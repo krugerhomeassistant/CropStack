@@ -227,7 +227,7 @@ Goal: probabilistic, self-updating environment; remove v1 heuristics (§18).
 **Acceptance**: AC-P2 for animals (adding a hot humid tail creates THI alerts without configuration); animal tasks appear in Today under Animals.
 
 ## Phase 10 — Harvest, pantry, seeds, inputs §10
-- [ ] Harvest log with yields vs expected; feeds yield estimates for the plan generator.
+- [~] (v0.22.0: `harvest` table, API, per-planting log and total in the UI; yield vs expected and plan feedback open) Harvest log with yields vs expected; feeds yield estimates for the plan generator.
 - [ ] Pantry & preservation inventory with batches, methods, best-before defaults, expiry tasks.
 - [ ] Seed vault: lots, germination tests, viability by species longevity, reorder reminders from planned sowings.
 - [ ] Inputs inventory full (fertiliser, feed, medication, bedding) with usage linked to tasks.

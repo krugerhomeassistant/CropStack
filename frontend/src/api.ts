@@ -110,6 +110,8 @@ export type Job = {
   steps: string[]
 }
 export type TodayData = { date: string; groups: { group: string; tasks: Job[] }[]; upcoming: Job[] }
+export type HarvestUnit = 'kg' | 'g' | 'count' | 'bunch'
+export type Harvest = { id: number; planting_id: number; harvested_on: string; quantity: number; unit: HarvestUnit; notes: string }
 export type Probability = { var: string; days: number[]; years: string }
 
 export type DayWeather = {
@@ -244,6 +246,9 @@ export const api = {
   updatePlanting: (id: number, body: Partial<Pick<Planting, 'status' | 'quantity' | 'location' | 'notes'>>) =>
     request<Planting>('PATCH', `/plantings/${id}`, body),
   deletePlanting: (id: number) => request<null>('DELETE', `/plantings/${id}`),
+  harvests: () => request<Harvest[]>('GET', '/plantings/harvests'),
+  addHarvest: (plantingId: number, body: Omit<Harvest, 'id' | 'planting_id'>) =>
+    request<Harvest>('POST', `/plantings/${plantingId}/harvests`, body),
   savePrefs: (prefs: Prefs) => request<Prefs>('PUT', '/auth/prefs', prefs),
   weather: () => request<Weather>('GET', '/sites/current/weather'),
   householdSettings: () => request<HouseholdSettings>('GET', '/household/settings'),

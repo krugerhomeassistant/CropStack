@@ -30,3 +30,20 @@ def test_planting_validation(owner):  # noqa: F811
     assert post(method="transplant", set_out_date="2026-10-01") == 422  # before sowing
     assert post(method="transplant", set_out_date="2026-11-30") == 201
     assert post(quantity=0) == 422
+
+
+def test_harvests_are_logged_per_planting_and_go_with_it(owner):  # noqa: F811
+    pid = owner.post("/api/v1/plantings", json=BASE).json()["id"]
+    log = lambda **kw: owner.post(f"/api/v1/plantings/{pid}/harvests", json=kw)  # noqa: E731
+    first = log(harvested_on="2026-12-01", quantity=2.5, unit="kg")
+    assert first.status_code == 201 and log(harvested_on="2026-12-08", quantity=12, unit="count").status_code == 201
+    assert log(harvested_on="2026-12-01", quantity=0, unit="kg").status_code == 422
+    assert log(harvested_on="2026-12-01", quantity=1, unit="tonnes").status_code == 422
+    assert owner.post("/api/v1/plantings/999999/harvests", json=first.json()).status_code == 404
+    rows = owner.get("/api/v1/plantings/harvests").json()
+    assert [(r["quantity"], r["unit"]) for r in rows] == [(2.5, "kg"), (12, "count")]
+
+    assert owner.delete(f"/api/v1/plantings/harvests/{rows[0]['id']}").status_code == 204
+    assert len(owner.get("/api/v1/plantings/harvests").json()) == 1
+    owner.delete(f"/api/v1/plantings/{pid}")
+    assert owner.get("/api/v1/plantings/harvests").json() == []  # deleted with the planting

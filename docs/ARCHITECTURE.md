@@ -39,7 +39,7 @@ Target architecture (engines, data model, API) is specified in `docs/SPEC.md` §
 | `scheduler.py` | background job registry + runner (thread per run), status for `/api/health` |
 | `engine/water.py` | **pure** soil-water balance: `WaterProfile` from a catalog item, `depletion_path`, `first_dry_day` |
 | `tasks.py` | task engine core: pure generators `crop_schedule` (sow, set out, first harvest), `weather_alerts` (frost, heat from the forecast) and `water_alerts`, and `sync` (per set of task kinds), which updates stored tasks by `generator_key`, logs changes, leaves done/skipped/locked tasks alone |
-| `routers/plantings.py` | plantings CRUD with forward-only status rules; regenerates tasks on every change |
+| `routers/plantings.py` | plantings CRUD with forward-only status rules; regenerates tasks on every change; harvest log (`GET /plantings/harvests`, `POST /plantings/{id}/harvests`, `DELETE /plantings/harvests/{id}`) |
 | `routers/today.py` | `GET /api/v1/today` (due jobs grouped Protect…Maintain, next 14 days), `PATCH /api/v1/tasks/{id}` (done/skipped; done moves the planting along), 12-hourly `tasks` job |
 | `routers/weather.py` | forecast refresh (3 h), `forecast` job, `GET /api/v1/sites/current/weather` |
 | `climate.py` | **pure** climate card description: season stats, frost dates at a risk, zone, daylight, monthly means, rain season, extremes, `summarize`, `report` |
@@ -78,11 +78,12 @@ Target architecture (engines, data model, API) is specified in `docs/SPEC.md` §
 | `CROPSTACK_SCHEDULER` | `true` | background jobs (forecast refresh) |
 | `CROPSTACK_PORT` | `8430` | compose host port only |
 
-## DB schema (SQLite, Alembic migrations; head 0009)
+## DB schema (SQLite, Alembic migrations; head 0010)
 - **user**: id, username (unique, lowercased), password_hash (argon2id), display_name, created_at, prefs JSON (start, units)
 - **household**: id, name, created_at, settings JSON (forecast, place_search)
 - **membership**: user_id (PK → user, CASCADE), household_id (→ household, CASCADE, indexed), role (owner|member|viewer), created_at
 - **invite**: token_hash (PK, SHA-256), household_id (→ household, CASCADE), role, created_by (→ user, SET NULL), created_at, expires_at, used_at
+- **harvest**: id, household_id (CASCADE), planting_id (→ planting, CASCADE), harvested_on, quantity (> 0), unit (kg, g, count, bunch), notes, created_by (SET NULL), created_at
 - **site**: id, household_id (→ household, unique, CASCADE), name, latitude, longitude, postal_code, frost_probability (10–90), soil ('', sandy, loamy, clay), created_at, updated_at
 - **forecast**: site_id (PK → site, CASCADE), latitude, longitude, raw JSON (Open-Meteo forecast response), fetched_at
 - **catalogoverride**: (household_id → household CASCADE, kind, slug, path) PK, value JSON (a cited `Value`), updated_at

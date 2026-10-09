@@ -1,9 +1,9 @@
 # ACTIVE CONTEXT
 
-**Date:** 2026-10-09 · **Version:** 0.21.0
+**Date:** 2026-10-09 · **Version:** 0.22.0
 
 ## Current subtask
-v0.20.0 (soil question; watering uses it) released after CI; v0.19.0 Water jobs, v0.18.0 Protect jobs, v0.17.0 the task engine and Today jobs. Owner confirmed (2026-10-09) live weather works on the ZimaOS install. Next: rest of the setup interview (space, water source, household, time, budget), crop-specific how-to text (generic per-kind steps shipped in v0.21.0), 6.6 feeding, 6.7 scouting, then hardening-off and successions; Today weather advice and the how-to text per job. Process note: `ss` is missing in the sandbox; find the stub server by scanning /proc (see /tmp/restart.sh pattern) and run e2e and screenshots against separate fresh data dirs.
+v0.22.0 harvest logging shipped (table 0010, API, Garden UI, e2e). v0.21.0 CI failed on the screenshots script (fixed in 1a33d87). v0.20.0 (soil question; watering uses it) released after CI; v0.19.0 Water jobs, v0.18.0 Protect jobs, v0.17.0 the task engine and Today jobs. Owner confirmed (2026-10-09) live weather works on the ZimaOS install. Next: rest of the setup interview (space, water source, household, time, budget), crop-specific how-to text (generic per-kind steps shipped in v0.21.0), 6.6 feeding, 6.7 scouting, then hardening-off and successions; Today weather advice and the how-to text per job. Process note: `ss` is missing in the sandbox; find the stub server by scanning /proc (see /tmp/restart.sh pattern) and run e2e and screenshots against separate fresh data dirs.
 
 ## Open to-dos (owner: "make note of missed/still to dos")
 - UI kit: Sheet/Dialog, Tabs, Toast, Select. Add with the first screen that needs them (PLAN 6.9).

@@ -95,6 +95,17 @@ try {
   await owner.getByText('Sown', { exact: true }).waitFor()
   step('plant from a window, list and advance')
 
+  // Harvests are logged once a crop is growing
+  const [first] = await (await owner.request.get(`${base}/api/v1/plantings`)).json()
+  for (const status of ['germinated', 'harvesting'])
+    await owner.request.patch(`${base}/api/v1/plantings/${first.id}`, { data: { status } })
+  await owner.reload()
+  await owner.getByRole('button', { name: 'Log a harvest' }).first().click()
+  await owner.getByLabel('How much').fill('1.5')
+  await owner.getByRole('button', { name: 'Save', exact: true }).click()
+  await owner.getByText(/Picked: 1\.5/).waitFor()
+  step('log a harvest')
+
   // A job that is due today shows on Today with its reason, and finishing it moves the planting
   const todayIso = new Date().toISOString().slice(0, 10)
   await owner.request.post(`${base}/api/v1/plantings`, {

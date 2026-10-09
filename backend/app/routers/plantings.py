@@ -8,7 +8,7 @@ from pydantic import BaseModel, Field, model_validator
 from sqlmodel import select
 
 from ..deps import EditorDep, MemberDep, SessionDep
-from ..models import Planting
+from ..models import Harvest, Planting
 from .catalog import CatalogDep
 from .today import refresh_tasks
 
@@ -99,4 +99,35 @@ def update_planting(planting_id: int, body: PlantingPatch, me: EditorDep, db: Se
 @router.delete("/{planting_id}", status_code=204)
 def delete_planting(planting_id: int, me: EditorDep, db: SessionDep) -> None:
     db.delete(_own(db, me.household_id, planting_id))  # its tasks go with it (ON DELETE CASCADE)
+    db.commit()
+
+
+class HarvestIn(BaseModel):
+    harvested_on: date
+    quantity: float = Field(gt=0, le=1_000_000)
+    unit: Literal["kg", "g", "count", "bunch"]
+    notes: str = Field("", max_length=500)
+
+
+@router.get("/harvests")
+def list_harvests(me: MemberDep, db: SessionDep) -> list[Harvest]:
+    return list(db.exec(select(Harvest).where(Harvest.household_id == me.household_id).order_by(Harvest.harvested_on)))
+
+
+@router.post("/{planting_id}/harvests", status_code=201)
+def add_harvest(planting_id: int, body: HarvestIn, me: EditorDep, db: SessionDep) -> Harvest:
+    _own(db, me.household_id, planting_id)
+    row = Harvest(household_id=me.household_id, planting_id=planting_id, created_by=me.user_id, **body.model_dump())
+    db.add(row)
+    db.commit()
+    db.refresh(row)
+    return row
+
+
+@router.delete("/harvests/{harvest_id}", status_code=204)
+def delete_harvest(harvest_id: int, me: EditorDep, db: SessionDep) -> None:
+    row = db.get(Harvest, harvest_id)
+    if not row or row.household_id != me.household_id:
+        raise HTTPException(404, "No such harvest")
+    db.delete(row)
     db.commit()

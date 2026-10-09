@@ -164,3 +164,17 @@ class TaskChange(SQLModel, table=True):
     task_id: int = Field(foreign_key="task.id", ondelete="CASCADE", index=True)
     at: datetime = Field(default_factory=now)
     what: str
+
+
+class Harvest(SQLModel, table=True):
+    """Something picked from a planting: what the garden actually yields (SPEC §10.1)."""
+
+    id: int | None = Field(default=None, primary_key=True)
+    household_id: int = Field(foreign_key="household.id", ondelete="CASCADE", index=True)
+    planting_id: int = Field(foreign_key="planting.id", ondelete="CASCADE", index=True)
+    harvested_on: date
+    quantity: float
+    unit: str  # kg, g, count or bunch
+    notes: str = ""
+    created_by: int | None = Field(default=None, foreign_key="user.id", ondelete="SET NULL")
+    created_at: datetime = Field(default_factory=now)

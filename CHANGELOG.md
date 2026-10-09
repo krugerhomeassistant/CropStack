@@ -5,6 +5,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.22.0] - 2026-10-09
+
+### Added
+- **Log a harvest** on any planting that is up or growing: how much (kg, g, count or bunch), saved with today's date. The Garden page shows the running total ("Picked: 3.5 kg") for each planting. Harvests are deleted with their planting.
+
 ## [0.21.0] - 2026-10-09
 
 ### Added

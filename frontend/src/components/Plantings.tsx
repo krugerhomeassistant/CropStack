@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router'
 import { Sprout, Trash2 } from 'lucide-react'
-import { api, type CropSummary, type Planting, type PlantingStatus } from '../api'
+import { api, type CropSummary, type Harvest, type HarvestUnit, type Planting, type PlantingStatus } from '../api'
 import { N_, t } from '../i18n'
 import { useApp } from '../state'
-import { Badge, Button, EmptyState, ErrorState, IconButton, Section, Skeleton } from './ui'
+import { Badge, Button, EmptyState, ErrorState, Field, IconButton, Section, Skeleton } from './ui'
 
 const STATUS: Record<PlantingStatus, string> = {
   planned: N_('Planned'),
@@ -35,19 +35,79 @@ const ACTION: Record<PlantingStatus, string> = {
 
 const date = (iso: string) => new Date(`${iso}T00:00:00`).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })
 
+const UNITS: Record<HarvestUnit, string> = { kg: N_('kg'), g: N_('g'), count: N_('pieces'), bunch: N_('bunches') }
+const iso = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+
+/** "2.5 kg, 12 pieces": what has been picked so far, per unit. */
+function picked(rows: Harvest[]): string {
+  const totals = new Map<HarvestUnit, number>()
+  for (const h of rows) totals.set(h.unit, (totals.get(h.unit) ?? 0) + h.quantity)
+  return [...totals].map(([unit, q]) => `${Math.round(q * 100) / 100} ${t(UNITS[unit])}`).join(', ')
+}
+
+function HarvestForm({ plantingId, onSaved }: { plantingId: number; onSaved: (h: Harvest) => void }) {
+  const [open, setOpen] = useState(false)
+  const [quantity, setQuantity] = useState('')
+  const [unit, setUnit] = useState<HarvestUnit>('kg')
+  const [error, setError] = useState('')
+  if (!open)
+    return (
+      <Button variant="ghost" onClick={() => setOpen(true)}>
+        {t('Log a harvest')}
+      </Button>
+    )
+  return (
+    <form
+      className="flex flex-wrap items-end gap-2"
+      onSubmit={(e) => {
+        e.preventDefault()
+        api
+          .addHarvest(plantingId, { harvested_on: iso(new Date()), quantity: Number(quantity), unit, notes: '' })
+          .then(
+            (h) => {
+              onSaved(h)
+              setOpen(false)
+              setQuantity('')
+            },
+            (err) => setError(err instanceof Error ? err.message : t('Failed to save')),
+          )
+      }}
+    >
+      <Field label={t('How much')} error={error}>
+        <input className="input w-28" type="number" min="0" step="any" required value={quantity} onChange={(e) => setQuantity(e.target.value)} />
+      </Field>
+      <Field label={t('Unit')}>
+        <select className="input" value={unit} onChange={(e) => setUnit(e.target.value as HarvestUnit)}>
+          {(Object.keys(UNITS) as HarvestUnit[]).map((u) => (
+            <option key={u} value={u}>
+              {t(UNITS[u])}
+            </option>
+          ))}
+        </select>
+      </Field>
+      <Button type="submit">{t('Save')}</Button>
+      <Button variant="ghost" onClick={() => setOpen(false)}>
+        {t('Cancel')}
+      </Button>
+    </form>
+  )
+}
+
 /** What the household has planted or plans to plant. */
 export default function Plantings() {
   const { user } = useApp()
   const [rows, setRows] = useState<Planting[] | null>(null)
+  const [harvests, setHarvests] = useState<Harvest[]>([])
   const [names, setNames] = useState<Record<string, CropSummary>>({})
   const [error, setError] = useState<string | null>(null)
   const canEdit = user.role !== 'viewer'
 
   function load() {
     setError(null)
-    Promise.all([api.plantings(), api.crops()]).then(
-      ([plantings, crops]) => {
+    Promise.all([api.plantings(), api.crops(), api.harvests()]).then(
+      ([plantings, crops, picks]) => {
         setRows(plantings)
+        setHarvests(picks)
         setNames(Object.fromEntries(crops.map((c) => [c.slug, c])))
       },
       (e) => setError(e instanceof Error ? e.message : t('Failed to load')),
@@ -89,6 +149,7 @@ export default function Plantings() {
         {rows.map((p) => {
           const next = ADVANCE[p.status]
           const crop = names[p.crop]
+          const mine = harvests.filter((h) => h.planting_id === p.id)
           return (
             <li key={p.id} className="flex flex-col gap-2 py-3 first:pt-0 last:pb-0">
               <div className="flex items-start justify-between gap-3">
@@ -100,6 +161,7 @@ export default function Plantings() {
                     {t('{count} planted', { count: p.quantity })}
                     {p.location && ` · ${p.location}`}
                   </p>
+                  {mine.length > 0 && <p className="text-sm font-semibold text-leaf">{t('Picked: {total}', { total: picked(mine) })}</p>}
                   <p className="text-sm text-muted">
                     {p.method === 'transplant'
                       ? t('Sow indoors {sow}, set out {out}', { sow: date(p.start_date), out: date(p.set_out_date ?? p.start_date) })
@@ -119,6 +181,9 @@ export default function Plantings() {
                     <Button variant="ghost" onClick={() => change(p.id, { status: 'failed' })}>
                       {t('It failed')}
                     </Button>
+                  )}
+                  {!['planned', 'sown', 'failed'].includes(p.status) && (
+                    <HarvestForm plantingId={p.id} onSaved={(h) => setHarvests((hs) => [...hs, h])} />
                   )}
                   <IconButton icon={Trash2} label={t('Delete planting')} onClick={() => remove(p.id)} />
                 </div>
