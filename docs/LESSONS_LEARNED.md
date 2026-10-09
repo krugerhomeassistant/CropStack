@@ -66,4 +66,8 @@ CropStack-specific:
 56. **GBIF reports *Pisum sativum* as a SYNONYM** → GBIF follows the move to *Lathyrus oleraceus* → keep the name gardeners use and record the expected status in `crosswalk.yaml` (`gbif_status`), so `check` stays green but the exception is visible.
 57. **YAML dump wrote `&id001` anchors for repeated dates** → PyYAML aliases identical objects → custom dumper with `ignore_aliases()`.
 58. **Network from the sandbox, 2026-10-09**: raw.githubusercontent, GBIF API, OSU, CRAN and Zenodo reachable; Wikidata API reachable with an identifying UA (429 without); Wikidata SPARQL endpoint blocked.
-
+52. **`pkill -f <name>` killed the shell again (exit 144), a repeat of 49** → never use `pkill -f` from the Bash tool; `P=$(pgrep -f "python -m <module>" | head -1); [ -n "$P" ] && kill $P`.
+53. **Chart axis text rendered at ~5 px on a phone** → an SVG with a fixed 640×240 viewBox scales everything down with the width → size the drawing to its container (ResizeObserver) so text stays 11 px.
+54. **Dark-mode chart colours failed the dataviz validator** → text tokens (`water`, `harvest`) are tuned for text contrast, but dark charts need L 0.48–0.67 and chroma ≥ 0.1 → separate chart tokens validated with `validate_palette.js --mode dark --surface <app surface>`.
+55. **Playwright hover missed a chart below the fold** → `boundingBox()` is viewport-relative and does not scroll → `scrollIntoViewIfNeeded()` first.
+56. **Several rain bars labelled as the maximum** → `v === max` is true for ties → label by the index of the first maximum.

@@ -1,13 +1,13 @@
 # ACTIVE CONTEXT
 
-**Date:** 2026-10-09 · **Version:** 0.10.0
+**Date:** 2026-10-09 · **Version:** 0.11.0
 
 ## Current subtask
-Releasing v0.10.0 (Phase 5a: 29 crops, ingestion pipeline, Crops screens). Then continue Phase 5.
+v0.11.0 (climate charts) ready to release. v0.10.0 (29 crops, ingestion pipeline, Crops screens) is released and CI-verified. Next: Phase 5 content and fetchers v2, or Phase 6 crop engine.
 
 ## Open to-dos (owner: "make note of missed/still to dos")
 - UI kit: Sheet/Dialog, Tabs, Toast, Select. Add with the first screen that needs them (PLAN 6.9).
-- Climate page: charts instead of the summary card (PLAN 11; the owner cares about it, so consider pulling it forward).
+- Climate charts v2 (PLAN 11): ET0, user-picked threshold curves, trend, this-season overlay, sensor overlay, takeaway sentence, attribution line; add the chart rules to `docs/DESIGN.md`. Chart tests: unit tests for the pure helpers if they grow.
 - Catalog (PLAN 5): fetchers v2 (ECOCROP, DSSAT, Wikidata Afrikaans, WFO, USDA PLANTS, EPPO, Wikipedia companions); monthly CI job opening a PR with the YAML diff; prose-similarity CI check; herbs and the rest of the 60 crops; varieties (≥ 2 per crop); 20 fruit species; 5 cover crops; 40 organisms; override editor and custom crops.
 - From the owner: real climate and forecast values from the ZimaOS install (first real Open-Meteo call; never succeeded from the sandbox).
 - Waits for Home Assistant work: 4.3 sensors and observations.

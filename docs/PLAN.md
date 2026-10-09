@@ -231,8 +231,9 @@ Goal: probabilistic, self-updating environment; remove v1 heuristics (§18).
 - [ ] Journal with photos and tags.
 
 ## Phase 11 — Climate explorer & insights §11.4–11.5
-- [ ] `docs/DESIGN.md`: palette, chart rules (light/dark, accessible), typography.
-- [ ] Charts: DOY bands (temperature day/night, soil, rain, ET0), daylight curve, threshold probability curves (user-picked), trend, this-season overlay, sensor overlay; data-table toggle; generated takeaway sentence; attribution.
+- [x] Chart palette validated for light and dark (tokens `chart-warm`, `chart-cool`); chart rules in WIKI. Still to add to `docs/DESIGN.md`.
+- [x] Charts v1 (v0.11.0): temperature bands (day/night), soil, rain per month, daylight, freezing-night chance (only where it occurs); today marker; hover, touch and keyboard readout; table view.
+- [ ] Charts v2: ET0, threshold probability curves (user-picked), trend, this-season overlay (forecast and recent weather over the bands), sensor overlay; generated takeaway sentence; attribution line under the charts.
 - [ ] "What matters here, now" ranking (probability × impact × soonness) from the household's crops/animals; reference basket before any plantings.
 - [ ] Dashboards: yields, production, water use, task completion; season comparison.
 

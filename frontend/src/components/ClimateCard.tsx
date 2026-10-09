@@ -23,14 +23,29 @@ const signed = (v: number) => `${v > 0 ? '+' : ''}${v.toFixed(1)}`
  * threshold (SPEC P1): every line is a number from the record, and frost dates appear whenever frost occurs
  * at the person's chosen risk level.
  */
-export default function ClimateCard({ gardenKey, units }: { gardenKey: string; units: Units }) {
+export default function ClimateCard({
+  gardenKey,
+  units,
+  onLoaded,
+}: {
+  gardenKey: string
+  units: Units
+  /** Called with each loaded climate, so the page can show charts once the archive exists. */
+  onLoaded?: (climate: Climate) => void
+}) {
   const [climate, setClimate] = useState<Climate | null>(null)
   const [error, setError] = useState('')
 
   function load() {
     setError('')
     setClimate(null)
-    api.climate().then(setClimate, (err) => setError(err instanceof Error ? err.message : t('Failed to load')))
+    api.climate().then(
+      (c) => {
+        setClimate(c)
+        onLoaded?.(c)
+      },
+      (err) => setError(err instanceof Error ? err.message : t('Failed to load')),
+    )
   }
 
   // gardenKey changes when location or frost risk changes, so the card refreshes after an edit.

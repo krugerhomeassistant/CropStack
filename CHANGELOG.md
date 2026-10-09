@@ -5,6 +5,18 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.11.0] - 2026-10-09
+
+### Added
+- **Climate charts** under More → Climate (or Climate in the side menu): temperature through the year (a typical day's high and low with the range in 8 years out of 10), rain per month, soil temperature, day length, and, only where nights actually freeze, the chance of a freezing night on each day. A dotted line marks today.
+- Hover or touch a chart to read the values for that day; with the keyboard, focus a chart and use the left and right arrow keys. Every chart has a "Show as a table" view.
+- Charts follow your unit choice (°C or °F, mm or inches) and look right in light and dark mode.
+
+### Changed
+- The Climate page opens with the summary card, then the charts.
+
+## [0.11.0] - 2026-10-09
+
 ## [0.10.0] - 2026-10-09
 
 ### Added
@@ -106,7 +118,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - CI: ruff lint and format, backend tests, frontend build, image publishing to GHCR and automatic GitHub releases on a version bump.
 - Project docs: README, wiki, architecture, roadmap, contributing guide, security policy and Code of Conduct.
 
-[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.8.0...HEAD
+[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.11.0...HEAD
+[0.11.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.10.0...v0.11.0
 [0.8.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.5.1...v0.6.0

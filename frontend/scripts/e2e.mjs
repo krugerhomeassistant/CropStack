@@ -51,6 +51,20 @@ try {
   await owner.getByText(/^Zone /).waitFor()
   step('climate card')
 
+  // Charts: temperature lines with a tooltip on hover and a table alternative; rain bars; no frost chart without frost
+  await owner.getByRole('heading', { name: 'Temperature through the year' }).waitFor()
+  const chart = owner.getByRole('group', { name: 'Temperature through the year' })
+  await chart.scrollIntoViewIfNeeded()
+  const box = await chart.boundingBox()
+  await owner.mouse.move(box.x + box.width / 2, box.y + box.height / 2)
+  await chart.getByRole('status').getByText('Daily high').waitFor()
+  await owner.getByRole('img', { name: 'Rain per month' }).waitFor()
+  await owner.getByText('Show as a table').first().click()
+  await owner.getByRole('cell', { name: 'January' }).first().waitFor()
+  if (await owner.getByRole('heading', { name: 'Chance of a freezing night' }).count())
+    throw new Error('frost chart shown for a climate without frost')
+  step('climate charts')
+
   // Crops: search, open one, its values carry numbered sources
   await nav(owner, 'More')
   await owner.getByRole('link', { name: /Crops/ }).click()

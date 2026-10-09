@@ -56,6 +56,10 @@ export type Climate = {
   source: string
 }
 
+/** Typical value per day of the year (365 days, 29 Feb dropped): the middle value and the range of 8 years in 10. */
+export type Bands = { var: string; p10: (number | null)[]; p50: (number | null)[]; p90: (number | null)[]; years: string }
+export type Probability = { var: string; days: number[]; years: string }
+
 export type DayWeather = {
   date: string
   tmin: number | null
@@ -171,6 +175,9 @@ export const api = {
   garden: () => request<Garden>('GET', '/sites/current'),
   saveGarden: (garden: GardenInput) => request<Garden>('PUT', '/sites/current', garden),
   climate: () => request<Climate>('GET', '/sites/current/climate'),
+  bands: (name: string) => request<Bands>('GET', `/sites/current/climate/bands?var=${name}`),
+  probability: (name: string, op: 'le' | 'ge', x: number) =>
+    request<Probability>('GET', `/sites/current/climate/probability?var=${name}&op=${op}&x=${x}`),
   savePrefs: (prefs: Prefs) => request<Prefs>('PUT', '/auth/prefs', prefs),
   weather: () => request<Weather>('GET', '/sites/current/weather'),
   householdSettings: () => request<HouseholdSettings>('GET', '/household/settings'),

@@ -17,6 +17,7 @@
 | Climate card description | `backend/app/climate.py` |
 | No-presets check | `backend/tests/test_no_presets.py` |
 | Outside services | `backend/app/external.py` |
+| Climate charts | `frontend/src/components/{charts,ClimateCharts}.tsx` |
 | Climate card / place search | `frontend/src/components/{ClimateCard,PlaceSearch}.tsx` |
 | Catalog (data, licence, sources, schema) | `catalog/` (`README.md`, `sources.yaml`, `NOTICE`, `LICENSE`, `schema/`) |
 | Catalog ingestion | `scripts/ingest/` (`crosswalk.yaml`, `snapshots.lock`), cache `.ingest-cache/` (git-ignored) |

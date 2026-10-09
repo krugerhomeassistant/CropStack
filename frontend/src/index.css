@@ -22,6 +22,9 @@
   --color-check: #5e4b98;
   --color-animals: #8a5e14;
   --color-danger: #b3261e;
+  /* Chart series: validated as a pair (dataviz validator, both themes), so dark values differ from the text tokens. */
+  --color-chart-warm: #b83e22;
+  --color-chart-cool: #1f6aa8;
 
   --radius-section: 1rem;
   --radius-row: 0.625rem;
@@ -44,6 +47,8 @@
     --color-check: #b3a3e6;
     --color-animals: #e0b45e;
     --color-danger: #f2b8b5;
+    --color-chart-warm: #d96443;
+    --color-chart-cool: #4a98dd;
   }
 }
 

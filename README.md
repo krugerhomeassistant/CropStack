@@ -25,6 +25,8 @@ It runs on your own hardware (a NAS, a Raspberry Pi, a home server) as one conta
   <img src="docs/images/today-phone.png" width="260" alt="Today screen on a phone: greeting, today's weather with a 7-day outlook, and the daily jobs section" />
   &nbsp;
   <img src="docs/images/settings-phone.png" width="260" alt="Settings on a phone: start screen, units and data sources" />
+  &nbsp;
+  <img src="docs/images/climate-phone.png" width="260" alt="Climate page on a phone: summary card and the temperature chart with its range band" />
 </p>
 <p align="center">
   <img src="docs/images/today-desktop-dark.png" width="820" alt="Today screen on a desktop in dark mode, with the side navigation" />
@@ -40,6 +42,7 @@ It runs on your own hardware (a NAS, a Raspberry Pi, a home server) as one conta
 
 - **Your garden's climate.** Enter a place, postal code or coordinates and CropStack downloads 30 years of daily weather for that spot, then describes it in plain words: rain per year and when it falls, the hottest day and coldest night of a typical year, frost dates if frost happens at your chosen risk level, daylight, and warming or cooling trends. Recent years count more.
 - **Today's weather.** Today and the next 7 days, plus how the last 30 days compare with normal ("2.3 °C warmer than normal; drier than almost every year on record"). Refreshed in the background.
+- **Climate charts.** The shape of your year at a glance: typical daily highs and lows with their range, rain per month, soil temperature, day length, and the chance of a freezing night if your nights freeze at all. Hover or touch for any day; a table view is one tap away.
 - **A probability engine.** Behind the scenes every year on record is treated as a possible future, so CropStack can answer questions like "how likely is soil above 10 °C by this date?" for any threshold. This is what the crop planner will build on.
 - **Households.** Share one garden with your family. Owners invite people by link as *member* (does the daily work) or *viewer* (looks only).
 - **Your choices.** Each person picks the screen the app opens on and metric or imperial units.
