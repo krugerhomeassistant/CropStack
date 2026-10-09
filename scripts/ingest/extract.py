@@ -117,6 +117,43 @@ def openfarm(raw: bytes) -> dict[str, dict]:
     return out
 
 
+# ---------------------------------------------------------------- FAO ECOCROP via the Recocrop R package
+
+
+def _range(row: dict, keys: tuple[str, ...]) -> dict | None:
+    """Four ascending limits (absolute min, optimum min, optimum max, absolute max), or None when a limit is
+    missing, the limits are out of order, or the range is empty. ECOCROP writes unknowns as 0 or blank."""
+    vals = [_number(str(row.get(k))) for k in keys]
+    if None in vals or any(v != v for v in vals) or not vals[0] <= vals[1] <= vals[2] <= vals[3] or not vals[3]:
+        return None
+    return dict(zip(("min", "opt_min", "opt_max", "max"), vals, strict=True))
+
+
+def ecocrop(rows: list[dict]) -> dict[int, dict]:
+    """Records by ECOCROP code. `rows` are the table's rows as dicts (the CLI reads them from Recocrop's
+    ecocrop.rds). Temperatures in °C, rainfall in mm per year, cycle in days.
+
+    KTMP (killing temperature) is not extracted: ECOCROP uses 0 both for a real 0 °C and for "not given", so the
+    two cannot be told apart.
+    """
+    out: dict[int, dict] = {}
+    for row in rows:
+        code = _number(str(row.get("CODE")))
+        if code is None:
+            continue
+        gmin, gmax = _number(str(row.get("GMIN"))), _number(str(row.get("GMAX")))
+        record = {
+            "name": row.get("NAME"),
+            "scientific_name": row.get("SCIENTNAME"),
+            "temperature": _range(row, ("TMIN", "TOPMN", "TOPMX", "TMAX")),
+            "rainfall": _range(row, ("RMIN", "ROPMN", "ROPMX", "RMAX")),
+            "ph": _range(row, ("PHMIN", "PHOPMN", "PHOPMX", "PHMAX")),
+            "cycle": {"min": gmin, "max": gmax} if gmin and gmax and 0 < gmin <= gmax else None,
+        }
+        out[int(code)] = {k: v for k, v in record.items() if v is not None}
+    return out
+
+
 # ---------------------------------------------------------------- GBIF species match
 
 

@@ -80,6 +80,31 @@ def from_fao56(stages: list[dict], kc: dict | None, roots: dict | None, source: 
     return out
 
 
+def from_ecocrop(record: dict | None, code: int | None, source: dict) -> Proposals:
+    """FAO ECOCROP limits. Air temperature maps onto the profile's stress and optimum fields; rainfall, pH and cycle
+    length are kept as ranges (annual rainfall is a range to compare with, not a rule)."""
+    if not record or code is None:
+        return {}
+
+    def at(column: str) -> dict:
+        return {**source, "locator": f"ECOCROP code {code}, {column} (via Recocrop)"}
+
+    out: Proposals = {}
+    if t := record.get("temperature"):
+        out["requirements.temperature.stress_min"] = value(t["min"], "Cel", "government", at("TMIN"))
+        out["requirements.temperature.optimal"] = value(
+            {"min": t["opt_min"], "max": t["opt_max"]}, "Cel", "government", at("TOPMN, TOPMX")
+        )
+        out["requirements.temperature.stress_max"] = value(t["max"], "Cel", "government", at("TMAX"))
+    if ph := record.get("ph"):
+        out["requirements.soil.ph"] = value(ph, None, "government", at("PHMIN to PHMAX"))
+    if rain := record.get("rainfall"):
+        out["params.annual_rainfall"] = value(rain, "mm", "government", at("RMIN to RMAX"))
+    if cycle := record.get("cycle"):
+        out["params.cycle_days"] = value(cycle, "d", "government", at("GMIN, GMAX"))
+    return out
+
+
 SUN = {"Full Sun": "full_sun", "Partial Sun": "partial_sun", "Partial Shade": "partial_shade", "Shade": "shade"}
 
 

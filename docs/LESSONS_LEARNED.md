@@ -71,3 +71,9 @@ CropStack-specific:
 54. **Dark-mode chart colours failed the dataviz validator** → text tokens (`water`, `harvest`) are tuned for text contrast, but dark charts need L 0.48–0.67 and chroma ≥ 0.1 → separate chart tokens validated with `validate_palette.js --mode dark --surface <app surface>`.
 55. **Playwright hover missed a chart below the fold** → `boundingBox()` is viewport-relative and does not scroll → `scrollIntoViewIfNeeded()` first.
 56. **Several rain bars labelled as the maximum** → `v === max` is true for ties → label by the index of the first maximum.
+57. **ECOCROP's KTMP (killing temperature) is 0 for tomato** → 0 means both a real 0 °C and "not given" in this table → do not import it; take frost limits from curated or other sources.
+58. **ECOCROP rainfall looked like "per growing cycle"** → Recocrop's docs say the FAO database holds *annual* precipitation (Recocrop divides it into monthly figures itself) → read the consuming code's docs before naming a field; the field is `annual_rainfall`.
+59. **The catalog model rejected ECOCROP's four-point ranges** → `Range` had min/opt/max only → extended with `opt_min`/`opt_max`; the model gate caught it before bad data landed.
+60. **`pyreadr` imports but fails ("requires pandas or polars")** → it has no hard dependency on a dataframe library → install pandas as well; the CLI error now says so.
+61. **ECOCROP names are old (tomato is *Lycopersicon esculentum*)** → name matching misses → crosswalk by `CODE`, checked by eye against the scientific name.
+62. **`rsync` is not installed in the sandbox** → restore a directory from git with `git checkout -- <dir>` when it has no other uncommitted changes.

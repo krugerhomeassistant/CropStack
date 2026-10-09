@@ -55,7 +55,36 @@ requirements:
       evidence: extension-service
       confidence: medium
       sources:
-      - {ref: harrington-osu, locator: Table 1 (°F converted to °C), retrieved: 2026-10-09, snapshot: 'sha256:8c233471e724b47faafd3446a2eb623eced88ab1b7611163f784bf2d2192e140'}
+      - {ref: harrington-osu, locator: Table 1 (°F converted to °C), retrieved: 2026-10-09, snapshot: 'sha256:28afc523a272d97043014e9a9ed993c99cb1ff512ed2ba04f46b2013677581eb'}
+  temperature:
+    stress_min:
+      value: 5.0
+      unit: Cel
+      evidence: government
+      confidence: medium
+      sources:
+      - {ref: fao-ecocrop, locator: 'ECOCROP code 63, TMIN (via Recocrop)', retrieved: 2026-10-09, snapshot: 'sha256:90a21d908419e304e4e4c38c92df62d93b25cb373420fcd0a711247b1f47f358'}
+    optimal:
+      value: {min: 12.0, max: 21.0}
+      unit: Cel
+      evidence: government
+      confidence: medium
+      sources:
+      - {ref: fao-ecocrop, locator: 'ECOCROP code 63, TOPMN, TOPMX (via Recocrop)', retrieved: 2026-10-09, snapshot: 'sha256:90a21d908419e304e4e4c38c92df62d93b25cb373420fcd0a711247b1f47f358'}
+    stress_max:
+      value: 30.0
+      unit: Cel
+      evidence: government
+      confidence: medium
+      sources:
+      - {ref: fao-ecocrop, locator: 'ECOCROP code 63, TMAX (via Recocrop)', retrieved: 2026-10-09, snapshot: 'sha256:90a21d908419e304e4e4c38c92df62d93b25cb373420fcd0a711247b1f47f358'}
+  soil:
+    ph:
+      value: {min: 4.2, opt_min: 6.0, opt_max: 7.0, max: 7.5}
+      evidence: government
+      confidence: medium
+      sources:
+      - {ref: fao-ecocrop, locator: 'ECOCROP code 63, PHMIN to PHMAX (via Recocrop)', retrieved: 2026-10-09, snapshot: 'sha256:90a21d908419e304e4e4c38c92df62d93b25cb373420fcd0a711247b1f47f358'}
 params:
   height_max:
     value: 0.3
@@ -187,49 +216,49 @@ params:
     evidence: extension-service
     confidence: medium
     sources:
-    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-09, snapshot: 'sha256:8c233471e724b47faafd3446a2eb623eced88ab1b7611163f784bf2d2192e140'}
+    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-09, snapshot: 'sha256:28afc523a272d97043014e9a9ed993c99cb1ff512ed2ba04f46b2013677581eb'}
   - value: 15.0
     unit: d
     qualifiers: {soil_temp_c: 5.0}
     evidence: extension-service
     confidence: medium
     sources:
-    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-09, snapshot: 'sha256:8c233471e724b47faafd3446a2eb623eced88ab1b7611163f784bf2d2192e140'}
+    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-09, snapshot: 'sha256:28afc523a272d97043014e9a9ed993c99cb1ff512ed2ba04f46b2013677581eb'}
   - value: 7.0
     unit: d
     qualifiers: {soil_temp_c: 10.0}
     evidence: extension-service
     confidence: medium
     sources:
-    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-09, snapshot: 'sha256:8c233471e724b47faafd3446a2eb623eced88ab1b7611163f784bf2d2192e140'}
+    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-09, snapshot: 'sha256:28afc523a272d97043014e9a9ed993c99cb1ff512ed2ba04f46b2013677581eb'}
   - value: 4.0
     unit: d
     qualifiers: {soil_temp_c: 15.0}
     evidence: extension-service
     confidence: medium
     sources:
-    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-09, snapshot: 'sha256:8c233471e724b47faafd3446a2eb623eced88ab1b7611163f784bf2d2192e140'}
+    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-09, snapshot: 'sha256:28afc523a272d97043014e9a9ed993c99cb1ff512ed2ba04f46b2013677581eb'}
   - value: 3.0
     unit: d
     qualifiers: {soil_temp_c: 20.0}
     evidence: extension-service
     confidence: medium
     sources:
-    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-09, snapshot: 'sha256:8c233471e724b47faafd3446a2eb623eced88ab1b7611163f784bf2d2192e140'}
+    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-09, snapshot: 'sha256:28afc523a272d97043014e9a9ed993c99cb1ff512ed2ba04f46b2013677581eb'}
   - value: 2.0
     unit: d
     qualifiers: {soil_temp_c: 25.0}
     evidence: extension-service
     confidence: medium
     sources:
-    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-09, snapshot: 'sha256:8c233471e724b47faafd3446a2eb623eced88ab1b7611163f784bf2d2192e140'}
+    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-09, snapshot: 'sha256:28afc523a272d97043014e9a9ed993c99cb1ff512ed2ba04f46b2013677581eb'}
   - value: 2.0
     unit: d
     qualifiers: {soil_temp_c: 30.0}
     evidence: extension-service
     confidence: medium
     sources:
-    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-09, snapshot: 'sha256:8c233471e724b47faafd3446a2eb623eced88ab1b7611163f784bf2d2192e140'}
+    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-09, snapshot: 'sha256:28afc523a272d97043014e9a9ed993c99cb1ff512ed2ba04f46b2013677581eb'}
   row_spacing:
     value: 30
     unit: cm
@@ -261,3 +290,17 @@ params:
     sources:
     - {ref: openfarm-rescue, locator: 'https://web.archive.org/web/20250318003524/https://openfarm.cc/en/crops/lettuce', retrieved: 2026-10-09,
       snapshot: 'sha256:203050c7a2be7ab1c4c165ee4edb42aaebcb13d183bd53540a2bf3482363caec'}
+  annual_rainfall:
+    value: {min: 900.0, opt_min: 1100.0, opt_max: 1400.0, max: 4100.0}
+    unit: mm
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-ecocrop, locator: 'ECOCROP code 63, RMIN to RMAX (via Recocrop)', retrieved: 2026-10-09, snapshot: 'sha256:90a21d908419e304e4e4c38c92df62d93b25cb373420fcd0a711247b1f47f358'}
+  cycle_days:
+    value: {min: 35.0, max: 85.0}
+    unit: d
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-ecocrop, locator: 'ECOCROP code 63, GMIN, GMAX (via Recocrop)', retrieved: 2026-10-09, snapshot: 'sha256:90a21d908419e304e4e4c38c92df62d93b25cb373420fcd0a711247b1f47f358'}

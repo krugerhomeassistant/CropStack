@@ -71,6 +71,8 @@ try {
   await owner.getByLabel('Search crops').fill('tamatie')
   await owner.getByRole('link', { name: /Tomato/ }).click()
   await owner.getByRole('heading', { name: 'Sowing' }).waitFor()
+  await owner.getByRole('heading', { name: 'Growing conditions' }).waitFor()
+  await owner.getByText(/Grows between .* best between/).waitFor()
   await owner.getByRole('link', { name: 'Source 1' }).first().waitFor()
   assert.ok(await owner.getByRole('heading', { name: 'Sources' }).isVisible())
   await owner.getByLabel('Back').click()

@@ -101,7 +101,13 @@ export type DataSource = {
 export type Evidence =
   'peer-reviewed' | 'government' | 'extension-service' | 'model' | 'grower-reported' | 'traditional'
 export type SourceRef = { ref: string; locator?: string | null; retrieved?: string | null; snapshot?: string | null }
-export type Range = { min?: number | null; opt?: number | null; max?: number | null }
+export type Range = {
+  min?: number | null
+  opt_min?: number | null
+  opt?: number | null
+  opt_max?: number | null
+  max?: number | null
+}
 export type Fact = {
   value: number | string | boolean | Range
   unit?: string | null

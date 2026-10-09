@@ -1,4 +1,8 @@
 # Raw source snapshots used by the catalog (scripts/ingest). Files live in .ingest-cache/<sha256>.
+ecocrop-recocrop:
+  retrieved: 2026-10-09
+  sha256: 90a21d908419e304e4e4c38c92df62d93b25cb373420fcd0a711247b1f47f358
+  url: https://cran.r-project.org/src/contrib/Recocrop_0.4-2.tar.gz
 gbif:Allium cepa:
   retrieved: 2026-10-09
   sha256: fd55a6c85c80dd2ac7b73651de9861382931d4b9cf83c8fd84bb8c0888db5535
@@ -101,7 +105,7 @@ gbif:Zea mays:
   url: https://api.gbif.org/v1/species/match?name=Zea%20mays&kingdom=Plantae&strict=true
 harrington-osu:
   retrieved: 2026-10-09
-  sha256: 8c233471e724b47faafd3446a2eb623eced88ab1b7611163f784bf2d2192e140
+  sha256: 28afc523a272d97043014e9a9ed993c99cb1ff512ed2ba04f46b2013677581eb
   url: https://extension.oregonstate.edu/es/catalog/soil-temperature-conditions-vegetable-seed-germination
 openfarm-rescue:
   retrieved: 2026-10-09

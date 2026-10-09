@@ -20,6 +20,8 @@ FAO (ECOCROP, DAD-IS)
       https://www.fao.org/dad-is/en/ Licence: CC-BY-4.0.
   Additional FAO terms that apply to these values: they may not be used to promote a commercial enterprise,
   and their use does not imply any endorsement by FAO.
+  ECOCROP values were read from the table shipped in the Recocrop R package (CRAN, GPL-3 code); only FAO's data
+  is used, not the package's code.
 
 EPPO Codes
   Contains EPPO Codes (www.eppo.int). Download date: recorded with each import in sources.yaml / the

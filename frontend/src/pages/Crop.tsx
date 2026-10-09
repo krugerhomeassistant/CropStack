@@ -15,7 +15,7 @@ import {
 import { Badge, EmptyState, ErrorState, PageHeader, Section, Skeleton } from '../components/ui'
 import { N_, t } from '../i18n'
 import { useApp } from '../state'
-import { cm, metres, temp, type Units } from '../units'
+import { cm, metres, rain, temp, type Units } from '../units'
 
 const EVIDENCE: Record<Evidence, string> = {
   'peer-reviewed': N_('Peer-reviewed study'),
@@ -122,6 +122,65 @@ function Germination({ data, units, notes }: { data: CropData; units: Units; not
               {t('Soil temperature at sowing depth.')}
               {notes.cite(emergence)}
             </span>
+          </Row>
+        )}
+      </dl>
+    </Section>
+  )
+}
+
+function Conditions({ data, units, notes }: { data: CropData; units: Units; notes: Notes }) {
+  const air = data.requirements?.temperature ?? {}
+  const low = num(air.stress_min)
+  const high = num(air.stress_max)
+  const best = range(air.optimal)
+  const ph = data.requirements?.soil?.ph
+  const acidity = range(ph)
+  const cycle = range(data.params?.cycle_days)
+  const rainfall = data.params?.annual_rainfall
+  const yearly = range(rainfall)
+  if (low == null && !acidity && !cycle && !yearly) return null
+  const fixed = (n?: number | null) => (n == null ? '–' : n.toFixed(1))
+  return (
+    <Section title={t('Growing conditions')} description={t('The conditions this crop is usually grown in, from FAO.')}>
+      <dl className="-my-3 divide-y divide-line">
+        {low != null && high != null && best && (
+          <Row label={t('Air temperature')}>
+            {t('Grows between {min} and {max}, best between {from} and {to}.', {
+              min: temp(low, units),
+              max: temp(high, units),
+              from: temp(best.min ?? low, units),
+              to: temp(best.max ?? high, units),
+            })}
+            {notes.cite(air.stress_min, air.optimal, air.stress_max)}
+          </Row>
+        )}
+        {acidity && (
+          <Row label={t('Soil acidity (pH)')}>
+            {t('Copes with pH {min} to {max}, best between {from} and {to}.', {
+              min: fixed(acidity.min),
+              max: fixed(acidity.max),
+              from: fixed(acidity.opt_min),
+              to: fixed(acidity.opt_max),
+            })}
+            {notes.cite(ph)}
+          </Row>
+        )}
+        {cycle && (
+          <Row label={t('Growing cycle')}>
+            {t('{min} to {max} days from sowing to the end of the harvest.', { min: cycle.min ?? '–', max: cycle.max ?? '–' })}
+            {notes.cite(data.params?.cycle_days)}
+          </Row>
+        )}
+        {yearly && (
+          <Row label={t('Rain it is grown in')}>
+            {t('Usually grown where a year brings {from} to {to} of rain; it copes with {min} to {max}.', {
+              from: rain(yearly.opt_min ?? 0, units),
+              to: rain(yearly.opt_max ?? 0, units),
+              min: rain(yearly.min ?? 0, units),
+              max: rain(yearly.max ?? 0, units),
+            })}
+            {notes.cite(rainfall)}
           </Row>
         )}
       </dl>
@@ -390,6 +449,7 @@ export default function Crop() {
 
       <div className="flex flex-col gap-6 lg:grid lg:grid-cols-2 lg:items-start">
         <Germination data={data} units={units} notes={notes} />
+        <Conditions data={data} units={units} notes={notes} />
         <Water data={data} units={units} notes={notes} />
         <Size data={data} units={units} notes={notes} />
       </div>

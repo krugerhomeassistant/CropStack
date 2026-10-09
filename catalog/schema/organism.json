@@ -174,6 +174,7 @@
     },
     "Range": {
       "additionalProperties": false,
+      "description": "Limits of a variable: absolute min and max, and the best value `opt` or the best band `opt_min`..`opt_max`.",
       "properties": {
         "max": {
           "anyOf": [
@@ -210,6 +211,30 @@
           ],
           "default": null,
           "title": "Opt"
+        },
+        "opt_max": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Opt Max"
+        },
+        "opt_min": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Opt Min"
         }
       },
       "title": "Range",

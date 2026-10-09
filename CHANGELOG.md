@@ -5,6 +5,17 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.12.0] - 2026-10-09
+
+### Added
+- **Growing conditions** on every crop page: the air temperature it grows in and does best in, the soil acidity (pH) it copes with, the length of its growing cycle, and the yearly rainfall it is usually grown in, all from FAO's ECOCROP database, each with a numbered source.
+
+### Development
+- `scripts/ingest` reads FAO ECOCROP from the Recocrop R package on CRAN (needs `pip install pyreadr pandas`). Ranges that are missing, zero-filled or out of order are skipped, and ECOCROP's killing temperature is left out because its 0 can mean either 0 °C or "not given".
+- Catalog ranges can now describe a best band as well as a single best value (`opt_min`, `opt_max`).
+
+## [0.12.0] - 2026-10-09
+
 ## [0.11.0] - 2026-10-09
 
 ### Added
@@ -118,7 +129,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - CI: ruff lint and format, backend tests, frontend build, image publishing to GHCR and automatic GitHub releases on a version bump.
 - Project docs: README, wiki, architecture, roadmap, contributing guide, security policy and Code of Conduct.
 
-[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.11.0...HEAD
+[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.12.0...HEAD
+[0.12.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.11.0...v0.12.0
 [0.11.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.10.0...v0.11.0
 [0.8.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.6.0...v0.7.0

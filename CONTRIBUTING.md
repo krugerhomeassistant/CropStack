@@ -36,7 +36,7 @@ Review the generated file in `app/migrations/versions/` (autogenerate misses ren
 
 Catalog data lives in `catalog/` (CC BY-SA 4.0); see [`catalog/README.md`](catalog/README.md) for the format and rules. Every value cites a source registered in `catalog/sources.yaml`; write descriptions in your own words. After changing the models in `backend/app/catalog.py`, run `python scripts/catalog_schema.py`. The app (and the tests) refuse to start on an invalid catalog.
 
-Values that come from open or factual sources are imported, not typed: `python scripts/ingest fetch` (downloads into `.ingest-cache/`, records `scripts/ingest/snapshots.lock`), then `python scripts/ingest merge` and review `git diff catalog/`. Hand-written values always win over imported ones. To add a crop, write its curated base file (names, scientific name, family, rotation group, life cycle, description) in `catalog/crops/`, add its row names to `scripts/ingest/crosswalk.yaml`, run `merge`, and run `python scripts/ingest check` against GBIF.
+Values that come from open or factual sources are imported, not typed: `python scripts/ingest fetch` (run it from the backend venv; ECOCROP also needs `pip install pyreadr pandas`; downloads into `.ingest-cache/`, records `scripts/ingest/snapshots.lock`), then `python scripts/ingest merge` and review `git diff catalog/`. Hand-written values always win over imported ones. To add a crop, write its curated base file (names, scientific name, family, rotation group, life cycle, description) in `catalog/crops/`, add its row names to `scripts/ingest/crosswalk.yaml`, run `merge`, and run `python scripts/ingest check` against GBIF.
 
 ## Checks (same as CI)
 

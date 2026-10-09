@@ -109,3 +109,47 @@ def test_merge_refreshes_its_own_values():
     assert merge.merge(item, newer, "fao-56") == ["requirements.water.kc_mid"]
     assert item["requirements"]["water"]["kc_mid"]["value"] == 1.15
     assert merge.merge(item, newer, "fao-56") == []  # unchanged → no diff
+
+
+def ecocrop_row(**changes):
+    """A row shaped like Recocrop's ecocrop table (made-up numbers)."""
+    row = {"CODE": 99, "NAME": "Testbean", "SCIENTNAME": "Fabaceae test", "GMIN": 70, "GMAX": 150, "KTMP": 0}
+    row |= dict(TMIN=7, TOPMN=20, TOPMX=27, TMAX=35, RMIN=400, ROPMN=600, ROPMX=1300, RMAX=1800)
+    row |= dict(PHMIN=5.0, PHOPMN=5.5, PHOPMX=6.8, PHMAX=7.5)
+    return row | changes
+
+
+def test_ecocrop_keeps_only_ordered_ranges():
+    rows = [
+        ecocrop_row(),
+        ecocrop_row(CODE=100, RMIN=0, ROPMN=0, ROPMX=0, RMAX=0),  # 0 = not given
+        ecocrop_row(CODE=101, PHMIN=float("nan")),
+        ecocrop_row(CODE=102, TOPMN=30, TOPMX=27),  # out of order
+        ecocrop_row(CODE=103, GMIN=0, GMAX=0),
+    ]
+    records = extract.ecocrop(rows)
+    assert records[99]["temperature"] == {"min": 7, "opt_min": 20, "opt_max": 27, "max": 35}
+    assert records[99]["cycle"] == {"min": 70, "max": 150}
+    assert "rainfall" not in records[100]
+    assert "ph" not in records[101]
+    assert "temperature" not in records[102] and "ph" in records[102]
+    assert "cycle" not in records[103]
+    assert "ktmp" not in str(records).lower()  # KTMP's 0 is ambiguous, so it is never read
+
+
+def test_ecocrop_proposals_validate_against_the_catalog_model():
+    src = merge.cite("fao-ecocrop", date(2026, 10, 9), "12" * 32)
+    proposals = merge.from_ecocrop(extract.ecocrop([ecocrop_row()])[99], 99, src)
+    item = {"kind": "crop", "slug": "testbean", "names": {"en": ["Testbean"]}, "scientific_name": "Phaseolus test"}
+    item |= {"family": "Fabaceae", "life_cycle": "annual"}
+    merge.merge(item, proposals, "fao-ecocrop")
+    crop = Crop.model_validate(yaml.safe_load(merge.dump(item)))
+    assert crop.requirements.temperature.stress_min.value == 7
+    assert (crop.requirements.temperature.optimal.value.min, crop.requirements.temperature.optimal.value.max) == (
+        20,
+        27,
+    )
+    assert crop.requirements.soil.ph.value.opt_max == 6.8
+    assert crop.params["annual_rainfall"].unit == "mm"
+    assert crop.params["cycle_days"].sources[0].locator == "ECOCROP code 99, GMIN, GMAX (via Recocrop)"
+    assert merge.from_ecocrop(None, None, src) == {}

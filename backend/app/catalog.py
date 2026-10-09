@@ -45,17 +45,21 @@ class SourceRef(Strict):
 
 
 class Range(Strict):
+    """Limits of a variable: absolute min and max, and the best value `opt` or the best band `opt_min`..`opt_max`."""
+
     min: float | None = None
+    opt_min: float | None = None
     opt: float | None = None
+    opt_max: float | None = None
     max: float | None = None
 
     @model_validator(mode="after")
     def ordered(self) -> Range:
-        vals = [v for v in (self.min, self.opt, self.max) if v is not None]
+        vals = [v for v in (self.min, self.opt_min, self.opt, self.opt_max, self.max) if v is not None]
         if not vals:
-            raise ValueError("a range needs at least one of min, opt, max")
+            raise ValueError("a range needs at least one of min, opt_min, opt, opt_max, max")
         if vals != sorted(vals):
-            raise ValueError("range must satisfy min <= opt <= max")
+            raise ValueError("range must satisfy min <= opt_min <= opt <= opt_max <= max")
         return self
 
 

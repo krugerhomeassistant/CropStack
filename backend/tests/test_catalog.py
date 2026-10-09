@@ -87,7 +87,7 @@ def lethal(value: dict) -> dict:
                     }
                 }
             },
-            "min <= opt <= max",
+            "range must satisfy",
         ),
         (
             {"requirements": {"temperature": {"lethal_minimum": {"value": 0, "evidence": "model", "estimate": True}}}},

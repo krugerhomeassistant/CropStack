@@ -3,35 +3,38 @@
 # fao56_stages / fao56_kc / fao56_roots: FAO-56 Tables 11 / 12 / 22 row names as in pyfao56 tools/tables.py
 # harrington:  row name on the OSU Harrington germination page
 # openfarm:    slug in the OpenFarm rescue crops.json
+# ecocrop:     CODE in FAO ECOCROP (Recocrop's table). Kale uses 155 (Collards: same cultivar group, Brassica oleracea
+#              Acephala); pumpkin 50 (Cucurbita maxima); zucchini 168 (vegetable marrow, C. pepo); radish 1617
+#              (garden radish, small-rooted); turnip 91 (Brassica rapa, turnip); tomato 17 (listed as Lycopersicon).
 # gbif_status: expected GBIF status when not ACCEPTED (pea: GBIF follows the move to Lathyrus oleraceus; gardeners and
 #              seed packets still say Pisum sativum, so the catalog keeps it)
 
-asparagus: {gbif: Asparagus officinalis, fao56_stages: asparagus, fao56_kc: asparagus, fao56_roots: asparagus, harrington: Asparagus, openfarm: asparagus}
-beetroot: {gbif: Beta vulgaris, fao56_stages: beets table, fao56_kc: beets table, fao56_roots: beets table, harrington: Beet, openfarm: beet}
-broccoli: {gbif: Brassica oleracea, fao56_stages: broccoli, fao56_kc: broccoli, fao56_roots: broccoli, openfarm: broccoli}
-cabbage: {gbif: Brassica oleracea, fao56_stages: cabbage, fao56_kc: cabbage, fao56_roots: cabbage, harrington: Cabbage, openfarm: cabbage}
-carrot: {gbif: Daucus carota, fao56_stages: carrots, fao56_kc: carrots, fao56_roots: carrots, harrington: Carrot, openfarm: carrot}
-cauliflower: {gbif: Brassica oleracea, fao56_stages: cauliflower, fao56_kc: cauliflower, fao56_roots: cauliflower, harrington: Cauliflower, openfarm: cauliflower}
-celery: {gbif: Apium graveolens, fao56_stages: celery, fao56_kc: celery, fao56_roots: celery, openfarm: celery}
-cucumber: {gbif: Cucumis sativus, fao56_stages: cucumber, fao56_kc: cucumber fresh market, fao56_roots: cucumber fresh market, harrington: Cucumber}
-eggplant: {gbif: Solanum melongena, fao56_stages: eggplant, fao56_kc: eggplant, fao56_roots: eggplant, harrington: Eggplant, openfarm: eggplant}
-garlic: {gbif: Allium sativum, fao56_kc: garlic, fao56_roots: garlic, openfarm: garlic}
-green-bean: {gbif: Phaseolus vulgaris, fao56_stages: beans green, fao56_kc: beans green, fao56_roots: beans green, harrington: Bean, openfarm: green-bean}
-kale: {gbif: Brassica oleracea, openfarm: kale}
-lettuce: {gbif: Lactuca sativa, fao56_stages: lettuce, fao56_kc: lettuce, fao56_roots: lettuce, harrington: Lettuce, openfarm: lettuce}
-melon: {gbif: Cucumis melo, fao56_stages: cantaloupe, fao56_kc: cantaloupe, fao56_roots: cantaloupe, harrington: Muskmelon, openfarm: cantaloupe}
-onion: {gbif: Allium cepa, fao56_stages: onion dry, fao56_kc: onions dry, fao56_roots: onions dry, harrington: Onion, openfarm: onion}
-parsley: {gbif: Petroselinum crispum, harrington: Parsley, openfarm: parsley}
-parsnip: {gbif: Pastinaca sativa, fao56_kc: parsnip, fao56_roots: parsnip, harrington: Parsnip, openfarm: parsnip}
-pea: {gbif: Pisum sativum, gbif_status: SYNONYM, fao56_stages: peas, fao56_kc: peas fresh, fao56_roots: peas fresh, harrington: Pea, openfarm: pea}
-potato: {gbif: Solanum tuberosum, fao56_stages: potato, fao56_kc: potato, fao56_roots: potato, openfarm: potato}
-pumpkin: {gbif: Cucurbita maxima, fao56_stages: pumpkin winter squash, fao56_kc: pumpkin winter squash, fao56_roots: pumpkin winter squash, harrington: Pumpkin}
-radish: {gbif: Raphanus sativus, fao56_stages: radish, fao56_kc: radish, fao56_roots: radishes, harrington: Radish, openfarm: radish}
-spinach: {gbif: Spinacia oleracea, fao56_stages: spinach, fao56_kc: spinach, fao56_roots: spinach, harrington: Spinach, openfarm: spinach}
-sweet-corn: {gbif: Zea mays, fao56_stages: maize sweet, fao56_kc: maize sweet corn fresh, fao56_roots: maize sweet corn, harrington: Corn}
-sweet-pepper: {gbif: Capsicum annuum, fao56_stages: sweet peppers bell, fao56_kc: sweet peppers bell, fao56_roots: sweet peppers bell, harrington: Pepper, openfarm: bell-pepper}
-swiss-chard: {gbif: Beta vulgaris, harrington: "Chard, Swiss"}
-tomato: {gbif: Solanum lycopersicum, fao56_stages: tomato, fao56_kc: tomato, fao56_roots: tomato, harrington: Tomato, openfarm: tomato}
-turnip: {gbif: Brassica rapa, fao56_kc: turnip rutabaga, fao56_roots: turnip rutabaga, harrington: Turnip, openfarm: turnip}
-watermelon: {gbif: Citrullus lanatus, fao56_stages: water melons, fao56_kc: watermelon, fao56_roots: watermelon, harrington: Watermelon}
-zucchini: {gbif: Cucurbita pepo, fao56_stages: squash zucchini, fao56_kc: squash zucchini, fao56_roots: squash zucchini, harrington: Squash, openfarm: zucchini}
+asparagus: {gbif: Asparagus officinalis, fao56_stages: asparagus, fao56_kc: asparagus, fao56_roots: asparagus, harrington: Asparagus, openfarm: asparagus, ecocrop: 353}
+beetroot: {gbif: Beta vulgaris, fao56_stages: beets table, fao56_kc: beets table, fao56_roots: beets table, harrington: Beet, openfarm: beet, ecocrop: 458}
+broccoli: {gbif: Brassica oleracea, fao56_stages: broccoli, fao56_kc: broccoli, fao56_roots: broccoli, openfarm: broccoli, ecocrop: 358}
+cabbage: {gbif: Brassica oleracea, fao56_stages: cabbage, fao56_kc: cabbage, fao56_roots: cabbage, harrington: Cabbage, openfarm: cabbage, ecocrop: 41}
+carrot: {gbif: Daucus carota, fao56_stages: carrots, fao56_kc: carrots, fao56_roots: carrots, harrington: Carrot, openfarm: carrot, ecocrop: 62}
+cauliflower: {gbif: Brassica oleracea, fao56_stages: cauliflower, fao56_kc: cauliflower, fao56_roots: cauliflower, harrington: Cauliflower, openfarm: cauliflower, ecocrop: 153}
+celery: {gbif: Apium graveolens, fao56_stages: celery, fao56_kc: celery, fao56_roots: celery, openfarm: celery, ecocrop: 357}
+cucumber: {gbif: Cucumis sativus, fao56_stages: cucumber, fao56_kc: cucumber fresh market, fao56_roots: cucumber fresh market, harrington: Cucumber, ecocrop: 49}
+eggplant: {gbif: Solanum melongena, fao56_stages: eggplant, fao56_kc: eggplant, fao56_roots: eggplant, harrington: Eggplant, openfarm: eggplant, ecocrop: 70}
+garlic: {gbif: Allium sativum, fao56_kc: garlic, fao56_roots: garlic, openfarm: garlic, ecocrop: 220}
+green-bean: {gbif: Phaseolus vulgaris, fao56_stages: beans green, fao56_kc: beans green, fao56_roots: beans green, harrington: Bean, openfarm: green-bean, ecocrop: 61}
+kale: {gbif: Brassica oleracea, openfarm: kale, ecocrop: 155}
+lettuce: {gbif: Lactuca sativa, fao56_stages: lettuce, fao56_kc: lettuce, fao56_roots: lettuce, harrington: Lettuce, openfarm: lettuce, ecocrop: 63}
+melon: {gbif: Cucumis melo, fao56_stages: cantaloupe, fao56_kc: cantaloupe, fao56_roots: cantaloupe, harrington: Muskmelon, openfarm: cantaloupe, ecocrop: 72}
+onion: {gbif: Allium cepa, fao56_stages: onion dry, fao56_kc: onions dry, fao56_roots: onions dry, harrington: Onion, openfarm: onion, ecocrop: 27}
+parsley: {gbif: Petroselinum crispum, harrington: Parsley, openfarm: parsley, ecocrop: 385}
+parsnip: {gbif: Pastinaca sativa, fao56_kc: parsnip, fao56_roots: parsnip, harrington: Parsnip, openfarm: parsnip, ecocrop: 442}
+pea: {gbif: Pisum sativum, gbif_status: SYNONYM, fao56_stages: peas, fao56_kc: peas fresh, fao56_roots: peas fresh, harrington: Pea, openfarm: pea, ecocrop: 48}
+potato: {gbif: Solanum tuberosum, fao56_stages: potato, fao56_kc: potato, fao56_roots: potato, openfarm: potato, ecocrop: 1}
+pumpkin: {gbif: Cucurbita maxima, fao56_stages: pumpkin winter squash, fao56_kc: pumpkin winter squash, fao56_roots: pumpkin winter squash, harrington: Pumpkin, ecocrop: 50}
+radish: {gbif: Raphanus sativus, fao56_stages: radish, fao56_kc: radish, fao56_roots: radishes, harrington: Radish, openfarm: radish, ecocrop: 1617}
+spinach: {gbif: Spinacia oleracea, fao56_stages: spinach, fao56_kc: spinach, fao56_roots: spinach, harrington: Spinach, openfarm: spinach, ecocrop: 441}
+sweet-corn: {gbif: Zea mays, fao56_stages: maize sweet, fao56_kc: maize sweet corn fresh, fao56_roots: maize sweet corn, harrington: Corn, ecocrop: 1204}
+sweet-pepper: {gbif: Capsicum annuum, fao56_stages: sweet peppers bell, fao56_kc: sweet peppers bell, fao56_roots: sweet peppers bell, harrington: Pepper, openfarm: bell-pepper, ecocrop: 33}
+swiss-chard: {gbif: Beta vulgaris, harrington: "Chard, Swiss", ecocrop: 459}
+tomato: {gbif: Solanum lycopersicum, fao56_stages: tomato, fao56_kc: tomato, fao56_roots: tomato, harrington: Tomato, openfarm: tomato, ecocrop: 17}
+turnip: {gbif: Brassica rapa, fao56_kc: turnip rutabaga, fao56_roots: turnip rutabaga, harrington: Turnip, openfarm: turnip, ecocrop: 91}
+watermelon: {gbif: Citrullus lanatus, fao56_stages: water melons, fao56_kc: watermelon, fao56_roots: watermelon, harrington: Watermelon, ecocrop: 47}
+zucchini: {gbif: Cucurbita pepo, fao56_stages: squash zucchini, fao56_kc: squash zucchini, fao56_roots: squash zucchini, harrington: Squash, openfarm: zucchini, ecocrop: 168}

@@ -9,7 +9,10 @@ Review the resulting `git diff catalog/` like any other change; hand-curated val
 
 from __future__ import annotations
 
+import io
 import sys
+import tarfile
+import tempfile
 from pathlib import Path
 from urllib.parse import quote
 
@@ -25,6 +28,9 @@ CROSSWALK = yaml.safe_load(Path(__file__).with_name("crosswalk.yaml").read_text(
 SOURCES = {
     "pyfao56-tables": "https://raw.githubusercontent.com/kthorp/pyfao56/main/src/pyfao56/tools/tables.py",
     "harrington-osu": "https://extension.oregonstate.edu/es/catalog/soil-temperature-conditions-vegetable-seed-germination",
+    # FAO ECOCROP as shipped in the Recocrop R package (inst/parameters/ecocrop.rds). The code is GPL; the table is
+    # FAO's data (CC BY 4.0, no endorsement). CRAN moves a superseded version to .../Archive/Recocrop/.
+    "ecocrop-recocrop": "https://cran.r-project.org/src/contrib/Recocrop_0.4-2.tar.gz",
     "openfarm-rescue": "https://raw.githubusercontent.com/thefullnacho/openfarm-crops-rescue/"
     "754cfd75da007c17a628eca812632f326dc7cf10/crops.json",
 }
@@ -32,6 +38,22 @@ SOURCES = {
 
 def gbif_url(name: str) -> str:
     return f"https://api.gbif.org/v1/species/match?name={quote(name)}&kingdom=Plantae&strict=true"
+
+
+def ecocrop_rows(tarball: bytes) -> list[dict]:
+    """Rows of ECOCROP's table from the Recocrop package. Needs pyreadr and pandas (maintainers only: pip install pyreadr pandas)."""
+    try:
+        import pyreadr
+    except ImportError as e:
+        raise SystemExit("reading ECOCROP needs pyreadr: pip install pyreadr pandas") from e
+    with tarfile.open(fileobj=io.BytesIO(tarball)) as tar:
+        member = tar.extractfile("Recocrop/inst/parameters/ecocrop.rds")
+        if member is None:
+            raise SystemExit("Recocrop/inst/parameters/ecocrop.rds not found in the package")
+        with tempfile.NamedTemporaryFile(suffix=".rds") as rds:
+            rds.write(member.read())
+            rds.flush()
+            return pyreadr.read_r(rds.name)[None].to_dict("records")
 
 
 def cmd_fetch() -> int:
@@ -51,6 +73,8 @@ def cmd_merge() -> int:
     fao = extract.fao56(raw)
     raw, harr_src = _source("harrington-osu", "harrington-osu")
     harr = extract.harrington(raw)
+    raw, eco_src = _source("ecocrop-recocrop", "fao-ecocrop")
+    eco = extract.ecocrop(ecocrop_rows(raw))
     raw, of_src = _source("openfarm-rescue", "openfarm-rescue")
     openfarm = extract.openfarm(raw)
 
@@ -64,6 +88,7 @@ def cmd_merge() -> int:
         batches = [
             ("fao-56", merge.from_fao56(stages, fao["kc"].get(names.get("fao56_kc")), fao["roots"].get(names.get("fao56_roots")), fao_src)),
             ("harrington-osu", merge.from_harrington(harr["germination"].get(names.get("harrington")), harr["emergence"].get(names.get("harrington")), harr_src)),
+            ("fao-ecocrop", merge.from_ecocrop(eco.get(names.get("ecocrop")), names.get("ecocrop"), eco_src)),
             ("openfarm-rescue", merge.from_openfarm(openfarm.get(names.get("openfarm")), of_src)),
         ]  # fmt: skip
         changed = [p for ref, proposals in batches for p in merge.merge(item, proposals, ref)]
