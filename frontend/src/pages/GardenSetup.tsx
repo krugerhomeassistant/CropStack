@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { LocateFixed } from 'lucide-react'
 import { api, type Garden, type GardenInput } from '../api'
+import PlaceSearch from '../components/PlaceSearch'
 
 type Props = { garden: Garden | null; onSaved: (garden: Garden) => void; onCancel?: () => void }
 
@@ -67,6 +68,15 @@ export default function GardenSetup({ garden, onSaved, onCancel }: Props) {
 
         <fieldset className="flex flex-col gap-2">
           <legend className="mb-2 text-sm font-semibold">Location</legend>
+          <PlaceSearch
+            onPick={(place) =>
+              set({
+                latitude: String(place.latitude),
+                longitude: String(place.longitude),
+                postal_code: place.postal_code || form.postal_code,
+              })
+            }
+          />
           <button type="button" className="btn-secondary" onClick={locate}>
             <LocateFixed className="size-4" aria-hidden /> Use my current location
           </button>

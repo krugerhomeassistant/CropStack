@@ -7,6 +7,9 @@
 | Settings/env | `backend/app/config.py`, `.env.example` |
 | DB engine | `backend/app/db.py` |
 | App factory, health, SPA fallback | `backend/app/main.py` |
+| Climate engine | `backend/app/climate.py` |
+| Outside services | `backend/app/external.py` |
+| Climate card / place search | `frontend/src/components/{ClimateCard,PlaceSearch}.tsx` |
 | Models | `backend/app/models.py` |
 | Auth / garden API | `backend/app/routers/{auth,garden}.py` |
 | API client | `frontend/src/api.ts` |
@@ -21,7 +24,7 @@
 | Data (runtime) | `./data/cropstack.db`, `./data/secret.key` |
 
 ## Endpoints (under `/api`, docs at `/api/docs`)
-`GET health` · auth: `GET status`, `POST register`, `POST login`, `POST logout`, `GET me`, `POST password` · `GET|PUT garden`
+`GET health` · auth: `GET status`, `POST register`, `POST login`, `POST logout`, `GET me`, `POST password` · `GET|PUT garden` · `GET garden/climate` · `GET places?q=`
 
 ## Repos
 - CropStack: https://github.com/krugerhomeassistant/CropStack
@@ -33,7 +36,9 @@
 - FastAPI https://fastapi.tiangolo.com · SQLModel https://sqlmodel.tiangolo.com · pydantic-settings https://docs.pydantic.dev/latest/concepts/pydantic_settings/
 - Vite https://vite.dev · Tailwind v4 https://tailwindcss.com/docs · vite-plugin-pwa https://vite-pwa-org.netlify.app · lucide https://lucide.dev
 - Keep a Changelog https://keepachangelog.com/en/1.1.0/ · Semantic Versioning https://semver.org
-- Candidate climate data (Phase 2, to verify): USDA Plant Hardiness Zone Map https://planthardiness.ars.usda.gov · Open-Meteo https://open-meteo.com · NOAA climate normals https://www.ncei.noaa.gov/products/land-based-station/us-climate-normals
+- Open-Meteo historical API https://open-meteo.com/en/docs/historical-weather-api · terms/limits https://open-meteo.com/en/pricing · model ids in source `Sources/App/Controllers/ForecastapiController.swift` (`era5_seamless` → ERA5 + ERA5-Land) https://github.com/open-meteo/open-meteo
+- Nominatim search API https://nominatim.org/release-docs/latest/api/Search/ · usage policy https://operations.osmfoundation.org/policies/nominatim/
+- USDA zone definition (−60 °F start, 10 °F zones, 5 °F half-zones) https://planthardiness.ars.usda.gov
 - Home Assistant developer docs https://developers.home-assistant.io
 
 ## Local

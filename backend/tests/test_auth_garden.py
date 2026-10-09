@@ -87,3 +87,53 @@ def test_garden_create_update_and_isolation(client):
 def test_garden_validation(client, bad):
     register(client, f"val{abs(hash(str(bad))) % 10_000}")
     assert client.put("/api/garden", json=GARDEN | bad).status_code == 422
+
+
+def test_climate_is_fetched_once_per_location(client, monkeypatch):
+    from app import external
+    from tests.test_climate import synthetic
+
+    calls = []
+
+    def fake_fetch(lat, lon):
+        calls.append((lat, lon))
+        return synthetic(mean=5, amplitude=10, coldest=__import__("datetime").date(2001, 7, 15))
+
+    monkeypatch.setattr(external, "fetch_climate_archive", fake_fetch)
+    register(client, "fiona")
+    assert client.get("/api/garden/climate").status_code == 404  # no garden yet
+
+    client.put("/api/garden", json=GARDEN)
+    first = client.get("/api/garden/climate").json()
+    assert first["zone"] and first["source"].startswith("Open-Meteo")
+    client.put("/api/garden", json=GARDEN | {"frost_probability": 10})
+    cautious = client.get("/api/garden/climate").json()
+    assert len(calls) == 1  # risk change is computed from the cache
+    assert cautious["frost_probability"] == 10
+
+    client.put("/api/garden", json=GARDEN | {"latitude": -26.2})
+    client.get("/api/garden/climate")
+    assert calls == [(GARDEN["latitude"], GARDEN["longitude"]), (-26.2, GARDEN["longitude"])]
+
+
+def test_climate_service_failure_is_reported(client, monkeypatch):
+    from app import external
+
+    def failing(lat, lon):
+        raise external.ExternalError("archive-api.open-meteo.com answered 429: Daily API request limit exceeded")
+
+    monkeypatch.setattr(external, "fetch_climate_archive", failing)
+    register(client, "gina")
+    client.put("/api/garden", json=GARDEN)
+    resp = client.get("/api/garden/climate")
+    assert resp.status_code == 502 and "limit exceeded" in resp.json()["detail"]
+
+
+def test_place_search(client, monkeypatch):
+    from app import external
+
+    monkeypatch.setattr(external, "search_places", lambda q: [{"label": q, "latitude": 1.0, "longitude": 2.0}])
+    assert client.get("/api/places", params={"q": "0081"}).status_code == 401
+    register(client, "hank")
+    assert client.get("/api/places", params={"q": "0081"}).json()[0]["label"] == "0081"
+    assert client.get("/api/places", params={"q": "x"}).status_code == 422

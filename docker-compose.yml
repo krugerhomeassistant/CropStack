@@ -1,3 +1,5 @@
+# Generic Docker Compose. ZimaOS / CasaOS users: import docker-compose.zimaos.yml instead
+# (their importer does not understand ${VAR:-default} and would show a broken port).
 services:
   cropstack:
     image: ghcr.io/krugerhomeassistant/cropstack:latest   # prebuilt; `--build` builds locally instead

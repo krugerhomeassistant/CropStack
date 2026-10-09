@@ -25,6 +25,18 @@ Self-hosted, Docker-based garden and homestead planner. It turns a location (coo
 | Frost probability | Chance that frost still occurs after the computed spring date (or before the fall date). Lower = safer, later planting |
 | Task | A dated action generated from plant timing + climate (sow, transplant, harden off, feed, prune, harvest) |
 
+## Climate engine (`backend/app/climate.py`, v0.3.0)
+- **Data**: Open-Meteo archive, `models=era5_seamless` (ERA5-Land ~11 km, ERA5 ~25 km where Land has no data), daily `temperature_2m_min`, `temperature_2m_max`, `soil_temperature_0_to_7cm_mean`, last 30 complete years, `timezone=auto`. One request ≈ 800 of the 10,000 free daily calls → fetched once per garden location and stored condensed in `climatecache`.
+- **Season-year**: starts on the climatologically warmest day (31-day smoothed mean daily minimum), so each season holds one whole cold period in either hemisphere. Partial seasons (<360 days) at the ends are dropped (→ 29 seasons).
+- **Frost day**: daily minimum air temperature at 2 m ≤ 0 °C.
+- **Frost dates at risk p**: per season, first frost (autumn) and last frost (spring) offsets; seasons without frost count as ±∞. With k = floor(p·n): spring date = the value with k seasons later than it; autumn date = the value with k seasons earlier. `None` (shown as "Rare") when frost is rarer than the risk. Frost-free season = autumn − spring + 365 (autumn is in the next season); 365 when either is `None`.
+- **Hardiness zone**: mean of each season's minimum → °F → USDA scale (zone 1a from −60 °F, 5 °F half-zones, clamped 1a–13b). Applied worldwide as a comparable number; gridded data underestimates cold in valleys.
+- **Daylight**: astronomical day length on the 15th of each month (sun centre −0.833°, includes refraction).
+- **Report** (`GET /api/garden/climate`): computed on every request from the cache + the garden's current `frost_probability`, so changing risk needs no refetch; moving the garden refetches. Errors from Open-Meteo → 502 with the service's reason.
+
+## Place search
+`GET /api/places?q=` → Nominatim `/search` (free text: town, address or postal code; postcodes work in South Africa where Open-Meteo's geocoder found none). Search on submit only (Nominatim policy ≤ 1 req/s, identifying User-Agent `CropStack/<version> (+repo URL)`).
+
 ## Planned scheduling rules (to be confirmed during implementation)
 - Indoor sowing = LSF − (variety weeks before LSF).
 - Hardening off starts 7–10 days before transplant.
@@ -35,9 +47,10 @@ Self-hosted, Docker-based garden and homestead planner. It turns a location (coo
 
 ## Workflows
 - **Sign up / log in**: `GET /api/auth/status` tells the app whether to show sign-up. Registration modes (`CROPSTACK_ALLOW_REGISTRATION`): `auto` (default) = open until the first account exists, `true`, `false`. Usernames are stored lowercased. Passwords: argon2id, min 8 chars. Login failures are throttled per client IP (10 per 15 min, in memory). Session = signed cookie `cropstack_session`, 30 days.
-- **Garden setup**: after login, if `GET /api/garden` is 404 the app shows setup: name, latitude/longitude (browser geolocation works only over HTTPS or localhost; on a LAN `http://` install enter coordinates by hand), optional postal code, frost risk (Cautious 10 % · Typical 50 % · Bold 90 %, stored as `frost_probability`). `PUT /api/garden` creates or updates; one garden per user.
+- **Garden setup**: after login, if `GET /api/garden` is 404 the app shows setup: name, place search (fills coordinates and postal code), latitude/longitude (browser geolocation works only over HTTPS or localhost; on a LAN `http://` install enter coordinates by hand), optional postal code, frost risk (Cautious 10 % · Typical 50 % · Bold 90 %, stored as `frost_probability`). `PUT /api/garden` creates or updates; one garden per user.
 - **Health check**: `GET /api/health` → `{status, version}`; also runs `SELECT 1` against SQLite. Used by the Docker `HEALTHCHECK`.
 - **App shell** (`App.tsx`): loading → `auth` (no session) → `setup` (no garden) → `home`; any network failure shows a retry screen.
+- **Home**: garden card + `ClimateCard` (loads `/api/garden/climate`; reloads when location or frost risk changes; error card with retry).
 - **Routing**: `/api/*` = API (404 JSON for unknown routes); every other path serves a built file if it exists inside the build dir, else `index.html` (client-side routing; traversal attempts fall back to `index.html`).
 
 ## Configuration

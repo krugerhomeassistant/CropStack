@@ -1,5 +1,6 @@
 import { LogOut, MapPin, Pencil, Sprout } from 'lucide-react'
 import type { Garden, User } from '../api'
+import ClimateCard from '../components/ClimateCard'
 
 type Props = { user: User; garden: Garden; onEdit: () => void; onLogout: () => void }
 
@@ -32,9 +33,9 @@ export default function Home({ user, garden, onEdit, onLogout }: Props) {
         </p>
       </section>
 
-      <section className="card text-sm text-muted">
-        Your hardiness zone, frost dates and planting calendar will appear here in the next update.
-      </section>
+      <ClimateCard gardenKey={`${garden.latitude},${garden.longitude},${garden.frost_probability}`} />
+
+      <section className="card text-sm text-muted">Your planting calendar will appear here in a coming update.</section>
     </main>
   )
 }

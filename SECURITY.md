@@ -14,6 +14,6 @@ Only the latest release receives fixes. Update with `docker compose pull && dock
 
 ## Design notes
 
-- All data stays in your SQLite file (`/data`); nothing leaves your server unless you enable an external weather, AI or notification service.
+- All data stays in your SQLite file (`/data`). Outbound requests: garden coordinates to Open-Meteo (climate, once per location) and place-search text to OpenStreetMap Nominatim (only when you search). Future weather, AI and notification integrations will be opt-in.
 - The container runs as an unprivileged user (uid 10001).
 - Run CropStack behind HTTPS (or a private network such as Tailscale) when it's reachable from outside your home, and set `CROPSTACK_SECURE_COOKIES=true`.

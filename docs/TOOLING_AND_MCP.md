@@ -16,6 +16,9 @@
 | `scripts/bump.py` | `python scripts/bump.py X.Y.Z` | version in all places + changelog section |
 | GitHub Actions | `.github/workflows/ci.yml` | lint, tests, build, GHCR image, release |
 | Playwright (Chromium) | E2E script: sign up → garden setup → reload → logout → bad login, 390×844 screenshots | real-browser check of each screen |
+| Open-Meteo archive API | climate data (`external.fetch_climate_archive`) | free, global, ERA5-Land 11 km, CC BY 4.0, no key |
+| Nominatim | place / postal-code search (`external.search_places`) | finds SA postal codes Open-Meteo geocoding missed |
+| `fake_server.py` pattern | E2E: run the app with `external.*` monkeypatched to synthetic data (tests/test_climate.synthetic) | no network or quota needed |
 | Dependabot | `.github/dependabot.yml` | weekly grouped pip / npm / docker / actions updates |
 
 ## Claude session tooling used

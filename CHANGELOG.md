@@ -5,6 +5,16 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-10-09
+
+### Added
+- **Your climate** on the home screen: hardiness zone, last spring and first autumn frost dates at your chosen risk level, frost-free season length, how often frost happens, coldest night of a typical year, daylight range, elevation, and monthly average highs, lows and soil temperature. Works anywhere in the world, including the Southern Hemisphere.
+- Calculated from 30 years of daily weather records (Open-Meteo, ERA5-Land / ERA5) the first time you open it, then cached; changing your frost risk updates the dates instantly.
+- **Place search** in garden setup: find your garden by town, address or postal code (OpenStreetMap).
+
+### Changed
+- Privacy: the climate lookup sends your garden's coordinates to Open-Meteo, and place search sends what you type to OpenStreetMap. Nothing else leaves your server.
+
 ## [0.2.0] - 2026-10-09
 
 ### Added
@@ -19,6 +29,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - CI: ruff lint and format, backend tests, frontend build, image publishing to GHCR and automatic GitHub releases on a version bump.
 - Project docs: README, wiki, architecture, roadmap, contributing guide, security policy and Code of Conduct.
 
-[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/krugerhomeassistant/CropStack/releases/tag/v0.1.0

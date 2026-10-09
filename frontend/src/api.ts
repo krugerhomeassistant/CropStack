@@ -11,6 +11,27 @@ export type Garden = {
 
 export type GardenInput = Omit<Garden, 'id'>
 
+export type Place = { label: string; latitude: number; longitude: number; postal_code: string }
+
+type Monthly = (number | null)[]
+
+export type Climate = {
+  last_spring_frost: string | null // "MM-DD"
+  first_fall_frost: string | null
+  growing_season_days: number
+  frost_free: boolean
+  frost_years_pct: number
+  frost_probability: number
+  zone: string
+  extreme_min_c: number
+  daylight_hours: number[]
+  monthly: { tmin: Monthly; tmax: Monthly; soil: Monthly }
+  elevation_m: number | null
+  period: string
+  southern_hemisphere: boolean
+  source: string
+}
+
 export class ApiError extends Error {
   constructor(
     public status: number,
@@ -44,4 +65,6 @@ export const api = {
   logout: () => request<{ ok: boolean }>('POST', '/auth/logout'),
   garden: () => request<Garden>('GET', '/garden'),
   saveGarden: (garden: GardenInput) => request<Garden>('PUT', '/garden', garden),
+  climate: () => request<Climate>('GET', '/garden/climate'),
+  places: (q: string) => request<Place[]>('GET', `/places?q=${encodeURIComponent(q)}`),
 }

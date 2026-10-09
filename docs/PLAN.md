@@ -25,11 +25,16 @@
 - [ ] Onboarding step "confirm detected climate" (needs Phase 2)
 
 ## Phase 2 — Climate engine (v0.3.0)
-- [ ] Research data sources: USDA zone (PRISM / phzmapi), frost dates (NOAA normals or Open-Meteo historical), soil temp, daylight (astral calc)
-- [ ] `climate.py` pure functions: zone, LSF/FFF at a probability, season length, daylight curve
-- [ ] Geocoding for postal codes (Open-Meteo / Nominatim), cached in DB
-- [ ] Tests with fixed fixtures (no network)
-- [ ] Southern Hemisphere support (frost season Jun–Aug) and non-US zones (compute zone from local extreme-minimum temperature)
+- [x] Research data sources → Open-Meteo archive `era5_seamless` (global, 30 y daily); Nominatim for place/postal search
+- [x] `climate.py` pure functions: season stats, frost dates at a probability, season length, zone, daylight, monthly normals
+- [x] Southern Hemisphere (warmest-day season anchor) and non-US zones (computed from local extreme minimum)
+- [x] `climatecache` table; refetch only on location change; risk change recomputes from cache
+- [x] Place search endpoint + UI (search on submit)
+- [x] Climate card on Home with attribution and grid-scale caveat
+- [x] Tests: 17 new (synthetic NH/SH/tropical climates, risk ordering, rare frost, zones, daylight, caching, errors, places) + E2E with faked services
+- [ ] Verify against real Open-Meteo data on the user's install (sandbox IP over the free daily limit on 2026-10-09)
+- [ ] Optional: compare frost dates with a known station (e.g. a local SAWS / NOAA normal) for sanity
+- [ ] Optional: monthly chart instead of the table
 
 ## Phase 3 — Encyclopedia & task engine (v0.4.0)
 - [ ] Plant data schema (When/How/What), seed dataset (start with ~40 common crops), licence-checked sources

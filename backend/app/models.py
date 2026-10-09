@@ -1,7 +1,9 @@
 """Database tables."""
 
 from datetime import UTC, datetime
+from typing import Any
 
+from sqlalchemy import JSON, Column
 from sqlmodel import Field, SQLModel
 
 
@@ -30,3 +32,13 @@ class Garden(SQLModel, table=True):
     frost_probability: int = 50
     created_at: datetime = Field(default_factory=now)
     updated_at: datetime = Field(default_factory=now)
+
+
+class ClimateCache(SQLModel, table=True):
+    """Condensed climate record for a garden's location (see climate.summarize); refetched when it moves."""
+
+    garden_id: int = Field(foreign_key="garden.id", primary_key=True, ondelete="CASCADE")
+    latitude: float
+    longitude: float
+    summary: dict[str, Any] = Field(sa_column=Column(JSON, nullable=False))
+    fetched_at: datetime = Field(default_factory=now)

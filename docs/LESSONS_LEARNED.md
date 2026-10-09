@@ -24,3 +24,11 @@ CropStack-specific:
 15. **ZimaOS 1.7 doesn't always notice new `:latest` images** (community-reported) → open the app → Save without changes to re-pull; `docker pull` first if needed.
 16. **Browser geolocation fails on a LAN `http://` install** → requires a secure context → manual lat/long fields stay first-class; postal-code geocoding comes in Phase 2.
 
+18. **Open-Meteo "Daily API request limit exceeded" from the sandbox** → the cloud sandbox shares its IP with others → test with synthetic fixtures (`tests/test_climate.synthetic`); real calls run from the user's server with its own quota.
+19. **WebFetch refused archive-api.open-meteo.com (robots)** → verify API shape from the open-source server code instead (sparse clone of `open-meteo/open-meteo`, grep `Sources/App`).
+20. **Open-Meteo geocoding returned nothing for SA postal code `0081`** → its geocoder is name-based (GeoNames) → Nominatim `q=` finds postcodes.
+21. **Nested `<form>` (place search inside garden form)** → invalid HTML, inner form ignored → plain div + button `type="button"` + Enter key with `preventDefault`.
+22. **Playwright `getByText('Your climate')` matched the loading text** → `getByText` is case-insensitive substring by default → wait for a unique final element (`/^Zone /`).
+23. **Zone test values on a boundary** (−17.78 °C = −0.004 °F → 6b, not 7a) → pick test temperatures inside a half-zone, not on its edge.
+24. **Day lengths at ±latitude don't sum to 24 h** → refraction (−0.833°) lengthens both → ~24.7 h at 60°; test ranges, not symmetry.
+17. **ZimaOS showed host port `-8430}`** → user imported the generic `docker-compose.yml`; the ZimaOS importer doesn't expand `${CROPSTACK_PORT:-8430}` → import `docker-compose.zimaos.yml` (plain values); header comment in `docker-compose.yml` now says so.

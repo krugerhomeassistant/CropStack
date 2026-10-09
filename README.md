@@ -22,7 +22,7 @@
 CropStack is an open-source, self-hosted web app that guides gardeners and homesteaders from the first spring seed trays to the full seasonal harvest. It pairs **hyper-local climate data** with a **botanical encyclopedia** so your sowing, transplanting and harvest calendar is worked out for *your* plot, and it runs on **your** hardware: a NAS, a Raspberry Pi or a home server. One container, one SQLite file, no telemetry.
 
 > [!NOTE]
-> CropStack is in early development. You can already create an account and set up your garden's location. Features below are the plan; [Project status](#-project-status) shows what works today.
+> CropStack is in early development. You can already set up your garden and see its local climate: zone, frost dates and monthly normals. Features below are the plan; [Project status](#-project-status) shows what works today.
 
 ## ✨ Features
 
@@ -104,8 +104,9 @@ API docs are served at `/api/docs`; `/api/health` reports status and version.
 | Installable PWA shell (light/dark) | ✅ v0.1.0 |
 | Multi-arch Docker image, CI, automatic releases | ✅ v0.1.0 |
 | Accounts & garden profile (location, frost-risk preference) | ✅ v0.2.0 |
-| Climate setup (zone, frost dates) | 🔜 next |
-| Plant encyclopedia & task calendar | 🔜 |
+| Climate: zone, frost dates, season length, daylight, monthly normals | ✅ v0.3.0 |
+| Place search (town, address, postal code) | ✅ v0.3.0 |
+| Plant encyclopedia & task calendar | 🔜 next |
 | Garden mapper & rotation | ⏳ |
 | Weather adaptation, Home Assistant, AI co-pilot | ⏳ |
 
@@ -126,6 +127,17 @@ flowchart LR
 ```
 
 Single image: Node builds the PWA, Python 3.14 serves it and the API. Details in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md); concepts and workflows in the [wiki](docs/WIKI.md).
+
+## 🔒 Privacy & data sources
+
+CropStack has no telemetry. Two features talk to free public services:
+
+| Feature | Service | What is sent |
+|---|---|---|
+| Climate (once per location, then cached) | [Open-Meteo](https://open-meteo.com) historical weather API (ERA5 / ERA5-Land, CC BY 4.0) | Garden coordinates |
+| Place search (only when you search) | [OpenStreetMap Nominatim](https://nominatim.org) | Your search text |
+
+Both are used within their free non-commercial terms. Climate values are estimates for a 10–25 km grid cell; frost pockets and slopes can differ.
 
 ## 🤝 Contributing
 

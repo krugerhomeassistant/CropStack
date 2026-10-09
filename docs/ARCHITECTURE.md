@@ -5,7 +5,8 @@
 Browser/PWA ──HTTP──▶ cropstack container :8000 (host :8430)
                         ├─ FastAPI  /api/*            (session-cookie auth, planned)
                         ├─ static SPA /*              (Vite build, service worker precache)
-                        └─ SQLite  /data/cropstack.db (WAL, foreign keys on)
+                        ├─ SQLite  /data/cropstack.db (WAL, foreign keys on)
+                        └─ httpx ──▶ archive-api.open-meteo.com (climate) · nominatim.openstreetmap.org (place search)
 ```
 Single image, multi-stage: `node:24-alpine` builds the SPA → `python:3.14-slim` runtime. `entrypoint.sh` starts as root, chowns `$CROPSTACK_DATA_DIR`, then drops to uid 10001 via `setpriv`. One uvicorn worker, access log off, `--proxy-headers` for reverse proxies.
 
@@ -27,7 +28,9 @@ Planned optional services: weather API client (httpx), MQTT client for Home Assi
 | `models.py` | `User`, `Garden` |
 | `deps.py` | `SessionDep`, `UserDep`, argon2 `hash_pw` / `verify_pw` |
 | `routers/auth.py` | status, register, login (IP throttle), logout, me, password |
-| `routers/garden.py` | `GET` / `PUT /api/garden` |
+| `climate.py` | **pure** climate engine: season stats, frost dates at a risk, zone, daylight, monthly means, `summarize`, `report` |
+| `external.py` | Open-Meteo archive fetch, Nominatim search, `ExternalError` |
+| `routers/garden.py` | `GET` / `PUT /api/garden`, `GET /api/garden/climate` (cached), `GET /api/places` |
 | `main.py` | app factory, session + security-header middleware, `/api/health`, SPA fallback |
 
 ## Frontend (`frontend/`)
@@ -37,6 +40,7 @@ Planned optional services: weather API client (httpx), MQTT client for Home Assi
 | `src/api.ts` | typed fetch client, `ApiError` |
 | `src/App.tsx` | screen state machine: loading → auth → garden setup → home |
 | `src/pages/` | `Auth`, `GardenSetup`, `Home` |
+| `src/components/` | `PlaceSearch` (not a form: nested in the garden form), `ClimateCard` |
 | `src/index.css` | Tailwind theme tokens (canvas, ink, muted, leaf, sprout, soil, card) + dark mode |
 | `vite.config.ts` | PWA manifest, `/api` dev proxy → :8000 |
 
@@ -53,11 +57,13 @@ Planned optional services: weather API client (httpx), MQTT client for Home Assi
 ## DB schema (SQLite, `create_all`; no migrations yet)
 - **user**: id, username (unique, lowercased), password_hash (argon2id), display_name, created_at
 - **garden**: id, user_id → user (unique, CASCADE), name, latitude, longitude, postal_code, frost_probability (10–90, default 50), created_at, updated_at
+- **climatecache**: garden_id (PK) → garden (CASCADE), latitude, longitude (location it was fetched for), summary JSON (`season_start`, `first_frost[]`, `last_frost[]`, `annual_min[]`, `monthly{tmin,tmax,soil}`, `elevation_m`, `timezone`, `period`), fetched_at. New *table* rather than new garden columns, so existing installs need no migration.
 
 Planned: `plant` / `variety`, `bed`, `planting` (variety × bed × season), `task`. Adding columns to existing tables will need a migration tool (Alembic) before the first public release with data worth keeping.
 
 ## Invariants
 - `/api/*` responses are `Cache-Control: no-store`; security headers on every response.
-- Domain logic (climate, scheduling, rotation) lives in pure, tested modules; routers stay thin.
+- Domain logic (climate, scheduling, rotation) lives in pure, tested modules; routers stay thin; outside calls only in `external.py`.
+- Schema changes add tables, not columns, until a migration tool is in place.
 - Container never runs the app as root.
 - Versions in `backend/app/__init__.py` and `frontend/package.json` must match (CI enforces).
