@@ -53,11 +53,13 @@ Goal: the foundations everything else needs, before data volume makes changes ex
 - [ ] → Phase 4.2: Settings → Data sources page with enable/disable (only meaningful once there is more than one source and manual fallback).
 
 **3.4 Catalog infrastructure**
-> ⏸ Input pending: the user is running a separate deep-research chat on **where and how to source and store** crop/animal/organism data (2026-10-09). Do not lock the storage format (YAML in repo vs DB-first vs imported packs) or sources until its findings are in; then update SPEC §6.1/§16 and these tasks.
-- [ ] JSON Schemas: `data/schema/{requirement_profile,crop,variety,species,breed,organism,task_template}.json` (§5, §6.1, §8.1, §11.3).
-- [ ] Loader: validate `data/**/*.yaml` at startup and in CI; upsert into DB with `catalog_version`; never overwrite user overrides.
+> ✅ Sourcing research done (2026-10-09): [`research/catalog-data-sources.md`](research/catalog-data-sources.md); storage = YAML in `catalog/` (CC BY-SA 4.0) per SPEC §16.1.
+- [ ] JSON Schemas: `catalog/schema/{requirement_profile,crop,variety,species,breed,organism,task_template}.json` (§5, §6.1, §8.1, §11.3).
+- [ ] Loader: validate `catalog/**/*.yaml` at startup and in CI; upsert into DB with `catalog_version`; never overwrite user overrides.
 - [ ] Override mechanism (`override` table, JSON-path per field) + merged view helper `effective(entity, household)`; tests for override/reset.
-- [ ] Source tracking: every numeric field may carry `source` (citation id) → `data/sources.yaml`.
+- [ ] Source tracking: every value carries the provenance block of SPEC §16.1 → `catalog/sources.yaml`.
+- [ ] `catalog/LICENSE` (CC BY-SA 4.0) + `catalog/NOTICE` (FAO extra terms, EPPO notice, citation strings); README/WIKI state MIT does not cover `catalog/`.
+- [ ] CI licence gate: fail on any source whose licence is NC, ND or unknown.
 
 **Acceptance**: v0.4.0 DB upgrades cleanly; a second member (e.g. the user's wife) can be invited, chooses Today as start screen and never sees the climate page unless she opens it; catalog YAML with a schema error fails CI.
 
@@ -86,14 +88,16 @@ Goal: probabilistic, self-updating environment; remove v1 heuristics (§18).
 **Acceptance**: AC-P1, AC-P2 (cold tail appears/disappears), AC-P3 pass on the environment layer; forecast refresh stays within quota budget in a 24 h simulated run.
 
 ## Phase 5 — Crop & organism catalog content (v0.7.0) §6.1, §11.3
-> ⏸ Sources and licences come from the user's separate deep-research chat (see 3.4 note). Merge its findings before writing content.
-- [ ] Source list `data/sources.yaml`: extension services (university extension guides; ARC South Africa where reusable), FAO-56 Kc table, ECOCROP (verify terms), literature; licence notes per source.
-- [ ] Verify ECOCROP reuse terms; if reusable, script `scripts/import_ecocrop.py` to seed temperature/rain ranges with citation.
-- [ ] Write 60 vegetable & herb crops (`data/crops/*.yaml`): profile (§5), phenology GDD targets or DTM, spacing, depth, germination curve, family, nutrient demand per stage, Kc, companions (with evidence level), harvest ripeness cues, storage/preservation, yield/m², how-to text for each task type.
+- [ ] `catalog/sources.yaml` from `docs/research/catalog-data-sources.md` (licence, extra terms, `tos_reviewed`, access per source).
+- [ ] Ingestion package `scripts/catalog/` (SPEC §16.1): fetcher per source with identifying User-Agent, robots.txt check, throttle; raw snapshots by SHA-256 outside git + `snapshots.lock`; pure extractors with fixture tests; proposals merged under hand-curated values.
+- [ ] Fetchers: Wikidata SPARQL (names, Afrikaans labels, ID crosswalk), WFO snapshot, ECOCROP via Recocrop raw table (spot-check 20 crops against the live tool), pyfao56 tables, OpenFarm rescue `crops.json`, USDA PLANTS JSON (cover crops), EPPO Codes, Wikipedia companion list (pinned revision).
+- [ ] Monthly GitHub Actions job: run fetchers, open a PR with the YAML diff for review.
+- [ ] Prose-similarity CI check (catalog text vs snapshot text) to prevent copied expression.
+- [ ] Write 60 vegetable & herb crops (`catalog/crops/*.yaml`): profile (§5), phenology GDD targets or DTM, spacing, depth, germination curve, family, nutrient demand per stage, Kc, companions (default `evidence: traditional` + mechanism tag; promote only with a pair-specific study), harvest ripeness cues, storage/preservation, yield/m², how-to text for each task type.
 - [ ] Varieties: ≥ 2 per crop (e.g. heat-tolerant vs standard), sourced.
 - [ ] 20 fruit species (trees, vines, berries) with chill requirements, bloom frost sensitivity, pruning windows.
 - [ ] 5 cover crops.
-- [ ] Organism catalog v1 (`data/organisms/*.yaml`): 40 common pests/diseases/beneficials/weeds/deficiencies with identification, look-alikes, verdict-with-context rules (keep / remove / tolerate below threshold), least-harm actions, safety notes, risk model (degree-day or weather rule) where published; photos with licences.
+- [ ] Organism catalog v1 (`catalog/organisms/*.yaml`): 40 common pests/diseases/beneficials/weeds/deficiencies with identification, look-alikes, verdict-with-context rules (keep / remove / tolerate below threshold), least-harm actions, safety notes, risk model (degree-day or weather rule) re-implemented from published rules (Hutton, Smith, Gubler-Thomas; US degree-day models flagged `US-calibrated`); photos only CC0/CC BY/CC BY-SA, licence + author stored per image.
 - [ ] Catalog browser UI (search, filter, detail with sources) + override editor + "create custom crop/variety/organism" (clone or blank).
 - [ ] CI: schema validation, every numeric field has a source or `estimate: true`, no duplicate slugs.
 
@@ -146,7 +150,7 @@ Goal: probabilistic, self-updating environment; remove v1 heuristics (§18).
 
 ## Phase 8 — Guided setup, layout editor, plan generator (v0.10.0) §3.1–3.2, §7.1, §9.1
 **8.1 Setup interview**
-- [ ] Question graph (`data/interview.yaml`): topics (§3.1 table), questions, input types, conditions, "why we ask", mapping to profile fields.
+- [ ] Question graph (`backend/app/interview.yaml`): topics (§3.1 table), questions, input types, conditions, "why we ask", mapping to profile fields.
 - [ ] Wizard UI: one question per screen on mobile, progress, skip, resume, edit later; accessible.
 - [ ] `household_profile` versioned storage + API.
 
@@ -172,7 +176,7 @@ Goal: probabilistic, self-updating environment; remove v1 heuristics (§18).
 
 ## Phase 9 — Animals (v0.11.0–v0.12.0) §8
 **9.1 Catalog & records**
-- [ ] Species/breed YAML for chicken, duck, goose, turkey, quail, goat, sheep, cattle, pig, rabbit, honeybee (profiles, housing space, water & feed models, lifecycle, production, care templates), sourced.
+- [ ] Species/breed YAML for chicken, duck, goose, turkey, quail, goat, sheep, cattle, pig, rabbit, honeybee (profiles, housing space, water & feed models, lifecycle, production, care templates), sourced. Breeds from FAO DAD-IS (CC BY 4.0, structured fields only) matched to Wikidata by name+species+country. No bundled withdrawal periods: user enters label days, app computes the safe date.
 - [ ] Tables `animal_group`, `animal`, `animal_event`; UI for groups, individuals, events (weights, health, treatments with withdrawal periods, breeding, births, deaths, moves, production).
 
 **9.2 Care & environment**

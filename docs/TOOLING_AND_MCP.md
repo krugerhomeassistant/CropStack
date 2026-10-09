@@ -29,6 +29,18 @@
 - Remote device bridge: deliver files to `E:\Projects\Personal\CropStack`
 - No MCP servers required by the app itself.
 
+## Catalog ingestion (planned, Phase 5; versions checked 2026-10-09)
+| Tool | Use | Why |
+|---|---|---|
+| httpx | fetchers; Wikidata SPARQL as a plain GET | already a dependency; SPARQLWrapper (last release 2022) not needed |
+| Protego 0.7.0 | robots.txt parsing | RFC 9309 compliant |
+| hishel 1.4.0 | HTTP caching / conditional requests | polite refetches |
+| selectolax 1.0.0 | HTML extraction (last resort) | fast, small |
+| pygbif 0.7.0 | GBIF names/occurrence media | official client |
+| frictionless 5.20.0 | Data Package metadata + `frictionless validate` | per-resource licences |
+| jsonschema 4.26.0 / pydantic 2.14.0 | catalog schema validation | CI gate |
+Raw snapshots live outside git (may be copyrighted); `snapshots.lock` records hashes.
+
 ## Candidate integrations (not yet added)
 - Planned by SPEC/PLAN: Hypothesis (property tests, Phase 4) · numpy (vectorised environment engine, Phase 4; check arm64 wheel + RAM) · OR-Tools CP-SAT (only if greedy plan fitting is insufficient, Phase 8) · canvas library for the layout editor (Konva vs plain SVG spike, Phase 8) · axe-core (accessibility CI, Phase 14)
 - Open-Meteo (forecast, historical, geocoding) · MQTT client (aiomqtt) for Home Assistant · Ollama for the co-pilot · Playwright for README screenshots (Bloomery pattern)

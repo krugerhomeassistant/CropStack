@@ -155,10 +155,12 @@ CropStack has no telemetry. Two features talk to free public services:
 
 Both are used within their free non-commercial terms. Climate values are estimates for a 10–25 km grid cell; frost pockets and slopes can differ.
 
+The crop, pest and animal catalog (in development) is built from openly licensed data and cited facts, with a source and evidence level on every value. See [catalog data sources](docs/research/catalog-data-sources.md).
+
 ## 🤝 Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the dev setup, code standards and release process. Report security issues privately ([SECURITY.md](SECURITY.md)).
 
 ## 📄 License
 
-[MIT](LICENSE)
+Code: [MIT](LICENSE). The catalog data in `catalog/` (planned) will be licensed separately under CC BY-SA 4.0 with attribution in `catalog/NOTICE`.

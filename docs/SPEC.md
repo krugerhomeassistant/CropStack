@@ -192,9 +192,10 @@ soil:
 ### 6.1 Catalog
 - **Crop** (species-level): names (scientific, common in each language), family (rotation group), life cycle (annual/biennial/perennial), edible parts, requirement profile, phenology model (6.3), propagation methods (direct sow, transplant, cutting, division, graft, tuber), spacing (in-row, between-row, square-foot count), depth, days to germination (as function of soil temperature), companion/antagonist links (with evidence level), common pests/diseases (with degree-day or weather risk models where known), nutrient demand class, yield per m² range, storage life, preservation methods.
 - **Variety** (cultivar): inherits from crop, overrides any field (e.g. "bolt-resistant", days to maturity, heat tolerance, chill requirement for fruit trees, determinate/indeterminate, seed source).
-- **Initial content**: ≥ 60 vegetables & herbs, ≥ 20 fruit species, ≥ 5 cover crops, each with ≥ 2 varieties, every numeric field sourced (extension service publications, FAO-56, ECOCROP ranges where licence allows, peer-reviewed literature). Stored in repo as `data/crops/<slug>.yaml` validated by JSON Schema; loaded into DB on start (catalog version tracked; user overrides survive updates).
+- **Initial content**: ≥ 60 vegetables & herbs, ≥ 20 fruit species, ≥ 5 cover crops, each with ≥ 2 varieties, every value sourced and evidence-labelled per §16.1. Stored in repo as `catalog/crops/<slug>.yaml` (not `data/`, which is the runtime volume) validated by JSON Schema; loaded into DB on start (catalog version tracked; user overrides survive updates).
 - **Custom**: users create crops/varieties from scratch or by cloning; per-field override with "reset to default".
-- **Imports** (optional, later): Permapeople (CC BY-SA, attribution, non-commercial), Trefle (CC BY 4.0) for names/images only.
+- **Seed content**: names and multilingual labels from Wikidata (CC0) and World Flora Online (CC0); climate envelopes from FAO ECOCROP (CC BY 4.0); FAO-56 Kc values as cited facts; crop slugs and sowing basics from the CC0 OpenFarm rescue set (340 records, `evidence: grower-reported` until checked). Details: [`research/catalog-data-sources.md`](research/catalog-data-sources.md).
+- **Not bundled**: Permapeople (CC BY-SA 2.0, no free commercial API), PFAF (non-commercial), Trefle per-record third-party licences; link out only.
 
 ### 6.2 Plantings
 A **planting** = variety × location (bed/area/container/structure) × method × start date × quantity, with status (planned → sown → germinated → transplanted → flowering → harvesting → finished/failed), actual dates, notes, photos. Successions are linked plantings.
@@ -425,11 +426,28 @@ REST under `/api/v1`, JSON, session cookie auth (+ API keys for integrations, sc
 | Open-Meteo Climate API (CMIP6 HighResMIP, 10 km, to 2050) | optional projections for perennials | CC BY 4.0 | bias-corrected to ERA5-Land |
 | OpenStreetMap Nominatim | place / postal search | ODbL; ≤ 1 req/s, identifying UA | search on submit |
 | ISRIC SoilGrids | soil defaults | CC BY 4.0 | verify API availability |
-| FAO ECOCROP | crop temperature/rain ranges reference | FAO open access | verify reuse terms per field |
-| FAO-56 | crop coefficients, ET method | FAO publication | cite values |
-| Extension services & literature | catalog values | cite per value | no copying of text |
-| Permapeople (optional import) | plant attributes | CC BY-SA 4.0, non-commercial | attribution in UI |
-| Trefle (optional) | names/images | CC BY 4.0 | |
+| FAO ECOCROP | crop temperature/rain/pH ranges, killing temp, season length | CC BY 4.0 (FAO Data Catalog record) + FAO DB terms: no commercial promotion, no implied endorsement | no official bulk download; Recocrop R package (1,710 taxa) as raw snapshot, spot-checked |
+| FAO-56 (Allen et al. 1998) | Kc, stage lengths, root depth, depletion fraction | © FAO 1998; numbers stored as cited facts (via pyfao56, CC0) | never copy table layout or notes |
+| Wikidata | names (incl. Afrikaans), cultivar/breed items, ID crosswalk | CC0 | SPARQL |
+| World Flora Online | accepted scientific names | CC0 | pinned Zenodo snapshot |
+| USDA PLANTS / GRIN | cover-crop characteristics, cultivar names | CC0 / US public domain | thin for vegetables |
+| OpenFarm rescue (`thefullnacho/openfarm-crops-rescue`) | seed crop list, spacing, sowing method | CC0 | quality uneven; review every value |
+| BBCH monograph (Meier 2018) | growth-stage codes | CC BY 4.0 | |
+| DSSAT genotype files | cardinal temps, thermal time (tomato, pepper, cabbage, bean, potato) | BSD-3-Clause | label as model calibration |
+| EPPO Codes | organism/crop codes | EPPO open data licence; notice + download date | host/distribution data not bundled |
+| GloBI | host–pest, parasitoid, pollinator links | per source dataset | filter rows by licence |
+| GBIF / iNaturalist / Wikimedia Commons | organism photos | per image: CC0, CC BY, CC BY-SA only | never NC/ND |
+| Wikipedia "List of companion plants" | companion pairs | CC BY-SA 4.0 | pin revision; default `evidence: traditional` |
+| FAO DAD-IS | breeds (8,800+) | CC BY 4.0 (FAO DB terms Annex 1) | web export only; structured fields only |
+| Extension services, ARC, peer-reviewed literature | catalog values | facts cited per value | never copy prose, tables or images; ARC reproduction needs written permission |
+| Permapeople, PFAF, PPDB, Feedipedia, FARAD, CABI, UC IPM text/photos | reference only | NC / ND / all rights reserved | link out, never bundle |
+
+### 16.1 Catalog data policy
+- **Licence**: `catalog/` is licensed CC BY-SA 4.0 (`catalog/LICENSE` + `catalog/NOTICE` with FAO terms, EPPO notice, citation strings); code stays MIT. Accepted inputs: CC0, public domain, CC BY, CC BY-SA 4.0. CI rejects NC, ND and unknown licences.
+- **Facts, not copies**: single values (depth, spacing, temperatures, intervals) are extracted and cited; prose is written fresh; no source's whole list or structure is mirrored.
+- **Provenance**: `catalog/sources.yaml` registry (title, author, url, licence, extra terms, `tos_reviewed`, access); every value carries `unit`, `qualifiers`, `evidence` (`peer-reviewed | government | extension-service | model | grower-reported | traditional`), `confidence`, `rank` (`preferred | normal | deprecated`) and `sources` (ref, retrieved, locator, snapshot hash). Conflicts are kept as ranges or qualified statements, never averaged.
+- **Pipeline** (maintainer-side only; self-hosted instances never scrape): per-source fetcher (API/dump first, HTML last) → raw snapshot by SHA-256 outside git (`snapshots.lock`) → tested extractor → merge (hand-curated wins) → schema + licence gate + prose-similarity check → monthly PR for review. Scrapers obey robots.txt, identify themselves, throttle (≈1 req per 1–5 s per host), never log in or accept terms.
+- **No open source → no invented value**: gaps (home yield/m², seed longevity, frost-kill temps, vernalization, stage-wise nutrient uptake, SA remedy registers, withdrawal periods) are curated from cited facts, labelled (`commercial benchmark`, `US-calibrated`), or entered by the user (e.g. withdrawal days from the label).
 
 The UI MUST show attribution wherever data from a source is displayed, and a Settings → Data sources page listing all of the above with what is sent.
 
@@ -465,3 +483,4 @@ The v0.3/v0.4 climate card used fixed heuristics that violate P1/P2 and MUST be 
 3. Catalog contribution workflow: PRs to the repo only, or an in-app "share my custom crop" export?
 4. Pasture model fidelity: simple GDD × water-balance index, or a published grass growth model?
 5. Language order after English: Afrikaans first (as Bloomery)?
+6. ARC (South Africa) sowing guidelines: request written reuse permission from ARC-VOPI?

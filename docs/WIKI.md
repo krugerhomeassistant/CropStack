@@ -80,5 +80,14 @@ See `README.md` → Configuration. All env vars use the `CROPSTACK_` prefix (`ba
 - `./data/cropstack.db` (SQLite, WAL) and `./data/secret.key` (auto-generated session key, mode 600).
 - Back up the whole `data/` folder.
 
+## Catalog data & licensing
+- Catalog values (crops, varieties, organisms, species, breeds) live in `catalog/` (planned) under **CC BY-SA 4.0**; the code is MIT. `catalog/NOTICE` carries FAO and EPPO terms.
+- Every value is a **cited fact** with an **evidence level**: `peer-reviewed`, `government`, `extension-service`, `model` (crop-model calibration), `grower-reported` (e.g. OpenFarm), `traditional` (folk knowledge, e.g. most companion pairs). The UI shows sources per field and a generated *Data sources & licences* page.
+- Labels for honest limits: `commercial benchmark` (yields converted from t/ha; 1 t/ha = 0.1 kg/m²), `US-calibrated` (pest degree-day models), `estimate`.
+- Bundled only: CC0, public domain, CC BY, CC BY-SA 4.0. Non-commercial or no-derivatives sources (PFAF, Permapeople, PPDB, Feedipedia, CABI, UC IPM text/photos) are read to check facts and linked, never copied.
+- Rotation: family groups (APG IV) with a 3-year default, overridden by disease links that cross families (clubroot 7 y, Sclerotinia ≥ 5 y, Verticillium 4–5 y, Fusarium 4–7 y, onion white rot: rotation ineffective).
+- Withdrawal periods are never bundled: the user enters the label's days; CropStack computes the safe date.
+- Research and source list: [`docs/research/catalog-data-sources.md`](research/catalog-data-sources.md). Policy: SPEC §16.1.
+
 ## Release process
 `python scripts/bump.py X.Y.Z` → commit → push to `main`. CI publishes `ghcr.io/krugerhomeassistant/cropstack:X.Y.Z` and creates the GitHub release from `CHANGELOG.md`.

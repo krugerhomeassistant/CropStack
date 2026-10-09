@@ -4,6 +4,8 @@
 | What | Path |
 |---|---|
 | Product spec | `docs/SPEC.md` |
+| Catalog data-source research (licences, gaps, pipeline) | `docs/research/catalog-data-sources.md` |
+| Catalog (planned, CC BY-SA 4.0) | `catalog/` (`sources.yaml`, `crops/`, `organisms/`, `species/`, `schema/`) |
 | Roadmap | `docs/PLAN.md` |
 | Version | `backend/app/__init__.py` (+ `frontend/package.json`) |
 | Settings/env | `backend/app/config.py`, `.env.example` |
@@ -37,7 +39,9 @@
 
 ## External docs
 - Open-Meteo forecast (16 d, past_days ≤ 92, hourly soil moisture/temperature, ET0, RH) https://open-meteo.com/en/docs · seasonal (ECMWF EC46/SEAS5, ≤ 7 months, 51 members) https://open-meteo.com/en/docs/seasonal-forecast-api · climate projections (CMIP6 HighResMIP, 10 km, bias-corrected to ERA5-Land) https://open-meteo.com/en/docs/climate-api
-- FAO ECOCROP (crop temperature/rain ranges; ~2,300 species; open access, reuse terms to verify) https://www.fao.org/land-water/resources/tools/databases/ecocrop/en · Wikipedia summary https://en.wikipedia.org/wiki/Ecocrop
+- FAO ECOCROP (CC BY 4.0 per FAO Data Catalog; no bulk download) https://ecocrop.apps.fao.org · catalog record https://data.apps.fao.org/catalog/api/3/action/package_show?id=ecocrop · bulk via Recocrop (GPL code, 1,710 taxa) https://cran.r-project.org/web/packages/Recocrop/index.html · FAO DB terms https://www.fao.org/contact-us/terms/db-terms-of-use/en/
+- Catalog sources (full list with licences in `docs/research/catalog-data-sources.md`): Wikidata https://www.wikidata.org/wiki/Wikidata:Licensing · World Flora Online (CC0) https://www.worldfloraonline.org · USDA PLANTS https://plants.sc.egov.usda.gov · pyfao56 (FAO-56 tables, CC0) https://github.com/kthorp/pyfao56 · BBCH (CC BY 4.0) https://www.openagrar.de · DSSAT genotypes (BSD-3) https://github.com/DSSAT/dssat-csm-os/tree/develop/Data/Genotype · OpenFarm rescue (CC0, 340 crops) https://github.com/thefullnacho/openfarm-crops-rescue · EPPO open data https://data.eppo.int/documentation/opendata · GloBI https://globalbioticinteractions.org/data · iNaturalist open data https://github.com/inaturalist/inaturalist-open-data · FAO DAD-IS https://www.fao.org/dad-is/en/ · Wikipedia companion list https://en.wikipedia.org/wiki/List_of_companion_plants
+- Scraping etiquette: robots.txt RFC 9309 https://www.rfc-editor.org/rfc/rfc9309.html · iNaturalist API practices https://www.inaturalist.org/pages/api+recommended+practices · CC attribution practices https://wiki.creativecommons.org/wiki/Recommended_practices_for_attribution
 - Plant data APIs survey (Trefle CC BY 4.0, Permapeople CC BY-SA non-commercial, Perenual paid, OpenFarm shut down Apr 2025) https://github.com/PflanzenDex/PflanzenDex/issues/599 · OpenFarm archive (CC0 data) https://github.com/openfarmcc/OpenFarm · Growstuff https://github.com/Growstuff/growstuff
 - Livestock heat stress / THI background https://animalscience.tamu.edu/wp-content/uploads/sites/4/2023/08/heatstress3.pdf
 - ZimaOS updating `:latest` apps (community): https://shop.zimaspace.com/pages/zimaos-1-7-app-update-registry-vs-store
