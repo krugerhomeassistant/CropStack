@@ -24,3 +24,23 @@
 body {
   @apply bg-canvas text-ink font-sans antialiased;
 }
+
+@utility card {
+  @apply rounded-2xl bg-card p-5 shadow-sm;
+}
+
+@utility field {
+  @apply flex flex-col gap-1 text-sm font-semibold;
+}
+
+@utility input {
+  @apply w-full rounded-xl border border-ink/15 bg-canvas px-3 py-2 text-base font-normal outline-none focus:border-leaf focus:ring-2 focus:ring-leaf/30;
+}
+
+@utility btn {
+  @apply rounded-xl bg-leaf px-4 py-2.5 font-bold text-white transition hover:brightness-110 disabled:opacity-50;
+}
+
+@utility btn-secondary {
+  @apply flex items-center justify-center gap-2 rounded-xl border border-leaf/40 px-4 py-2 font-semibold text-leaf;
+}

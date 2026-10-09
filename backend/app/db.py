@@ -28,7 +28,8 @@ def get_engine() -> Engine:
 
 
 def init_db() -> None:
-    # Table models are registered by importing their modules before this runs.
+    from . import models  # noqa: F401  registers the tables
+
     SQLModel.metadata.create_all(get_engine())
 
 

@@ -10,15 +10,19 @@
 - [x] CI (version check, lint, tests, build, GHCR multi-arch image, auto release), Dependabot, issue/PR templates
 - [x] README, CHANGELOG, CONTRIBUTING, SECURITY, CODE_OF_CONDUCT, LICENSE
 - [x] Living docs in `docs/`
-- [ ] User: create GitHub repo `krugerhomeassistant/CropStack` (public) and push `main`
+- [x] Create GitHub repo and push `main` (rebased on GitHub's LICENSE commit)
 - [ ] User: after first CI run, set GHCR package `cropstack` visibility to Public
+- [x] ZimaOS compose (`docker-compose.zimaos.yml`, /DATA/AppData/cropstack, 256 MiB) + README guide incl. updating
+- [ ] User: install on ZimaOS
 - [ ] Verify `docker compose up -d --build` on the user's host
 
 ## Phase 1 — Accounts & garden profile (v0.2.0)
-- [ ] `user` model, argon2 hashing, register/login/logout/me (port Bloomery `auth.py` pattern, IP throttling)
-- [ ] `garden` model: name, lat/lon, postal code, elevation, frost probability (default 50%)
-- [ ] Onboarding UI: location → confirm detected climate
-- [ ] Tests for auth + garden CRUD
+- [x] `user` model, argon2 hashing, register/login/logout/me/password (Bloomery pattern, IP throttling)
+- [x] `garden` model: name, lat/lon, postal code, frost probability (default 50%); one per user
+- [x] UI: sign-up/login, garden setup (geolocation + manual), home card, edit, logout
+- [x] Tests: 13 backend (auth flow, throttle, registration modes, garden CRUD/isolation/validation) + Playwright E2E
+- [ ] Elevation (fetch with climate in Phase 2 rather than asking the user)
+- [ ] Onboarding step "confirm detected climate" (needs Phase 2)
 
 ## Phase 2 — Climate engine (v0.3.0)
 - [ ] Research data sources: USDA zone (PRISM / phzmapi), frost dates (NOAA normals or Open-Meteo historical), soil temp, daylight (astral calc)

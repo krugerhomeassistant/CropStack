@@ -14,6 +14,9 @@ class Settings(BaseSettings):
     static_dir: Path = Path("./static")
     secret_key: str = ""
     secure_cookies: bool = False  # set true behind HTTPS
+    # "auto" = open only until the first account exists; "true" = always open; "false" = closed
+    allow_registration: str = "auto"
+    session_max_age_days: int = 30
 
     @property
     def db_url(self) -> str:

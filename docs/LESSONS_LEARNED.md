@@ -17,3 +17,10 @@ Inherited from Bloomery (same stack; full list in that repo's `docs/LESSONS_LEAR
 CropStack-specific:
 
 10. **vite-plugin-pwa 2.0.0 (new major)** → builds cleanly with Vite 8.3.4 and the same config as Bloomery's 1.3 → no changes needed (verified 2026-10-09).
+11. **Git in a connected Windows folder (device bridge) fails with `config.lock: File exists`** → git deletes its lock files and deletion is off by default there → clone/commit outside the mount, then `cp -r` into it; deliver later changes the same way or ask for delete permission.
+12. **Copied repo shows every file as modified** → Windows mount has no exec bits → `git config core.fileMode false` (Windows Git's default anyway).
+13. **GitHub repo created with a LICENSE commit** → local history unrelated → `git rebase -X ours origin/main` before the first push.
+14. **`npm i playwright` pulled a newer browser build than /opt/pw-browsers has** → `chromium.launch({ executablePath: '/opt/pw-browsers/chromium' })`.
+15. **ZimaOS 1.7 doesn't always notice new `:latest` images** (community-reported) → open the app → Save without changes to re-pull; `docker pull` first if needed.
+16. **Browser geolocation fails on a LAN `http://` install** → requires a secure context → manual lat/long fields stay first-class; postal-code geocoding comes in Phase 2.
+

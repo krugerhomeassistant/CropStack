@@ -22,6 +22,7 @@ Self-hosted, Docker-based garden and homestead planner. It turns a location (coo
 | Crop family | Botanical family used for rotation (e.g. Solanaceae, Brassicaceae) |
 | Rotation conflict | Same crop family in the same bed within the configured number of seasons |
 | Plot / bed | Physical growing area on the garden map (raised bed, row, container, guild) |
+| Frost probability | Chance that frost still occurs after the computed spring date (or before the fall date). Lower = safer, later planting |
 | Task | A dated action generated from plant timing + climate (sow, transplant, harden off, feed, prune, harvest) |
 
 ## Planned scheduling rules (to be confirmed during implementation)
@@ -33,8 +34,10 @@ Self-hosted, Docker-based garden and homestead planner. It turns a location (coo
 - Weather overrides shift or flag tasks (frost alert → protect or delay tender transplants; heat → extra watering; heavy rain → skip watering).
 
 ## Workflows
+- **Sign up / log in**: `GET /api/auth/status` tells the app whether to show sign-up. Registration modes (`CROPSTACK_ALLOW_REGISTRATION`): `auto` (default) = open until the first account exists, `true`, `false`. Usernames are stored lowercased. Passwords: argon2id, min 8 chars. Login failures are throttled per client IP (10 per 15 min, in memory). Session = signed cookie `cropstack_session`, 30 days.
+- **Garden setup**: after login, if `GET /api/garden` is 404 the app shows setup: name, latitude/longitude (browser geolocation works only over HTTPS or localhost; on a LAN `http://` install enter coordinates by hand), optional postal code, frost risk (Cautious 10 % · Typical 50 % · Bold 90 %, stored as `frost_probability`). `PUT /api/garden` creates or updates; one garden per user.
 - **Health check**: `GET /api/health` → `{status, version}`; also runs `SELECT 1` against SQLite. Used by the Docker `HEALTHCHECK`.
-- **App shell**: the PWA loads, calls `/api/health` and shows server status and version.
+- **App shell** (`App.tsx`): loading → `auth` (no session) → `setup` (no garden) → `home`; any network failure shows a retry screen.
 - **Routing**: `/api/*` = API (404 JSON for unknown routes); every other path serves a built file if it exists inside the build dir, else `index.html` (client-side routing; traversal attempts fall back to `index.html`).
 
 ## Configuration

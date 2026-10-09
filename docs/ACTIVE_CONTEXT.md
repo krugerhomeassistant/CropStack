@@ -1,16 +1,16 @@
 # ACTIVE CONTEXT
 
-**Date:** 2026-10-09 · **Version:** 0.1.0
+**Date:** 2026-10-09 · **Version:** 0.2.0
 
 ## Current subtask
-Phase 0: repo foundation mirroring Bloomery.
+Phase 1 done (accounts + garden profile). User wants to install on ZimaOS and follow updates.
 
 ## Last execution results
-- Backend 1/1 tests, ruff clean. Frontend `npm run build` OK (vite-plugin-pwa 2.0.0). Server smoke test: `/api/health` 200, SPA routes 200, `/api/nope` 404.
-- Not yet built as a Docker image in the sandbox.
+- Backend 13/13, ruff clean, frontend build OK, Playwright E2E (sign up → setup → reload → logout → bad login) passes, no page errors.
+- First CI run on main was still in progress at commit time.
 
 ## Blockers
-- GitHub repo `krugerhomeassistant/CropStack` does not exist yet; must be created from the user's account before the first push.
+- GHCR package `cropstack` must be set Public by the user after CI publishes it, or ZimaOS can't pull it.
 
 ## Immediate next step
-User creates the repo and pushes; then Phase 1 (accounts & garden profile).
+Phase 2: climate engine. Research data sources first (hardiness zone outside the US, frost dates, soil temp, geocoding). The engine must handle both hemispheres (Southern: frost season Jun–Aug) and non-US locations (USDA zones are defined from US data; compute the zone from the local extreme-minimum temperature instead).

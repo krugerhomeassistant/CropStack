@@ -22,7 +22,7 @@
 CropStack is an open-source, self-hosted web app that guides gardeners and homesteaders from the first spring seed trays to the full seasonal harvest. It pairs **hyper-local climate data** with a **botanical encyclopedia** so your sowing, transplanting and harvest calendar is worked out for *your* plot, and it runs on **your** hardware: a NAS, a Raspberry Pi or a home server. One container, one SQLite file, no telemetry.
 
 > [!NOTE]
-> CropStack is in early development. v0.1.0 is the foundation (app shell, server, Docker image, CI). Features below are the plan; [Project status](#-project-status) shows what works today.
+> CropStack is in early development. You can already create an account and set up your garden's location. Features below are the plan; [Project status](#-project-status) shows what works today.
 
 ## ✨ Features
 
@@ -73,6 +73,16 @@ docker compose up -d --build
 
 Update: `docker compose pull && docker compose up -d`.
 
+### 🧊 ZimaOS / CasaOS
+
+1. Dashboard → **App Store** → **+** → **Install a customized app** → **Import**
+2. Paste [`docker-compose.zimaos.yml`](docker-compose.zimaos.yml) → **Install**
+3. Open `http://<zima-ip>:8430` and create your account (the first account is the only one that can sign up).
+
+Data lives in `/DATA/AppData/cropstack`; memory is capped at 256 MB.
+
+**Updating:** the app uses the `latest` image, which CI rebuilds on every change to `main`. To update, open the app's settings in the dashboard and press **Save** without changes; ZimaOS re-pulls the image and recreates the container. If it doesn't pick up the new version (check `/api/health`), run `docker pull ghcr.io/krugerhomeassistant/cropstack:latest` in a terminal first, then press **Save** again. Your data in `/DATA/AppData/cropstack` is kept.
+
 ## ⚙️ Configuration
 
 All settings are optional environment variables (copy [`.env.example`](.env.example) to `.env`).
@@ -82,6 +92,7 @@ All settings are optional environment variables (copy [`.env.example`](.env.exam
 | `CROPSTACK_PORT` | `8430` | Host port |
 | `CROPSTACK_SECRET_KEY` | auto-generated in `data/secret.key` | Session signing key |
 | `CROPSTACK_SECURE_COOKIES` | `false` | Set `true` behind HTTPS |
+| `CROPSTACK_ALLOW_REGISTRATION` | `auto` | `auto` = only the first account can sign up, `true` = open, `false` = closed |
 
 API docs are served at `/api/docs`; `/api/health` reports status and version.
 
@@ -92,8 +103,8 @@ API docs are served at `/api/docs`; `/api/health` reports status and version.
 | Server, SQLite storage, health check | ✅ v0.1.0 |
 | Installable PWA shell (light/dark) | ✅ v0.1.0 |
 | Multi-arch Docker image, CI, automatic releases | ✅ v0.1.0 |
-| Accounts & garden profile | 🔜 next |
-| Climate setup (zone, frost dates) | 🔜 |
+| Accounts & garden profile (location, frost-risk preference) | ✅ v0.2.0 |
+| Climate setup (zone, frost dates) | 🔜 next |
 | Plant encyclopedia & task calendar | 🔜 |
 | Garden mapper & rotation | ⏳ |
 | Weather adaptation, Home Assistant, AI co-pilot | ⏳ |

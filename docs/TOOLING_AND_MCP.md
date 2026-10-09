@@ -15,6 +15,7 @@
 | Vite dev server | `npm run dev` (proxies `/api` → :8000) | hot reload |
 | `scripts/bump.py` | `python scripts/bump.py X.Y.Z` | version in all places + changelog section |
 | GitHub Actions | `.github/workflows/ci.yml` | lint, tests, build, GHCR image, release |
+| Playwright (Chromium) | E2E script: sign up → garden setup → reload → logout → bad login, 390×844 screenshots | real-browser check of each screen |
 | Dependabot | `.github/dependabot.yml` | weekly grouped pip / npm / docker / actions updates |
 
 ## Claude session tooling used

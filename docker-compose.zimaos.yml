@@ -1,0 +1,29 @@
+# ZimaOS / CasaOS: App Store → "+" → Install a customized app → Import (paste this file).
+# Pulls the prebuilt multi-arch image from GitHub Container Registry (published by CI on every push to main).
+name: cropstack
+services:
+  cropstack:
+    image: ghcr.io/krugerhomeassistant/cropstack:latest
+    container_name: cropstack
+    restart: unless-stopped
+    ports:
+      - "8430:8000"
+    environment:
+      CROPSTACK_ALLOW_REGISTRATION: "auto"   # only the first account can sign up
+    volumes:
+      - /DATA/AppData/cropstack:/data
+    mem_limit: 256m
+x-casaos:
+  architectures: [amd64, arm64]
+  main: cropstack
+  title:
+    en_us: CropStack
+  tagline:
+    en_us: Location-aware garden & homestead planner
+  category: Utilities
+  icon: https://raw.githubusercontent.com/krugerhomeassistant/CropStack/main/frontend/public/icon.svg
+  description:
+    en_us: Self-hosted garden planner that turns your location into a sowing, transplanting and harvest calendar.
+  port_map: "8430"
+  scheme: http
+  index: /
