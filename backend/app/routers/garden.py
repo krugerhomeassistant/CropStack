@@ -1,12 +1,16 @@
 """The household's site (garden location and frost-risk preference), its climate, and place search."""
 
+from datetime import date
+from typing import Literal
+
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel, Field
 from sqlmodel import Session, select
 
 from .. import climate, external
+from .. import environment as env
 from ..deps import MemberDep, OwnerDep, SessionDep, UserDep
-from ..models import ClimateCache, Site, now
+from ..models import ClimateArchive, Site, now
 
 router = APIRouter(prefix="/api/v1", tags=["site"])
 
@@ -44,26 +48,98 @@ def save_garden(body: GardenIn, owner: OwnerDep, db: SessionDep) -> Site:
     return site
 
 
+ARCHIVE_VERSION = 1  # bump when external.ARCHIVE_VARIABLES changes: stored archives are then refetched
+SOURCE = "Open-Meteo.com (ERA5 / ERA5-Land, CC BY 4.0)"
+EngineVar = Literal["tmin", "tmax", "soil_t", "precip", "et0", "rh", "wind"]
+
+
+def _archive(site: Site, db: Session) -> ClimateArchive:
+    """The site's daily record; refetched when the site moved, a newer complete year exists, or the format changed."""
+    archive = db.get(ClimateArchive, site.id)
+    same_place = archive is not None and (archive.latitude, archive.longitude) == (site.latitude, site.longitude)
+    if archive and same_place and archive.version == ARCHIVE_VERSION and archive.last_year >= date.today().year - 1:
+        return archive
+    try:
+        raw = external.fetch_climate_archive(site.latitude, site.longitude)
+    except external.ExternalError as e:
+        if archive and same_place:
+            return archive  # last year's record still answers everything; refresh again on a later visit
+        raise HTTPException(502, f"Climate data unavailable: {e}") from e
+    values = {
+        "latitude": site.latitude,
+        "longitude": site.longitude,
+        "version": ARCHIVE_VERSION,
+        "last_year": int(raw["daily"]["time"][-1][:4]),
+        "raw": raw,
+        "fetched_at": now(),
+    }
+    archive = archive or ClimateArchive(site_id=site.id, **values)
+    archive.sqlmodel_update(values)
+    db.add(archive)
+    db.commit()
+    db.refresh(archive)
+    return archive
+
+
+# shortcut: per-process cache of built climatologies (one uvicorn worker); keyed by fetch time so a refetch
+# rebuilds. Move to a shared cache if the app ever runs several workers.
+_BUILT: dict[tuple[int, str], env.Climatology] = {}
+
+
+def _climatology(archive: ClimateArchive) -> env.Climatology:
+    key = (archive.site_id, archive.fetched_at.isoformat())
+    if key not in _BUILT:
+        if len(_BUILT) >= 16:
+            _BUILT.pop(next(iter(_BUILT)))
+        _BUILT[key] = env.from_open_meteo(archive.raw)
+    return _BUILT[key]
+
+
 @router.get("/sites/current/climate")
 def get_climate(me: MemberDep, db: SessionDep) -> dict:
-    """Frost dates, zone and monthly normals for the site; fetched once per location, then cached."""
+    """Climate summary for the site's card (frost dates, zone, monthly normals, rain, daylight)."""
     site = _site(me.household_id, db)
-    cache = db.get(ClimateCache, site.id)
-    stale = not cache or cache.summary.get("version") != climate.SUMMARY_VERSION
-    if stale or (cache.latitude, cache.longitude) != (site.latitude, site.longitude):
-        try:
-            summary = climate.summarize(external.fetch_climate_archive(site.latitude, site.longitude))
-        except external.ExternalError as e:
-            raise HTTPException(502, f"Climate data unavailable: {e}") from e
-        cache = cache or ClimateCache(site_id=site.id, latitude=site.latitude, longitude=site.longitude, summary={})
-        cache.sqlmodel_update(
-            {"latitude": site.latitude, "longitude": site.longitude, "summary": summary, "fetched_at": now()}
-        )
-        db.add(cache)
-        db.commit()
-    return climate.report(cache.summary, site.latitude, site.frost_probability) | {
-        "fetched_at": cache.fetched_at,
-        "source": "Open-Meteo.com (ERA5 / ERA5-Land, CC BY 4.0)",
+    archive = _archive(site, db)
+    return climate.report(climate.summarize(archive.raw), site.latitude, site.frost_probability) | {
+        "fetched_at": archive.fetched_at,
+        "source": SOURCE,
+    }
+
+
+@router.get("/sites/current/climate/probability")
+def climate_probability(
+    me: MemberDep,
+    db: SessionDep,
+    var: EngineVar,
+    x: float,
+    op: Literal["le", "lt", "ge", "gt"] = "le",
+) -> dict:
+    """Chance, for each day of the year, that `var` is `op` `x` (e.g. tmin le 0 = a night at or below 0 °C)."""
+    c = _climatology(_archive(_site(me.household_id, db), db))
+    return {
+        "var": var,
+        "op": op,
+        "x": x,
+        "days": [round(p, 3) for p in env.daily_prob(c, var, op, x)],
+        "years": f"{c.years[0]}-{c.years[-1]}",
+        "source": SOURCE,
+    }
+
+
+@router.get("/sites/current/climate/bands")
+def climate_bands(me: MemberDep, db: SessionDep, var: EngineVar) -> dict:
+    """10th, 50th and 90th percentile of `var` for each day of the year (charts)."""
+    c = _climatology(_archive(_site(me.household_id, db), db))
+    rows = env.daily_quantiles(c, var, (0.1, 0.5, 0.9))
+    r = lambda v: None if v is None else round(v, 2)  # noqa: E731
+    return {
+        "var": var,
+        "p10": [r(row[0]) for row in rows],
+        "p50": [r(row[1]) for row in rows],
+        "p90": [r(row[2]) for row in rows],
+        "trend_per_decade": round(c.trends[var] * 10, 2) if var in c.trends else None,
+        "years": f"{c.years[0]}-{c.years[-1]}",
+        "source": SOURCE,
     }
 
 

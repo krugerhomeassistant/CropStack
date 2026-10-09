@@ -21,8 +21,9 @@ def synthetic(
     year_shift spreads the years apart (°C) so frost dates differ between years; day_range = max - min;
     rain_cold / rain_warm = mm per day in the colder / warmer half of the year.
     """
-    start = date(1995, 1, 1)
-    days = [start + timedelta(days=i) for i in range((date(1995 + years, 1, 1) - start).days)]
+    # Like the real fetch: the last `years` complete calendar years before today.
+    start = date(date.today().year - years, 1, 1)
+    days = [start + timedelta(days=i) for i in range((date(date.today().year, 1, 1) - start).days)]
     cold = coldest.timetuple().tm_yday
     # -cos(...) = -1 on the coldest day: tmin = mean - amplitude there
     cycle = [-math.cos(2 * math.pi * (d.timetuple().tm_yday - cold) / 365) for d in days]
@@ -36,6 +37,9 @@ def synthetic(
             "temperature_2m_max": [t + day_range for t in tmin],
             "soil_temperature_0_to_7cm_mean": [t + 6 for t in tmin],
             "precipitation_sum": [rain_cold if c < 0 else rain_warm for c in cycle],
+            "et0_fao_evapotranspiration": [max(0.5, 3 + 0.2 * t) for t in tmin],
+            "relative_humidity_2m_mean": [70.0 for _ in tmin],
+            "wind_speed_10m_max": [15.0 for _ in tmin],
         },
     }
 
@@ -52,7 +56,7 @@ def test_northern_hemisphere_frost_window():
     assert abs(days_between("11-15", report["first_fall_frost"])) <= 2
     assert 240 <= report["growing_season_days"] <= 246
     assert report["frost_years_pct"] == 100 and not report["frost_free"]
-    assert summary["period"] == "1995-2024"
+    assert summary["period"] == f"{date.today().year - 30}-{date.today().year - 1}"
     assert len(summary["last_frost"]) == 29  # partial first and last seasons dropped
 
 

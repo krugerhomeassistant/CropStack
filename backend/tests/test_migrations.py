@@ -14,7 +14,7 @@ from app.db import init_db
 
 V040_SCHEMA = (Path(__file__).parent / "fixtures" / "schema_v0_4_0.sql").read_text()
 V020_SCHEMA = V040_SCHEMA.split("CREATE TABLE climatecache")[0]  # v0.2.0 had no climate cache
-HEAD = "0003"
+HEAD = "0004"
 
 
 @pytest.fixture
@@ -51,7 +51,7 @@ def version(engine) -> str:
 def test_fresh_database_matches_models(db_path):
     engine = engine_for(db_path)
     init_db(engine)
-    assert {"user", "household", "membership", "site", "climatecache"} <= set(inspect(engine).get_table_names())
+    assert {"user", "household", "membership", "site", "climatearchive"} <= set(inspect(engine).get_table_names())
     assert version(engine) == HEAD
     with engine.connect() as conn:
         diff = compare_metadata(MigrationContext.configure(conn), SQLModel.metadata)
@@ -73,7 +73,7 @@ def test_upgrade_from_pre_alembic_release_keeps_data(db_path, schema, with_clima
         assert conn.execute(text("SELECT household_id, role FROM membership WHERE user_id = 1")).one() == (1, "owner")
         site = conn.execute(text("SELECT id, household_id, name, latitude, postal_code FROM site")).one()
         assert site == (1, 1, "Back yard", -33.93, "7600")
-        assert conn.execute(text("SELECT count(*) FROM climatecache")).scalar_one() == 0  # cache: refetched
+        assert conn.execute(text("SELECT count(*) FROM climatearchive")).scalar_one() == 0  # refetched on first visit
 
 
 def test_foreign_keys_are_back_on_after_migrating(db_path):

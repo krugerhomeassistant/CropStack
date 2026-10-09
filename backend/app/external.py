@@ -13,6 +13,16 @@ USER_AGENT = f"CropStack/{VERSION} (+https://github.com/krugerhomeassistant/Crop
 ARCHIVE_URL = "https://archive-api.open-meteo.com/v1/archive"
 NOMINATIM_URL = "https://nominatim.openstreetmap.org/search"
 CLIMATE_YEARS = 30
+# Open-Meteo daily variable -> environment engine name. Seven variables: still one weighted request (≤ 10).
+ARCHIVE_VARIABLES = {
+    "temperature_2m_min": "tmin",
+    "temperature_2m_max": "tmax",
+    "soil_temperature_0_to_7cm_mean": "soil_t",
+    "precipitation_sum": "precip",
+    "et0_fao_evapotranspiration": "et0",
+    "relative_humidity_2m_mean": "rh",
+    "wind_speed_10m_max": "wind",
+}
 
 
 class ExternalError(Exception):
@@ -34,7 +44,7 @@ def _get(url: str, params: dict, timeout: float) -> httpx.Response:
 
 
 def fetch_climate_archive(latitude: float, longitude: float, today: date | None = None) -> dict:
-    """Daily min/max air temperature, topsoil temperature and rain for the last CLIMATE_YEARS complete years.
+    """Daily weather (ARCHIVE_VARIABLES) for the last CLIMATE_YEARS complete years.
 
     Cost: ~800 of Open-Meteo's 10,000 free daily calls (long ranges are weighted), so callers must cache.
     """
@@ -44,7 +54,7 @@ def fetch_climate_archive(latitude: float, longitude: float, today: date | None 
         "longitude": longitude,
         "start_date": f"{end_year - CLIMATE_YEARS + 1}-01-01",
         "end_date": f"{end_year}-12-31",
-        "daily": "temperature_2m_min,temperature_2m_max,soil_temperature_0_to_7cm_mean,precipitation_sum",
+        "daily": ",".join(ARCHIVE_VARIABLES),
         "timezone": "auto",
         "models": "era5_seamless",  # ERA5-Land (~11 km) where available, ERA5 (~25 km) elsewhere, e.g. coasts
     }

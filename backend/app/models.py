@@ -78,11 +78,15 @@ class Site(SQLModel, table=True):
     updated_at: datetime = Field(default_factory=now)
 
 
-class ClimateCache(SQLModel, table=True):
-    """Condensed climate record for a site's location (see climate.summarize); refetched when it moves."""
+class ClimateArchive(SQLModel, table=True):
+    """A site's raw daily weather record (Open-Meteo archive response): the input of every climate question.
+
+    Refetched when the site moves, when a newer complete year exists, or when `version` changes."""
 
     site_id: int = Field(foreign_key="site.id", primary_key=True, ondelete="CASCADE")
     latitude: float
     longitude: float
-    summary: dict[str, Any] = Field(sa_column=Column(JSON, nullable=False))
+    version: int
+    last_year: int  # last complete year in the record
+    raw: dict[str, Any] = Field(sa_column=Column(JSON, nullable=False))
     fetched_at: datetime = Field(default_factory=now)
