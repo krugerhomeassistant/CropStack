@@ -1,4 +1,19 @@
-export type User = { id: number; username: string; display_name: string; created_at: string }
+export type Role = 'owner' | 'member' | 'viewer'
+
+export type User = {
+  id: number
+  username: string
+  display_name: string
+  created_at: string
+  role: Role
+  household: { id: number; name: string }
+}
+
+export type Member = { user_id: number; username: string; display_name: string; role: Role }
+export type Household = { id: number; name: string; my_role: Role; members: Member[] }
+export type InviteInfo = { household: string; role: Role; expires_at: string }
+export type PendingInvite = { id: string; role: Role; created_at: string; expires_at: string }
+export type NewInvite = PendingInvite & { token: string; path: string }
 
 export type Garden = {
   id: number
@@ -64,7 +79,16 @@ export const api = {
   status: () => request<{ registration_open: boolean; authenticated: boolean }>('GET', '/auth/status'),
   me: () => request<User>('GET', '/auth/me'),
   login: (username: string, password: string) => request<User>('POST', '/auth/login', { username, password }),
-  register: (username: string, password: string) => request<User>('POST', '/auth/register', { username, password }),
+  register: (username: string, password: string, display_name = '', invite?: string) =>
+    request<User>('POST', '/auth/register', { username, password, display_name, invite }),
+  household: () => request<Household>('GET', '/household'),
+  renameHousehold: (name: string) => request<{ name: string }>('PUT', '/household', { name }),
+  setRole: (userId: number, role: Role) => request<{ role: Role }>('PUT', `/household/members/${userId}`, { role }),
+  removeMember: (userId: number) => request<{ ok: boolean }>('DELETE', `/household/members/${userId}`),
+  invites: () => request<PendingInvite[]>('GET', '/household/invites'),
+  createInvite: (role: Role) => request<NewInvite>('POST', '/household/invites', { role }),
+  revokeInvite: (id: string) => request<{ ok: boolean }>('DELETE', `/household/invites/${id}`),
+  inviteInfo: (token: string) => request<InviteInfo>('GET', `/invites/${encodeURIComponent(token)}`),
   logout: () => request<{ ok: boolean }>('POST', '/auth/logout'),
   garden: () => request<Garden>('GET', '/garden'),
   saveGarden: (garden: GardenInput) => request<Garden>('PUT', '/garden', garden),

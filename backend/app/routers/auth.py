@@ -1,5 +1,6 @@
 """Accounts: register, login, logout, current user, password change."""
 
+import hashlib
 import time
 from collections import defaultdict, deque
 
@@ -9,7 +10,7 @@ from sqlmodel import Session, func, select
 
 from ..config import get_settings
 from ..deps import SessionDep, UserDep, hash_pw, verify_pw
-from ..models import User
+from ..models import Household, Invite, Membership, User, now
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 
@@ -18,6 +19,10 @@ class Credentials(BaseModel):
     username: str = Field(min_length=2, max_length=64)
     password: str = Field(min_length=8, max_length=256)
     display_name: str = Field("", max_length=64)
+
+
+class Registration(Credentials):
+    invite: str | None = Field(None, max_length=128)  # joins that household instead of creating one
 
 
 class PasswordChange(BaseModel):
@@ -32,8 +37,22 @@ def registration_open(db: Session) -> bool:
     return db.exec(select(func.count()).select_from(User)).one() == 0  # "auto": only the first account
 
 
-def public_user(user: User) -> dict:
-    return user.model_dump(include={"id", "username", "display_name", "created_at"})
+def token_hash(token: str) -> str:
+    return hashlib.sha256(token.encode()).hexdigest()
+
+
+def valid_invite(db: Session, token: str) -> Invite | None:
+    invite = db.get(Invite, token_hash(token))
+    return invite if invite and not invite.used_at and invite.expires_at > now() else None
+
+
+def public_user(user: User, db: Session) -> dict:
+    membership = db.get(Membership, user.id)
+    household = db.get(Household, membership.household_id) if membership else None
+    return user.model_dump(include={"id", "username", "display_name", "created_at"}) | {
+        "role": membership.role if membership else None,
+        "household": {"id": household.id, "name": household.name} if household else None,
+    }
 
 
 @router.get("/status")
@@ -42,18 +61,31 @@ def status(request: Request, db: SessionDep) -> dict:
 
 
 @router.post("/register")
-def register(body: Credentials, request: Request, db: SessionDep) -> dict:
-    if not registration_open(db):
+def register(body: Registration, request: Request, db: SessionDep) -> dict:
+    invite = valid_invite(db, body.invite) if body.invite else None
+    if body.invite and not invite:
+        raise HTTPException(410, "This invite link has expired or was already used")
+    if not invite and not registration_open(db):
         raise HTTPException(403, "Registration is closed")
     username = body.username.strip().lower()
     if db.exec(select(User).where(User.username == username)).first():
         raise HTTPException(409, "Username taken")
     user = User(username=username, password_hash=hash_pw(body.password), display_name=body.display_name or username)
     db.add(user)
+    db.flush()  # assigns user.id
+    if invite:
+        db.add(Membership(user_id=user.id, household_id=invite.household_id, role=invite.role))
+        invite.used_at = now()
+        db.add(invite)
+    else:
+        household = Household(name=f"{user.display_name}'s homestead")
+        db.add(household)
+        db.flush()
+        db.add(Membership(user_id=user.id, household_id=household.id, role="owner"))
     db.commit()
     db.refresh(user)
     request.session["uid"] = user.id
-    return public_user(user)
+    return public_user(user, db)
 
 
 # shortcut: in-memory per process (one uvicorn worker); resets on restart, fine for brute-force damping.
@@ -81,7 +113,7 @@ def login(body: Credentials, request: Request, db: SessionDep) -> dict:
         raise HTTPException(401, "Invalid username or password")
     FAILS.pop(key, None)
     request.session["uid"] = user.id
-    return public_user(user)
+    return public_user(user, db)
 
 
 @router.post("/logout")
@@ -91,8 +123,8 @@ def logout(request: Request) -> dict:
 
 
 @router.get("/me")
-def me(user: UserDep) -> dict:
-    return public_user(user)
+def me(user: UserDep, db: SessionDep) -> dict:
+    return public_user(user, db)
 
 
 @router.post("/password")

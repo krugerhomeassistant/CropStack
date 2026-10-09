@@ -14,6 +14,7 @@ from app.db import init_db
 
 V040_SCHEMA = (Path(__file__).parent / "fixtures" / "schema_v0_4_0.sql").read_text()
 V020_SCHEMA = V040_SCHEMA.split("CREATE TABLE climatecache")[0]  # v0.2.0 had no climate cache
+HEAD = "0002"
 
 
 @pytest.fixture
@@ -50,8 +51,8 @@ def version(engine) -> str:
 def test_fresh_database_matches_models(db_path):
     engine = engine_for(db_path)
     init_db(engine)
-    assert {"user", "garden", "climatecache", "alembic_version"} <= set(inspect(engine).get_table_names())
-    assert version(engine) == "0001"
+    assert {"user", "household", "membership", "site", "climatecache"} <= set(inspect(engine).get_table_names())
+    assert version(engine) == HEAD
     with engine.connect() as conn:
         diff = compare_metadata(MigrationContext.configure(conn), SQLModel.metadata)
     assert diff == [], f"models changed without a migration: {diff}"
@@ -64,12 +65,15 @@ def test_upgrade_from_pre_alembic_release_keeps_data(db_path, schema, with_clima
     init_db(engine)
     init_db(engine)  # idempotent on every start
 
-    assert version(engine) == "0001"
+    assert version(engine) == HEAD
     with engine.connect() as conn:
         assert conn.execute(text("SELECT username FROM user")).scalar_one() == "kruger"
-        assert conn.execute(text("SELECT name FROM garden")).scalar_one() == "Back yard"
-        climate_rows = conn.execute(text("SELECT count(*) FROM climatecache")).scalar_one()
-    assert climate_rows == (1 if with_climate else 0)  # v0.2 gets the missing table, empty
+        # The user owns a household of their own, and their garden is now its site (same id).
+        assert conn.execute(text("SELECT id, name FROM household")).one() == (1, "Kruger's homestead")
+        assert conn.execute(text("SELECT household_id, role FROM membership WHERE user_id = 1")).one() == (1, "owner")
+        site = conn.execute(text("SELECT id, household_id, name, latitude, postal_code FROM site")).one()
+        assert site == (1, 1, "Back yard", -33.93, "7600")
+        assert conn.execute(text("SELECT count(*) FROM climatecache")).scalar_one() == 0  # cache: refetched
 
 
 def test_foreign_keys_are_back_on_after_migrating(db_path):

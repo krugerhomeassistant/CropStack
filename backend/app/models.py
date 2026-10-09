@@ -28,11 +28,44 @@ class User(SQLModel, table=True):
     created_at: datetime = Field(default_factory=now)
 
 
-class Garden(SQLModel, table=True):
-    """A user's growing site; its location drives every climate calculation."""
+ROLES = ("owner", "member", "viewer")  # owner: everything · member: plan, log, do tasks · viewer: read-only
+
+
+class Household(SQLModel, table=True):
+    """The people who share a homestead: its sites, crops, animals and records."""
 
     id: int | None = Field(default=None, primary_key=True)
-    user_id: int = Field(foreign_key="user.id", unique=True, ondelete="CASCADE")  # one garden per user for now
+    name: str
+    created_at: datetime = Field(default_factory=now)
+
+
+class Membership(SQLModel, table=True):
+    # shortcut: one household per user (user_id is the key); make it a (user, household) pair when someone
+    # needs to belong to two households.
+    user_id: int = Field(foreign_key="user.id", primary_key=True, ondelete="CASCADE")
+    household_id: int = Field(foreign_key="household.id", index=True, ondelete="CASCADE")
+    role: str  # one of ROLES
+    created_at: datetime = Field(default_factory=now)
+
+
+class Invite(SQLModel, table=True):
+    """A one-time link to join a household; only a SHA-256 hash of the token is stored."""
+
+    token_hash: str = Field(primary_key=True)
+    household_id: int = Field(foreign_key="household.id", index=True, ondelete="CASCADE")
+    role: str
+    created_by: int | None = Field(default=None, foreign_key="user.id", ondelete="SET NULL")
+    created_at: datetime = Field(default_factory=now)
+    expires_at: datetime
+    used_at: datetime | None = None
+
+
+class Site(SQLModel, table=True):
+    """A place where the household grows or keeps animals; its location drives every climate calculation."""
+
+    id: int | None = Field(default=None, primary_key=True)
+    # shortcut: one site per household (unique) until the multi-site UI exists (SPEC 4.1).
+    household_id: int = Field(foreign_key="household.id", unique=True, ondelete="CASCADE")
     name: str = "My garden"
     latitude: float
     longitude: float
@@ -44,9 +77,9 @@ class Garden(SQLModel, table=True):
 
 
 class ClimateCache(SQLModel, table=True):
-    """Condensed climate record for a garden's location (see climate.summarize); refetched when it moves."""
+    """Condensed climate record for a site's location (see climate.summarize); refetched when it moves."""
 
-    garden_id: int = Field(foreign_key="garden.id", primary_key=True, ondelete="CASCADE")
+    site_id: int = Field(foreign_key="site.id", primary_key=True, ondelete="CASCADE")
     latitude: float
     longitude: float
     summary: dict[str, Any] = Field(sa_column=Column(JSON, nullable=False))

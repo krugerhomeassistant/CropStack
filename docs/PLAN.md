@@ -34,11 +34,13 @@ Goal: the foundations everything else needs, before data volume makes changes ex
 - [x] LESSON + WIKI + CONTRIBUTING: every schema change = Alembic revision.
 
 **3.2 Households, roles, sites**
-- [ ] Tables `household`, `membership(role)`; migrate each existing user into their own household (owner).
-- [ ] Rename `garden` → `site` (keep data; add `household_id`, `elevation`, `boundary`); API alias `/api/garden` → `/api/v1/sites/current` for one release.
-- [ ] Role checks dependency (`require_role`); tests for owner/member/viewer permissions.
-- [ ] Invite flow: owner creates an invite link (token, role, expiry) → registration via invite even when registration is closed.
-- [ ] Settings UI: household name, members list, invite, change role, remove.
+- [x] Tables `household`, `membership(role)` (one household per user for now), `invite`; migration 0002 makes each existing user the owner of their own household (household.id = user.id).
+- [x] `garden` → `site` owned by the household (same ids; one site per household for now); climate cache rebuilt empty (refetches). `elevation`/`boundary` deferred to Phase 4 / Phase 8 when used.
+- [ ] API: `/api/garden` stays until 3.3 moves everything to `/api/v1` (sites endpoint then).
+- [x] Role checks (`MemberDep`, `OwnerDep`, `EditorDep`, `require_role`); garden location = owner only.
+- [x] Invites: owner creates a link (role, 7 days, single use, SHA-256 hash stored); public `GET /api/invites/{token}`; registration with invite works when sign-up is closed.
+- [x] Household page: rename, people with role change and remove (removes their login; last-owner and self guards), invite link with copy (secure context) or select, open invites with cancel. Members without a garden see a waiting screen; edit button only for owners.
+- [x] Tests: 6 API tests (ownership, invite join, single use + hashing, expiry/revoke, roles/removal, cross-household isolation) + migration tests for 0002 + Playwright two-browser invite E2E.
 
 **3.3 API & app shell**
 - [ ] Version API under `/api/v1` (keep `/api/health` unversioned); update frontend client.

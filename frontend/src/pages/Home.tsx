@@ -1,10 +1,10 @@
-import { LogOut, MapPin, Pencil, Sprout } from 'lucide-react'
+import { LogOut, MapPin, Pencil, Sprout, Users } from 'lucide-react'
 import type { Garden, User } from '../api'
 import ClimateCard from '../components/ClimateCard'
 
-type Props = { user: User; garden: Garden; onEdit: () => void; onLogout: () => void }
+type Props = { user: User; garden: Garden; onEdit: () => void; onHousehold: () => void; onLogout: () => void }
 
-export default function Home({ user, garden, onEdit, onLogout }: Props) {
+export default function Home({ user, garden, onEdit, onHousehold, onLogout }: Props) {
   return (
     <main className="mx-auto flex min-h-dvh max-w-md flex-col gap-6 px-6 py-10">
       <header className="flex items-center justify-between">
@@ -12,9 +12,14 @@ export default function Home({ user, garden, onEdit, onLogout }: Props) {
           <Sprout className="size-7 text-leaf" aria-hidden />
           <span className="text-xl font-extrabold">CropStack</span>
         </div>
-        <button className="flex items-center gap-1 text-sm text-muted" onClick={onLogout}>
-          <LogOut className="size-4" aria-hidden /> Log out
-        </button>
+        <div className="flex items-center gap-4">
+          <button className="flex items-center gap-1 text-sm text-muted" onClick={onHousehold}>
+            <Users className="size-4" aria-hidden /> Household
+          </button>
+          <button className="flex items-center gap-1 text-sm text-muted" onClick={onLogout}>
+            <LogOut className="size-4" aria-hidden /> Log out
+          </button>
+        </div>
       </header>
 
       <p className="text-muted">Hi {user.display_name || user.username}.</p>
@@ -22,9 +27,11 @@ export default function Home({ user, garden, onEdit, onLogout }: Props) {
       <section className="card flex flex-col gap-2">
         <div className="flex items-start justify-between">
           <h1 className="text-2xl font-extrabold">{garden.name}</h1>
-          <button className="text-muted" onClick={onEdit} aria-label="Edit garden">
-            <Pencil className="size-5" aria-hidden />
-          </button>
+          {user.role === 'owner' && (
+            <button className="text-muted" onClick={onEdit} aria-label="Edit garden">
+              <Pencil className="size-5" aria-hidden />
+            </button>
+          )}
         </div>
         <p className="flex items-center gap-1 text-sm text-muted">
           <MapPin className="size-4" aria-hidden />

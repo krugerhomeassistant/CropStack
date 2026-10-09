@@ -1,12 +1,12 @@
-"""The user's garden profile (location and frost-risk preference)."""
+"""The household's site (garden location and frost-risk preference), its climate, and place search."""
 
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel, Field
 from sqlmodel import Session, select
 
 from .. import climate, external
-from ..deps import SessionDep, UserDep
-from ..models import ClimateCache, Garden, now
+from ..deps import MemberDep, OwnerDep, SessionDep, UserDep
+from ..models import ClimateCache, Site, now
 
 router = APIRouter(prefix="/api", tags=["garden"])
 
@@ -19,50 +19,49 @@ class GardenIn(BaseModel):
     frost_probability: int = Field(50, ge=10, le=90)
 
 
+# shortcut: the API still says "garden" (one site per household); /api/v1/sites arrives with PLAN 3.3.
 @router.get("/garden")
-def get_garden(user: UserDep, db: SessionDep) -> Garden:
-    return _garden(user.id, db)
+def get_garden(me: MemberDep, db: SessionDep) -> Site:
+    return _site(me.household_id, db)
 
 
-def _garden(user_id: int | None, db: Session) -> Garden:
-    garden = db.exec(select(Garden).where(Garden.user_id == user_id)).first()
-    if not garden:
+def _site(household_id: int, db: Session) -> Site:
+    site = db.exec(select(Site).where(Site.household_id == household_id)).first()
+    if not site:
         raise HTTPException(404, "No garden yet")
-    return garden
+    return site
 
 
 @router.put("/garden")
-def save_garden(body: GardenIn, user: UserDep, db: SessionDep) -> Garden:
-    garden = db.exec(select(Garden).where(Garden.user_id == user.id)).first() or Garden(
-        user_id=user.id, latitude=body.latitude, longitude=body.longitude
+def save_garden(body: GardenIn, owner: OwnerDep, db: SessionDep) -> Site:
+    site = db.exec(select(Site).where(Site.household_id == owner.household_id)).first() or Site(
+        household_id=owner.household_id, latitude=body.latitude, longitude=body.longitude
     )
-    garden.sqlmodel_update(body.model_dump() | {"updated_at": now()})
-    db.add(garden)
+    site.sqlmodel_update(body.model_dump() | {"updated_at": now()})
+    db.add(site)
     db.commit()
-    db.refresh(garden)
-    return garden
+    db.refresh(site)
+    return site
 
 
 @router.get("/garden/climate")
-def get_climate(user: UserDep, db: SessionDep) -> dict:
-    """Frost dates, zone and monthly normals for the garden; fetched once per location, then cached."""
-    garden = _garden(user.id, db)
-    cache = db.get(ClimateCache, garden.id)
+def get_climate(me: MemberDep, db: SessionDep) -> dict:
+    """Frost dates, zone and monthly normals for the site; fetched once per location, then cached."""
+    site = _site(me.household_id, db)
+    cache = db.get(ClimateCache, site.id)
     stale = not cache or cache.summary.get("version") != climate.SUMMARY_VERSION
-    if stale or (cache.latitude, cache.longitude) != (garden.latitude, garden.longitude):
+    if stale or (cache.latitude, cache.longitude) != (site.latitude, site.longitude):
         try:
-            summary = climate.summarize(external.fetch_climate_archive(garden.latitude, garden.longitude))
+            summary = climate.summarize(external.fetch_climate_archive(site.latitude, site.longitude))
         except external.ExternalError as e:
             raise HTTPException(502, f"Climate data unavailable: {e}") from e
-        cache = cache or ClimateCache(
-            garden_id=garden.id, latitude=garden.latitude, longitude=garden.longitude, summary={}
-        )
+        cache = cache or ClimateCache(site_id=site.id, latitude=site.latitude, longitude=site.longitude, summary={})
         cache.sqlmodel_update(
-            {"latitude": garden.latitude, "longitude": garden.longitude, "summary": summary, "fetched_at": now()}
+            {"latitude": site.latitude, "longitude": site.longitude, "summary": summary, "fetched_at": now()}
         )
         db.add(cache)
         db.commit()
-    return climate.report(cache.summary, garden.latitude, garden.frost_probability) | {
+    return climate.report(cache.summary, site.latitude, site.frost_probability) | {
         "fetched_at": cache.fetched_at,
         "source": "Open-Meteo.com (ERA5 / ERA5-Land, CC BY 4.0)",
     }

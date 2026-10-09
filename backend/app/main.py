@@ -12,7 +12,7 @@ from starlette.middleware.sessions import SessionMiddleware
 from . import VERSION
 from .config import get_settings
 from .db import get_engine, init_db
-from .routers import auth, garden
+from .routers import auth, garden, household
 
 
 @asynccontextmanager
@@ -45,7 +45,7 @@ def create_app() -> FastAPI:
             resp.headers.setdefault("Cache-Control", "no-store")
         return resp
 
-    for router in (auth.router, garden.router):
+    for router in (auth.router, garden.router, household.router):
         app.include_router(router)
 
     @app.get("/api/health", tags=["system"])

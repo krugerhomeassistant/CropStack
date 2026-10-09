@@ -13,7 +13,8 @@
 | Outside services | `backend/app/external.py` |
 | Climate card / place search | `frontend/src/components/{ClimateCard,PlaceSearch}.tsx` |
 | Models | `backend/app/models.py` |
-| Auth / garden API | `backend/app/routers/{auth,garden}.py` |
+| Auth / household / garden API | `backend/app/routers/{auth,household,garden}.py` |
+| Migrations | `backend/app/migrations/versions/` |
 | API client | `frontend/src/api.ts` |
 | Screens | `frontend/src/pages/*.tsx` |
 | ZimaOS install | `docker-compose.zimaos.yml` |
@@ -26,7 +27,7 @@
 | Data (runtime) | `./data/cropstack.db`, `./data/secret.key` |
 
 ## Endpoints (under `/api`, docs at `/api/docs`)
-`GET health` · auth: `GET status`, `POST register`, `POST login`, `POST logout`, `GET me`, `POST password` · `GET|PUT garden` · `GET garden/climate` · `GET places?q=`
+`GET health` · auth: `GET status`, `POST register`, `POST login`, `POST logout`, `GET me`, `POST password` · household: `GET|PUT household`, `PUT|DELETE household/members/{user_id}`, `GET|POST household/invites`, `DELETE household/invites/{id}`, public `GET invites/{token}` · `GET|PUT garden` · `GET garden/climate` · `GET places?q=`
 
 ## Repos
 - CropStack: https://github.com/krugerhomeassistant/CropStack
