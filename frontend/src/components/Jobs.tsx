@@ -27,6 +27,16 @@ function JobCard({ job, canEdit, onFinish }: { job: Job; canEdit: boolean; onFin
         {job.overdue && <Badge tone="marigold">{t('Overdue')}</Badge>}
       </div>
       <p className="text-sm text-muted">{job.reason}</p>
+      {job.steps.length > 0 && (
+        <details className="group">
+          <summary className="min-h-11 cursor-pointer py-2 text-sm font-semibold text-leaf">{t('How to do it')}</summary>
+          <ol className="list-decimal space-y-1 pl-5 text-sm">
+            {job.steps.map((step) => (
+              <li key={step}>{step}</li>
+            ))}
+          </ol>
+        </details>
+      )}
       {canEdit && (
         <div className="flex flex-wrap gap-2">
           <Button onClick={() => onFinish(job.id, 'done')}>

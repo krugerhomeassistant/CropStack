@@ -203,8 +203,12 @@ class Organism(Item):
 
 
 class TaskTemplate(Item):
+    """How to do a kind of job, in plain steps (written fresh for CropStack, shown under each job on Today)."""
+
     kind: Literal["task_template"]
     applies_to: list[Kind]
+    task_kind: Literal["sow", "set_out", "harvest", "water", "frost", "heat"]  # the engine's job kind it explains
+    steps: list[str] = Field(min_length=1)
 
 
 MODELS: dict[str, type[Item]] = {

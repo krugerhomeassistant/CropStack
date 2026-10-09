@@ -1,0 +1,14 @@
+# Test fixture: a copy of the real template.
+kind: task_template
+slug: how-to-sow
+names:
+  en:
+  - Sow
+description: Sowing seed outdoors or in trays, in plain steps.
+applies_to: [crop]
+task_kind: sow
+steps:
+- Loosen the soil (or fill the tray or pot with fresh seed-starting mix) and water it lightly the day before.
+- Sow at the depth and spacing on the crop page. As a rule of thumb, bury a seed about twice its own width.
+- Firm the soil gently over the seed and water with a fine spray so the seed is not washed out.
+- Label what you sowed and the date. Keep the surface moist, not soaked, until the seedlings are up.

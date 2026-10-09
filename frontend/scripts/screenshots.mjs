@@ -56,6 +56,7 @@ for (const [device, viewport] of Object.entries(devices))
     for (const name of pages) {
       await page.goto(`${base}/${name}`)
       await page.waitForLoadState('networkidle')
+      if (name === 'today') await page.locator('summary').first().click() // one job shows its steps
       await page.screenshot({ path: `${out}${name.replace('/', '-')}-${colorScheme}-${device}.png`, fullPage: true })
     }
     await context.close()

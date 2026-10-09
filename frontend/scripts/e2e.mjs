@@ -103,6 +103,8 @@ try {
   await nav(owner, 'Today')
   await owner.getByRole('heading', { name: 'Sow lettuce (3) in Bed 2' }).waitFor()
   await owner.getByText('You planned to sow on').first().waitFor()
+  await owner.getByText('How to do it').first().click()
+  await owner.getByText(/Firm the soil gently/).first().waitFor()
   await owner.getByRole('button', { name: 'Mark sown' }).first().click()
   await owner.getByRole('heading', { name: 'Sow lettuce (3) in Bed 2' }).waitFor({ state: 'detached' })
   step('Today shows the due job and finishing it moves the planting')

@@ -1,0 +1,12 @@
+kind: task_template
+slug: how-to-heat
+names:
+  en:
+  - Protect from heat
+description: Helping plants through a hot spell.
+applies_to: [crop]
+task_kind: heat
+steps:
+- Water deeply in the early morning, before the heat builds.
+- Shade the plants in the afternoon with shade cloth or a sheet on stakes, not touching the leaves.
+- Mulch the soil to keep it cool and damp.

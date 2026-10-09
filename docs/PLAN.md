@@ -29,7 +29,7 @@ Items left open by earlier releases. Close them before or alongside the phase th
 - [x] v0.9.0: run `npm run screenshots` in CI against a seeded server and upload the images as artifacts (PLAN 6.9).
 - [ ] v0.9.0: Sheet/Dialog, Tabs, Toast, Select in the UI kit with the first screen that needs them (PLAN 6.9).
 - [x] v0.9.0: unchecked radio in dark mode renders as a filled grey dot (browser `accent-color`); style the radio to match the tokens.
-- [ ] Owner: confirm real climate and forecast values from the ZimaOS install (first real Open-Meteo call; the sandbox gets 429/proxy errors).
+- [x] (2026-10-09, owner: "pulling into zima perfectly") Owner: confirm real climate and forecast values from the ZimaOS install (first real Open-Meteo call; the sandbox gets 429/proxy errors).
 - [ ] Climate page is the v0.4 card restyled; charts come with the climate explorer (Phase 11).
 
 ---
@@ -173,7 +173,7 @@ Goal: probabilistic, self-updating environment; remove v1 heuristics (§18).
 
 ## Phase 7 — Today screen & calendar §11.2, §9.2
 - [~] (v0.17.0: grouped jobs and next 14 days; weather advice, load vs time open) `GET /api/v1/today`: grouped actions (Protect, Plant, Water, Feed, Harvest, Animals, Check, Maintain), weather header with plain-language advice, load vs available time, next-7-days strip.
-- [~] (v0.17.0: why-now, Done, Skip) Task card component: how-to steps, why-now, minutes, Done (with quantity/photo), Skip, Snooze, Not possible today; optimistic UI.
+- [~] (v0.17.0: why-now, Done, Skip; v0.21.0: how-to steps from catalog task templates) Task card component: how-to steps, why-now, minutes, Done (with quantity/photo), Skip, Snooze, Not possible today; optimistic UI.
 - [ ] Load balancing: overflow low-priority tasks to the next suitable day.
 - [ ] Offline: cache today/week + how-tos; queued completions with idempotency keys; sync banner.
 - [ ] Calendar views: week agenda, month, year wheel, per-subject timeline.

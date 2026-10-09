@@ -1,0 +1,12 @@
+kind: task_template
+slug: how-to-frost
+names:
+  en:
+  - Protect from frost
+description: Covering plants against a cold night.
+applies_to: [crop]
+task_kind: frost
+steps:
+- In the evening, cover the plants with fleece, an old sheet, or upturned buckets or pots.
+- Keep the cover off the leaves where you can, with stakes, and reach it down to the ground. Weigh the edges down.
+- Take it off in the morning once the frost has melted.

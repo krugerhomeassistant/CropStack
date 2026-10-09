@@ -1,0 +1,13 @@
+kind: task_template
+slug: how-to-set-out
+names:
+  en:
+  - Set out seedlings
+description: Moving seedlings from trays into the garden.
+applies_to: [crop]
+task_kind: set_out
+steps:
+- 'Harden the seedlings first: a week or two outdoors in the shade, a few more hours each day, then in full sun.'
+- Water the seedlings and the planting spot well before you start.
+- Plant at the same depth as in the pot, spaced as on the crop page.
+- Water in, and shade them for a few days if it is hot or windy.

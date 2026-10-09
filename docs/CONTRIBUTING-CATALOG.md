@@ -44,6 +44,10 @@ source is not registered, or `COVERAGE.md` is stale.
 | `params.transplant_age_days` | Seedling age at set-out; enables the indoor-start windows |
 | `requirements.water.*` | Watering (coming) |
 
+## How-to steps
+
+The steps under each job on Today are task templates in `catalog/task-templates/` (copy `how-to-water.yaml`). One file per job kind: `task_kind` is one of `sow`, `set_out`, `harvest`, `water`, `frost`, `heat`, and `steps` is a list of short sentences in your own words.
+
 ## How collection keeps going
 
 - A scheduled GitHub Action (monthly) re-runs the importers in `scripts/ingest/` and opens a pull request with the

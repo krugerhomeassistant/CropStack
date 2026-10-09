@@ -1,0 +1,13 @@
+kind: task_template
+slug: how-to-harvest
+names:
+  en:
+  - Harvest
+description: Picking a crop.
+applies_to: [crop]
+task_kind: harvest
+steps:
+- Pick in the cool of the morning when you can.
+- Use clean scissors or a knife rather than pulling, so the plant is not damaged.
+- Pick a little at a time; picking regularly keeps many crops producing.
+- Eat or store what you pick soon.

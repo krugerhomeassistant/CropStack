@@ -842,6 +842,7 @@
     }
   },
   "additionalProperties": false,
+  "description": "How to do a kind of job, in plain steps (written fresh for CropStack, shown under each job on Today).",
   "properties": {
     "applies_to": {
       "items": {
@@ -910,13 +911,35 @@
       "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
       "title": "Slug",
       "type": "string"
+    },
+    "steps": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Steps",
+      "type": "array"
+    },
+    "task_kind": {
+      "enum": [
+        "sow",
+        "set_out",
+        "harvest",
+        "water",
+        "frost",
+        "heat"
+      ],
+      "title": "Task Kind",
+      "type": "string"
     }
   },
   "required": [
     "kind",
     "slug",
     "names",
-    "applies_to"
+    "applies_to",
+    "task_kind",
+    "steps"
   ],
   "title": "TaskTemplate",
   "type": "object"

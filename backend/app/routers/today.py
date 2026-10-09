@@ -90,8 +90,14 @@ def refresh_all() -> None:
             refresh_tasks(db, household_id, c)
 
 
-def _view(t: Task, today: date) -> dict:
+def _how(c: cat.Catalog) -> dict[str, list[str]]:
+    """Plain steps for each kind of job, from the catalog's task templates."""
+    return {data["task_kind"]: data["steps"] for _, data in c.list("task_template")}
+
+
+def _view(t: Task, today: date, how: dict[str, list[str]]) -> dict:
     return {
+        "steps": how.get(t.kind, []),
         "id": t.id,
         "kind": t.kind,
         "group": t.group,
@@ -120,14 +126,15 @@ def get_today(me: MemberDep, db: SessionDep, c: CatalogDep) -> dict:
     ).all()
     due = [t for t in open_tasks if t.earliest <= today]
     soon = [t for t in open_tasks if today < t.earliest <= today + timedelta(days=UPCOMING_DAYS)]
+    how = _how(c)
     return {
         "date": today,
         "groups": [
-            {"group": g, "tasks": [_view(t, today) for t in due if t.group == g]}
+            {"group": g, "tasks": [_view(t, today, how) for t in due if t.group == g]}
             for g in GROUPS
             if any(t.group == g for t in due)
         ],
-        "upcoming": [_view(t, today) for t in soon],
+        "upcoming": [_view(t, today, how) for t in soon],
     }
 
 
@@ -157,4 +164,4 @@ def update_task(task_id: int, body: TaskPatch, me: EditorDep, db: SessionDep, c:
         db.add(planting)
     db.commit()
     refresh_tasks(db, me.household_id, c)
-    return _view(task, _today(db, me.household_id)) | {"status": task.status}
+    return _view(task, _today(db, me.household_id), _how(c)) | {"status": task.status}

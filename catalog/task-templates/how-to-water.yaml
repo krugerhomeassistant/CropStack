@@ -1,0 +1,12 @@
+kind: task_template
+slug: how-to-water
+names:
+  en:
+  - Water
+description: Watering well.
+applies_to: [crop]
+task_kind: water
+steps:
+- Water slowly at the base of the plants, early in the morning, so the water soaks down instead of running off.
+- Give the amount in the job. A deep soak now and then makes deeper roots than a daily sprinkle.
+- 'Check afterwards: push a finger into the soil. It should be damp about 5 cm down.'

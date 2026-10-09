@@ -164,3 +164,12 @@ def test_water_alert_appears_when_the_soil_will_run_dry_and_restarts_after_water
     rainy = [r | {"precip": 20.0} for r in rows]
     assert water_alerts(sown, "tomato", w, None, rainy, today) == []
     assert water_alerts(planting(), "tomato", w, None, rows, today) == []  # not sown yet
+
+
+def test_jobs_come_with_plain_steps_from_the_catalog(owner):  # noqa: F811
+    from datetime import UTC, datetime
+
+    today = datetime.now(UTC).date()
+    owner.post("/api/v1/plantings", json={"crop": "testcrop", "method": "direct", "start_date": str(today)})
+    job = owner.get("/api/v1/today").json()["groups"][0]["tasks"][0]
+    assert job["kind"] == "sow" and len(job["steps"]) >= 3

@@ -5,6 +5,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.21.0] - 2026-10-09
+
+### Added
+- **How to do it** under every job on Today: a few plain steps for sowing, setting out seedlings, harvesting, watering and protecting from frost or heat. They live in the catalog as task templates, so anyone can improve them with a pull request.
+
 ## [0.20.0] - 2026-10-09
 
 ### Added

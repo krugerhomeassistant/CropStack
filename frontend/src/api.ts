@@ -107,6 +107,7 @@ export type Job = {
   latest: string
   overdue: boolean
   planting_id: number | null
+  steps: string[]
 }
 export type TodayData = { date: string; groups: { group: string; tasks: Job[] }[]; upcoming: Job[] }
 export type Probability = { var: string; days: number[]; years: string }

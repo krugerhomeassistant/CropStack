@@ -1,9 +1,9 @@
 # ACTIVE CONTEXT
 
-**Date:** 2026-10-09 · **Version:** 0.20.0
+**Date:** 2026-10-09 · **Version:** 0.21.0
 
 ## Current subtask
-v0.20.0 (soil question; watering uses it) released after CI; v0.19.0 Water jobs, v0.18.0 Protect jobs, v0.17.0 the task engine and Today jobs. Owner confirmed (2026-10-09) live weather works on the ZimaOS install. Next: rest of the setup interview (space, water source, household, time, budget), per-job how-to text, 6.6 feeding, 6.7 scouting, then hardening-off and successions; Today weather advice and the how-to text per job. Process note: `ss` is missing in the sandbox; find the stub server by scanning /proc (see /tmp/restart.sh pattern) and run e2e and screenshots against separate fresh data dirs.
+v0.20.0 (soil question; watering uses it) released after CI; v0.19.0 Water jobs, v0.18.0 Protect jobs, v0.17.0 the task engine and Today jobs. Owner confirmed (2026-10-09) live weather works on the ZimaOS install. Next: rest of the setup interview (space, water source, household, time, budget), crop-specific how-to text (generic per-kind steps shipped in v0.21.0), 6.6 feeding, 6.7 scouting, then hardening-off and successions; Today weather advice and the how-to text per job. Process note: `ss` is missing in the sandbox; find the stub server by scanning /proc (see /tmp/restart.sh pattern) and run e2e and screenshots against separate fresh data dirs.
 
 ## Open to-dos (owner: "make note of missed/still to dos")
 - UI kit: Sheet/Dialog, Tabs, Toast, Select. Add with the first screen that needs them (PLAN 6.9).
@@ -31,4 +31,4 @@ v0.20.0 (soil question; watering uses it) released after CI; v0.19.0 Water jobs,
 - None. Decided 2026-10-09 (user: personal, non-commercial use; repo stays public): public `catalog/` = CC BY-SA 4.0; no ARC request for now; personal-use values go in a private pack on the server (SPEC §16.1, §19 Q6–7).
 
 ## Immediate next step
-Phase 5 catalog content (ingestion pipeline, following the handoff reading order above) → 6 crop engine → 7 Today tasks. Still open from the owner: real climate and forecast values from the ZimaOS install (first real Open-Meteo call). 4.3 (sensors, observations) waits for Home Assistant work.
+Phase 5 catalog content (ingestion pipeline, following the handoff reading order above) → 6 crop engine → 7 Today tasks. Live weather confirmed working on the ZimaOS install. 4.3 (sensors, observations) waits for Home Assistant work.
