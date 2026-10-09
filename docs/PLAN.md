@@ -150,7 +150,7 @@ Goal: probabilistic, self-updating environment; remove v1 heuristics (§18).
 - [~] Recompute job: on planting edits and every 12 h (v0.17.0); on forecast/observation open; AC-P6 test open.
 
 **6.5 Water** §6.6
-- [~] (v0.19.0: per-planting FAO-56 balance with one standard soil, Water jobs in mm and litres per m², reset by "Watered"; per-bed, soil texture from setup, best time of day, sensor override, water budget open) Soil-water balance (FAO-56 simplified), soil water-holding capacity from texture, root depth by stage; irrigation tasks with litres and best time of day; sensor override; water budget tracking vs household budget.
+- [~] (v0.19.0: per-planting FAO-56 balance with one standard soil, Water jobs in mm and litres per m², reset by "Watered"; per-bed, best time of day, sensor override, water budget open; v0.20.0: soil class from the setup Soil question) Soil-water balance (FAO-56 simplified), soil water-holding capacity from texture, root depth by stage; irrigation tasks with litres and best time of day; sensor override; water budget tracking vs household budget.
 
 **6.6 Feeding** §6.5.1
 - [ ] Inputs inventory minimal (product, N-P-K, form) so feed tasks can name what to use.

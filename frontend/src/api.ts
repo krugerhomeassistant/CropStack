@@ -27,6 +27,7 @@ export type Garden = {
   longitude: number
   postal_code: string
   frost_probability: number
+  soil: '' | 'sandy' | 'loamy' | 'clay'
 }
 
 export type GardenInput = Omit<Garden, 'id'>

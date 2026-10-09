@@ -76,6 +76,7 @@ class Site(SQLModel, table=True):
     postal_code: str = ""
     # Risk accepted for frost dates: 50 = median date (half of years still frost after the spring date).
     frost_probability: int = 50
+    soil: str = ""  # "", sandy, loamy or clay: how much water the ground holds (engine/water.py)
     created_at: datetime = Field(default_factory=now)
     updated_at: datetime = Field(default_factory=now)
 

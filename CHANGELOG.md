@@ -5,6 +5,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.20.0] - 2026-10-09
+
+### Added
+- **Soil question in garden setup.** Sandy, silty or loamy, clay, or not sure, each with a one-line feel test. Watering now uses how much water your kind of soil holds, so sandy gardens get Water jobs sooner and clay gardens later. Existing gardens keep the middle value until you choose.
+
+### Note
+- The three soil values come from one worked example each in FAO Irrigation and Drainage Paper 56 (loamy sand 90, silt 170, silty clay 120 mm of water per metre). They are a feel-test answer, not a lab measurement.
+
 ## [0.19.0] - 2026-10-09
 
 ### Added

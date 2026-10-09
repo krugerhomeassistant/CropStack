@@ -61,3 +61,13 @@ def test_profile_from_catalog_item():
     assert round(profile_from_item(item, (80, 120)).total_days) == 100  # standard split of the cycle
     del item["requirements"]["water"]["kc_mid"]
     assert profile_from_item(item, (80, 120)) is None
+
+
+def test_sandy_soil_dries_sooner_than_loamy_soil():
+    from app.engine.water import SOIL_AWC_MM_PER_M
+
+    dry = {
+        soil: first_dry_day(depletion_path(W, SOWN, SOWN, week(6.0, n=14), SOIL_AWC_MM_PER_M[soil]), SOWN, 14)["date"]
+        for soil in ("sandy", "loamy")
+    }
+    assert dry["sandy"] < dry["loamy"]

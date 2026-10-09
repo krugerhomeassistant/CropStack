@@ -78,12 +78,12 @@ Target architecture (engines, data model, API) is specified in `docs/SPEC.md` §
 | `CROPSTACK_SCHEDULER` | `true` | background jobs (forecast refresh) |
 | `CROPSTACK_PORT` | `8430` | compose host port only |
 
-## DB schema (SQLite, Alembic migrations; head 0008)
+## DB schema (SQLite, Alembic migrations; head 0009)
 - **user**: id, username (unique, lowercased), password_hash (argon2id), display_name, created_at, prefs JSON (start, units)
 - **household**: id, name, created_at, settings JSON (forecast, place_search)
 - **membership**: user_id (PK → user, CASCADE), household_id (→ household, CASCADE, indexed), role (owner|member|viewer), created_at
 - **invite**: token_hash (PK, SHA-256), household_id (→ household, CASCADE), role, created_by (→ user, SET NULL), created_at, expires_at, used_at
-- **site**: id, household_id (→ household, unique, CASCADE), name, latitude, longitude, postal_code, frost_probability (10–90), created_at, updated_at
+- **site**: id, household_id (→ household, unique, CASCADE), name, latitude, longitude, postal_code, frost_probability (10–90), soil ('', sandy, loamy, clay), created_at, updated_at
 - **forecast**: site_id (PK → site, CASCADE), latitude, longitude, raw JSON (Open-Meteo forecast response), fetched_at
 - **catalogoverride**: (household_id → household CASCADE, kind, slug, path) PK, value JSON (a cited `Value`), updated_at
 - **climatearchive**: site_id (PK → site, CASCADE), latitude, longitude (where it was fetched), version (`ARCHIVE_VERSION`), last_year, raw JSON (Open-Meteo daily response, ~0.5 MB), fetched_at

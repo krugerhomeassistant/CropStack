@@ -13,6 +13,13 @@ const FROST_CHOICES = [
   { value: 90, label: N_('Bold'), hint: N_('plant early, accept more frost risk') },
 ]
 
+const SOIL_CHOICES = [
+  { value: 'sandy', label: N_('Sandy'), hint: N_('gritty, falls apart when rubbed, water drains away fast') },
+  { value: 'loamy', label: N_('Silty or loamy'), hint: N_('smooth or crumbly, holds a shape briefly when squeezed') },
+  { value: 'clay', label: N_('Clay'), hint: N_('sticky when wet, rolls into a ribbon, slow to drain') },
+  { value: '', label: N_('Not sure'), hint: N_('uses a middle value; you can change it later') },
+] as const
+
 export default function GardenSetup({ garden, onSaved, onCancel }: Props) {
   const [form, setForm] = useState({
     name: garden?.name ?? 'My garden',
@@ -20,6 +27,7 @@ export default function GardenSetup({ garden, onSaved, onCancel }: Props) {
     longitude: garden ? String(garden.longitude) : '',
     postal_code: garden?.postal_code ?? '',
     frost_probability: garden?.frost_probability ?? 50,
+    soil: garden?.soil ?? '',
   })
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
@@ -134,6 +142,14 @@ export default function GardenSetup({ garden, onSaved, onCancel }: Props) {
           options={FROST_CHOICES.map((c) => ({ ...c, label: t(c.label), hint: t(c.hint) }))}
           value={form.frost_probability}
           onChange={(frost_probability) => set({ frost_probability })}
+        />
+
+        <RadioCards
+          legend={t('Soil')}
+          name="soil"
+          options={SOIL_CHOICES.map((c) => ({ ...c, label: t(c.label), hint: t(c.hint) }))}
+          value={form.soil}
+          onChange={(soil) => set({ soil })}
         />
 
         {error && <ErrorMessage>{error}</ErrorMessage>}

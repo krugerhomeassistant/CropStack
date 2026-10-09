@@ -195,3 +195,10 @@ def test_crop_windows(client, monkeypatch):
     assert body["usable"] and len(body["success_by_day"]) == 365
     assert body["verdict"]["state"] in {"yes", "risky", "no"}
     assert client.get("/api/v1/crops/nope/windows").status_code == 404
+
+
+def test_garden_soil_is_saved_and_checked(client):
+    register(client, "soilly")
+    assert client.put("/api/v1/sites/current", json=GARDEN | {"soil": "sandy"}).json()["soil"] == "sandy"
+    assert client.put("/api/v1/sites/current", json=GARDEN | {"soil": "peat"}).status_code == 422
+    assert client.get("/api/v1/sites/current").json()["soil"] == "sandy"

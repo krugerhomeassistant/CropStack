@@ -3,8 +3,8 @@
 Each day the crop uses ETc = Kc * ET0 and rain refills the soil. Starting full (at sowing or the last watering),
 the water used since then is the depletion; the crop is stressed once it passes the readily available water
 RAW = p * TAW, where TAW = soil water-holding capacity * root depth.
-shortcut: one standard soil (120 mm of water per metre of depth) and 80 % of rain counted, until the setup
-questions ask about soil; no mulch, shade or rain-shelter effects; roots grow in a straight line to full depth.
+shortcut: three soil classes from one FAO example each (a feel-test answer, not a lab value) and 80 % of rain
+counted; no mulch, shade or rain-shelter effects; roots grow in a straight line to full depth.
 """
 
 from dataclasses import dataclass
@@ -13,7 +13,9 @@ from statistics import median
 
 from .phenology import _number, _range
 
-SOIL_AWC_MM_PER_M = 120.0
+# Water the ground holds between field capacity and wilting point, mm per metre of depth. FAO-56 Example 36 (Table 19):
+# loamy sand 90, silt 170, silty clay 120. Unset keeps the middle value.
+SOIL_AWC_MM_PER_M = {"sandy": 90.0, "loamy": 170.0, "clay": 120.0, "": 120.0}
 RAIN_USED = 0.8
 SEEDLING_ROOT_M = 0.2
 GENERIC_STAGES = (0.15, 0.25, 0.40, 0.20)  # FAO-56's rough split: initial, development, mid, late
@@ -72,7 +74,7 @@ def profile_from_item(item: dict, cycle_days: tuple[float, float] | None) -> Wat
 
 
 def depletion_path(
-    w: WaterProfile, sown: date, wet_since: date, days: list[dict], awc: float = SOIL_AWC_MM_PER_M
+    w: WaterProfile, sown: date, wet_since: date, days: list[dict], awc: float = SOIL_AWC_MM_PER_M[""]
 ) -> list[dict]:
     """Day by day from `wet_since` (soil full that day): depletion and the dry point, both in mm.
     `days` are weather rows (date ISO, et0 and precip in mm) in date order; missing numbers count as zero."""

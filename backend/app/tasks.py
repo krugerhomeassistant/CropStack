@@ -158,7 +158,13 @@ def weather_alerts(
 
 
 def water_alerts(
-    p: Planting, name: str, profile: water.WaterProfile, last_watered: date | None, rows: list[dict], today: date
+    p: Planting,
+    name: str,
+    profile: water.WaterProfile,
+    last_watered: date | None,
+    rows: list[dict],
+    today: date,
+    awc: float = water.SOIL_AWC_MM_PER_M[""],
 ) -> list[TaskSpec]:
     """A Water job when the soil around an outdoor planting is expected to pass its dry point in the next 3 days.
     `rows` = daily weather (observed and forecast); the soil counts as full at sowing, at set-out, or when the
@@ -166,7 +172,7 @@ def water_alerts(
     if p.status not in EXPOSED or (p.method == "transplant" and p.status in ("sown", "germinated")):
         return []
     wet_since = max(d for d in (p.set_out_date if p.method == "transplant" else None, p.start_date, last_watered) if d)
-    path = water.depletion_path(profile, p.start_date, wet_since, rows)
+    path = water.depletion_path(profile, p.start_date, wet_since, rows, awc)
     dry = water.first_dry_day(path, today)
     if not dry:
         return []

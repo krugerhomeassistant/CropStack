@@ -57,6 +57,7 @@ def refresh_protect(db: Session, household_id: int, c: cat.Catalog) -> None:
     today = local_today(stored.raw) if stored else datetime.now(UTC).date()
     all_rows = weather.daily_rows(stored.raw) if stored else []
     ahead = weather.split(all_rows, today)[1]
+    awc = water.SOIL_AWC_MM_PER_M[site.soil if site else ""]
     watered: dict[int, date] = {}  # planting -> the last day a person said they watered it
     for t in db.exec(
         select(Task).where(Task.household_id == household_id, Task.kind == "water", Task.status == "done")
@@ -72,7 +73,9 @@ def refresh_protect(db: Session, household_id: int, c: cat.Catalog) -> None:
         name = (item.get("names", {}).get("en") or [p.crop])[0].lower()
         out = weather_alerts(p, name, profile.lethal_min, profile.stress_max, ahead)
         thirst = water.profile_from_item(item, profile.cycle_days if profile.usable else None)
-        return out + (water_alerts(p, name, thirst, watered.get(p.id), all_rows, today) if thirst and all_rows else [])
+        return out + (
+            water_alerts(p, name, thirst, watered.get(p.id), all_rows, today, awc) if thirst and all_rows else []
+        )
 
     sync(db, household_id, specs, {"frost", "heat", "water"})
     db.commit()

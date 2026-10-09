@@ -24,6 +24,7 @@ class GardenIn(BaseModel):
     longitude: float = Field(ge=-180, le=180)
     postal_code: str = Field("", max_length=16)
     frost_probability: int = Field(50, ge=10, le=90)
+    soil: Literal["", "sandy", "loamy", "clay"] = ""
 
 
 # shortcut: one site per household, addressed as "current" until the multi-site UI exists (SPEC 4.1).
