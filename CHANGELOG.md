@@ -5,6 +5,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.14.0] - 2026-10-09
+
+### Added
+- **Anyone can add plants and animals.** A contributor guide (`docs/CONTRIBUTING-CATALOG.md`), issue forms to request a species or report a value, a catalog pull-request template, and a generated to-do list of every missing or estimated value (`docs/COVERAGE.md`).
+- **Suggest a correction** link on each crop page, opening the report form for that crop.
+
+### Development
+- A monthly GitHub Action re-runs the importers and opens a pull request with the data diff. CI fails when `docs/COVERAGE.md` is stale.
+
 ## [0.13.0] - 2026-10-09
 
 ### Added

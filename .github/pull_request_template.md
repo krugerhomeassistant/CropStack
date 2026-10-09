@@ -6,3 +6,5 @@
 - [ ] Frontend builds (`cd frontend && npm run build`)
 - [ ] User-facing change noted under `[Unreleased]` in `CHANGELOG.md`
 - [ ] `docs/WIKI.md` / `README.md` updated if behaviour or setup changed
+
+Catalog contribution? Use `?template=catalog.md` on the new pull request URL instead.

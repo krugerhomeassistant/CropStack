@@ -1,0 +1,27 @@
+name: Request a plant or animal
+description: Ask for a crop, variety, animal or breed to be added to the catalog
+labels: [catalog, needs data]
+body:
+  - type: input
+    id: name
+    attributes: { label: Common name, description: In any language. }
+    validations: { required: true }
+  - type: input
+    id: scientific
+    attributes: { label: Scientific name, description: Optional but helps a lot. }
+  - type: textarea
+    id: where
+    attributes:
+      label: Where do you grow or keep it?
+      description: Region or climate, so values can be checked against local conditions.
+  - type: textarea
+    id: sources
+    attributes:
+      label: Sources you know of
+      description: Extension-service sheets, seed-company growing guides, papers. Links are enough.
+  - type: checkboxes
+    id: help
+    attributes:
+      label: Can you help?
+      options:
+        - label: I can open a pull request (see docs/CONTRIBUTING-CATALOG.md)

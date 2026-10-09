@@ -1,0 +1,22 @@
+name: Report or correct a value
+description: A number or fact in the catalog is wrong, missing, or different where you live
+labels: [catalog, needs data]
+body:
+  - type: input
+    id: item
+    attributes: { label: Crop or animal, description: "e.g. tomato" }
+    validations: { required: true }
+  - type: input
+    id: field
+    attributes: { label: Which value, description: "e.g. frost kill temperature" }
+    validations: { required: true }
+  - type: input
+    id: value
+    attributes: { label: What it should be, description: Include the unit. }
+    validations: { required: true }
+  - type: input
+    id: region
+    attributes: { label: Region or conditions it applies to }
+  - type: textarea
+    id: source
+    attributes: { label: Source, description: A link or full reference. Without one it is recorded as an estimate. }

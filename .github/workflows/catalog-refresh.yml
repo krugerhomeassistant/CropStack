@@ -1,0 +1,28 @@
+name: Catalog refresh
+
+# Monthly: re-run the importers and open a pull request with the data diff for a person to review.
+on:
+  schedule: [{ cron: "17 5 1 * *" }]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with: { python-version: "3.14" }
+      - run: pip install -r backend/requirements.txt pyreadr pandas
+      - run: python scripts/ingest fetch && python scripts/ingest merge
+      - run: python scripts/coverage.py
+      - uses: peter-evans/create-pull-request@v8
+        with:
+          branch: catalog-refresh
+          title: "Catalog refresh"
+          body: "Automated re-run of `scripts/ingest`. Review the YAML diff and the snapshot hashes before merging."
+          commit-message: "Catalog refresh"
+          labels: catalog

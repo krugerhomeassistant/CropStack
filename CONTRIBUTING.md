@@ -38,6 +38,8 @@ Catalog data lives in `catalog/` (CC BY-SA 4.0); see [`catalog/README.md`](catal
 
 Values that come from open or factual sources are imported, not typed: `python scripts/ingest fetch` (run it from the backend venv; ECOCROP also needs `pip install pyreadr pandas`; downloads into `.ingest-cache/`, records `scripts/ingest/snapshots.lock`), then `python scripts/ingest merge` and review `git diff catalog/`. Hand-written values always win over imported ones. To add a crop, write its curated base file (names, scientific name, family, rotation group, life cycle, description) in `catalog/crops/`, add its row names to `scripts/ingest/crosswalk.yaml`, run `merge`, and run `python scripts/ingest check` against GBIF.
 
+Adding plants, animals or values, with or without code: see [`docs/CONTRIBUTING-CATALOG.md`](docs/CONTRIBUTING-CATALOG.md). Remaining gaps are listed in [`docs/COVERAGE.md`](docs/COVERAGE.md) (`python scripts/coverage.py` refreshes it).
+
 ## Checks (same as CI)
 
 ```bash

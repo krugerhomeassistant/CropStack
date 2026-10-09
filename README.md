@@ -146,6 +146,8 @@ One multi-arch image: Python 3.14 with FastAPI, SQLModel and Alembic serves the 
 
 ## 🤝 Contributing
 
+**Know a plant or animal CropStack is missing?** Anyone can add one: see [docs/CONTRIBUTING-CATALOG.md](docs/CONTRIBUTING-CATALOG.md) and the open gaps in [docs/COVERAGE.md](docs/COVERAGE.md). No coding needed for the issue forms.
+
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the development setup, code standards and release process. Please report security issues privately ([SECURITY.md](SECURITY.md)).
 
 ## 📄 License

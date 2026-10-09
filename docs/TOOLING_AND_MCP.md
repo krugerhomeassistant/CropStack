@@ -27,6 +27,7 @@
 | `npm run screenshots` | `CROPSTACK_URL=… CHROMIUM_PATH=/opt/pw-browsers/chromium npm run screenshots` (Playwright 1.64 dev dependency) | visual check of every page × light/dark × phone/desktop before a release (DESIGN.md) |
 | Fonts | `@fontsource-variable/bricolage-grotesque`, `@fontsource-variable/atkinson-hyperlegible-next` | self-hosted (offline PWA, no Google Fonts call) |
 | pyreadr + pandas (maintainers) | `backend/.venv/bin/pip install pyreadr pandas` | read Recocrop's `ecocrop.rds` (R serialisation); run ingest from the backend venv (httpx, PyYAML) |
+| `python scripts/coverage.py [--check]` | list missing/estimated catalog values | feeds docs/COVERAGE.md; CI fails when stale |
 | `python scripts/ingest fetch|merge|check` | catalog ingestion (maintainers) | API-first, snapshot-locked, reviewable YAML diffs (SPEC §16.1) |
 | GBIF species API | `check`: accepted name + family per crop | CC BY 4.0, reachable from the sandbox; Wikidata SPARQL is not |
 | Dependabot | `.github/dependabot.yml` | weekly grouped pip / npm / docker / actions updates |

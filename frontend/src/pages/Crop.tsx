@@ -458,6 +458,16 @@ export default function Crop() {
       </div>
       <Stages data={data} notes={notes} />
       <Sources notes={notes} sources={item.sources} />
+      <p className="text-sm text-muted">
+        <a
+          className="underline"
+          href={`https://github.com/krugerhomeassistant/CropStack/issues/new?template=report_value.yml&title=${encodeURIComponent(`Correction: ${data.slug}`)}&item=${encodeURIComponent(data.slug)}`}
+          target="_blank"
+          rel="noreferrer"
+        >
+          {t('Suggest a correction')}
+        </a>
+      </p>
     </>
   )
 }
