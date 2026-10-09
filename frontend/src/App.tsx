@@ -16,9 +16,36 @@ import { AppContext } from './state'
 
 const INVITE_PATH = /^\/invite\/([^/]+)$/
 
+/**
+ * Why did loading fail? After an update the browser can still run the previous app from its offline cache for a
+ * moment; it then calls API paths the new server no longer has. If the server is up and newer than this app,
+ * reload once (per server version, so it can't loop) to pick up the new app. Returns an error to show otherwise.
+ */
+async function diagnose(error: unknown): Promise<string | null> {
+  const health = await fetch('/api/health')
+    .then((r) => (r.ok ? r.json() : null))
+    .catch(() => null)
+  if (!health) return t('Cannot reach the CropStack server.')
+  if (health.version !== __APP_VERSION__) {
+    const key = `reloaded-for-${health.version}`
+    let already = false
+    try {
+      already = sessionStorage.getItem(key) === '1'
+      sessionStorage.setItem(key, '1')
+    } catch {
+      // storage blocked: reload anyway; worst case the error below shows after a second failure
+    }
+    if (!already) {
+      location.reload()
+      return null
+    }
+  }
+  return error instanceof Error ? error.message : t('Something went wrong')
+}
+
 type State =
   | { screen: 'loading' }
-  | { screen: 'error' }
+  | { screen: 'error'; message: string }
   | { screen: 'auth'; registrationOpen: boolean; invite?: Invite; notice?: string }
   | { screen: 'setup'; user: User }
   | { screen: 'waiting'; user: User }
@@ -52,8 +79,9 @@ export default function App() {
       })
       if (garden) setState({ screen: 'app', user, garden })
       else setState(user.role === 'owner' ? { screen: 'setup', user } : { screen: 'waiting', user })
-    } catch {
-      setState({ screen: 'error' })
+    } catch (error) {
+      const message = await diagnose(error)
+      if (message) setState({ screen: 'error', message })
     }
   }
 
@@ -74,10 +102,11 @@ export default function App() {
         <main className="mx-auto flex min-h-dvh max-w-md flex-col items-center justify-center gap-3 px-6 text-center">
           <Sprout className="size-12 text-leaf" aria-hidden />
           <p className="text-muted" role="status">
-            {state.screen === 'error' ? t('Cannot reach the CropStack server.') : t('Loading…')}
+            {state.screen === 'error' ? state.message : t('Loading…')}
           </p>
           {state.screen === 'error' && (
-            <button className="btn" onClick={load}>
+            // A full reload, not just a retry: it also picks up a newer app version.
+            <button className="btn" onClick={() => location.reload()}>
               {t('Try again')}
             </button>
           )}

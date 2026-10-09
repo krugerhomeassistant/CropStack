@@ -5,6 +5,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.5.1] - 2026-10-09
+
+### Fixed
+- Right after an update the app could show "Cannot reach the CropStack server" while the browser still ran the previous version from its offline cache. It now notices the newer server and reloads itself once; "Try again" does a full reload; other errors show what actually went wrong.
+
 ## [0.5.0] - 2026-10-09
 
 ### Added
@@ -51,7 +56,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - CI: ruff lint and format, backend tests, frontend build, image publishing to GHCR and automatic GitHub releases on a version bump.
 - Project docs: README, wiki, architecture, roadmap, contributing guide, security policy and Code of Conduct.
 
-[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.5.0...HEAD
+[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.5.1...HEAD
+[0.5.1]: https://github.com/krugerhomeassistant/CropStack/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.2.0...v0.3.0
