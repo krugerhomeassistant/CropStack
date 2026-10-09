@@ -1,0 +1,53 @@
+kind: organism
+slug: slugs-and-snails
+names:
+  en:
+  - Slugs and snails
+organism_type: pest
+scientific_name: null
+description: Night feeders that chew ragged holes in seedlings, leaves and low fruit and leave silver slime trails.
+params:
+  identify:
+    value: Smooth-edged holes in leaves, flowers and fruit, plus dried silvery trails. Snails carry a spiral shell; slugs
+      do not. They feed at night and hide in cool, shady places by day.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Pest Notes: Snails and Slugs'
+      retrieved: '2026-10-10'
+  look_when:
+    value: Go out after dark or at first light, especially after rain or on cloudy days. Seedlings and fruit close to the
+      ground are hit first.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Pest Notes: Snails and Slugs'
+      retrieved: '2026-10-10'
+  verdict:
+    value: remove
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Pest Notes: Snails and Slugs'
+      retrieved: '2026-10-10'
+  first_action:
+    value: Clear hiding places (boards, stones, debris), water in the morning so the surface dries by night, and collect them
+      by torchlight. Copper strips around beds keep many out.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Pest Notes: Snails and Slugs'
+      retrieved: '2026-10-10'
+  safety:
+    value: If you use bait, choose iron phosphate; metaldehyde is very toxic to pets. Scatter it thinly in the evening and
+      renew after rain.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Pest Notes: Snails and Slugs'
+      retrieved: '2026-10-10'

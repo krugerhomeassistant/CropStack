@@ -1,0 +1,53 @@
+kind: organism
+slug: whiteflies
+names:
+  en:
+  - Whiteflies
+organism_type: pest
+scientific_name: null
+description: Tiny white winged insects that rise in a cloud when a plant is shaken. The flat young stages on leaf undersides
+  do most of the damage, and the honeydew they leave grows black sooty mould.
+params:
+  identify:
+    value: Tiny white insects with four wings, not true flies. Flat, oval, motionless young cling to leaf undersides. Sticky
+      honeydew, black sooty mould and yellowing or silvery leaves follow.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Pest Notes: Whiteflies'
+      retrieved: '2026-10-10'
+  look_when:
+    value: Turn leaves over on warm days and look for the young stages; yellow sticky cards show when adults arrive.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Pest Notes: Whiteflies'
+      retrieved: '2026-10-10'
+  verdict:
+    value: tolerate_below_threshold
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Pest Notes: Whiteflies'
+      retrieved: '2026-10-10'
+  first_action:
+    value: Inspect new plants, control ants, hose off adults, and strip heavily infested leaves. Soap or oil sprays need coverage
+      of every leaf underside and repeating.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Pest Notes: Whiteflies'
+      retrieved: '2026-10-10'
+  safety:
+    value: Systemic insecticides can harm bees and the wasps and bugs that keep whiteflies down. Keep them for severe cases
+      and never on flowering plants.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Pest Notes: Whiteflies'
+      retrieved: '2026-10-10'

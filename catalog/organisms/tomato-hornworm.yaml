@@ -1,0 +1,45 @@
+kind: organism
+slug: tomato-hornworm
+names:
+  en:
+  - Tomato hornworm
+organism_type: pest
+scientific_name: Manduca quinquemaculata
+description: A very large green caterpillar that strips tomato leaves fast. Easy to miss until the plant is half bare, and
+  easy to remove by hand.
+params:
+  identify:
+    value: The biggest caterpillar in the vegetable garden, up to about 10 cm, striped and well camouflaged, with a horn at
+      the tail end. Large dark droppings on the ground under tomatoes give it away.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Garden pests: Hornworms'
+      retrieved: '2026-10-10'
+  look_when:
+    value: Look under tomato plants for droppings when leaves go missing. Numbers peak in midsummer, with a smaller wave in
+      late summer.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Garden pests: Hornworms'
+      retrieved: '2026-10-10'
+  verdict:
+    value: remove
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Garden pests: Hornworms'
+      retrieved: '2026-10-10'
+  first_action:
+    value: Pick them off or snip them with shears. Small ones respond to Bt (Bacillus thuringiensis) if there are many. After
+      the crop, turn the soil to destroy the pupae.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Garden pests: Hornworms'
+      retrieved: '2026-10-10'

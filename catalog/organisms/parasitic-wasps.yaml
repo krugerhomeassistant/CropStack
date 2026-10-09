@@ -1,0 +1,43 @@
+kind: organism
+slug: parasitic-wasps
+names:
+  en:
+  - Parasitic wasps
+organism_type: beneficial
+scientific_name: null
+description: Tiny wasps, too small to sting people, that lay eggs inside aphids, caterpillars and scale insects. The young
+  eat the host from inside.
+params:
+  identify:
+    value: 'You will rarely see the wasp. Look for its work: tan, crusty aphid ''mummies'' with a round exit hole, or wasp
+      grubs showing through a scale insect.'
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Pest Notes: Biological Control and Natural Enemies of Invertebrates'
+      retrieved: '2026-10-10'
+  look_when:
+    value: Look for mummies in aphid colonies. Once they appear, numbers often fall within one to two weeks.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Pest Notes: Biological Control and Natural Enemies of Invertebrates'
+      retrieved: '2026-10-10'
+  verdict:
+    value: keep
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Pest Notes: Biological Control and Natural Enemies of Invertebrates'
+      retrieved: '2026-10-10'
+  first_action:
+    value: Leave parasitised hosts in place and do not spray. Control ants and avoid broad-spectrum products.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Pest Notes: Biological Control and Natural Enemies of Invertebrates'
+      retrieved: '2026-10-10'

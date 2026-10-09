@@ -1,0 +1,45 @@
+kind: organism
+slug: lady-beetles
+names:
+  en:
+  - Ladybirds
+  - Lady beetles
+organism_type: beneficial
+scientific_name: Coccinellidae
+description: Both the spotted adults and the spiky dark larvae eat aphids, whiteflies, mealybugs, scale and mites. Learn to
+  recognise the larvae so you do not squash them.
+params:
+  identify:
+    value: Round, domed beetles, often red or orange with spots. The young (larvae) look very different from the adults and
+      also hunt aphids, so learn both shapes before you squash anything.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Pest Notes: Biological Control and Natural Enemies of Invertebrates'
+      retrieved: '2026-10-10'
+  look_when:
+    value: Seen wherever aphids are. A colony with ladybirds in it is usually best left alone.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Pest Notes: Biological Control and Natural Enemies of Invertebrates'
+      retrieved: '2026-10-10'
+  verdict:
+    value: keep
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Pest Notes: Biological Control and Natural Enemies of Invertebrates'
+      retrieved: '2026-10-10'
+  first_action:
+    value: Leave them. Skip broad-spectrum sprays, keep flowers growing for pollen and nectar, and control ants that guard
+      aphids.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Pest Notes: Biological Control and Natural Enemies of Invertebrates'
+      retrieved: '2026-10-10'

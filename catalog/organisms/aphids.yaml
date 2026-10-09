@@ -1,0 +1,55 @@
+kind: organism
+slug: aphids
+names:
+  en:
+  - Aphids
+organism_type: pest
+scientific_name: null
+description: Small soft insects that cluster on new growth and under leaves and suck sap. A few do little harm; a crowded
+  colony yellows and curls leaves and can spread plant viruses.
+params:
+  identify:
+    value: Soft, pear-shaped insects in green, yellow, brown, red or black, often with two small tubes at the back of the
+      body. They cluster on stems and leaf undersides and move slowly when touched. Sticky honeydew and ants climbing the
+      plant are clues.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Pest Notes: Aphids'
+      retrieved: '2026-10-10'
+  look_when:
+    value: Check twice a week while plants grow fast, leaf undersides first, and the windward edge of the garden. Worst in
+      warm, not hot, spring weather.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Pest Notes: Aphids'
+      retrieved: '2026-10-10'
+  verdict:
+    value: tolerate_below_threshold
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Pest Notes: Aphids'
+      retrieved: '2026-10-10'
+  first_action:
+    value: Spray them off with water early in the day, cut out badly infested shoots, and go easy on nitrogen. Leave the colony
+      alone if ladybirds, lacewing larvae or golden aphid 'mummies' are present.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Pest Notes: Aphids'
+      retrieved: '2026-10-10'
+  safety:
+    value: Broad-spectrum sprays kill the insects that eat aphids and often make the next outbreak worse. Soap or oil sprays
+      only on plants that are not stressed or in heat.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Pest Notes: Aphids'
+      retrieved: '2026-10-10'

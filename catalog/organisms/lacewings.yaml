@@ -1,0 +1,43 @@
+kind: organism
+slug: lacewings
+names:
+  en:
+  - Lacewings
+organism_type: beneficial
+scientific_name: Chrysopidae
+description: The larvae hunt many soft-bodied pests. The pale green adults feed on pollen and nectar, so flowers keep them
+  around.
+params:
+  identify:
+    value: Adults are slender, delicate and pale green with lacy wings and are often seen around lights. The larvae are small,
+      mobile hunters.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Pest Notes: Biological Control and Natural Enemies of Invertebrates'
+      retrieved: '2026-10-10'
+  look_when:
+    value: Present wherever there are aphids and other soft-bodied pests.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Pest Notes: Biological Control and Natural Enemies of Invertebrates'
+      retrieved: '2026-10-10'
+  verdict:
+    value: keep
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Pest Notes: Biological Control and Natural Enemies of Invertebrates'
+      retrieved: '2026-10-10'
+  first_action:
+    value: Leave them. Grow a mix of flowering plants through the season and avoid long-lasting sprays.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Pest Notes: Biological Control and Natural Enemies of Invertebrates'
+      retrieved: '2026-10-10'

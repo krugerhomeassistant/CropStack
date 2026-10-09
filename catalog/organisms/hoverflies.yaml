@@ -1,0 +1,43 @@
+kind: organism
+slug: hoverflies
+names:
+  en:
+  - Hoverflies
+  - Syrphid flies
+organism_type: beneficial
+scientific_name: Syrphidae
+description: Adults hover at flowers. The larvae eat aphids.
+params:
+  identify:
+    value: Adults hover around flowers. The larvae are legless and sit on aphid colonies, eating the aphids rather than the
+      plant, which tells them apart from leaf-chewing caterpillars.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Pest Notes: Biological Control and Natural Enemies of Invertebrates'
+      retrieved: '2026-10-10'
+  look_when:
+    value: Where aphids are feeding and flowers are open.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Pest Notes: Biological Control and Natural Enemies of Invertebrates'
+      retrieved: '2026-10-10'
+  verdict:
+    value: keep
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Pest Notes: Biological Control and Natural Enemies of Invertebrates'
+      retrieved: '2026-10-10'
+  first_action:
+    value: Leave them. Open flowers through the season feed the adults.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Pest Notes: Biological Control and Natural Enemies of Invertebrates'
+      retrieved: '2026-10-10'

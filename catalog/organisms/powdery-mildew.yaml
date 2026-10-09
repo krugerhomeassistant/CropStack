@@ -1,0 +1,54 @@
+kind: organism
+slug: powdery-mildew
+names:
+  en:
+  - Powdery mildew
+organism_type: disease
+scientific_name: null
+description: A white, dusty fungus on leaves. Unlike most leaf diseases it likes warm, dry weather and shade, and it hits
+  squash, cucumbers and melons hardest.
+params:
+  identify:
+    value: White powdery patches on both sides of leaves and on stems. Infected leaves yellow, brown and drop. Tomato, pepper
+      and onion show yellow patches with little visible powder.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Pest Notes: Powdery Mildew on Vegetables'
+      retrieved: '2026-10-10'
+  look_when:
+    value: Look from late spring on, when days are mild (about 15 to 27 degrees C) and plants are crowded or shaded. Heat
+      above about 32 degrees C and full sun slow it down.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Pest Notes: Powdery Mildew on Vegetables'
+      retrieved: '2026-10-10'
+  verdict:
+    value: remove
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Pest Notes: Powdery Mildew on Vegetables'
+      retrieved: '2026-10-10'
+  first_action:
+    value: Pick off infected leaves and bin them (do not compost). Give plants full sun, space and light feeding so the foliage
+      stays open. Sulfur or oil sprays work if used early.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Pest Notes: Powdery Mildew on Vegetables'
+      retrieved: '2026-10-10'
+  safety:
+    value: 'Do not spray sulfur near 32 degrees C or within two weeks of an oil spray. Sulfur works as a protectant: put it
+      on before the mildew shows.'
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Pest Notes: Powdery Mildew on Vegetables'
+      retrieved: '2026-10-10'

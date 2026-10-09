@@ -5,6 +5,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.23.0] - 2026-10-10
+
+### Added
+- **First organisms in the catalog:** aphids, tomato hornworm, slugs and snails, powdery mildew and whiteflies, plus the helpers that eat them (ladybirds, lacewings, hoverflies, parasitic wasps). Each says what to look for, when to look, whether to keep it, remove it or leave it below a threshold, and the gentlest first action. Text is written fresh; facts cite UC IPM as a facts-only source.
+
 ## [0.22.0] - 2026-10-09
 
 ### Added
