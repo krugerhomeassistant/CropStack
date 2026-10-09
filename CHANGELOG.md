@@ -5,6 +5,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-10-09
+
 ### Added
 - **Catalog foundation**: the format for crops, varieties, animal species and breeds, pests and beneficials, with a source and evidence level on every value, checked automatically (including licences). Content follows in the next releases.
 - **Your own values win**: each household can override any catalog value (for example how much cold its tomatoes survive), and reset it.
@@ -71,7 +73,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - CI: ruff lint and format, backend tests, frontend build, image publishing to GHCR and automatic GitHub releases on a version bump.
 - Project docs: README, wiki, architecture, roadmap, contributing guide, security policy and Code of Conduct.
 
-[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.6.0...HEAD
+[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.7.0...HEAD
+[0.7.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.5.1...v0.6.0
 [0.5.1]: https://github.com/krugerhomeassistant/CropStack/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.4.0...v0.5.0
