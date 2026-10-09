@@ -1,9 +1,13 @@
 # WIKI — CropStack
 
+> The full target behaviour is specified in [`SPEC.md`](SPEC.md). This wiki documents what is **built today**; where they differ, SPEC is the goal and this page is the current state.
+
 ## Purpose
 Self-hosted, Docker-based garden and homestead planner. It turns a location (coordinates or postal code) into local climate facts (hardiness zone, frost dates, soil temperature, daylight) and combines them with plant data to produce a rolling task calendar, from indoor sowing to harvest. Local-first: one SQLite file, optional integrations (weather, Home Assistant, AI) are opt-in.
 
 ## Users & principles
+- **Core rule (SPEC §2)**: no climate presets, modes or location rules. Every recommendation = a subject's requirement profile (crop variety, animal breed, task) × the site's environment data (distributions, observations, forecasts). The v0.3/v0.4 climate card still contains fixed heuristics (`HOT_C`, the 50 % frost-headline rule, rainfall-regime labels); they are scheduled for removal in PLAN Phase 4 (SPEC §18).
+- **Action first (SPEC P9)**: the home screen will be *Today* (what to plant, water, feed, harvest, check); analysis such as the climate explorer lives on its own page.
 - Home gardeners and homesteaders running their own server (NAS, Pi, home lab).
 - Works offline in the field (PWA); nothing leaves the server unless an integration is enabled.
 - Plans are explainable: every task shows the rule and dates it came from.

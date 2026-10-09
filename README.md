@@ -13,44 +13,52 @@
 ![React](https://img.shields.io/badge/React%2019-PWA-61DAFB?logo=react&logoColor=black)
 [![License: MIT](https://img.shields.io/badge/license-MIT-23301F)](LICENSE)
 
-[Features](#-features) · [Install](#-install) · [Configuration](#%EF%B8%8F-configuration) · [Status](#-project-status) · [Roadmap](#%EF%B8%8F-roadmap) · [Contributing](#-contributing)
+[Features](#-features) · [Spec](docs/SPEC.md) · [Plan](docs/PLAN.md) · [Install](#-install) · [Configuration](#%EF%B8%8F-configuration) · [Status](#-project-status) · [Contributing](#-contributing)
 
 </div>
 
 ---
 
-CropStack is an open-source, self-hosted web app that guides gardeners and homesteaders from the first spring seed trays to the full seasonal harvest. It pairs **hyper-local climate data** with a **botanical encyclopedia** so your sowing, transplanting and harvest calendar is worked out for *your* plot, and it runs on **your** hardware: a NAS, a Raspberry Pi or a home server. One container, one SQLite file, no telemetry.
+CropStack is an open-source, self-hosted homestead app that tells you **what to do today, and how**: what to plant, water, feed and harvest, which animals need what, and which bugs to keep or remove. It works it out from your own space, water, time and goals and from your location's real weather data, and it keeps re-deciding as conditions change. It runs on **your** hardware (a NAS, a Raspberry Pi, a home server): one container, one SQLite file, no telemetry.
 
 > [!NOTE]
-> CropStack is in early development. You can already set up your garden and see its local climate: zone, frost dates and monthly normals. Features below are the plan; [Project status](#-project-status) shows what works today.
+> CropStack is in early development. Today you can set up your garden and see its local climate. Everything below is specified in [docs/SPEC.md](docs/SPEC.md) and scheduled in [docs/PLAN.md](docs/PLAN.md); [Project status](#-project-status) shows what works now.
 
 ## ✨ Features
 
-### 📍 Location-aware planning
-- **Automatic climate setup** from a town, postal code or coordinates: hardiness zone, rainfall pattern (winter / summer rainfall), hot days, frost dates where frost matters, soil temperatures and daylight. Works worldwide, Southern Hemisphere included.
-- **Smart calendar & task engine**: a rolling schedule for indoor sowing, hardening off, transplanting, direct sowing, pruning, fertilising, pest checks and harvest windows.
-- **Adaptive weather**: heatwaves, surprise frosts and heavy rain shift watering and transplant tasks automatically (public weather APIs or your own station).
+### ✅ Today: what to do, how, and why
+- One screen with today's jobs grouped as **Protect · Plant · Water · Feed · Harvest · Animals · Check · Maintain**.
+- Every job says where, how much and how (depth, spacing, litres, dose), and *why now* in plain words.
+- Fits the time you have; the rest moves to the next good day. Works offline in the garden.
 
-### 📚 Botanical encyclopedia
-- Care sheets for heirloom and standard fruit, vegetable and herb varieties.
-- **When**: sowing depth, germination time, days to maturity, succession intervals.
-- **How**: soil pH, sun hours, watering, trellising and a companion-planting matrix.
-- **What**: amendments, expected yield per plant or square foot, pest and disease symptoms.
+### 🧭 Fully dynamic, anywhere
+- **No presets, no modes, no regions.** Each crop variety and animal breed has requirements (temperatures, water, daylight, humidity); your location has 30 years of weather, this season's actual weather and a 16-day forecast. Every date and warning comes from comparing the two.
+- Frost, heat, drought or humidity appear only when the data says they matter for **what you grow and keep**, and appear by themselves if your climate changes.
+- Climate data refreshes itself, weights recent years more and learns from your own sensors and observations (e.g. a frost pocket).
 
-### 🗺️ Garden mapper
-- Drag-and-drop beds, rows, containers and food-forest guilds.
-- Square-foot overlays with spacing warnings.
-- **Crop rotation tracking** that flags soil-depletion and soil-borne disease risks across seasons.
+### 🧑‍🌾 Guided setup and a plan that fits
+- A short interview: space, sun, water (tanks, restrictions), soil, household size and what you eat, how much you want to grow, time, budget, experience.
+- A **plan generator** proposes crops, quantities, successions and animals that fit your space, water and time, shows what is covered each month, and the single change that would help most.
 
-### 🏠 Home Assistant
-- Pull soil moisture, light and greenhouse sensors into CropStack (MQTT & REST).
-- Drive irrigation valves and greenhouse vents from CropStack's watering schedule.
-- Dashboard cards for upcoming tasks and harvest alerts.
+### 🗺️ Layout editor
+- Draw your property, beds, containers, structures, trees and buildings to scale; sun and shade hours computed from the sun path and obstacle heights.
+- Auto-layout from the plan, spacing and rotation checks, a date slider to see beds through the season, printable bed sheets.
 
-### 🤖 AI co-pilot (optional, local-first)
-- Photo diagnosis of pests, deficiencies and fungal infections with local vision models (Ollama) or a cloud API.
-- Localised questions: *"My tomatoes are yellowing in Zone 7b after three days of rain, what should I top-dress with?"*
-- Recipes for canning, freezing and dehydrating based on what's ripening now.
+### 🐔 Animals
+- Poultry, goats, sheep, cattle, pigs, rabbits and bees: daily care, feeding and water, egg/milk/honey records, breeding planner, heat-stress and cold alerts from the forecast, medication withdrawal periods.
+
+### 🐞 Keep or remove?
+- Weekly "what to look for" per crop based on weather and growth stage, with photos, look-alikes and least-harm actions; beneficial insects are flagged as keepers.
+
+### 📦 Harvest, pantry and seeds
+- Harvest log with yields, preservation and pantry stock with best-before reminders, seed vault with germination tests and reorder reminders.
+
+### 📈 Climate explorer (for the curious)
+- Charts of temperatures, soil temperature, rain, evaporation and daylight through the year, probabilities for any threshold you pick, trends and this season against normal. Kept off the home screen unless you want it there.
+
+### 🏠 Home Assistant & 🤖 AI co-pilot (optional)
+- Sensors in, irrigation and ventilation requests out, calendar and to-do entities.
+- Local (Ollama) or cloud AI that answers questions from your own garden data and identifies pests from photos.
 
 ## 🚀 Install
 
@@ -107,15 +115,22 @@ API docs are served at `/api/docs`; `/api/health` reports status and version.
 | Climate: zone, frost dates, season length, daylight, monthly normals | ✅ v0.3.0 |
 | Climate: rainfall pattern, rain and hot days per month | ✅ v0.4.0 |
 | Place search (town, address, postal code) | ✅ v0.3.0 |
-| Plant encyclopedia & task calendar | 🔜 next |
-| Garden mapper & rotation | ⏳ |
-| Weather adaptation, Home Assistant, AI co-pilot | ⏳ |
 
-The detailed roadmap lives in [docs/PLAN.md](docs/PLAN.md).
+The specification ([docs/SPEC.md](docs/SPEC.md)) describes the full product; the roadmap ([docs/PLAN.md](docs/PLAN.md)) breaks it into phases:
 
-## 🛣️ Roadmap
-
-Beyond the core: **pantry & preservation inventory** (canned, cellared, frozen and dried stock with expiry reminders), a **seed vault** (germination tests, year, source) and **livestock & orchard modules** (eggs, hives, pruning cycles, breeding schedules).
+| Phase | Delivers |
+|---|---|
+| 3 · Platform | Households & invites (shared with family), per-person start screen, migrations, translations, catalog framework |
+| 4 · Environment engine | Probabilistic, self-updating climate + forecast + sensor calibration; removes today's fixed rules |
+| 5 · Catalog | 60+ vegetables & herbs, 20 fruits, cover crops, 40 pests/beneficials/weeds, all sourced and editable |
+| 6 · Crop engine | Growth-stage model, planting windows, tasks for sowing, care, water, feeding and scouting |
+| 7 · Today & calendar | The Today screen, calendars, offline use, notifications |
+| 8 · Setup & planning | Guided interview, layout editor with sun mapping, plan generator |
+| 9 · Animals | Care, alerts, breeding, production |
+| 10 · Harvest & pantry | Harvests, preservation, seed vault, inputs |
+| 11 · Climate explorer | Charts and insights |
+| 12–13 · Integrations | Home Assistant, AI co-pilot |
+| 14 · v1.0 | Afrikaans, accessibility, performance, backups |
 
 ## 🧭 How it's built
 

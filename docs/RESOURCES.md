@@ -3,6 +3,8 @@
 ## Key paths
 | What | Path |
 |---|---|
+| Product spec | `docs/SPEC.md` |
+| Roadmap | `docs/PLAN.md` |
 | Version | `backend/app/__init__.py` (+ `frontend/package.json`) |
 | Settings/env | `backend/app/config.py`, `.env.example` |
 | DB engine | `backend/app/db.py` |
@@ -32,6 +34,10 @@
 - Sister project / reference implementation: https://github.com/krugerhomeassistant/Bloomery
 
 ## External docs
+- Open-Meteo forecast (16 d, past_days ≤ 92, hourly soil moisture/temperature, ET0, RH) https://open-meteo.com/en/docs · seasonal (ECMWF EC46/SEAS5, ≤ 7 months, 51 members) https://open-meteo.com/en/docs/seasonal-forecast-api · climate projections (CMIP6 HighResMIP, 10 km, bias-corrected to ERA5-Land) https://open-meteo.com/en/docs/climate-api
+- FAO ECOCROP (crop temperature/rain ranges; ~2,300 species; open access, reuse terms to verify) https://www.fao.org/land-water/resources/tools/databases/ecocrop/en · Wikipedia summary https://en.wikipedia.org/wiki/Ecocrop
+- Plant data APIs survey (Trefle CC BY 4.0, Permapeople CC BY-SA non-commercial, Perenual paid, OpenFarm shut down Apr 2025) https://github.com/PflanzenDex/PflanzenDex/issues/599 · OpenFarm archive (CC0 data) https://github.com/openfarmcc/OpenFarm · Growstuff https://github.com/Growstuff/growstuff
+- Livestock heat stress / THI background https://animalscience.tamu.edu/wp-content/uploads/sites/4/2023/08/heatstress3.pdf
 - ZimaOS updating `:latest` apps (community): https://shop.zimaspace.com/pages/zimaos-1-7-app-update-registry-vs-store
 - FastAPI https://fastapi.tiangolo.com · SQLModel https://sqlmodel.tiangolo.com · pydantic-settings https://docs.pydantic.dev/latest/concepts/pydantic_settings/
 - Vite https://vite.dev · Tailwind v4 https://tailwindcss.com/docs · vite-plugin-pwa https://vite-pwa-org.netlify.app · lucide https://lucide.dev

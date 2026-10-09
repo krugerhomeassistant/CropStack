@@ -10,7 +10,7 @@ Browser/PWA ──HTTP──▶ cropstack container :8000 (host :8430)
 ```
 Single image, multi-stage: `node:24-alpine` builds the SPA → `python:3.14-slim` runtime. `entrypoint.sh` starts as root, chowns `$CROPSTACK_DATA_DIR`, then drops to uid 10001 via `setpriv`. One uvicorn worker, access log off, `--proxy-headers` for reverse proxies.
 
-Planned optional services: weather API client (httpx), MQTT client for Home Assistant, Ollama (compose profile `ai`) or OpenAI-compatible API for the co-pilot. Postgres is an option only if multi-user scale demands it; SQLite is the default.
+Target architecture (engines, data model, API) is specified in `docs/SPEC.md` §13–15. Planned optional services: weather API client (httpx), MQTT client for Home Assistant, Ollama (compose profile `ai`) or OpenAI-compatible API for the co-pilot. Postgres is an option only if multi-user scale demands it; SQLite is the default.
 
 ## Stack (pinned 2026-10-09)
 | Layer | Tech |
@@ -62,6 +62,7 @@ Planned optional services: weather API client (httpx), MQTT client for Home Assi
 Planned: `plant` / `variety`, `bed`, `planting` (variety × bed × season), `task`. Adding columns to existing tables will need a migration tool (Alembic) before the first public release with data worth keeping.
 
 ## Invariants
+- **No presets (SPEC P1)**: no code branches on country, hemisphere, climate type or region; decisions come from requirement profiles × environment data. CI banned-pattern check planned (PLAN 4.4).
 - `/api/*` responses are `Cache-Control: no-store`; security headers on every response.
 - Domain logic (climate, scheduling, rotation) lives in pure, tested modules; routers stay thin; outside calls only in `external.py`.
 - Schema changes add tables, not columns, until a migration tool is in place.
