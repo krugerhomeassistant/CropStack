@@ -7,34 +7,34 @@ see [CONTRIBUTING-CATALOG.md](CONTRIBUTING-CATALOG.md).
 
 | Crop | Missing | Estimate only |
 |---|---|---|
-| asparagus | temperature.lethal_min | – |
-| beetroot | – | temperature.lethal_min |
+| asparagus | temperature.lethal_min | none |
+| beetroot | none | temperature.lethal_min |
 | broccoli | soil_temperature.germination | temperature.lethal_min |
-| cabbage | – | temperature.lethal_min |
-| carrot | – | temperature.lethal_min |
-| cauliflower | – | temperature.lethal_min |
+| cabbage | none | temperature.lethal_min |
+| carrot | none | temperature.lethal_min |
+| cauliflower | none | temperature.lethal_min |
 | celery | soil_temperature.germination | temperature.lethal_min |
-| cucumber | – | temperature.lethal_min |
-| eggplant | – | temperature.lethal_min |
+| cucumber | none | temperature.lethal_min |
+| eggplant | none | temperature.lethal_min |
 | garlic | soil_temperature.germination | temperature.lethal_min |
-| green-bean | – | temperature.lethal_min |
+| green-bean | none | temperature.lethal_min |
 | kale | soil_temperature.germination, water.kc_mid, water.root_depth | temperature.lethal_min |
-| lettuce | – | temperature.lethal_min |
-| melon | – | temperature.lethal_min |
-| onion | – | temperature.lethal_min |
+| lettuce | none | temperature.lethal_min |
+| melon | none | temperature.lethal_min |
+| onion | none | temperature.lethal_min |
 | parsley | water.kc_mid, water.root_depth | temperature.lethal_min |
-| parsnip | – | temperature.lethal_min |
-| pea | – | temperature.lethal_min |
+| parsnip | none | temperature.lethal_min |
+| pea | none | temperature.lethal_min |
 | potato | soil_temperature.germination | temperature.lethal_min |
-| pumpkin | – | temperature.lethal_min |
-| radish | – | temperature.lethal_min |
-| spinach | – | temperature.lethal_min |
-| sweet-corn | – | temperature.lethal_min |
-| sweet-pepper | – | temperature.lethal_min |
+| pumpkin | none | temperature.lethal_min |
+| radish | none | temperature.lethal_min |
+| spinach | none | temperature.lethal_min |
+| sweet-corn | none | temperature.lethal_min |
+| sweet-pepper | none | temperature.lethal_min |
 | swiss-chard | water.kc_mid, water.root_depth | temperature.lethal_min |
-| tomato | – | temperature.lethal_min |
-| turnip | – | temperature.lethal_min |
-| watermelon | – | temperature.lethal_min |
-| zucchini | – | temperature.lethal_min |
+| tomato | none | temperature.lethal_min |
+| turnip | none | temperature.lethal_min |
+| watermelon | none | temperature.lethal_min |
+| zucchini | none | temperature.lethal_min |
 
 Animals, varieties and organisms are not in the catalog yet; adding the first ones is also welcome.

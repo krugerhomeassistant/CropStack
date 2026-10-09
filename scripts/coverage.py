@@ -60,7 +60,7 @@ def render() -> str:
         "| Crop | Missing | Estimate only |",
         "|---|---|---|",
     ]
-    short = lambda fs: ", ".join(f.split(".", 1)[1] for f in fs) or "–"  # noqa: E731
+    short = lambda fs: ", ".join(f.split(".", 1)[1] for f in fs) or "none"  # noqa: E731
     lines += [f"| {slug} | {short(m)} | {short(e)} |" for slug, m, e in data]
     lines += ["", "Animals, varieties and organisms are not in the catalog yet; adding the first ones is also welcome.", ""]
     return "\n".join(lines)

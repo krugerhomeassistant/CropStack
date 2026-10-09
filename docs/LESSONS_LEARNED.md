@@ -79,3 +79,4 @@ CropStack-specific:
 62. **`rsync` is not installed in the sandbox** → restore a directory from git with `git checkout -- <dir>` when it has no other uncommitted changes.
 63. **A new test registered a username another test had already used (409)** → API tests share one database within the run → use a unique username per test.
 64. **E2E/screenshots against a leftover stub server showed old results or refused connections** → an earlier server still held the port → stop it by PID (`pgrep` + `kill`), wipe `/tmp/cs-e2e`, restart with `--port 8512`, and pass `CROPSTACK_URL` and `CHROMIUM_PATH=/opt/pw-browsers/chromium`.
+65. **CI lint failed on `scripts/coverage.py` though local ruff passed** → I ran ruff from `backend/`, which skips the repo-root `scripts/` → run `ruff check . && ruff format --check .` from the repo root, as CI does.
