@@ -28,7 +28,7 @@ Target architecture (engines, data model, API) is specified in `docs/SPEC.md` §
 | `db.py` | engine (WAL + FK pragmas), `init_db` (Alembic `upgrade head`, foreign keys off while migrating), `get_session` dependency |
 | `migrations/` | Alembic env + revisions (`0001_baseline` = v0.4.0 schema, creates only missing tables) |
 | `catalog.py` | catalog models (value + provenance, requirement profile, item kinds, sources), loader with licence gate, private pack, `effective()`, override checks |
-| `routers/catalog.py` | catalog status/reload, list, item (effective + sources), household overrides |
+| `routers/catalog.py` | catalog status/reload, source registry (`/sources`), list (names, scientific name, family), item (effective + sources), household overrides |
 | `models.py` | `User`, `Household`, `Membership` (PK user_id → one household per user), `Invite` (hashed token), `Site` (one per household), `ClimateCache` |
 | `deps.py` | `SessionDep`, `UserDep`, `MemberDep`, `OwnerDep`, `EditorDep` (`require_role`), argon2 `hash_pw` / `verify_pw` |
 | `routers/household.py` | household name, settings (data-source switches), data-sources list, members (role, remove), invites (create, list, revoke), public invite info |
@@ -53,7 +53,7 @@ Target architecture (engines, data model, API) is specified in `docs/SPEC.md` §
 | `src/units.ts` | SI → metric/imperial display helpers |
 | `src/components/Layout.tsx` | page frame: bottom nav < 1024 px (`--nav-h` incl. safe area), left rail ≥ 1024 px; content max 960 px |
 | `src/components/ui/index.tsx` | UI kit (DESIGN.md): Button, IconButton, PageHeader, Section, Field, RadioCards, Switch, Badge, ErrorMessage, ErrorState, EmptyState, Skeleton |
-| `src/pages/` | `Auth` (incl. invite), `GardenSetup`, `Today`, `Garden`, `More`, `Climate`, `Household`, `Settings` |
+| `src/pages/` | `Auth` (incl. invite), `GardenSetup`, `Today`, `Garden`, `More`, `Crops`, `Crop` (detail with numbered citations), `CropData` (credits), `Climate`, `Household`, `Settings` |
 | `src/components/` | `PlaceSearch` (not a form: nested in the garden form), `ClimateCard`, `WeatherCard`, `DataSources` |
 | `src/index.css` | Tailwind `@theme` tokens (canvas, surface, sunken, line, ink, muted, leaf, on-leaf, marigold, water, feed, harvest, check, animals, danger; radii; fonts), dark values via `prefers-color-scheme`, primitives (`card`, `field`, `input`, `btn*`, `switch`, `radio`) |
 | `scripts/screenshots.mjs` | every page × light/dark × phone/desktop → `frontend/screenshots/` (git-ignored) |
@@ -90,3 +90,13 @@ Planned: `plant` / `variety`, `bed`, `planting` (variety × bed × season), `tas
 - Every schema change is an Alembic revision; CI checks models and migrations match.
 - Container never runs the app as root.
 - Versions in `backend/app/__init__.py` and `frontend/package.json` must match (CI enforces).
+
+## Catalog ingestion (`scripts/ingest/`, maintainers only)
+| File | Role |
+|---|---|
+| `__main__.py` | CLI `python scripts/ingest fetch|merge|check`; source URLs (pinned where possible) |
+| `fetch.py` | httpx client, robots.txt (stdlib `urllib.robotparser`, RFC 9309 5xx = disallow), per-host throttle, `.ingest-cache/<sha256>`, `snapshots.lock` |
+| `extract.py` | pure extractors: pyfao56 tables (FAO-56 11/12/22), Harrington HTML tables, OpenFarm rescue JSON, GBIF match |
+| `merge.py` | records → cited `Value` dicts; merge rule (empty or same-source fields only); YAML dump (flow style for small flat maps, no anchors) |
+| `crosswalk.yaml` | crop slug → each source's row name |
+

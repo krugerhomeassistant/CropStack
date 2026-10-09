@@ -1,5 +1,15 @@
 import { NavLink, Outlet } from 'react-router'
-import { CalendarCheck, ChartLine, LogOut, Menu, Settings, Sprout, Users, type LucideIcon } from 'lucide-react'
+import {
+  BookOpen,
+  CalendarCheck,
+  ChartLine,
+  LogOut,
+  Menu,
+  Settings,
+  Sprout,
+  Users,
+  type LucideIcon,
+} from 'lucide-react'
 import { t } from '../i18n'
 import { useApp } from '../state'
 
@@ -12,6 +22,7 @@ const MAIN: Dest[] = [
 ]
 /** Behind "More" on a phone; listed in full in the desktop rail. */
 export const MORE: Dest[] = [
+  { to: '/crops', label: 'Crops', icon: BookOpen },
   { to: '/climate', label: 'Climate', icon: ChartLine },
   { to: '/household', label: 'Household', icon: Users },
   { to: '/settings', label: 'Settings', icon: Settings },
@@ -36,25 +47,25 @@ function RailLink({ to, label, icon: Icon }: Dest) {
 export default function Layout() {
   const { logout } = useApp()
   return (
-    <>
-      <nav
-        aria-label={t('Main')}
-        className="fixed inset-y-0 left-0 hidden w-60 flex-col gap-1 border-r border-line bg-surface px-4 py-6 lg:flex"
-      >
-        <p className="mb-6 px-3 font-display text-2xl font-extrabold text-leaf">CropStack</p>
-        {[...MAIN, ...MORE].map((d) => (
-          <RailLink key={d.to} {...d} />
-        ))}
-        <button
-          type="button"
-          onClick={logout}
-          className="mt-auto flex min-h-11 items-center gap-3 rounded-[var(--radius-row)] px-3 font-semibold text-muted hover:bg-sunken hover:text-ink"
-        >
-          <LogOut className="size-5" aria-hidden />
-          {t('Log out')}
-        </button>
-        <p className="px-3 pt-2 text-xs text-muted">CropStack v{__APP_VERSION__}</p>
-      </nav>
+    <div className="relative">
+      {/* The column spans the whole document (so the surface runs to the bottom of long pages); the nav sticks. */}
+      <div className="absolute inset-y-0 left-0 hidden w-60 border-r border-line bg-surface lg:block">
+        <nav aria-label={t('Main')} className="sticky top-0 flex h-dvh flex-col gap-1 px-4 py-6">
+          <p className="mb-6 px-3 font-display text-2xl font-extrabold text-leaf">CropStack</p>
+          {[...MAIN, ...MORE].map((d) => (
+            <RailLink key={d.to} {...d} />
+          ))}
+          <button
+            type="button"
+            onClick={logout}
+            className="mt-auto flex min-h-11 items-center gap-3 rounded-[var(--radius-row)] px-3 font-semibold text-muted hover:bg-sunken hover:text-ink"
+          >
+            <LogOut className="size-5" aria-hidden />
+            {t('Log out')}
+          </button>
+          <p className="px-3 pt-2 text-xs text-muted">CropStack v{__APP_VERSION__}</p>
+        </nav>
+      </div>
 
       <main className="mx-auto flex min-h-dvh max-w-2xl flex-col gap-6 px-4 pt-8 pb-[calc(var(--nav-h)+1.5rem)] sm:px-8 lg:ml-60 lg:max-w-none lg:pb-12">
         <div className="mx-auto flex w-full max-w-[60rem] flex-col gap-6">
@@ -84,6 +95,6 @@ export default function Layout() {
           ))}
         </ul>
       </nav>
-    </>
+    </div>
   )
 }

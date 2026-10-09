@@ -1,0 +1,233 @@
+kind: crop
+slug: potato
+names:
+  en:
+  - Potato
+  af:
+  - Aartappel
+scientific_name: Solanum tuberosum
+family: Solanaceae
+rotation_group: nightshades
+life_cycle: annual
+description: Grown from seed tubers. Tubers exposed to light turn green and should not be eaten, so plants are earthed up
+  as they grow.
+requirements:
+  water:
+    kc_initial:
+      value: 0.5
+      unit: '1'
+      evidence: government
+      confidence: high
+      sources:
+      - {ref: fao-56, locator: Table 12 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+    kc_mid:
+      value: 1.15
+      unit: '1'
+      evidence: government
+      confidence: high
+      sources:
+      - {ref: fao-56, locator: Table 12 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+    kc_late:
+      value: 0.75
+      unit: '1'
+      evidence: government
+      confidence: high
+      sources:
+      - {ref: fao-56, locator: Table 12 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+    root_depth:
+      value: {min: 0.4, max: 0.6}
+      unit: m
+      evidence: government
+      confidence: high
+      sources:
+      - {ref: fao-56, locator: Table 22 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+    depletion_fraction:
+      value: 0.35
+      unit: '1'
+      evidence: government
+      confidence: high
+      sources:
+      - {ref: fao-56, locator: Table 22 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+params:
+  height_max:
+    value: 0.6
+    unit: m
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-56, locator: Table 12 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  stage_days_initial:
+  - value: 25.0
+    unit: d
+    qualifiers: {region: semiarid climate, planting: jan nov}
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-56, locator: Table 11 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  - value: 25.0
+    unit: d
+    qualifiers: {region: continental climate, planting: may}
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-56, locator: Table 11 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  - value: 30.0
+    unit: d
+    qualifiers: {region: europe, planting: apr}
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-56, locator: Table 11 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  - value: 45.0
+    unit: d
+    qualifiers: {region: idaho usa, planting: apr may}
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-56, locator: Table 11 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  - value: 30.0
+    unit: d
+    qualifiers: {region: california desert usa, planting: dec}
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-56, locator: Table 11 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  stage_days_development:
+  - value: 30.0
+    unit: d
+    qualifiers: {region: semiarid climate, planting: jan nov}
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-56, locator: Table 11 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  - value: 30.0
+    unit: d
+    qualifiers: {region: continental climate, planting: may}
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-56, locator: Table 11 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  - value: 35.0
+    unit: d
+    qualifiers: {region: europe, planting: apr}
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-56, locator: Table 11 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  - value: 30.0
+    unit: d
+    qualifiers: {region: idaho usa, planting: apr may}
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-56, locator: Table 11 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  - value: 35.0
+    unit: d
+    qualifiers: {region: california desert usa, planting: dec}
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-56, locator: Table 11 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  stage_days_mid:
+  - value: 40.0
+    unit: d
+    qualifiers: {region: semiarid climate, planting: jan nov}
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-56, locator: Table 11 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  - value: 45.0
+    unit: d
+    qualifiers: {region: continental climate, planting: may}
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-56, locator: Table 11 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  - value: 50.0
+    unit: d
+    qualifiers: {region: europe, planting: apr}
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-56, locator: Table 11 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  - value: 70.0
+    unit: d
+    qualifiers: {region: idaho usa, planting: apr may}
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-56, locator: Table 11 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  - value: 50.0
+    unit: d
+    qualifiers: {region: california desert usa, planting: dec}
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-56, locator: Table 11 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  stage_days_late:
+  - value: 30.0
+    unit: d
+    qualifiers: {region: semiarid climate, planting: jan nov}
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-56, locator: Table 11 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  - value: 30.0
+    unit: d
+    qualifiers: {region: continental climate, planting: may}
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-56, locator: Table 11 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  - value: 30.0
+    unit: d
+    qualifiers: {region: europe, planting: apr}
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-56, locator: Table 11 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  - value: 20.0
+    unit: d
+    qualifiers: {region: idaho usa, planting: apr may}
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-56, locator: Table 11 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  - value: 25.0
+    unit: d
+    qualifiers: {region: california desert usa, planting: dec}
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-56, locator: Table 11 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  row_spacing:
+    value: 90
+    unit: cm
+    evidence: grower-reported
+    confidence: low
+    sources:
+    - {ref: openfarm-rescue, locator: 'https://web.archive.org/web/20250317232424/https://openfarm.cc/en/crops/potato', retrieved: 2026-10-09,
+      snapshot: 'sha256:203050c7a2be7ab1c4c165ee4edb42aaebcb13d183bd53540a2bf3482363caec'}
+  plant_spread:
+    value: 30
+    unit: cm
+    evidence: grower-reported
+    confidence: low
+    sources:
+    - {ref: openfarm-rescue, locator: 'https://web.archive.org/web/20250317232424/https://openfarm.cc/en/crops/potato', retrieved: 2026-10-09,
+      snapshot: 'sha256:203050c7a2be7ab1c4c165ee4edb42aaebcb13d183bd53540a2bf3482363caec'}
+  height:
+    value: 60
+    unit: cm
+    evidence: grower-reported
+    confidence: low
+    sources:
+    - {ref: openfarm-rescue, locator: 'https://web.archive.org/web/20250317232424/https://openfarm.cc/en/crops/potato', retrieved: 2026-10-09,
+      snapshot: 'sha256:203050c7a2be7ab1c4c165ee4edb42aaebcb13d183bd53540a2bf3482363caec'}
+  sun:
+    value: full_sun
+    evidence: grower-reported
+    confidence: low
+    sources:
+    - {ref: openfarm-rescue, locator: 'https://web.archive.org/web/20250317232424/https://openfarm.cc/en/crops/potato', retrieved: 2026-10-09,
+      snapshot: 'sha256:203050c7a2be7ab1c4c165ee4edb42aaebcb13d183bd53540a2bf3482363caec'}

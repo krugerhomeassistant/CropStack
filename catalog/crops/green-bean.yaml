@@ -1,0 +1,192 @@
+kind: crop
+slug: green-bean
+names:
+  en:
+  - Green bean
+  af:
+  - Groenboontjie
+scientific_name: Phaseolus vulgaris
+family: Fabaceae
+rotation_group: legumes
+life_cycle: annual
+description: Bush and climbing beans picked as young pods. Seed rots in cold, wet soil, so sowing waits for warm soil.
+requirements:
+  water:
+    kc_initial:
+      value: 0.5
+      unit: '1'
+      evidence: government
+      confidence: high
+      sources:
+      - {ref: fao-56, locator: Table 12 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+    kc_mid:
+      value: 1.05
+      unit: '1'
+      evidence: government
+      confidence: high
+      sources:
+      - {ref: fao-56, locator: Table 12 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+    kc_late:
+      value: 0.9
+      unit: '1'
+      evidence: government
+      confidence: high
+      sources:
+      - {ref: fao-56, locator: Table 12 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+    root_depth:
+      value: {min: 0.5, max: 0.7}
+      unit: m
+      evidence: government
+      confidence: high
+      sources:
+      - {ref: fao-56, locator: Table 22 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+    depletion_fraction:
+      value: 0.45
+      unit: '1'
+      evidence: government
+      confidence: high
+      sources:
+      - {ref: fao-56, locator: Table 22 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  soil_temperature:
+    germination:
+      value: {min: 15.6, opt: 26.7, max: 35.0}
+      unit: Cel
+      evidence: extension-service
+      confidence: medium
+      sources:
+      - {ref: harrington-osu, locator: Table 1 (°F converted to °C), retrieved: 2026-10-09, snapshot: 'sha256:8c233471e724b47faafd3446a2eb623eced88ab1b7611163f784bf2d2192e140'}
+params:
+  height_max:
+    value: 0.4
+    unit: m
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-56, locator: Table 12 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  stage_days_initial:
+  - value: 20.0
+    unit: d
+    qualifiers: {region: california mediterranean, planting: feb mar}
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-56, locator: Table 11 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  - value: 15.0
+    unit: d
+    qualifiers: {region: california egypt lebanon, planting: aug sep}
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-56, locator: Table 11 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  stage_days_development:
+  - value: 30.0
+    unit: d
+    qualifiers: {region: california mediterranean, planting: feb mar}
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-56, locator: Table 11 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  - value: 25.0
+    unit: d
+    qualifiers: {region: california egypt lebanon, planting: aug sep}
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-56, locator: Table 11 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  stage_days_mid:
+  - value: 30.0
+    unit: d
+    qualifiers: {region: california mediterranean, planting: feb mar}
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-56, locator: Table 11 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  - value: 25.0
+    unit: d
+    qualifiers: {region: california egypt lebanon, planting: aug sep}
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-56, locator: Table 11 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  stage_days_late:
+  - value: 10.0
+    unit: d
+    qualifiers: {region: california mediterranean, planting: feb mar}
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-56, locator: Table 11 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  - value: 10.0
+    unit: d
+    qualifiers: {region: california egypt lebanon, planting: aug sep}
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-56, locator: Table 11 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  days_to_emergence:
+  - value: 16.0
+    unit: d
+    qualifiers: {soil_temp_c: 15.0}
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-09, snapshot: 'sha256:8c233471e724b47faafd3446a2eb623eced88ab1b7611163f784bf2d2192e140'}
+  - value: 11.0
+    unit: d
+    qualifiers: {soil_temp_c: 20.0}
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-09, snapshot: 'sha256:8c233471e724b47faafd3446a2eb623eced88ab1b7611163f784bf2d2192e140'}
+  - value: 8.0
+    unit: d
+    qualifiers: {soil_temp_c: 25.0}
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-09, snapshot: 'sha256:8c233471e724b47faafd3446a2eb623eced88ab1b7611163f784bf2d2192e140'}
+  - value: 6.0
+    unit: d
+    qualifiers: {soil_temp_c: 30.0}
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-09, snapshot: 'sha256:8c233471e724b47faafd3446a2eb623eced88ab1b7611163f784bf2d2192e140'}
+  - value: 6.0
+    unit: d
+    qualifiers: {soil_temp_c: 35.0}
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-09, snapshot: 'sha256:8c233471e724b47faafd3446a2eb623eced88ab1b7611163f784bf2d2192e140'}
+  row_spacing:
+    value: 80
+    unit: cm
+    evidence: grower-reported
+    confidence: low
+    sources:
+    - {ref: openfarm-rescue, locator: 'https://web.archive.org/web/20250114064704/https://openfarm.cc/en/crops/green-bean',
+      retrieved: 2026-10-09, snapshot: 'sha256:203050c7a2be7ab1c4c165ee4edb42aaebcb13d183bd53540a2bf3482363caec'}
+  plant_spread:
+    value: 40
+    unit: cm
+    evidence: grower-reported
+    confidence: low
+    sources:
+    - {ref: openfarm-rescue, locator: 'https://web.archive.org/web/20250114064704/https://openfarm.cc/en/crops/green-bean',
+      retrieved: 2026-10-09, snapshot: 'sha256:203050c7a2be7ab1c4c165ee4edb42aaebcb13d183bd53540a2bf3482363caec'}
+  height:
+    value: 250
+    unit: cm
+    evidence: grower-reported
+    confidence: low
+    sources:
+    - {ref: openfarm-rescue, locator: 'https://web.archive.org/web/20250114064704/https://openfarm.cc/en/crops/green-bean',
+      retrieved: 2026-10-09, snapshot: 'sha256:203050c7a2be7ab1c4c165ee4edb42aaebcb13d183bd53540a2bf3482363caec'}
+  sun:
+    value: partial_sun
+    evidence: grower-reported
+    confidence: low
+    sources:
+    - {ref: openfarm-rescue, locator: 'https://web.archive.org/web/20250114064704/https://openfarm.cc/en/crops/green-bean',
+      retrieved: 2026-10-09, snapshot: 'sha256:203050c7a2be7ab1c4c165ee4edb42aaebcb13d183bd53540a2bf3482363caec'}

@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router'
-import { ChartLine, ChevronRight, LogOut, Settings as SettingsIcon, Users } from 'lucide-react'
+import { BookOpen, ChartLine, ChevronRight, LogOut, Settings as SettingsIcon, Users } from 'lucide-react'
 import { t } from '../i18n'
 import { useApp } from '../state'
 import { PageHeader } from '../components/ui'
 
 const LINKS = [
+  { to: '/crops', label: 'Crops', hint: 'Sowing, water and spacing for each crop, with sources', icon: BookOpen },
   { to: '/climate', label: 'Climate', hint: 'Temperatures, rain, frost and daylight through the year', icon: ChartLine },
   { to: '/household', label: 'Household', hint: 'People, roles and invites', icon: Users },
   { to: '/settings', label: 'Settings', hint: 'Start screen, units and data sources', icon: SettingsIcon },

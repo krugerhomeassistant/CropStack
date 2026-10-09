@@ -1,9 +1,16 @@
 # ACTIVE CONTEXT
 
-**Date:** 2026-10-09 · **Version:** 0.9.0
+**Date:** 2026-10-09 · **Version:** 0.10.0
 
 ## Current subtask
-Carry-over from v0.9.0 closed (committed E2E + CI screenshots, dark radio). Next: Phase 5 catalog content.
+Releasing v0.10.0 (Phase 5a: 29 crops, ingestion pipeline, Crops screens). Then continue Phase 5.
+
+## Open to-dos (owner: "make note of missed/still to dos")
+- UI kit: Sheet/Dialog, Tabs, Toast, Select. Add with the first screen that needs them (PLAN 6.9).
+- Climate page: charts instead of the summary card (PLAN 11; the owner cares about it, so consider pulling it forward).
+- Catalog (PLAN 5): fetchers v2 (ECOCROP, DSSAT, Wikidata Afrikaans, WFO, USDA PLANTS, EPPO, Wikipedia companions); monthly CI job opening a PR with the YAML diff; prose-similarity CI check; herbs and the rest of the 60 crops; varieties (≥ 2 per crop); 20 fruit species; 5 cover crops; 40 organisms; override editor and custom crops.
+- From the owner: real climate and forecast values from the ZimaOS install (first real Open-Meteo call; never succeeded from the sandbox).
+- Waits for Home Assistant work: 4.3 sensors and observations.
 
 ## Last execution results
 - All pages and components moved to the UI kit and tokens; desktop rail ≥ 1024 px; Today two columns on desktop; designed empty states for Today jobs and Garden beds. `npm run screenshots` reviewed (24 images, light/dark × phone/desktop). Build and type check clean.

@@ -51,6 +51,19 @@ try {
   await owner.getByText(/^Zone /).waitFor()
   step('climate card')
 
+  // Crops: search, open one, its values carry numbered sources
+  await nav(owner, 'More')
+  await owner.getByRole('link', { name: /Crops/ }).click()
+  await owner.getByLabel('Search crops').fill('tamatie')
+  await owner.getByRole('link', { name: /Tomato/ }).click()
+  await owner.getByRole('heading', { name: 'Sowing' }).waitFor()
+  await owner.getByRole('link', { name: 'Source 1' }).first().waitFor()
+  assert.ok(await owner.getByRole('heading', { name: 'Sources' }).isVisible())
+  await owner.getByLabel('Back').click()
+  await owner.getByRole('link', { name: 'Where the crop data comes from' }).click()
+  await owner.getByRole('heading', { name: 'Included in CropStack' }).waitFor()
+  step('crop catalog: search, detail with sources, credits')
+
   // Settings: start screen and units persist after a reload
   await owner.goto(`${base}/settings`)
   await owner.getByLabel(/Imperial/).check()

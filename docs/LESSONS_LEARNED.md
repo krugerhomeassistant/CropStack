@@ -61,4 +61,9 @@ CropStack-specific:
 51. **README and wiki drifted far behind the app (user, 2026-10-09)** → they were only patched per feature, never reread → review both on every release (in the release checklist, WIKI → Release process).
 52. **`pgrep -f "python /tmp/…/fake" | xargs kill` killed the Bash tool's shell again (exit 144)** → the pattern also matches the shell running that very command line → start background servers with `nohup … & echo $! > server.pid` and stop them with `kill $(cat server.pid)`; never match by command line from the same shell.
 53. **E2E `getByText('Marie')` matched the name, `@marie` and the sr-only "Role for Marie" label** → text locators are substring matches across visible and screen-reader text → wait on a unique string (`@marie`) or use `{ exact: true }`.
+54. **A test request to the Wikidata API went out with the owner's email in the User-Agent** → copied the "contact in UA" convention without thinking → User-Agents carry only the project name and repo URL (`fetch.USER_AGENT`); never put the owner's email or other personal data in requests to outside services.
+55. **The OSU Harrington page has a typo in an optimum range ("45–5")** → hand-made tables contain errors → extractors validate ordering and skip bad rows; only min/opt/max (which were consistent) are imported.
+56. **GBIF reports *Pisum sativum* as a SYNONYM** → GBIF follows the move to *Lathyrus oleraceus* → keep the name gardeners use and record the expected status in `crosswalk.yaml` (`gbif_status`), so `check` stays green but the exception is visible.
+57. **YAML dump wrote `&id001` anchors for repeated dates** → PyYAML aliases identical objects → custom dumper with `ignore_aliases()`.
+58. **Network from the sandbox, 2026-10-09**: raw.githubusercontent, GBIF API, OSU, CRAN and Zenodo reachable; Wikidata API reachable with an identifying UA (429 without); Wikidata SPARQL endpoint blocked.
 

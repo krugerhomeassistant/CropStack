@@ -1,0 +1,113 @@
+# Raw source snapshots used by the catalog (scripts/ingest). Files live in .ingest-cache/<sha256>.
+gbif:Allium cepa:
+  retrieved: 2026-10-09
+  sha256: fd55a6c85c80dd2ac7b73651de9861382931d4b9cf83c8fd84bb8c0888db5535
+  url: https://api.gbif.org/v1/species/match?name=Allium%20cepa&kingdom=Plantae&strict=true
+gbif:Allium sativum:
+  retrieved: 2026-10-09
+  sha256: 061d2147f93b90b47d9634efed4ac7d3111fb7a82214d006a525e8fa90921777
+  url: https://api.gbif.org/v1/species/match?name=Allium%20sativum&kingdom=Plantae&strict=true
+gbif:Apium graveolens:
+  retrieved: 2026-10-09
+  sha256: af745d38a8e186cdb663e8ac7b96fa18357bdc2c3f7b6444eb583b064a439823
+  url: https://api.gbif.org/v1/species/match?name=Apium%20graveolens&kingdom=Plantae&strict=true
+gbif:Asparagus officinalis:
+  retrieved: 2026-10-09
+  sha256: cbe39764ffa1ce67b3fe5051d7253f170a9de58f28ae39c77a9d0b15c07ac54a
+  url: https://api.gbif.org/v1/species/match?name=Asparagus%20officinalis&kingdom=Plantae&strict=true
+gbif:Beta vulgaris:
+  retrieved: 2026-10-09
+  sha256: 99d773c81afc5f0d14ab1e8c32c60b0d4a3321d46120ac0ea81ba66bf60212cf
+  url: https://api.gbif.org/v1/species/match?name=Beta%20vulgaris&kingdom=Plantae&strict=true
+gbif:Brassica oleracea:
+  retrieved: 2026-10-09
+  sha256: de30b0a77b52040311f4554a31cb011a0fa9ccd2e1d5212d7f9617e9d5739d28
+  url: https://api.gbif.org/v1/species/match?name=Brassica%20oleracea&kingdom=Plantae&strict=true
+gbif:Brassica rapa:
+  retrieved: 2026-10-09
+  sha256: fcecffff77f40b92e604d9b96aa46f1c0bf4981f332ef281f637fbc57e738a76
+  url: https://api.gbif.org/v1/species/match?name=Brassica%20rapa&kingdom=Plantae&strict=true
+gbif:Capsicum annuum:
+  retrieved: 2026-10-09
+  sha256: 7f9cbe961dd46af16b29d299e40922301c13f5e8d19d92161be02f9a2873664c
+  url: https://api.gbif.org/v1/species/match?name=Capsicum%20annuum&kingdom=Plantae&strict=true
+gbif:Citrullus lanatus:
+  retrieved: 2026-10-09
+  sha256: 3b0222f54d361766f86b17f214e9a05acf1c8452587d4ee261293ab770508a13
+  url: https://api.gbif.org/v1/species/match?name=Citrullus%20lanatus&kingdom=Plantae&strict=true
+gbif:Cucumis melo:
+  retrieved: 2026-10-09
+  sha256: 3193ae44f089b31904b110cfaf6b09ba8878603039e74e652b3fa75afa0cebaf
+  url: https://api.gbif.org/v1/species/match?name=Cucumis%20melo&kingdom=Plantae&strict=true
+gbif:Cucumis sativus:
+  retrieved: 2026-10-09
+  sha256: 7780d1872aa6efca94ab4497d4566cbd09d2d8725cc46af35c10ca7f5c5542c1
+  url: https://api.gbif.org/v1/species/match?name=Cucumis%20sativus&kingdom=Plantae&strict=true
+gbif:Cucurbita maxima:
+  retrieved: 2026-10-09
+  sha256: f4651062998e8de84b3d8543ef27cee484c171f59f951c0c21bf16da8eb48b81
+  url: https://api.gbif.org/v1/species/match?name=Cucurbita%20maxima&kingdom=Plantae&strict=true
+gbif:Cucurbita pepo:
+  retrieved: 2026-10-09
+  sha256: 9029b93f48272a2c76cfd97616ca3a07d8ed205bddf687b16b86472d5c50876d
+  url: https://api.gbif.org/v1/species/match?name=Cucurbita%20pepo&kingdom=Plantae&strict=true
+gbif:Daucus carota:
+  retrieved: 2026-10-09
+  sha256: d56d33ce4c45d34c5df07c7a1020b4c45a5f3bf7c93581621fdd56b45f28575e
+  url: https://api.gbif.org/v1/species/match?name=Daucus%20carota&kingdom=Plantae&strict=true
+gbif:Lactuca sativa:
+  retrieved: 2026-10-09
+  sha256: 2f6f22a79b8188f29411408c2b2a0008b01728011cf6569489f0ae0c2ffafe1f
+  url: https://api.gbif.org/v1/species/match?name=Lactuca%20sativa&kingdom=Plantae&strict=true
+gbif:Pastinaca sativa:
+  retrieved: 2026-10-09
+  sha256: cd0eebd521a60cff1f1b435467821aa00425e0765e34bde80b0bb064e7e45d72
+  url: https://api.gbif.org/v1/species/match?name=Pastinaca%20sativa&kingdom=Plantae&strict=true
+gbif:Petroselinum crispum:
+  retrieved: 2026-10-09
+  sha256: f090d07bd79a2ad418c31eefe445647a2676c01367c091d84cc8ff9faefdc1fb
+  url: https://api.gbif.org/v1/species/match?name=Petroselinum%20crispum&kingdom=Plantae&strict=true
+gbif:Phaseolus vulgaris:
+  retrieved: 2026-10-09
+  sha256: 2f5b3e47027d847f97d8b0c59bed465c6adef36a0d9fde0c5eee4276c8ff115a
+  url: https://api.gbif.org/v1/species/match?name=Phaseolus%20vulgaris&kingdom=Plantae&strict=true
+gbif:Pisum sativum:
+  retrieved: 2026-10-09
+  sha256: 6ececa10003ca033831189ea535e51055bdb4fd375f9f593220f11d7cabedcb2
+  url: https://api.gbif.org/v1/species/match?name=Pisum%20sativum&kingdom=Plantae&strict=true
+gbif:Raphanus sativus:
+  retrieved: 2026-10-09
+  sha256: 4147c15d073f419442c09683dbbd1415f2b006aff24dd9ad029b7bf13f864efa
+  url: https://api.gbif.org/v1/species/match?name=Raphanus%20sativus&kingdom=Plantae&strict=true
+gbif:Solanum lycopersicum:
+  retrieved: 2026-10-09
+  sha256: b47a422cad33de13e799005afd57eadadd659dc2bd3da182243293fedc3f4723
+  url: https://api.gbif.org/v1/species/match?name=Solanum%20lycopersicum&kingdom=Plantae&strict=true
+gbif:Solanum melongena:
+  retrieved: 2026-10-09
+  sha256: 2bd2332f94f5a2a6df0358287698ef22edb47c01fea80452027686638fce7f94
+  url: https://api.gbif.org/v1/species/match?name=Solanum%20melongena&kingdom=Plantae&strict=true
+gbif:Solanum tuberosum:
+  retrieved: 2026-10-09
+  sha256: 286a6228fe2659de4d7e41299053da7472f4b067c8bda484ae282faee1cc8ced
+  url: https://api.gbif.org/v1/species/match?name=Solanum%20tuberosum&kingdom=Plantae&strict=true
+gbif:Spinacia oleracea:
+  retrieved: 2026-10-09
+  sha256: 49c25e2123b63443432d8fe200e41e6ffe78fce9372c257649ac85469b64f85b
+  url: https://api.gbif.org/v1/species/match?name=Spinacia%20oleracea&kingdom=Plantae&strict=true
+gbif:Zea mays:
+  retrieved: 2026-10-09
+  sha256: 5fa8981e9cbde70053ecaecf040baca60137ad15d868c46587de4b33247d989a
+  url: https://api.gbif.org/v1/species/match?name=Zea%20mays&kingdom=Plantae&strict=true
+harrington-osu:
+  retrieved: 2026-10-09
+  sha256: 8c233471e724b47faafd3446a2eb623eced88ab1b7611163f784bf2d2192e140
+  url: https://extension.oregonstate.edu/es/catalog/soil-temperature-conditions-vegetable-seed-germination
+openfarm-rescue:
+  retrieved: 2026-10-09
+  sha256: 203050c7a2be7ab1c4c165ee4edb42aaebcb13d183bd53540a2bf3482363caec
+  url: https://raw.githubusercontent.com/thefullnacho/openfarm-crops-rescue/754cfd75da007c17a628eca812632f326dc7cf10/crops.json
+pyfao56-tables:
+  retrieved: 2026-10-09
+  sha256: cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633
+  url: https://raw.githubusercontent.com/kthorp/pyfao56/main/src/pyfao56/tools/tables.py

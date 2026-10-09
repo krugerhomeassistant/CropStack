@@ -15,3 +15,11 @@ export const length = (m: number, units: Units) =>
 
 export const speed = (kmh: number, units: Units) =>
   units === 'imperial' ? `${Math.round(kmh / 1.609)} mph` : `${Math.round(kmh)} km/h`
+
+/** Plant sizes and spacing (stored in cm). */
+export const cm = (value: number, units: Units) =>
+  units === 'imperial' ? `${Math.round(value / 2.54)} in` : `${Math.round(value)} cm`
+
+/** Short distances such as root depth (stored in m), one decimal. */
+export const metres = (value: number, units: Units) =>
+  units === 'imperial' ? `${(value * 3.28084).toFixed(1)} ft` : `${value.toFixed(1)} m`

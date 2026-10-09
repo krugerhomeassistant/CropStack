@@ -42,6 +42,23 @@ values with `qualifiers` instead of averaging. A value with no source must say `
   `link-only` source.
 - Write descriptions fresh. Never copy prose, tables, lists or images from a source.
 
+## Imported values
+
+Most numbers are imported by `scripts/ingest` from the sources in `sources.yaml` and carry the snapshot hash of
+the raw copy they came from. Values written by hand are never overwritten by an import. Parameters in use:
+
+| Path | Unit | Meaning |
+|---|---|---|
+| `requirements.soil_temperature.germination` | Cel | soil temperature range for germination (min, opt, max) |
+| `params.days_to_emergence` | d | days to emergence, one value per `qualifiers.soil_temp_c` |
+| `requirements.water.kc_initial` / `kc_mid` / `kc_late` | 1 | FAO-56 single crop coefficient per stage |
+| `requirements.water.root_depth` | m | maximum effective rooting depth (range) |
+| `requirements.water.depletion_fraction` | 1 | share of available soil water used before stress (FAO-56 p) |
+| `params.stage_days_initial` / `_development` / `_mid` / `_late` | d | stage lengths in field trials, per `qualifiers.region` and `planting` |
+| `params.height_max` | m | mean maximum plant height |
+| `params.row_spacing`, `params.plant_spread`, `params.height` | cm | grower-reported sizes |
+| `params.sun` | | `full_sun`, `partial_sun`, `partial_shade` or `shade` |
+
 ## Private pack
 
 A server can add its own entries in `<data>/catalog-private/` (same format, same folders). They are loaded after

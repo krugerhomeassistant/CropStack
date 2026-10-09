@@ -1,0 +1,126 @@
+kind: crop
+slug: pumpkin
+names:
+  en:
+  - Pumpkin
+  af:
+  - Pampoen
+scientific_name: Cucurbita maxima
+family: Cucurbitaceae
+rotation_group: cucurbits
+life_cycle: annual
+description: A sprawling warm-season vine with large, long-keeping fruit. Fruit cured in the sun after harvest stores for
+  months.
+requirements:
+  water:
+    kc_initial:
+      value: 0.5
+      unit: '1'
+      evidence: government
+      confidence: high
+      sources:
+      - {ref: fao-56, locator: Table 12 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+    kc_mid:
+      value: 1.0
+      unit: '1'
+      evidence: government
+      confidence: high
+      sources:
+      - {ref: fao-56, locator: Table 12 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+    kc_late:
+      value: 0.8
+      unit: '1'
+      evidence: government
+      confidence: high
+      sources:
+      - {ref: fao-56, locator: Table 12 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+    root_depth:
+      value: {min: 1.0, max: 1.5}
+      unit: m
+      evidence: government
+      confidence: high
+      sources:
+      - {ref: fao-56, locator: Table 22 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+    depletion_fraction:
+      value: 0.35
+      unit: '1'
+      evidence: government
+      confidence: high
+      sources:
+      - {ref: fao-56, locator: Table 22 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  soil_temperature:
+    germination:
+      value: {min: 15.6, opt: 35.0, max: 37.8}
+      unit: Cel
+      evidence: extension-service
+      confidence: medium
+      sources:
+      - {ref: harrington-osu, locator: Table 1 (°F converted to °C), retrieved: 2026-10-09, snapshot: 'sha256:8c233471e724b47faafd3446a2eb623eced88ab1b7611163f784bf2d2192e140'}
+params:
+  height_max:
+    value: 0.4
+    unit: m
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-56, locator: Table 12 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  stage_days_initial:
+  - value: 20.0
+    unit: d
+    qualifiers: {region: mediterranean, planting: mar aug}
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-56, locator: Table 11 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  - value: 25.0
+    unit: d
+    qualifiers: {region: europe, planting: jun}
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-56, locator: Table 11 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  stage_days_development:
+  - value: 30.0
+    unit: d
+    qualifiers: {region: mediterranean, planting: mar aug}
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-56, locator: Table 11 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  - value: 35.0
+    unit: d
+    qualifiers: {region: europe, planting: jun}
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-56, locator: Table 11 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  stage_days_mid:
+  - value: 30.0
+    unit: d
+    qualifiers: {region: mediterranean, planting: mar aug}
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-56, locator: Table 11 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  - value: 35.0
+    unit: d
+    qualifiers: {region: europe, planting: jun}
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-56, locator: Table 11 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  stage_days_late:
+  - value: 20.0
+    unit: d
+    qualifiers: {region: mediterranean, planting: mar aug}
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-56, locator: Table 11 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  - value: 25.0
+    unit: d
+    qualifiers: {region: europe, planting: jun}
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-56, locator: Table 11 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}

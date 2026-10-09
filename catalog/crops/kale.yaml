@@ -1,0 +1,44 @@
+kind: crop
+slug: kale
+names:
+  en:
+  - Kale
+  af:
+  - Boerkool
+scientific_name: Brassica oleracea
+family: Brassicaceae
+rotation_group: brassicas
+life_cycle: biennial
+description: A leafy brassica picked leaf by leaf over a long season. Light frost improves its flavour.
+params:
+  row_spacing:
+    value: 45
+    unit: cm
+    evidence: grower-reported
+    confidence: low
+    sources:
+    - {ref: openfarm-rescue, locator: 'https://web.archive.org/web/20230325095823/https://openfarm.cc/en/crops/kale', retrieved: 2026-10-09,
+      snapshot: 'sha256:203050c7a2be7ab1c4c165ee4edb42aaebcb13d183bd53540a2bf3482363caec'}
+  plant_spread:
+    value: 75
+    unit: cm
+    evidence: grower-reported
+    confidence: low
+    sources:
+    - {ref: openfarm-rescue, locator: 'https://web.archive.org/web/20230325095823/https://openfarm.cc/en/crops/kale', retrieved: 2026-10-09,
+      snapshot: 'sha256:203050c7a2be7ab1c4c165ee4edb42aaebcb13d183bd53540a2bf3482363caec'}
+  height:
+    value: 75
+    unit: cm
+    evidence: grower-reported
+    confidence: low
+    sources:
+    - {ref: openfarm-rescue, locator: 'https://web.archive.org/web/20230325095823/https://openfarm.cc/en/crops/kale', retrieved: 2026-10-09,
+      snapshot: 'sha256:203050c7a2be7ab1c4c165ee4edb42aaebcb13d183bd53540a2bf3482363caec'}
+  sun:
+    value: full_sun
+    evidence: grower-reported
+    confidence: low
+    sources:
+    - {ref: openfarm-rescue, locator: 'https://web.archive.org/web/20230325095823/https://openfarm.cc/en/crops/kale', retrieved: 2026-10-09,
+      snapshot: 'sha256:203050c7a2be7ab1c4c165ee4edb42aaebcb13d183bd53540a2bf3482363caec'}

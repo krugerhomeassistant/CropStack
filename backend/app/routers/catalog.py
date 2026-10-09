@@ -64,12 +64,25 @@ def reload(request: Request, _: OwnerDep) -> dict:
     return {"version": c.version, "items": len(c.items), "private_errors": c.private_errors}
 
 
+@router.get("/sources")
+def sources(c: CatalogDep, _: MemberDep) -> list[dict]:
+    """The source registry (catalog/sources.yaml): licence and how each source may be used, for the credits page."""
+    return [s.model_dump(mode="json") for s in c.sources.values()]
+
+
 @router.get("/{kind}")
 def list_items(kind: str, c: CatalogDep, _: MemberDep) -> list[dict]:
     if kind not in cat.KINDS:
         raise HTTPException(404, f"Unknown kind {kind!r}")
     return [
-        {"slug": slug, "names": data.get("names", {}), "origin": c.origin[(kind, slug)], "parent": data.get("parent")}
+        {
+            "slug": slug,
+            "names": data.get("names", {}),
+            "scientific_name": data.get("scientific_name"),
+            "family": data.get("family"),
+            "origin": c.origin[(kind, slug)],
+            "parent": data.get("parent"),
+        }
         for slug, data in c.list(kind)
     ]
 

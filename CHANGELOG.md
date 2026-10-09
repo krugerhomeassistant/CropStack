@@ -5,10 +5,18 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.10.0] - 2026-10-09
+
+### Added
+- **Crops**: a catalog of 29 common vegetables, under More (or in the side menu on a computer). Search by English or Afrikaans name, scientific name or plant family. Each crop page shows, in plain words, the soil temperature it needs to germinate and how many days seedlings take at each temperature, how much water it uses compared with a lawn, how deep its roots go and when to water, its size and spacing, and growth-stage lengths from field trials.
+- Every value on a crop page has a numbered source, listed at the end with its licence and how strong the evidence is; values reported by growers are marked as rough guides.
+- **Where the crop data comes from**: a credits page listing every catalog source and its licence.
+
 ### Changed
 - Radio buttons are drawn in the app's own style, so unselected options no longer look selected in dark mode.
 
 ### Development
+- `scripts/ingest`: imports catalog values from FAO-56 (via pyfao56), the Harrington germination tables and the OpenFarm rescue data, keeps a hash-locked snapshot of each source, never overwrites hand-written values, and checks names and families against GBIF.
 - `npm run e2e` checks the main flows in a real browser (sign up, garden setup and edit, settings, data sources, household, invites, roles, log out, desktop navigation) against `tests/e2e_server.py`, a server with outside services stubbed. CI runs it and the screenshots on every push and keeps the images as an artifact.
 
 ## [0.9.0] - 2026-10-09

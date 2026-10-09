@@ -1,0 +1,206 @@
+kind: crop
+slug: onion
+names:
+  en:
+  - Onion
+  af:
+  - Ui
+scientific_name: Allium cepa
+family: Amaryllidaceae
+rotation_group: alliums
+life_cycle: biennial
+description: Bulbing is triggered by day length, so a variety must match the day lengths at the garden's latitude in its growing
+  season.
+requirements:
+  water:
+    kc_initial:
+      value: 0.7
+      unit: '1'
+      evidence: government
+      confidence: high
+      sources:
+      - {ref: fao-56, locator: Table 12 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+    kc_mid:
+      value: 1.05
+      unit: '1'
+      evidence: government
+      confidence: high
+      sources:
+      - {ref: fao-56, locator: Table 12 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+    kc_late:
+      value: 0.75
+      unit: '1'
+      evidence: government
+      confidence: high
+      sources:
+      - {ref: fao-56, locator: Table 12 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+    root_depth:
+      value: {min: 0.3, max: 0.6}
+      unit: m
+      evidence: government
+      confidence: high
+      sources:
+      - {ref: fao-56, locator: Table 22 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+    depletion_fraction:
+      value: 0.3
+      unit: '1'
+      evidence: government
+      confidence: high
+      sources:
+      - {ref: fao-56, locator: Table 22 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  soil_temperature:
+    germination:
+      value: {min: 1.7, opt: 23.9, max: 35.0}
+      unit: Cel
+      evidence: extension-service
+      confidence: medium
+      sources:
+      - {ref: harrington-osu, locator: Table 1 (°F converted to °C), retrieved: 2026-10-09, snapshot: 'sha256:8c233471e724b47faafd3446a2eb623eced88ab1b7611163f784bf2d2192e140'}
+params:
+  height_max:
+    value: 0.4
+    unit: m
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-56, locator: Table 12 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  stage_days_initial:
+  - value: 15.0
+    unit: d
+    qualifiers: {region: mediterranean, planting: apr}
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-56, locator: Table 11 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  - value: 20.0
+    unit: d
+    qualifiers: {region: arid region california, planting: oct jan}
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-56, locator: Table 11 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  stage_days_development:
+  - value: 25.0
+    unit: d
+    qualifiers: {region: mediterranean, planting: apr}
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-56, locator: Table 11 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  - value: 35.0
+    unit: d
+    qualifiers: {region: arid region california, planting: oct jan}
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-56, locator: Table 11 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  stage_days_mid:
+  - value: 70.0
+    unit: d
+    qualifiers: {region: mediterranean, planting: apr}
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-56, locator: Table 11 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  - value: 110.0
+    unit: d
+    qualifiers: {region: arid region california, planting: oct jan}
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-56, locator: Table 11 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  stage_days_late:
+  - value: 40.0
+    unit: d
+    qualifiers: {region: mediterranean, planting: apr}
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-56, locator: Table 11 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  - value: 45.0
+    unit: d
+    qualifiers: {region: arid region california, planting: oct jan}
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-56, locator: Table 11 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  days_to_emergence:
+  - value: 135.0
+    unit: d
+    qualifiers: {soil_temp_c: 0.0}
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-09, snapshot: 'sha256:8c233471e724b47faafd3446a2eb623eced88ab1b7611163f784bf2d2192e140'}
+  - value: 31.0
+    unit: d
+    qualifiers: {soil_temp_c: 5.0}
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-09, snapshot: 'sha256:8c233471e724b47faafd3446a2eb623eced88ab1b7611163f784bf2d2192e140'}
+  - value: 13.0
+    unit: d
+    qualifiers: {soil_temp_c: 10.0}
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-09, snapshot: 'sha256:8c233471e724b47faafd3446a2eb623eced88ab1b7611163f784bf2d2192e140'}
+  - value: 7.0
+    unit: d
+    qualifiers: {soil_temp_c: 15.0}
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-09, snapshot: 'sha256:8c233471e724b47faafd3446a2eb623eced88ab1b7611163f784bf2d2192e140'}
+  - value: 5.0
+    unit: d
+    qualifiers: {soil_temp_c: 20.0}
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-09, snapshot: 'sha256:8c233471e724b47faafd3446a2eb623eced88ab1b7611163f784bf2d2192e140'}
+  - value: 4.0
+    unit: d
+    qualifiers: {soil_temp_c: 25.0}
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-09, snapshot: 'sha256:8c233471e724b47faafd3446a2eb623eced88ab1b7611163f784bf2d2192e140'}
+  - value: 4.0
+    unit: d
+    qualifiers: {soil_temp_c: 30.0}
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-09, snapshot: 'sha256:8c233471e724b47faafd3446a2eb623eced88ab1b7611163f784bf2d2192e140'}
+  - value: 12.0
+    unit: d
+    qualifiers: {soil_temp_c: 35.0}
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-09, snapshot: 'sha256:8c233471e724b47faafd3446a2eb623eced88ab1b7611163f784bf2d2192e140'}
+  row_spacing:
+    value: 15
+    unit: cm
+    evidence: grower-reported
+    confidence: low
+    sources:
+    - {ref: openfarm-rescue, locator: 'https://web.archive.org/web/20240815063856/https://openfarm.cc/en/crops/onion', retrieved: 2026-10-09,
+      snapshot: 'sha256:203050c7a2be7ab1c4c165ee4edb42aaebcb13d183bd53540a2bf3482363caec'}
+  plant_spread:
+    value: 15
+    unit: cm
+    evidence: grower-reported
+    confidence: low
+    sources:
+    - {ref: openfarm-rescue, locator: 'https://web.archive.org/web/20240815063856/https://openfarm.cc/en/crops/onion', retrieved: 2026-10-09,
+      snapshot: 'sha256:203050c7a2be7ab1c4c165ee4edb42aaebcb13d183bd53540a2bf3482363caec'}
+  sun:
+    value: full_sun
+    evidence: grower-reported
+    confidence: low
+    sources:
+    - {ref: openfarm-rescue, locator: 'https://web.archive.org/web/20240815063856/https://openfarm.cc/en/crops/onion', retrieved: 2026-10-09,
+      snapshot: 'sha256:203050c7a2be7ab1c4c165ee4edb42aaebcb13d183bd53540a2bf3482363caec'}

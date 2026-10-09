@@ -1,0 +1,252 @@
+kind: crop
+slug: sweet-corn
+names:
+  en:
+  - Sweet corn
+  af:
+  - Suikermielie
+scientific_name: Zea mays
+family: Poaceae
+rotation_group: grasses
+life_cycle: annual
+description: A wind-pollinated warm-season grass. Planting in a block rather than a single row gives better-filled cobs.
+requirements:
+  water:
+    kc_initial:
+      value: 0.3
+      unit: '1'
+      evidence: government
+      confidence: high
+      sources:
+      - {ref: fao-56, locator: Table 12 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+    kc_mid:
+      value: 1.15
+      unit: '1'
+      evidence: government
+      confidence: high
+      sources:
+      - {ref: fao-56, locator: Table 12 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+    kc_late:
+      value: 1.05
+      unit: '1'
+      evidence: government
+      confidence: high
+      sources:
+      - {ref: fao-56, locator: Table 12 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+    root_depth:
+      value: {min: 0.8, max: 1.2}
+      unit: m
+      evidence: government
+      confidence: high
+      sources:
+      - {ref: fao-56, locator: Table 22 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+    depletion_fraction:
+      value: 0.5
+      unit: '1'
+      evidence: government
+      confidence: high
+      sources:
+      - {ref: fao-56, locator: Table 22 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  soil_temperature:
+    germination:
+      value: {min: 10.0, opt: 35.0, max: 40.6}
+      unit: Cel
+      evidence: extension-service
+      confidence: medium
+      sources:
+      - {ref: harrington-osu, locator: Table 1 (°F converted to °C), retrieved: 2026-10-09, snapshot: 'sha256:8c233471e724b47faafd3446a2eb623eced88ab1b7611163f784bf2d2192e140'}
+params:
+  height_max:
+    value: 1.5
+    unit: m
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-56, locator: Table 12 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  stage_days_initial:
+  - value: 20.0
+    unit: d
+    qualifiers: {region: philippines, planting: mar}
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-56, locator: Table 11 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  - value: 20.0
+    unit: d
+    qualifiers: {region: mediterranean, planting: may jun}
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-56, locator: Table 11 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  - value: 20.0
+    unit: d
+    qualifiers: {region: arid climate, planting: oct dec}
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-56, locator: Table 11 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  - value: 30.0
+    unit: d
+    qualifiers: {region: idaho usa, planting: apr}
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-56, locator: Table 11 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  - value: 20.0
+    unit: d
+    qualifiers: {region: california desert usa, planting: jan}
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-56, locator: Table 11 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  stage_days_development:
+  - value: 20.0
+    unit: d
+    qualifiers: {region: philippines, planting: mar}
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-56, locator: Table 11 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  - value: 25.0
+    unit: d
+    qualifiers: {region: mediterranean, planting: may jun}
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-56, locator: Table 11 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  - value: 30.0
+    unit: d
+    qualifiers: {region: arid climate, planting: oct dec}
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-56, locator: Table 11 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  - value: 30.0
+    unit: d
+    qualifiers: {region: idaho usa, planting: apr}
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-56, locator: Table 11 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  - value: 40.0
+    unit: d
+    qualifiers: {region: california desert usa, planting: jan}
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-56, locator: Table 11 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  stage_days_mid:
+  - value: 30.0
+    unit: d
+    qualifiers: {region: philippines, planting: mar}
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-56, locator: Table 11 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  - value: 25.0
+    unit: d
+    qualifiers: {region: mediterranean, planting: may jun}
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-56, locator: Table 11 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  - value: 30.0
+    unit: d
+    qualifiers: {region: arid climate, planting: oct dec}
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-56, locator: Table 11 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  - value: 30.0
+    unit: d
+    qualifiers: {region: idaho usa, planting: apr}
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-56, locator: Table 11 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  - value: 70.0
+    unit: d
+    qualifiers: {region: california desert usa, planting: jan}
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-56, locator: Table 11 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  stage_days_late:
+  - value: 10.0
+    unit: d
+    qualifiers: {region: philippines, planting: mar}
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-56, locator: Table 11 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  - value: 10.0
+    unit: d
+    qualifiers: {region: mediterranean, planting: may jun}
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-56, locator: Table 11 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  - value: 10.0
+    unit: d
+    qualifiers: {region: arid climate, planting: oct dec}
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-56, locator: Table 11 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  - value: 10.0
+    unit: d
+    qualifiers: {region: idaho usa, planting: apr}
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-56, locator: Table 11 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  - value: 10.0
+    unit: d
+    qualifiers: {region: california desert usa, planting: jan}
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-56, locator: Table 11 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  days_to_emergence:
+  - value: 22.0
+    unit: d
+    qualifiers: {soil_temp_c: 10.0}
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-09, snapshot: 'sha256:8c233471e724b47faafd3446a2eb623eced88ab1b7611163f784bf2d2192e140'}
+  - value: 12.0
+    unit: d
+    qualifiers: {soil_temp_c: 15.0}
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-09, snapshot: 'sha256:8c233471e724b47faafd3446a2eb623eced88ab1b7611163f784bf2d2192e140'}
+  - value: 7.0
+    unit: d
+    qualifiers: {soil_temp_c: 20.0}
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-09, snapshot: 'sha256:8c233471e724b47faafd3446a2eb623eced88ab1b7611163f784bf2d2192e140'}
+  - value: 4.0
+    unit: d
+    qualifiers: {soil_temp_c: 25.0}
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-09, snapshot: 'sha256:8c233471e724b47faafd3446a2eb623eced88ab1b7611163f784bf2d2192e140'}
+  - value: 4.0
+    unit: d
+    qualifiers: {soil_temp_c: 30.0}
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-09, snapshot: 'sha256:8c233471e724b47faafd3446a2eb623eced88ab1b7611163f784bf2d2192e140'}
+  - value: 3.0
+    unit: d
+    qualifiers: {soil_temp_c: 35.0}
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-09, snapshot: 'sha256:8c233471e724b47faafd3446a2eb623eced88ab1b7611163f784bf2d2192e140'}

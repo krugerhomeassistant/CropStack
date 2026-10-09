@@ -92,6 +92,42 @@ export type DataSource = {
   enabled: boolean
 }
 
+// ---------------------------------------------------------------- catalog (SPEC §16.1: every value is cited)
+
+export type Evidence =
+  'peer-reviewed' | 'government' | 'extension-service' | 'model' | 'grower-reported' | 'traditional'
+export type SourceRef = { ref: string; locator?: string | null; retrieved?: string | null; snapshot?: string | null }
+export type Range = { min?: number | null; opt?: number | null; max?: number | null }
+export type Fact = {
+  value: number | string | boolean | Range
+  unit?: string | null
+  qualifiers?: Record<string, string | number | null>
+  evidence: Evidence
+  confidence: 'high' | 'medium' | 'low'
+  estimate?: boolean
+  sources: SourceRef[]
+}
+export type FactOrList = Fact | Fact[]
+export type CatalogSource = {
+  id: string
+  title: string
+  author: string | null
+  url: string
+  license: string
+  use: 'bundle' | 'facts-only' | 'link-only'
+  extra_terms: string | null
+  tos_reviewed: string
+}
+export type CropSummary = { slug: string; names: Record<string, string[]>; scientific_name: string; family: string }
+export type CropData = CropSummary & {
+  rotation_group?: string | null
+  life_cycle: 'annual' | 'biennial' | 'perennial'
+  description?: string | null
+  requirements?: Record<string, Record<string, FactOrList>>
+  params?: Record<string, FactOrList>
+}
+export type CatalogItem<T> = { data: T; origin: string; sources: Record<string, CatalogSource> }
+
 export class ApiError extends Error {
   constructor(
     public status: number,
@@ -138,7 +174,11 @@ export const api = {
   savePrefs: (prefs: Prefs) => request<Prefs>('PUT', '/auth/prefs', prefs),
   weather: () => request<Weather>('GET', '/sites/current/weather'),
   householdSettings: () => request<HouseholdSettings>('GET', '/household/settings'),
-  saveHouseholdSettings: (settings: HouseholdSettings) => request<HouseholdSettings>('PUT', '/household/settings', settings),
+  saveHouseholdSettings: (settings: HouseholdSettings) =>
+    request<HouseholdSettings>('PUT', '/household/settings', settings),
   dataSources: () => request<DataSource[]>('GET', '/household/data-sources'),
+  crops: () => request<CropSummary[]>('GET', '/catalog/crop'),
+  crop: (slug: string) => request<CatalogItem<CropData>>('GET', `/catalog/crop/${encodeURIComponent(slug)}`),
+  catalogSources: () => request<CatalogSource[]>('GET', '/catalog/sources'),
   places: (q: string) => request<Place[]>('GET', `/places?q=${encodeURIComponent(q)}`),
 }

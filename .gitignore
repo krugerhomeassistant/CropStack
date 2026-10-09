@@ -10,3 +10,4 @@ __pycache__/
 .coverage
 frontend/dev-dist/
 frontend/screenshots/
+.ingest-cache/

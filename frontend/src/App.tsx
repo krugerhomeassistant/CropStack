@@ -6,6 +6,9 @@ import Layout from './components/Layout'
 import { t } from './i18n'
 import Auth, { type Invite } from './pages/Auth'
 import Climate from './pages/Climate'
+import Crop from './pages/Crop'
+import CropData from './pages/CropData'
+import Crops from './pages/Crops'
 import GardenPage from './pages/Garden'
 import GardenSetup from './pages/GardenSetup'
 import Household from './pages/Household'
@@ -154,6 +157,9 @@ export default function App() {
               <Route path="/garden" element={<GardenPage />} />
               <Route path="/more" element={<More />} />
               <Route path="/climate" element={<Climate />} />
+              <Route path="/crops" element={<Crops />} />
+              <Route path="/crops/:slug" element={<Crop />} />
+              <Route path="/crop-data" element={<CropData />} />
               <Route path="/household" element={<Household />} />
               <Route path="/settings" element={<Settings />} />
             </Route>

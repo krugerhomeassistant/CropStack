@@ -1,0 +1,89 @@
+kind: crop
+slug: garlic
+names:
+  en:
+  - Garlic
+  af:
+  - Knoffel
+scientific_name: Allium sativum
+family: Amaryllidaceae
+rotation_group: alliums
+life_cycle: perennial
+description: Grown from individual cloves rather than seed. Bulbs form as days lengthen after a cool period, so planting time
+  matters more than anything else.
+requirements:
+  water:
+    kc_initial:
+      value: 0.7
+      unit: '1'
+      evidence: government
+      confidence: high
+      sources:
+      - {ref: fao-56, locator: Table 12 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+    kc_mid:
+      value: 1.0
+      unit: '1'
+      evidence: government
+      confidence: high
+      sources:
+      - {ref: fao-56, locator: Table 12 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+    kc_late:
+      value: 0.7
+      unit: '1'
+      evidence: government
+      confidence: high
+      sources:
+      - {ref: fao-56, locator: Table 12 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+    root_depth:
+      value: {min: 0.3, max: 0.5}
+      unit: m
+      evidence: government
+      confidence: high
+      sources:
+      - {ref: fao-56, locator: Table 22 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+    depletion_fraction:
+      value: 0.3
+      unit: '1'
+      evidence: government
+      confidence: high
+      sources:
+      - {ref: fao-56, locator: Table 22 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+params:
+  height_max:
+    value: 0.3
+    unit: m
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-56, locator: Table 12 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  row_spacing:
+    value: 10
+    unit: cm
+    evidence: grower-reported
+    confidence: low
+    sources:
+    - {ref: openfarm-rescue, locator: 'https://web.archive.org/web/20190817132432/https://openfarm.cc/en/crops/garlic', retrieved: 2026-10-09,
+      snapshot: 'sha256:203050c7a2be7ab1c4c165ee4edb42aaebcb13d183bd53540a2bf3482363caec'}
+  plant_spread:
+    value: 10
+    unit: cm
+    evidence: grower-reported
+    confidence: low
+    sources:
+    - {ref: openfarm-rescue, locator: 'https://web.archive.org/web/20190817132432/https://openfarm.cc/en/crops/garlic', retrieved: 2026-10-09,
+      snapshot: 'sha256:203050c7a2be7ab1c4c165ee4edb42aaebcb13d183bd53540a2bf3482363caec'}
+  height:
+    value: 120
+    unit: cm
+    evidence: grower-reported
+    confidence: low
+    sources:
+    - {ref: openfarm-rescue, locator: 'https://web.archive.org/web/20190817132432/https://openfarm.cc/en/crops/garlic', retrieved: 2026-10-09,
+      snapshot: 'sha256:203050c7a2be7ab1c4c165ee4edb42aaebcb13d183bd53540a2bf3482363caec'}
+  sun:
+    value: full_sun
+    evidence: grower-reported
+    confidence: low
+    sources:
+    - {ref: openfarm-rescue, locator: 'https://web.archive.org/web/20190817132432/https://openfarm.cc/en/crops/garlic', retrieved: 2026-10-09,
+      snapshot: 'sha256:203050c7a2be7ab1c4c165ee4edb42aaebcb13d183bd53540a2bf3482363caec'}

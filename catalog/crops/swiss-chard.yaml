@@ -1,0 +1,22 @@
+kind: crop
+slug: swiss-chard
+names:
+  en:
+  - Swiss chard
+  af:
+  - Snybeet
+scientific_name: Beta vulgaris
+family: Amaranthaceae
+rotation_group: beet family
+life_cycle: biennial
+description: A beet grown for its leaves and stems. Outer leaves are cut over many months, and it tolerates more heat than
+  spinach.
+requirements:
+  soil_temperature:
+    germination:
+      value: {min: 4.4, opt: 29.4, max: 35.0}
+      unit: Cel
+      evidence: extension-service
+      confidence: medium
+      sources:
+      - {ref: harrington-osu, locator: Table 1 (°F converted to °C), retrieved: 2026-10-09, snapshot: 'sha256:8c233471e724b47faafd3446a2eb623eced88ab1b7611163f784bf2d2192e140'}

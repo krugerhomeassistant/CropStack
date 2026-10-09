@@ -9,7 +9,7 @@ const base = process.env.CROPSTACK_URL ?? 'http://127.0.0.1:8000'
 const user = process.env.CROPSTACK_USER ?? 'screens'
 const password = process.env.CROPSTACK_PASSWORD ?? 'screens-only-123'
 const out = new URL('../screenshots/', import.meta.url).pathname
-const pages = ['today', 'garden', 'more', 'climate', 'household', 'settings']
+const pages = ['today', 'garden', 'more', 'crops', 'crops/tomato', 'crop-data', 'climate', 'household', 'settings']
 const devices = { phone: { width: 390, height: 844 }, desktop: { width: 1440, height: 900 } }
 
 mkdirSync(out, { recursive: true })
@@ -43,7 +43,7 @@ for (const [device, viewport] of Object.entries(devices))
     for (const name of pages) {
       await page.goto(`${base}/${name}`)
       await page.waitForLoadState('networkidle')
-      await page.screenshot({ path: `${out}${name}-${colorScheme}-${device}.png`, fullPage: true })
+      await page.screenshot({ path: `${out}${name.replace('/', '-')}-${colorScheme}-${device}.png`, fullPage: true })
     }
     await context.close()
   }

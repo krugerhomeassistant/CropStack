@@ -1,0 +1,83 @@
+kind: crop
+slug: parsley
+names:
+  en:
+  - Parsley
+  af:
+  - Pietersielie
+scientific_name: Petroselinum crispum
+family: Apiaceae
+rotation_group: carrot family
+life_cycle: biennial
+description: A leafy herb that is slow to germinate. Leaves can be picked for most of a year before it flowers in its second
+  season.
+requirements:
+  soil_temperature:
+    germination:
+      value: {min: 4.4, opt: 23.9, max: 32.2}
+      unit: Cel
+      evidence: extension-service
+      confidence: medium
+      sources:
+      - {ref: harrington-osu, locator: Table 1 (°F converted to °C), retrieved: 2026-10-09, snapshot: 'sha256:8c233471e724b47faafd3446a2eb623eced88ab1b7611163f784bf2d2192e140'}
+params:
+  days_to_emergence:
+  - value: 29.0
+    unit: d
+    qualifiers: {soil_temp_c: 10.0}
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-09, snapshot: 'sha256:8c233471e724b47faafd3446a2eb623eced88ab1b7611163f784bf2d2192e140'}
+  - value: 17.0
+    unit: d
+    qualifiers: {soil_temp_c: 15.0}
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-09, snapshot: 'sha256:8c233471e724b47faafd3446a2eb623eced88ab1b7611163f784bf2d2192e140'}
+  - value: 14.0
+    unit: d
+    qualifiers: {soil_temp_c: 20.0}
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-09, snapshot: 'sha256:8c233471e724b47faafd3446a2eb623eced88ab1b7611163f784bf2d2192e140'}
+  - value: 13.0
+    unit: d
+    qualifiers: {soil_temp_c: 25.0}
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-09, snapshot: 'sha256:8c233471e724b47faafd3446a2eb623eced88ab1b7611163f784bf2d2192e140'}
+  - value: 12.0
+    unit: d
+    qualifiers: {soil_temp_c: 30.0}
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-09, snapshot: 'sha256:8c233471e724b47faafd3446a2eb623eced88ab1b7611163f784bf2d2192e140'}
+  row_spacing:
+    value: 30
+    unit: cm
+    evidence: grower-reported
+    confidence: low
+    sources:
+    - {ref: openfarm-rescue, locator: 'https://web.archive.org/web/20230325103121/https://openfarm.cc/en/crops/parsley', retrieved: 2026-10-09,
+      snapshot: 'sha256:203050c7a2be7ab1c4c165ee4edb42aaebcb13d183bd53540a2bf3482363caec'}
+  plant_spread:
+    value: 10
+    unit: cm
+    evidence: grower-reported
+    confidence: low
+    sources:
+    - {ref: openfarm-rescue, locator: 'https://web.archive.org/web/20230325103121/https://openfarm.cc/en/crops/parsley', retrieved: 2026-10-09,
+      snapshot: 'sha256:203050c7a2be7ab1c4c165ee4edb42aaebcb13d183bd53540a2bf3482363caec'}
+  height:
+    value: 30
+    unit: cm
+    evidence: grower-reported
+    confidence: low
+    sources:
+    - {ref: openfarm-rescue, locator: 'https://web.archive.org/web/20230325103121/https://openfarm.cc/en/crops/parsley', retrieved: 2026-10-09,
+      snapshot: 'sha256:203050c7a2be7ab1c4c165ee4edb42aaebcb13d183bd53540a2bf3482363caec'}

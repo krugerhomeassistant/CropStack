@@ -1,6 +1,6 @@
 # WIKI — CropStack
 
-How CropStack works **today** (v0.9). The target product is specified in [`SPEC.md`](SPEC.md) and scheduled in [`PLAN.md`](PLAN.md); where this page and SPEC differ, SPEC is the goal and this page is the current state. Structure and modules: [`ARCHITECTURE.md`](ARCHITECTURE.md). Visual system: [`DESIGN.md`](DESIGN.md).
+How CropStack works **today** (v0.10). The target product is specified in [`SPEC.md`](SPEC.md) and scheduled in [`PLAN.md`](PLAN.md); where this page and SPEC differ, SPEC is the goal and this page is the current state. Structure and modules: [`ARCHITECTURE.md`](ARCHITECTURE.md). Visual system: [`DESIGN.md`](DESIGN.md).
 
 ## Purpose
 A self-hosted garden and homestead planner that tells a household what to do today (plant, water, feed, harvest, check, care for animals) and how. It decides from two things only: what each crop, animal or task needs (its **requirement profile**) and what the site's environment does (30 years of daily weather, this season's weather, the forecast, later the household's own sensors and observations). One container, one SQLite file, nothing sent anywhere the household hasn't been shown.
@@ -30,11 +30,12 @@ A self-hosted garden and homestead planner that tells a household what to do tod
 | Evidence level | How strong a catalog value is: peer-reviewed, government, extension service, model, grower-reported, traditional |
 
 ## Screens and navigation
-- **Phone** (< 1024 px): bottom bar with Today, Garden, More. More holds Climate, Household, Settings, Log out and the version.
-- **Desktop** (≥ 1024 px): left rail with Today, Garden, Climate, Household, Settings, Log out and the version.
+- **Phone** (< 1024 px): bottom bar with Today, Garden, More. More holds Crops, Climate, Household, Settings, Log out and the version.
+- **Desktop** (≥ 1024 px): left rail with Today, Garden, Crops, Climate, Household, Settings, Log out and the version.
 - `/` and unknown paths open each person's start screen (Settings → Open the app on).
 - **Today**: greeting with the date and garden; weather (today, next 7 days, last 30 days against normal); the daily jobs section (placeholder until the crop engine, PLAN 6–7). Desktop shows jobs and weather side by side.
 - **Garden**: garden name and location (owners can edit); beds section (placeholder until the layout editor, PLAN 8).
+- **Crops**: the catalog, searchable by English or Afrikaans name, scientific name or family. A crop page says in plain words when it germinates (soil temperature, days to emergence), how it uses water (crop coefficient as a share of a lawn's use, root depth, when to water), its size and spacing, and FAO-56 growth-stage lengths from field trials; each value has a numbered source listed at the end, and grower-reported values are marked as rough guides. **Where the crop data comes from** (`/crop-data`) lists every source with its licence, grouped by how it may be used.
 - **Climate**: the climate description card (charts arrive with the climate explorer, PLAN 11).
 - **Household**: name, people and roles, invites (owners).
 - **Settings**: start screen, units (per person), data sources (switches for owners).
@@ -76,7 +77,16 @@ Name; place search (town, address or postal code via Nominatim, on submit only, 
 - **Layers**: bundled `catalog/` → private pack `<data>/catalog-private/` (loaded after bundled, wins field by field; errors are shown to the owner and never stop the app) → household overrides in the database (`catalogoverride`, one row per field path, validated against the schema). Held in memory; `POST /api/v1/catalog/reload` re-reads it.
 - **Licence gate** (bundled data, at load and in CI): schema valid, unique slugs, parents exist, every value cites a source in `catalog/sources.yaml` or is marked an estimate, `bundle` sources have an open licence, nothing cites a `link-only` source.
 - **Policy** (SPEC §16, §16.1): bundled only CC0, public domain, CC BY, CC BY-SA 4.0. Non-commercial or no-derivatives sources are read to check facts and linked, never copied. Withdrawal periods are never bundled (the user enters the label's days). Research and the source table: [`research/catalog-data-sources.md`](research/catalog-data-sources.md).
-- **Content**: none yet (PLAN Phase 5).
+- **Content** (v0.10.0): 29 core vegetables in `catalog/crops/`. The curated part (names in English and Afrikaans, accepted scientific name, APG IV family, rotation group, life cycle, a description written for CropStack) is hand-written; the values come from the ingestion pipeline:
+
+  | Field | Source | Evidence |
+  |---|---|---|
+  | `requirements.soil_temperature.germination` (min/opt/max °C), `params.days_to_emergence` (per soil temperature) | Harrington tables via OSU Extension (°F converted) | extension service |
+  | `requirements.water.kc_initial/mid/late`, `params.height_max` | FAO-56 Table 12 via pyfao56 | official guideline |
+  | `requirements.water.root_depth` (m), `depletion_fraction` | FAO-56 Table 22 via pyfao56 | official guideline |
+  | `params.stage_days_initial/development/mid/late` (per trial region and planting month) | FAO-56 Table 11 via pyfao56 | official guideline |
+  | `params.row_spacing`, `plant_spread`, `height` (cm), `sun` | OpenFarm rescue (CC0) | grower-reported, low confidence |
+- **Ingestion** (`scripts/ingest/`, maintainers only; self-hosted servers never fetch): `fetch` downloads each source politely (identifying User-Agent without personal data, robots.txt, ≥ 2 s per host) into `.ingest-cache/<sha256>` (git-ignored) and records URL, hash and date in `scripts/ingest/snapshots.lock`; `merge` runs pure extractors on the locked snapshots and writes proposals into the crop files where the field is empty or was written by the same source before; anything else is hand-curated and never overwritten; `check` compares scientific names and families with the GBIF Backbone (pea is a documented exception: GBIF follows *Lathyrus oleraceus*, gardeners say *Pisum sativum*). `crosswalk.yaml` maps each crop to each source's row name. Review `git diff catalog/` like any change.
 
 ## Design system
 Tokens in `frontend/src/index.css`, components in `frontend/src/components/ui/` (`Button`, `IconButton`, `PageHeader`, `Section`, `Field`, `RadioCards`, `Switch`, `Badge`, `ErrorMessage`, `ErrorState`, `EmptyState`, `Skeleton`). Pages use these rather than ad-hoc classes. Rules and the reasons behind them: [`DESIGN.md`](DESIGN.md).

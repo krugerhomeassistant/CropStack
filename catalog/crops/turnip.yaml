@@ -1,0 +1,146 @@
+kind: crop
+slug: turnip
+names:
+  en:
+  - Turnip
+  af:
+  - Raap
+scientific_name: Brassica rapa
+family: Brassicaceae
+rotation_group: brassicas
+life_cycle: biennial
+description: A quick cool-season root crop whose leaves are edible too. Roots are best pulled small and tender.
+requirements:
+  water:
+    kc_initial:
+      value: 0.5
+      unit: '1'
+      evidence: government
+      confidence: high
+      sources:
+      - {ref: fao-56, locator: Table 12 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+    kc_mid:
+      value: 1.1
+      unit: '1'
+      evidence: government
+      confidence: high
+      sources:
+      - {ref: fao-56, locator: Table 12 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+    kc_late:
+      value: 0.95
+      unit: '1'
+      evidence: government
+      confidence: high
+      sources:
+      - {ref: fao-56, locator: Table 12 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+    root_depth:
+      value: {min: 0.5, max: 1.0}
+      unit: m
+      evidence: government
+      confidence: high
+      sources:
+      - {ref: fao-56, locator: Table 22 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+    depletion_fraction:
+      value: 0.5
+      unit: '1'
+      evidence: government
+      confidence: high
+      sources:
+      - {ref: fao-56, locator: Table 22 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  soil_temperature:
+    germination:
+      value: {min: 4.4, opt: 29.4, max: 40.6}
+      unit: Cel
+      evidence: extension-service
+      confidence: medium
+      sources:
+      - {ref: harrington-osu, locator: Table 1 (°F converted to °C), retrieved: 2026-10-09, snapshot: 'sha256:8c233471e724b47faafd3446a2eb623eced88ab1b7611163f784bf2d2192e140'}
+params:
+  height_max:
+    value: 0.6
+    unit: m
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-56, locator: Table 12 (via pyfao56), retrieved: 2026-10-09, snapshot: 'sha256:cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633'}
+  days_to_emergence:
+  - value: 5.0
+    unit: d
+    qualifiers: {soil_temp_c: 10.0}
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-09, snapshot: 'sha256:8c233471e724b47faafd3446a2eb623eced88ab1b7611163f784bf2d2192e140'}
+  - value: 3.0
+    unit: d
+    qualifiers: {soil_temp_c: 15.0}
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-09, snapshot: 'sha256:8c233471e724b47faafd3446a2eb623eced88ab1b7611163f784bf2d2192e140'}
+  - value: 2.0
+    unit: d
+    qualifiers: {soil_temp_c: 20.0}
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-09, snapshot: 'sha256:8c233471e724b47faafd3446a2eb623eced88ab1b7611163f784bf2d2192e140'}
+  - value: 1.0
+    unit: d
+    qualifiers: {soil_temp_c: 25.0}
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-09, snapshot: 'sha256:8c233471e724b47faafd3446a2eb623eced88ab1b7611163f784bf2d2192e140'}
+  - value: 1.0
+    unit: d
+    qualifiers: {soil_temp_c: 30.0}
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-09, snapshot: 'sha256:8c233471e724b47faafd3446a2eb623eced88ab1b7611163f784bf2d2192e140'}
+  - value: 1.0
+    unit: d
+    qualifiers: {soil_temp_c: 35.0}
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-09, snapshot: 'sha256:8c233471e724b47faafd3446a2eb623eced88ab1b7611163f784bf2d2192e140'}
+  - value: 2.0
+    unit: d
+    qualifiers: {soil_temp_c: 40.0}
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-09, snapshot: 'sha256:8c233471e724b47faafd3446a2eb623eced88ab1b7611163f784bf2d2192e140'}
+  row_spacing:
+    value: 10
+    unit: cm
+    evidence: grower-reported
+    confidence: low
+    sources:
+    - {ref: openfarm-rescue, locator: 'https://web.archive.org/web/20200922210234/https://openfarm.cc/en/crops/turnip', retrieved: 2026-10-09,
+      snapshot: 'sha256:203050c7a2be7ab1c4c165ee4edb42aaebcb13d183bd53540a2bf3482363caec'}
+  plant_spread:
+    value: 30
+    unit: cm
+    evidence: grower-reported
+    confidence: low
+    sources:
+    - {ref: openfarm-rescue, locator: 'https://web.archive.org/web/20200922210234/https://openfarm.cc/en/crops/turnip', retrieved: 2026-10-09,
+      snapshot: 'sha256:203050c7a2be7ab1c4c165ee4edb42aaebcb13d183bd53540a2bf3482363caec'}
+  height:
+    value: 30
+    unit: cm
+    evidence: grower-reported
+    confidence: low
+    sources:
+    - {ref: openfarm-rescue, locator: 'https://web.archive.org/web/20200922210234/https://openfarm.cc/en/crops/turnip', retrieved: 2026-10-09,
+      snapshot: 'sha256:203050c7a2be7ab1c4c165ee4edb42aaebcb13d183bd53540a2bf3482363caec'}
+  sun:
+    value: full_sun
+    evidence: grower-reported
+    confidence: low
+    sources:
+    - {ref: openfarm-rescue, locator: 'https://web.archive.org/web/20200922210234/https://openfarm.cc/en/crops/turnip', retrieved: 2026-10-09,
+      snapshot: 'sha256:203050c7a2be7ab1c4c165ee4edb42aaebcb13d183bd53540a2bf3482363caec'}

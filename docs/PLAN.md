@@ -2,6 +2,8 @@
 
 Roadmap implementing [`SPEC.md`](SPEC.md). Every task is atomic and resumable in a fresh session: it names the files, the behaviour and how it is verified. Section numbers like §6.4 refer to SPEC.md.
 
+**Versions** are assigned when a phase (or part of one) ships; see CHANGELOG.md.
+
 **Order rationale**: get to a useful **Today** screen (what to plant, water, feed, harvest, check) as early as possible, then deepen: layout and planning, animals, analysis, integrations.
 
 **Definition of done (every task)**: code + tests (unit; API; E2E for UI) pass in CI, ruff clean, `npm run build` clean, docs updated (WIKI for behaviour, ARCHITECTURE for structure, CHANGELOG `[Unreleased]` for user-facing), no new P1 violations (§2).
@@ -70,7 +72,7 @@ Goal: the foundations everything else needs, before data volume makes changes ex
 - [x] Licence gate: `bundle` needs an open licence; values may not cite unknown or `link-only` sources.
 - [x] Private pack: `<data>/catalog-private/` loaded after bundled, errors collected for the owner, `origin` = private / bundled+private; `POST /api/v1/catalog/reload`.
 - [x] Tests: 16 (real catalog loads, inheritance, private pack, 7 invalid-content cases, licence gate, parents, browse, override/reset/validation, roles + household isolation).
-- [ ] → Phase 5: catalog browser UI with source popovers and the "Data sources & licences" page.
+- [x] → Phase 5: catalog browser UI with numbered sources and the credits page (v0.10.0).
 
 **Acceptance**: v0.4.0 DB upgrades cleanly; a second member (e.g. the user's wife) can be invited, chooses Today as start screen and never sees the climate page unless she opens it; catalog YAML with a schema error fails CI.
 
@@ -105,23 +107,26 @@ Goal: probabilistic, self-updating environment; remove v1 heuristics (§18).
 
 **Acceptance**: AC-P1, AC-P2 (cold tail appears/disappears), AC-P3 pass on the environment layer; forecast refresh stays within quota budget in a 24 h simulated run.
 
-## Phase 5 — Crop & organism catalog content (v0.7.0) §6.1, §11.3
-- [ ] `catalog/sources.yaml` from `docs/research/catalog-data-sources.md` (licence, extra terms, `tos_reviewed`, access per source).
-- [ ] Ingestion package `scripts/catalog/` (SPEC §16.1): fetcher per source with identifying User-Agent, robots.txt check, throttle; raw snapshots by SHA-256 outside git + `snapshots.lock`; pure extractors with fixture tests; proposals merged under hand-curated values.
-- [ ] Fetchers: Wikidata SPARQL (names, Afrikaans labels, ID crosswalk), WFO snapshot, ECOCROP via Recocrop raw table (spot-check 20 crops against the live tool), pyfao56 tables, OpenFarm rescue `crops.json`, USDA PLANTS JSON (cover crops), EPPO Codes, Wikipedia companion list (pinned revision).
+## Phase 5 — Crop & organism catalog content (v0.10.0 = 5a) §6.1, §11.3
+- [x] `catalog/sources.yaml` from `docs/research/catalog-data-sources.md` (licence, extra terms, `tos_reviewed`, access per source).
+- [x] Ingestion package `scripts/ingest/` (SPEC §16.1): fetcher with identifying User-Agent, robots.txt check, 2 s/host throttle; raw snapshots by SHA-256 in `.ingest-cache/` (git-ignored) + committed `snapshots.lock`; pure extractors with synthetic-fixture tests; merge where hand-curated values win (v0.10.0).
+- [x] Fetchers v1: pyfao56 tables (FAO-56 Tables 11/12/22: stage days, Kc, height, root depth, p), Harrington germination via OSU (°F→°C, days to emergence), OpenFarm rescue (spacing, height, sun; grower-reported, low confidence), GBIF species match (`check`: accepted name + family).
+- [ ] Fetchers v2: ECOCROP via Recocrop raw table (CRAN reachable; temperature/rain/pH ranges, killing temperature; spot-check 20 crops), DSSAT species files (cardinal temperatures, model), Wikidata (Afrikaans labels: the API answers with an identifying UA; SPARQL endpoint blocked from the sandbox), WFO snapshot, USDA PLANTS JSON (cover crops), EPPO Codes, Wikipedia companion list (pinned revision).
 - [ ] Monthly GitHub Actions job: run fetchers, open a PR with the YAML diff for review.
 - [ ] Prose-similarity CI check (catalog text vs snapshot text) to prevent copied expression.
+- [x] 29 core vegetables (v0.10.0): curated base (names en/af, accepted name, APG IV family, rotation group, life cycle, fresh description) + pipeline values.
 - [ ] Write 60 vegetable & herb crops (`catalog/crops/*.yaml`): profile (§5), phenology GDD targets or DTM, spacing, depth, germination curve, family, nutrient demand per stage, Kc, companions (default `evidence: traditional` + mechanism tag; promote only with a pair-specific study), harvest ripeness cues, storage/preservation, yield/m², how-to text for each task type.
 - [ ] Varieties: ≥ 2 per crop (e.g. heat-tolerant vs standard), sourced.
 - [ ] 20 fruit species (trees, vines, berries) with chill requirements, bloom frost sensitivity, pruning windows.
 - [ ] 5 cover crops.
 - [ ] Organism catalog v1 (`catalog/organisms/*.yaml`): 40 common pests/diseases/beneficials/weeds/deficiencies with identification, look-alikes, verdict-with-context rules (keep / remove / tolerate below threshold), least-harm actions, safety notes, risk model (degree-day or weather rule) re-implemented from published rules (Hutton, Smith, Gubler-Thomas; US degree-day models flagged `US-calibrated`); photos only CC0/CC BY/CC BY-SA, licence + author stored per image.
-- [ ] Catalog browser UI (search, filter, detail with sources) + override editor + "create custom crop/variety/organism" (clone or blank).
-- [ ] CI: schema validation, every numeric field has a source or `estimate: true`, no duplicate slugs.
+- [x] Catalog browser UI: Crops list with search (en/af/scientific/family), crop detail in plain words with numbered sources, credits page "Where the crop data comes from" (v0.10.0).
+- [ ] Override editor + "create custom crop/variety/organism" (clone or blank).
+- [x] CI: schema validation, every numeric field has a source or `estimate: true`, no duplicate slugs, crop file name = slug.
 
 **Acceptance**: catalog loads in < 1 s; overriding a variety's `lethal_min` changes its windows (AC-P5 for crops).
 
-## Phase 6 — Crop engine: phenology, windows, tasks (v0.8.0) §6.3–6.6, §9.2
+## Phase 6 — Crop engine: phenology, windows, tasks §6.3–6.6, §9.2
 **6.1 Phenology**
 - [ ] `engine/phenology.py`: emergence from soil-temperature thermal time; stage progression by GDD (base, cutoff); photoperiod & vernalization triggers; perennial dormancy/chill/budbreak; expected + p10/p90 paths using environment distributions.
 - [ ] Tests with synthetic climates and hand-computed GDD sums.
@@ -154,7 +159,7 @@ Goal: probabilistic, self-updating environment; remove v1 heuristics (§18).
 
 **Acceptance**: for a synthetic Mediterranean and a synthetic frosty climate, the same tomato and lettuce varieties get different, sensible windows without configuration (AC-P2/P3); all tasks have reason traces (AC-P4).
 
-## Phase 6.9 — Design system (before the Today screen) §15 "Professional quality"
+## Phase 6.9 — Design system (v0.9.0) §15 "Professional quality"
 - [x] `docs/DESIGN.md`: brand basics, colour tokens (light/dark, contrast-checked), type scale, spacing/radius/elevation, iconography (lucide sizes/strokes), motion, voice & tone for copy.
 - [x] Component kit in `frontend/src/components/ui/`: Button, IconButton, PageHeader, Section, Field, Radio cards, Switch, Badge, Empty state, Skeleton, Error state; ad-hoc classes replaced in all pages (v0.9.0).
 - [ ] Sheet/Dialog, Tabs, Toast, Select: add with the first screen that needs them (Phase 7 task card, Phase 8 setup).
@@ -163,7 +168,7 @@ Goal: probabilistic, self-updating environment; remove v1 heuristics (§18).
 - [x] Run it in CI against the stubbed server (`tests/e2e_server.py`) and upload the images as artifacts.
 - [x] Replace placeholder copy (Today, Garden) with designed empty states.
 
-## Phase 7 — Today screen & calendar (v0.10.0) §11.2, §9.2
+## Phase 7 — Today screen & calendar §11.2, §9.2
 - [ ] `GET /api/v1/today`: grouped actions (Protect, Plant, Water, Feed, Harvest, Animals, Check, Maintain), weather header with plain-language advice, load vs available time, next-7-days strip.
 - [ ] Task card component: how-to steps, why-now, minutes, Done (with quantity/photo), Skip, Snooze, Not possible today; optimistic UI.
 - [ ] Load balancing: overflow low-priority tasks to the next suitable day.
@@ -175,7 +180,7 @@ Goal: probabilistic, self-updating environment; remove v1 heuristics (§18).
 
 **Acceptance**: AC-P7 (with a manually created plan until Phase 8); hallway test with a non-technical household member (the user's wife): can she tell in 10 seconds what to do today and how? Feedback goes into this plan.
 
-## Phase 8 — Guided setup, layout editor, plan generator (v0.10.0) §3.1–3.2, §7.1, §9.1
+## Phase 8 — Guided setup, layout editor, plan generator §3.1–3.2, §7.1, §9.1
 **8.1 Setup interview**
 - [ ] Question graph (`backend/app/interview.yaml`): topics (§3.1 table), questions, input types, conditions, "why we ask", mapping to profile fields.
 - [ ] Wizard UI: one question per screen on mobile, progress, skip, resume, edit later; accessible.
@@ -201,7 +206,7 @@ Goal: probabilistic, self-updating environment; remove v1 heuristics (§18).
 - [ ] Auto-layout into beds; diff view; accept → plantings + tasks.
 - [ ] Re-plan diff when profile or conditions change (AC-P8).
 
-## Phase 9 — Animals (v0.11.0–v0.12.0) §8
+## Phase 9 — Animals §8
 **9.1 Catalog & records**
 - [ ] Species/breed YAML for chicken, duck, goose, turkey, quail, goat, sheep, cattle, pig, rabbit, honeybee (profiles, housing space, water & feed models, lifecycle, production, care templates), sourced. Breeds from FAO DAD-IS (CC BY 4.0, structured fields only) matched to Wikidata by name+species+country. No bundled withdrawal periods: user enters label days, app computes the safe date.
 - [ ] Tables `animal_group`, `animal`, `animal_event`; UI for groups, individuals, events (weights, health, treatments with withdrawal periods, breeding, births, deaths, moves, production).
@@ -218,25 +223,25 @@ Goal: probabilistic, self-updating environment; remove v1 heuristics (§18).
 
 **Acceptance**: AC-P2 for animals (adding a hot humid tail creates THI alerts without configuration); animal tasks appear in Today under Animals.
 
-## Phase 10 — Harvest, pantry, seeds, inputs (v0.13.0) §10
+## Phase 10 — Harvest, pantry, seeds, inputs §10
 - [ ] Harvest log with yields vs expected; feeds yield estimates for the plan generator.
 - [ ] Pantry & preservation inventory with batches, methods, best-before defaults, expiry tasks.
 - [ ] Seed vault: lots, germination tests, viability by species longevity, reorder reminders from planned sowings.
 - [ ] Inputs inventory full (fertiliser, feed, medication, bedding) with usage linked to tasks.
 - [ ] Journal with photos and tags.
 
-## Phase 11 — Climate explorer & insights (v0.14.0) §11.4–11.5
+## Phase 11 — Climate explorer & insights §11.4–11.5
 - [ ] `docs/DESIGN.md`: palette, chart rules (light/dark, accessible), typography.
 - [ ] Charts: DOY bands (temperature day/night, soil, rain, ET0), daylight curve, threshold probability curves (user-picked), trend, this-season overlay, sensor overlay; data-table toggle; generated takeaway sentence; attribution.
 - [ ] "What matters here, now" ranking (probability × impact × soonness) from the household's crops/animals; reference basket before any plantings.
 - [ ] Dashboards: yields, production, water use, task completion; season comparison.
 
-## Phase 12 — Home Assistant (v0.15.0) §12.1
+## Phase 12 — Home Assistant §12.1
 - [ ] MQTT discovery publisher (tasks, alerts, bed water deficit, THI, laying forecast) and subscriber for configured sensors.
 - [ ] HACS custom integration (config flow, calendar + todo entities, services: complete task, log harvest, log observation), Platinum-quality patterns from Bloomery.
 - [ ] Irrigation request events per bed/zone (litres/minutes) for HA automations.
 
-## Phase 13 — AI co-pilot (v0.16.0) §12.4
+## Phase 13 — AI co-pilot §12.4
 - [ ] Provider abstraction (port Bloomery `ai.py`), settings UI, key never returned.
 - [ ] Grounded context builder + read-only tools (catalog, environment probabilities, plantings, tasks).
 - [ ] Chat; photo diagnosis → organism candidates with confidence, verdict, actions, follow-up task; preservation recipes from pantry; draft custom profiles for review.

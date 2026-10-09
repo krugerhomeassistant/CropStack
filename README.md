@@ -29,9 +29,12 @@ It runs on your own hardware (a NAS, a Raspberry Pi, a home server) as one conta
 <p align="center">
   <img src="docs/images/today-desktop-dark.png" width="820" alt="Today screen on a desktop in dark mode, with the side navigation" />
 </p>
+<p align="center">
+  <img src="docs/images/crop-desktop.png" width="820" alt="The tomato page in the crop catalog: germination, water, spacing and growth stages, each value with a numbered source" />
+</p>
 
 > [!NOTE]
-> CropStack is in active development (v0.9). The foundations work today: households, your garden's climate and weather, and the data catalog format. The daily jobs, crop planner and animal care are next. See [what works now](#-what-works-now) and the [roadmap](#-roadmap).
+> CropStack is in active development (v0.10). The foundations work today: households, your garden's climate and weather, and a first crop catalog. The daily jobs, crop planner and animal care are next. See [what works now](#-what-works-now) and the [roadmap](#-roadmap).
 
 ## ✅ What works now
 
@@ -42,7 +45,7 @@ It runs on your own hardware (a NAS, a Raspberry Pi, a home server) as one conta
 - **Your choices.** Each person picks the screen the app opens on and metric or imperial units.
 - **Privacy you can see.** Settings lists every outside service CropStack talks to, what it sends and when. Owners can switch off the forecast and place search.
 - **Installable app.** Works as a phone app (PWA) in light and dark mode, with a desktop layout for larger screens.
-- **Catalog foundation.** The format for crops, varieties, pests, animals and tasks, with a source and evidence level on every value and a licence check on every source. Content arrives in the next phase.
+- **Crop catalog.** 29 common vegetables, searchable in English or Afrikaans: when they germinate and how fast at each soil temperature, how much water they use and how deep their roots go, spacing, and growth stages. Every number shows where it comes from and how strong the evidence is; a credits page lists every source and its licence.
 
 ## 🗺️ Roadmap
 
@@ -50,7 +53,7 @@ The full product is specified in [docs/SPEC.md](docs/SPEC.md) and broken into st
 
 | Next | What you get |
 |---|---|
-| Crop catalog | Vegetables, herbs, fruit, cover crops, pests, beneficial insects and weeds, each with cited requirements |
+| More catalog | More vegetables and herbs, varieties, fruit, cover crops, pests, beneficial insects and weeds, temperature limits from FAO ECOCROP |
 | Crop engine | Planting windows from your climate, growth stages, watering from rain and evaporation, feeding and scouting |
 | **Today** | Your daily jobs grouped as Protect, Plant, Water, Feed, Harvest, Animals, Check and Maintain, each with how and why |
 | Setup and planning | A short interview (space, water, household, diet, time, budget), a layout editor drawn to scale with sun and shade, and a plan generator |

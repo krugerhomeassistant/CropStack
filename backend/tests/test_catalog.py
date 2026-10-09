@@ -22,6 +22,10 @@ def test_the_real_catalog_loads_and_its_schema_files_are_current():
         [sys.executable, str(REPO / "scripts" / "catalog_schema.py"), "--check"], capture_output=True
     )
     assert check.returncode == 0, check.stdout.decode()
+    for path in (REPO / "catalog" / "crops").glob("*.yaml"):
+        crop = loaded.get("crop", path.stem)
+        assert crop is not None, f"{path.name}: slug must match the file name"
+        assert crop["names"].get("en") and crop["description"], path.name
 
 
 def test_variety_inherits_from_its_crop_and_overrides_win():
@@ -133,7 +137,9 @@ def test_browse_catalog(client):
     signup(client, "cat1")
     status = client.get("/api/v1/catalog").json()
     assert status["counts"]["crop"] == 1 and status["counts"]["variety"] == 1
-    assert client.get("/api/v1/catalog/crop").json()[0]["slug"] == "testcrop"
+    listed = client.get("/api/v1/catalog/crop").json()[0]
+    assert listed["slug"] == "testcrop" and "scientific_name" in listed and "family" in listed
+    assert {s["id"] for s in client.get("/api/v1/catalog/sources").json()} >= {"test-open"}
     item = client.get("/api/v1/catalog/variety/testcrop-hardy").json()
     assert item["data"]["requirements"]["temperature"]["base"]["value"] == 10
     assert "test-open" in item["sources"]

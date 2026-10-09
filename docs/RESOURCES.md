@@ -19,6 +19,8 @@
 | Outside services | `backend/app/external.py` |
 | Climate card / place search | `frontend/src/components/{ClimateCard,PlaceSearch}.tsx` |
 | Catalog (data, licence, sources, schema) | `catalog/` (`README.md`, `sources.yaml`, `NOTICE`, `LICENSE`, `schema/`) |
+| Catalog ingestion | `scripts/ingest/` (`crosswalk.yaml`, `snapshots.lock`), cache `.ingest-cache/` (git-ignored) |
+| Crop pages | `frontend/src/pages/{Crops,Crop,CropData}.tsx` |
 | Catalog code / API | `backend/app/catalog.py`, `backend/app/routers/catalog.py`, `scripts/catalog_schema.py` |
 | Private pack (runtime) | `<data>/catalog-private/` |
 | Models | `backend/app/models.py` |
@@ -38,7 +40,7 @@
 | Data (runtime) | `./data/cropstack.db`, `./data/secret.key` |
 
 ## Endpoints (docs at `/api/docs`)
-`GET /api/health` · everything else under `/api/v1`: auth `GET status`, `POST register` (optional `invite`), `POST login`, `POST logout`, `GET me`, `PUT prefs`, `POST password` · household `GET|PUT household`, `PUT|DELETE household/members/{user_id}`, `GET|POST household/invites`, `DELETE household/invites/{id}`, public `GET invites/{token}` · site `GET|PUT sites/current`, `GET sites/current/climate`, `GET sites/current/climate/probability?var&op&x`, `GET sites/current/climate/bands?var` · `GET places?q=` · weather `GET sites/current/weather` · household `GET|PUT household/settings`, `GET household/data-sources` · catalog `GET catalog`, `POST catalog/reload`, `GET catalog/{kind}`, `GET catalog/{kind}/{slug}`, `PUT|DELETE catalog/{kind}/{slug}/overrides`
+`GET /api/health` · everything else under `/api/v1`: auth `GET status`, `POST register` (optional `invite`), `POST login`, `POST logout`, `GET me`, `PUT prefs`, `POST password` · household `GET|PUT household`, `PUT|DELETE household/members/{user_id}`, `GET|POST household/invites`, `DELETE household/invites/{id}`, public `GET invites/{token}` · site `GET|PUT sites/current`, `GET sites/current/climate`, `GET sites/current/climate/probability?var&op&x`, `GET sites/current/climate/bands?var` · `GET places?q=` · weather `GET sites/current/weather` · household `GET|PUT household/settings`, `GET household/data-sources` · catalog `GET catalog`, `POST catalog/reload`, `GET catalog/sources`, `GET catalog/{kind}`, `GET catalog/{kind}/{slug}`, `PUT|DELETE catalog/{kind}/{slug}/overrides`
 
 ## Repos
 - CropStack: https://github.com/krugerhomeassistant/CropStack
@@ -64,3 +66,10 @@
 ## Local
 - Host folder: `E:\Projects\Personal\CropStack`
 - Default URL: http://localhost:8430
+
+## Catalog source URLs (fetched by `scripts/ingest`)
+- pyfao56 FAO-56 tables: https://raw.githubusercontent.com/kthorp/pyfao56/main/src/pyfao56/tools/tables.py
+- Harrington germination tables (OSU): https://extension.oregonstate.edu/es/catalog/soil-temperature-conditions-vegetable-seed-germination
+- OpenFarm rescue (pinned commit): https://github.com/thefullnacho/openfarm-crops-rescue
+- GBIF species match: https://api.gbif.org/v1/species/match?name=…
+
