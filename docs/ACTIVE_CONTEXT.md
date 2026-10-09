@@ -16,7 +16,7 @@ Phase 4.1 + 4.4 released as v0.6.0: analog-year environment engine (`environment
 - Values marked "unverified" in the notes must not be bundled until checked.
 
 ## Blockers
-- None. Open: SPEC §19 Q6 (ask ARC-VOPI for reuse permission?); user may veto CC BY-SA 4.0 for the catalog.
+- None. Decided 2026-10-09 (user: personal, non-commercial use; repo stays public): public `catalog/` = CC BY-SA 4.0; no ARC request for now; personal-use values go in a private pack on the server (SPEC §16.1, §19 Q6–7).
 
 ## Immediate next step
-Phase 3.4 catalog infrastructure (schemas, loader, overrides, provenance, `catalog/LICENSE` + `NOTICE`, licence gate) per SPEC §16.1 and the research handoff above; then Phase 4.2 (forecast + scheduler). Open user decisions unchanged: CC BY-SA 4.0 veto? ARC permission request?
+Phase 3.4 catalog infrastructure (schemas, loader, overrides, provenance, `catalog/LICENSE` + `NOTICE`, licence gate) per SPEC §16.1 and the research handoff above; then Phase 4.2 (forecast + scheduler). Include the private pack (PLAN 3.4).

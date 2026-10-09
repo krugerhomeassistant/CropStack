@@ -60,6 +60,7 @@ Goal: the foundations everything else needs, before data volume makes changes ex
 - [ ] Source tracking: every value carries the provenance block of SPEC §16.1 → `catalog/sources.yaml`.
 - [ ] `catalog/LICENSE` (CC BY-SA 4.0) + `catalog/NOTICE` (FAO extra terms, EPPO notice, citation strings); README/WIKI state MIT does not cover `catalog/`.
 - [ ] CI licence gate: fail on any source whose licence is NC, ND or unknown.
+- [ ] Private pack: load `/data/catalog-private/**/*.yaml` (same schema) after the bundled catalog; never committed; excluded from the licence gate; `origin: private` shown as a badge (SPEC §16.1).
 
 **Acceptance**: v0.4.0 DB upgrades cleanly; a second member (e.g. the user's wife) can be invited, chooses Today as start screen and never sees the climate page unless she opens it; catalog YAML with a schema error fails CI.
 
