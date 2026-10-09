@@ -13,6 +13,7 @@ import {
   type Range,
 } from '../api'
 import { Badge, EmptyState, ErrorState, PageHeader, Section, Skeleton } from '../components/ui'
+import SowingWindows from '../components/SowingWindows'
 import { N_, t } from '../i18n'
 import { useApp } from '../state'
 import { cm, metres, rain, temp, type Units } from '../units'
@@ -446,6 +447,8 @@ export default function Crop() {
       </div>
 
       {data.description && <p className="max-w-prose text-lg">{data.description}</p>}
+
+      <SowingWindows slug={slug} />
 
       <div className="flex flex-col gap-6 lg:grid lg:grid-cols-2 lg:items-start">
         <Germination data={data} units={units} notes={notes} />

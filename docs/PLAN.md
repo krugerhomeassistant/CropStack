@@ -123,18 +123,20 @@ Goal: probabilistic, self-updating environment; remove v1 heuristics (§18).
 - [ ] Organism catalog v1 (`catalog/organisms/*.yaml`): 40 common pests/diseases/beneficials/weeds/deficiencies with identification, look-alikes, verdict-with-context rules (keep / remove / tolerate below threshold), least-harm actions, safety notes, risk model (degree-day or weather rule) re-implemented from published rules (Hutton, Smith, Gubler-Thomas; US degree-day models flagged `US-calibrated`); photos only CC0/CC BY/CC BY-SA, licence + author stored per image.
 - [x] Catalog browser UI: Crops list with search (en/af/scientific/family), crop detail in plain words with numbered sources, credits page "Where the crop data comes from" (v0.10.0).
 - [ ] Override editor + "create custom crop/variety/organism" (clone or blank).
+- [ ] **Contribution and perpetual collection** (owner request 2026-10-09): `docs/CONTRIBUTING-CATALOG.md` (YAML schema, evidence levels, source and licence rules, worked example); issue forms "Request a species" and "Report or correct a value"; `catalog-contribution` PR template; `scripts/coverage.py` (per crop/animal: which requirement fields are empty or estimates) published as `docs/COVERAGE.md` and used to label issues "needs data"; CI validates contributions (schema, sources, prose similarity, `catalog/NOTICE` licences); monthly ingest job (above) keeps running forever; in-app "Suggest a correction" link on each crop that opens a pre-filled issue.
+
 - [x] CI: schema validation, every numeric field has a source or `estimate: true`, no duplicate slugs, crop file name = slug.
 
 **Acceptance**: catalog loads in < 1 s; overriding a variety's `lethal_min` changes its windows (AC-P5 for crops).
 
 ## Phase 6 — Crop engine: phenology, windows, tasks §6.3–6.6, §9.2
 **6.1 Phenology**
-- [ ] `engine/phenology.py`: emergence from soil-temperature thermal time; stage progression by GDD (base, cutoff); photoperiod & vernalization triggers; perennial dormancy/chill/budbreak; expected + p10/p90 paths using environment distributions.
-- [ ] Tests with synthetic climates and hand-computed GDD sums.
+- [x] (v0.13.0, GDD only; photoperiod/vernalization/perennials still open) `engine/phenology.py`: emergence from soil-temperature thermal time; stage progression by GDD (base, cutoff); photoperiod & vernalization triggers; perennial dormancy/chill/budbreak; expected + p10/p90 paths using environment distributions.
+- [x] Tests with synthetic climates (hand-computed GDD sums still open; GDD itself is tested in test_environment).
 
 **6.2 Window finder**
-- [ ] `engine/windows.py`: daily candidate starts over 18 months × methods; success-probability factors; quality score; viable windows at risk tolerance; best sub-window; protected-growing rerun with structure modifiers.
-- [ ] "Can I grow X here?" verdict + blockers; API `GET /api/v1/varieties/{id}/windows?site=…`.
+- [x] (v0.13.0, direct sowing only; indoor/transplant/protected open) `engine/windows.py`: daily candidate starts over 18 months × methods; success-probability factors; quality score; viable windows at risk tolerance; best sub-window; protected-growing rerun with structure modifiers.
+- [x] "Can I grow X here?" verdict + blockers; API `GET /api/v1/crops/{slug}/windows` (varieties later) and crop-page section.
 - [ ] Performance benchmark: 50 varieties ≤ 2 s on CI runner (scaled target for Pi documented).
 
 **6.3 Plantings**

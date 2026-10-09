@@ -78,6 +78,13 @@ requirements:
       confidence: medium
       sources:
       - {ref: fao-ecocrop, locator: 'ECOCROP code 27, TMAX (via Recocrop)', retrieved: 2026-10-09, snapshot: 'sha256:90a21d908419e304e4e4c38c92df62d93b25cb373420fcd0a711247b1f47f358'}
+    lethal_min:
+      value: -6.0
+      unit: Cel
+      evidence: traditional
+      confidence: low
+      estimate: true
+      qualifiers: {basis: 'frost-tolerance class (tender, half-hardy or hardy) from standard extension charts'}
   soil:
     ph:
       value: {min: 4.3, opt_min: 6.0, opt_max: 7.0, max: 8.3}

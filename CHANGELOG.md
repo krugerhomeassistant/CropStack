@@ -5,6 +5,16 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.13.0] - 2026-10-09
+
+### Added
+- **When to sow here** on every crop page (once the garden has a location): the dates you can direct-sow it, the best stretch, how long until harvest, and a chart of the chance of success for each sowing day. It is worked out from the crop's requirements and your own climate record, with nothing to configure. Where it cannot succeed, the page says what stands in the way.
+- Frost-kill temperatures for 28 crops (marked as estimates until sourced).
+
+### Development
+- New `engine` package (`phenology`, `windows`): pure functions over the analog-year climate. Direct sowing only; indoor starts, transplants and protected growing come next.
+- API: `GET /api/v1/crops/{slug}/windows`.
+
 ## [0.12.0] - 2026-10-09
 
 ### Added

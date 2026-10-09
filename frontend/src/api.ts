@@ -58,6 +58,27 @@ export type Climate = {
 
 /** Typical value per day of the year (365 days, 29 Feb dropped): the middle value and the range of 8 years in 10. */
 export type Bands = { var: string; p10: (number | null)[]; p50: (number | null)[]; p90: (number | null)[]; years: string }
+export type SowWindow = {
+  start: string
+  end: string
+  length_days: number
+  all_year: boolean
+  best_start: string
+  best_end: string
+  success: number
+  days_to_maturity: { p10: number; p50: number; p90: number }
+}
+export type CropWindows =
+  | { slug: string; usable: false; missing: string[] }
+  | {
+      slug: string
+      usable: true
+      method: string
+      estimates: string[]
+      windows: SowWindow[]
+      success_by_day: number[]
+      verdict: { state: 'yes' | 'risky' | 'no'; best_success: number; threshold: number; blockers: string[] }
+    }
 export type Probability = { var: string; days: number[]; years: string }
 
 export type DayWeather = {
@@ -184,6 +205,7 @@ export const api = {
   bands: (name: string) => request<Bands>('GET', `/sites/current/climate/bands?var=${name}`),
   probability: (name: string, op: 'le' | 'ge', x: number) =>
     request<Probability>('GET', `/sites/current/climate/probability?var=${name}&op=${op}&x=${x}`),
+  cropWindows: (slug: string) => request<CropWindows>('GET', `/crops/${encodeURIComponent(slug)}/windows`),
   savePrefs: (prefs: Prefs) => request<Prefs>('PUT', '/auth/prefs', prefs),
   weather: () => request<Weather>('GET', '/sites/current/weather'),
   householdSettings: () => request<HouseholdSettings>('GET', '/household/settings'),

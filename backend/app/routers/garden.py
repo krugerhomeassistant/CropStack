@@ -9,8 +9,11 @@ from sqlmodel import Session, select
 
 from .. import climate, external
 from .. import environment as env
+from ..catalog import effective
 from ..deps import MemberDep, OwnerDep, SessionDep
+from ..engine import phenology, windows
 from ..models import ClimateArchive, Household, Site, now
+from .catalog import CatalogDep, _overrides
 
 router = APIRouter(prefix="/api/v1", tags=["site"])
 
@@ -155,3 +158,24 @@ def search_places(me: MemberDep, db: SessionDep, q: str = Query(min_length=2, ma
         return external.search_places(q)
     except external.ExternalError as e:
         raise HTTPException(502, f"Place search unavailable: {e}") from e
+
+
+@router.get("/crops/{slug}/windows")
+def crop_windows(slug: str, me: MemberDep, db: SessionDep, c: CatalogDep) -> dict:
+    """When this crop can be direct-sown at the household's site, from its requirements and the local climate."""
+    item = effective(c, "crop", slug, _overrides(db, me.household_id, "crop", slug))
+    if item is None:
+        raise HTTPException(404, f"No crop {slug!r} in the catalog")
+    site = _site(me.household_id, db)
+    profile = phenology.profile_from_item(item)
+    if not profile.usable:
+        return {"slug": slug, "usable": False, "missing": list(profile.missing)}
+    threshold = windows.success_threshold(site.frost_probability)
+    result = windows.analyse(_climatology(_archive(site, db)), profile, threshold)
+    return {
+        "slug": slug,
+        "usable": True,
+        "method": "direct sowing",
+        "estimates": list(profile.estimates),
+        **result,
+    }

@@ -1,9 +1,9 @@
 # ACTIVE CONTEXT
 
-**Date:** 2026-10-09 · **Version:** 0.12.0
+**Date:** 2026-10-09 · **Version:** 0.13.0
 
 ## Current subtask
-v0.12.0 (ECOCROP values and Growing conditions on crop pages) ready to release. v0.11.0 (climate charts) is released and CI-verified. Next: fetchers v2b, more crops, or the crop engine.
+v0.13.0 (direct-sow windows engine, API and crop-page section) released after CI. Next: contribution and perpetual-collection infrastructure (owner request below), then 6.2b indoor starts/transplants, 6.3 plantings.
 
 ## Open to-dos (owner: "make note of missed/still to dos")
 - UI kit: Sheet/Dialog, Tabs, Toast, Select. Add with the first screen that needs them (PLAN 6.9).
@@ -11,6 +11,8 @@ v0.12.0 (ECOCROP values and Growing conditions on crop pages) ready to release. 
 - Catalog (PLAN 5): fetchers v2b (DSSAT, Wikidata Afrikaans, WFO, USDA PLANTS, EPPO, Wikipedia companions; ECOCROP is done); monthly CI job opening a PR with the YAML diff; prose-similarity CI check; herbs and the rest of the 60 crops; varieties (≥ 2 per crop); 20 fruit species; 5 cover crops; 40 organisms; override editor and custom crops.
 - From the owner: real climate and forecast values from the ZimaOS install (first real Open-Meteo call; never succeeded from the sandbox).
 - Waits for Home Assistant work: 4.3 sensors and observations.
+
+- **Owner request 2026-10-09 (mid-Phase 6): global contribution + perpetual data collection.** Way for anyone to add plants/animals/values (PRs to `catalog/`; issue forms for "request a species" and "report a value"; a contributor guide with the YAML schema, sources and licence rules; CI that validates schema, sources and prose similarity on every PR) and a collection loop that never stops (monthly scheduled ingest job opening a PR with the YAML diff; a coverage report listing crops/animals still missing values; a "needs data" label queue). Build after #19 (windows API + UI). Tracked in PLAN as 5.x "Contribution and perpetual collection".
 
 ## Last execution results
 - All pages and components moved to the UI kit and tokens; desktop rail ≥ 1024 px; Today two columns on desktop; designed empty states for Today jobs and Garden beds. `npm run screenshots` reviewed (24 images, light/dark × phone/desktop). Build and type check clean.

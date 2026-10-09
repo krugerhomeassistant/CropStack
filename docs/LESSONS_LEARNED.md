@@ -77,3 +77,5 @@ CropStack-specific:
 60. **`pyreadr` imports but fails ("requires pandas or polars")** → it has no hard dependency on a dataframe library → install pandas as well; the CLI error now says so.
 61. **ECOCROP names are old (tomato is *Lycopersicon esculentum*)** → name matching misses → crosswalk by `CODE`, checked by eye against the scientific name.
 62. **`rsync` is not installed in the sandbox** → restore a directory from git with `git checkout -- <dir>` when it has no other uncommitted changes.
+63. **A new test registered a username another test had already used (409)** → API tests share one database within the run → use a unique username per test.
+64. **E2E/screenshots against a leftover stub server showed old results or refused connections** → an earlier server still held the port → stop it by PID (`pgrep` + `kill`), wipe `/tmp/cs-e2e`, restart with `--port 8512`, and pass `CROPSTACK_URL` and `CHROMIUM_PATH=/opt/pw-browsers/chromium`.

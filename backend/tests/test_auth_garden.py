@@ -182,3 +182,16 @@ def test_climate_probability_and_bands(client, monkeypatch):
     bands = client.get("/api/v1/sites/current/climate/bands", params={"var": "tmax"}).json()
     assert all(lo <= mid <= hi for lo, mid, hi in zip(bands["p10"], bands["p50"], bands["p90"], strict=True))
     assert client.get("/api/v1/sites/current/climate/bands", params={"var": "nonsense"}).status_code == 422
+
+
+def test_crop_windows(client, monkeypatch):
+    monkeypatch.setattr(
+        external, "fetch_climate_archive", lambda lat, lon: synthetic(mean=14, amplitude=7, coldest=date(2001, 7, 15))
+    )
+    register(client, "windy")
+    assert client.get("/api/v1/crops/testcrop/windows").status_code == 404  # no garden yet
+    client.put("/api/v1/sites/current", json=GARDEN)
+    body = client.get("/api/v1/crops/testcrop/windows").json()
+    assert body["usable"] and len(body["success_by_day"]) == 365
+    assert body["verdict"]["state"] in {"yes", "risky", "no"}
+    assert client.get("/api/v1/crops/nope/windows").status_code == 404

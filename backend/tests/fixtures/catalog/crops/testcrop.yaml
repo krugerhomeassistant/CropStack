@@ -15,3 +15,4 @@ params:
   days_to_maturity:
     - {value: 70, unit: d, qualifiers: {region: warm}, evidence: grower-reported, sources: [{ref: test-open}]}
     - {value: 90, unit: d, qualifiers: {region: cool}, evidence: grower-reported, sources: [{ref: test-open}]}
+  cycle_days: {value: {min: 70, max: 100}, unit: d, evidence: grower-reported, sources: [{ref: test-open}]}
