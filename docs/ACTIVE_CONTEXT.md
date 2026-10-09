@@ -10,6 +10,11 @@ Catalog data-sourcing research merged into the docs (user: "open-source data, ev
 - Decisions: catalog in `catalog/` (not `data/`, the runtime volume); catalog licence CC BY-SA 4.0, code MIT; per-value provenance + evidence levels; maintainer-only ingestion pipeline with licence gate (SPEC §16, §16.1). PLAN 3.4, 5, 9.1 updated; WIKI, RESOURCES, TOOLING, LESSONS 35–38, README updated. No code changes.
 - v0.5.0 state (previous session): backend 45/45, ruff clean, frontend build OK; one unreproduced test error seen once during 3.3, watch CI.
 
+## Handoff to the implementing session
+- Pull `main` first; then read, in order: this file, SPEC §6.1, §16, §16.1, PLAN 3.4 / Phase 5 / 9.1, `docs/research/catalog-data-sources.md` (decisions + source table), `docs/research/notes/*.md` (per-domain evidence: cited values, URLs, licence quotes, gaps).
+- Treat `licence_conflicts_resolved.md` as overriding the other notes where they disagree.
+- Values marked "unverified" in the notes must not be bundled until checked.
+
 ## Blockers
 - None. Open: SPEC §19 Q6 (ask ARC-VOPI for reuse permission?); user may veto CC BY-SA 4.0 for the catalog.
 
