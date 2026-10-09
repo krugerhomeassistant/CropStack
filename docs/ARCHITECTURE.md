@@ -15,7 +15,7 @@ Target architecture (engines, data model, API) is specified in `docs/SPEC.md` §
 ## Stack (pinned 2026-10-09)
 | Layer | Tech |
 |---|---|
-| Backend | Python 3.14 (runtime, CI) / 3.13+ (dev), FastAPI 0.143.0, uvicorn 0.54.0, SQLModel 0.0.48, pydantic-settings 2.15.0, argon2-cffi 25.1.0, itsdangerous 2.2.0, httpx 0.28.1, tzdata 2026.5 |
+| Backend | Python 3.14 (runtime, CI) / 3.13+ (dev), FastAPI 0.143.0, uvicorn 0.54.0, SQLModel 0.0.48, pydantic-settings 2.15.0, alembic 1.20.0, argon2-cffi 25.1.0, itsdangerous 2.2.0, httpx 0.28.1, tzdata 2026.5 |
 | Frontend | React 19.3, Vite 8.3, TypeScript 7.0, Tailwind 4.3 (`@tailwindcss/vite`), vite-plugin-pwa 2.0, lucide-react 1.53, @fontsource-variable/nunito (self-hosted font) |
 | Tooling | ruff (lint + format), pytest, GitHub Actions, Dependabot, GHCR |
 
@@ -24,7 +24,8 @@ Target architecture (engines, data model, API) is specified in `docs/SPEC.md` §
 |---|---|
 | `__init__.py` | `VERSION` (single source; `scripts/bump.py` keeps frontend in sync) |
 | `config.py` | `Settings` (env `CROPSTACK_*`), secret auto-generation |
-| `db.py` | engine (WAL + FK pragmas), `init_db`, `get_session` dependency |
+| `db.py` | engine (WAL + FK pragmas), `init_db` (Alembic `upgrade head`, foreign keys off while migrating), `get_session` dependency |
+| `migrations/` | Alembic env + revisions (`0001_baseline` = v0.4.0 schema, creates only missing tables) |
 | `models.py` | `User`, `Garden` |
 | `deps.py` | `SessionDep`, `UserDep`, argon2 `hash_pw` / `verify_pw` |
 | `routers/auth.py` | status, register, login (IP throttle), logout, me, password |
@@ -54,7 +55,7 @@ Target architecture (engines, data model, API) is specified in `docs/SPEC.md` §
 | `CROPSTACK_SECURE_COOKIES` | `false` | HTTPS-only cookies |
 | `CROPSTACK_PORT` | `8430` | compose host port only |
 
-## DB schema (SQLite, `create_all`; no migrations yet)
+## DB schema (SQLite, Alembic migrations; revision 0001)
 - **user**: id, username (unique, lowercased), password_hash (argon2id), display_name, created_at
 - **garden**: id, user_id → user (unique, CASCADE), name, latitude, longitude, postal_code, frost_probability (10–90, default 50), created_at, updated_at
 - **climatecache**: garden_id (PK) → garden (CASCADE), latitude, longitude (location it was fetched for), summary JSON (`version`, `season_start`, `first_frost[]`, `last_frost[]`, `annual_min[]`, `monthly{tmin,tmax,soil,rain,hot_days}`, `elevation_m`, `timezone`, `period`), fetched_at. New *table* rather than new garden columns, so existing installs need no migration.
@@ -65,6 +66,6 @@ Planned: `plant` / `variety`, `bed`, `planting` (variety × bed × season), `tas
 - **No presets (SPEC P1)**: no code branches on country, hemisphere, climate type or region; decisions come from requirement profiles × environment data. CI banned-pattern check planned (PLAN 4.4).
 - `/api/*` responses are `Cache-Control: no-store`; security headers on every response.
 - Domain logic (climate, scheduling, rotation) lives in pure, tested modules; routers stay thin; outside calls only in `external.py`.
-- Schema changes add tables, not columns, until a migration tool is in place.
+- Every schema change is an Alembic revision; CI checks models and migrations match.
 - Container never runs the app as root.
 - Versions in `backend/app/__init__.py` and `frontend/package.json` must match (CI enforces).

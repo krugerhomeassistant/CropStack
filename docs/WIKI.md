@@ -65,6 +65,12 @@ Self-hosted, Docker-based garden and homestead planner. It turns a location (coo
 ## Configuration
 See `README.md` → Configuration. All env vars use the `CROPSTACK_` prefix (`backend/app/config.py`).
 
+## Database migrations
+- Alembic, scripts in `backend/app/migrations/versions/`. The app upgrades the database to the latest revision on every start (`app/db.py: init_db`).
+- Every model change needs a revision: `cd backend && alembic revision --autogenerate -m "what changed"`, then review it. CI fails if models and migrations differ (`tests/test_migrations.py`).
+- Migrations run with SQLite foreign keys **off**: batch mode rebuilds tables (copy, drop, rename) and a cascade on drop would delete child rows.
+- Baseline `0001` = v0.4.0 schema; older installs are upgraded in place (missing tables created, data kept).
+
 ## Data
 - `./data/cropstack.db` (SQLite, WAL) and `./data/secret.key` (auto-generated session key, mode 600).
 - Back up the whole `data/` folder.

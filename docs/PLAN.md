@@ -27,10 +27,11 @@ Roadmap implementing [`SPEC.md`](SPEC.md). Every task is atomic and resumable in
 Goal: the foundations everything else needs, before data volume makes changes expensive.
 
 **3.1 Migrations**
-- [ ] Add Alembic (`backend/alembic/`, `alembic.ini`), baseline revision matching current tables (`user`, `garden`, `climatecache`).
-- [ ] Run `alembic upgrade head` in `entrypoint.sh` before uvicorn; replace `create_all` in `init_db` with migration check (tests use `upgrade head` on a temp DB).
-- [ ] Migration test: upgrade from a v0.4.0 DB fixture keeps users/gardens.
-- [ ] LESSON + WIKI: "every schema change = Alembic revision".
+- [x] Alembic 1.20 in `backend/app/migrations/` (inside the package so the image ships it), dev CLI config `backend/alembic.ini`, batch mode for SQLite, constraint naming convention on `SQLModel.metadata`.
+- [x] Baseline `0001` = v0.4.0 schema; creates only missing tables so v0.1–v0.4 installs (no Alembic history; v0.2 without `climatecache`) converge without special cases.
+- [x] `init_db()` runs `upgrade head` on every start (app lifespan, not entrypoint: same path in tests and image), with `PRAGMA foreign_keys=OFF` during migrations.
+- [x] Tests: fresh DB + model/migration drift check (`compare_metadata`), upgrades from real v0.2.0 / v0.4.0 schemas keep data, foreign keys back on, table rebuild does not cascade-delete (regression proven to fail without the guard).
+- [x] LESSON + WIKI + CONTRIBUTING: every schema change = Alembic revision.
 
 **3.2 Households, roles, sites**
 - [ ] Tables `household`, `membership(role)`; migrate each existing user into their own household (owner).

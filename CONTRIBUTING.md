@@ -21,6 +21,16 @@ On Windows, activate the venv with `.venv\Scripts\activate` and set variables wi
 - **Commits**: small and focused, imperative subject ("Add frost-date lookup").
 - **Docs**: update `README.md` and `docs/WIKI.md` in the same PR as any user-facing change, and add a line under `[Unreleased]` in `CHANGELOG.md`.
 
+## Database changes
+
+Every change to `backend/app/models.py` needs a migration:
+
+```bash
+cd backend && alembic revision --autogenerate -m "add planting table"
+```
+
+Review the generated file in `app/migrations/versions/` (autogenerate misses renames and data moves), then run the tests: `test_migrations.py` fails if models and migrations differ. The app applies migrations automatically on start.
+
 ## Checks (same as CI)
 
 ```bash

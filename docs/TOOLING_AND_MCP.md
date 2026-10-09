@@ -19,6 +19,7 @@
 | Open-Meteo archive API | climate data (`external.fetch_climate_archive`) | free, global, ERA5-Land 11 km, CC BY 4.0, no key |
 | Nominatim | place / postal-code search (`external.search_places`) | finds SA postal codes Open-Meteo geocoding missed |
 | `fake_server.py` pattern | E2E: run the app with `external.*` monkeypatched to synthetic data (tests/test_climate.synthetic) | no network or quota needed |
+| Alembic 1.20 | schema migrations; `cd backend && alembic revision --autogenerate -m "…"` | standard for SQLAlchemy; batch mode handles SQLite ALTER limits |
 | Dependabot | `.github/dependabot.yml` | weekly grouped pip / npm / docker / actions updates |
 
 ## Claude session tooling used
@@ -28,5 +29,5 @@
 - No MCP servers required by the app itself.
 
 ## Candidate integrations (not yet added)
-- Planned by SPEC/PLAN: Alembic (migrations, Phase 3) · Hypothesis (property tests, Phase 4) · numpy (vectorised environment engine, Phase 4; check arm64 wheel + RAM) · OR-Tools CP-SAT (only if greedy plan fitting is insufficient, Phase 8) · canvas library for the layout editor (Konva vs plain SVG spike, Phase 8) · axe-core (accessibility CI, Phase 14)
+- Planned by SPEC/PLAN: Hypothesis (property tests, Phase 4) · numpy (vectorised environment engine, Phase 4; check arm64 wheel + RAM) · OR-Tools CP-SAT (only if greedy plan fitting is insufficient, Phase 8) · canvas library for the layout editor (Konva vs plain SVG spike, Phase 8) · axe-core (accessibility CI, Phase 14)
 - Open-Meteo (forecast, historical, geocoding) · MQTT client (aiomqtt) for Home Assistant · Ollama for the co-pilot · Playwright for README screenshots (Bloomery pattern)

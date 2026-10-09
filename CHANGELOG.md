@@ -5,6 +5,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+### Changed
+- The database now upgrades itself safely on start (versioned migrations). Existing installs from v0.1–v0.4 are upgraded in place; no action needed.
+
 ## [0.4.0] - 2026-10-09
 
 ### Added
