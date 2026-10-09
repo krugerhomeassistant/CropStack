@@ -49,8 +49,7 @@ Goal: the foundations everything else needs, before data volume makes changes ex
 - [x] v0.4 climate card moved off Home to More → Climate (until Phase 11 charts); Today placeholder explains what arrives.
 - [x] i18n layer: every UI string through `t()` / `N_()` (`src/i18n.ts`); locale files + CI missing-string checker added with the first translation (Phase 14).
 - [x] Units helpers (`src/units.ts`: °C/°F, mm/in, m/ft); climate card converts; storage stays SI.
-- [ ] → 4.2: background scheduler (first job = forecast refresh).
-- [ ] → 4.2: Settings → Data sources page with enable/disable (once there is more than one source and a manual fallback).
+- [x] → done in 4.2: background scheduler; Settings → Data sources.
 
 **3.4 Catalog infrastructure**
 > ✅ Sourcing research done (2026-10-09): [`research/catalog-data-sources.md`](research/catalog-data-sources.md); storage = YAML in `catalog/` (CC BY-SA 4.0) per SPEC §16.1.
@@ -77,12 +76,15 @@ Goal: probabilistic, self-updating environment; remove v1 heuristics (§18).
 - [x] Tests (AC-P2 cold tail, AC-P3 hemisphere mirror, recency, trend vs noise, year-end wrap, GDD, water) — 13 engine + 6 API/description tests.
 - [ ] → PLAN 6.1: chill accumulation (needs perennial phenology).
 
-**4.2 Recent weather & forecast** (next; ships as v0.6.x/v0.7.0)
-- [ ] Background scheduler (asyncio task in the single worker) with job registry and last-run status in `/api/health`.
-- [ ] Settings → Data sources page (what is sent where; enable/disable where a fallback exists).
-- [ ] `env_daily` table; jobs: forecast (16 d, every 3 h, small variable set) and past 92 days (daily); quota budget + backoff; dedupe on restart.
-- [ ] Blending function per §4.4 with lead-time uncertainty; tests for each horizon band.
-- [ ] Season anomaly (GDD and rain vs normal to date).
+**4.2 Recent weather & forecast** ✅ (v0.8.0)
+- [x] `external.fetch_forecast`: Open-Meteo forecast, 16 days ahead + 92 days back, 9 daily variables (incl. precipitation probability, WMO weather code); ~8 weighted calls per refresh.
+- [x] `forecast` table (one row per site, migration 0006); refresh when missing, moved or older than 3 h; stale copy served if a refresh fails.
+- [x] `environment.with_forecast`: forecast written into every analog year (certain for 16 days, then climatology). Shortcut noted: no lead-time spread, no 17–46-day blend yet.
+- [x] Season anomaly (`weather.anomaly`): last 30 days vs the same days in the site's climate (temperature difference, rain total and its percentile among past years).
+- [x] Background scheduler (`app/scheduler.py`): `@job` registry, sync jobs in a thread, first run 60 s after start, errors recorded per job; `forecast` job every 30 min refreshes stale sites of households with the forecast on; status in `/api/health` (`jobs`); `CROPSTACK_SCHEDULER=false` in tests.
+- [x] Household switches (`household.settings`: forecast, place search; owner only) and Settings → Data sources (what is sent, when, licence; switches for optional sources). Place search hidden and refused when off.
+- [x] Today: weather card (today, 7 days with icons and rain chance, last-30-days line), hidden when the forecast is off; light/dark checked.
+- [x] Tests: 8 (conditioning incl. year wrap, anomaly, rows/split, scheduler, API fresh/stale/switches/roles).
 
 **4.3 Calibration hooks**
 - [ ] `sensor`, `sensor_reading`, `calibration` tables; manual sensor entry API; bias fit after ≥ 14 overlapping days (robust linear fit); apply to forecasts/climatology per target.

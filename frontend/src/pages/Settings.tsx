@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { api, type Prefs } from '../api'
+import DataSources from '../components/DataSources'
 import { N_, t } from '../i18n'
 import { useApp } from '../state'
 
@@ -84,6 +85,7 @@ export default function Settings() {
         value={prefs.units}
         onChange={(units) => save({ units })}
       />
+      <DataSources isOwner={user.role === 'owner'} />
     </>
   )
 }

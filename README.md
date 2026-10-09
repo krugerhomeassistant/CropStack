@@ -146,12 +146,13 @@ Single image: Node builds the PWA, Python 3.14 serves it and the API. Details in
 
 ## 🔒 Privacy & data sources
 
-CropStack has no telemetry. Two features talk to free public services:
+CropStack has no telemetry. Three features talk to free public services (listed in the app under More → Settings → Data sources):
 
 | Feature | Service | What is sent |
 |---|---|---|
 | Climate (once per location, then cached) | [Open-Meteo](https://open-meteo.com) historical weather API (ERA5 / ERA5-Land, CC BY 4.0) | Garden coordinates |
-| Place search (only when you search) | [OpenStreetMap Nominatim](https://nominatim.org) | Your search text |
+| Forecast (about every 3 hours; can be switched off) | [Open-Meteo](https://open-meteo.com) forecast API | Garden coordinates |
+| Place search (only when you search; can be switched off) | [OpenStreetMap Nominatim](https://nominatim.org) | Your search text |
 
 Both are used within their free non-commercial terms. Climate values are estimates for a 10–25 km grid cell; frost pockets and slopes can differ.
 

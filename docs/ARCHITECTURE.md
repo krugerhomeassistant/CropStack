@@ -6,7 +6,8 @@ Browser/PWA ──HTTP──▶ cropstack container :8000 (host :8430)
                         ├─ FastAPI  /api/*            (session-cookie auth, planned)
                         ├─ static SPA /*              (Vite build, service worker precache)
                         ├─ SQLite  /data/cropstack.db (WAL, foreign keys on)
-                        └─ httpx ──▶ archive-api.open-meteo.com (climate) · nominatim.openstreetmap.org (place search)
+                        ├─ scheduler (asyncio, 1 worker) ──▶ forecast refresh every 30 min
+                        └─ httpx ──▶ archive-api / api.open-meteo.com (climate, forecast) · nominatim.openstreetmap.org (place search)
 ```
 Single image, multi-stage: `node:24-alpine` builds the SPA → `python:3.14-slim` runtime. `entrypoint.sh` starts as root, chowns `$CROPSTACK_DATA_DIR`, then drops to uid 10001 via `setpriv`. One uvicorn worker, access log off, `--proxy-headers` for reverse proxies.
 
@@ -30,9 +31,12 @@ Target architecture (engines, data model, API) is specified in `docs/SPEC.md` §
 | `routers/catalog.py` | catalog status/reload, list, item (effective + sources), household overrides |
 | `models.py` | `User`, `Household`, `Membership` (PK user_id → one household per user), `Invite` (hashed token), `Site` (one per household), `ClimateCache` |
 | `deps.py` | `SessionDep`, `UserDep`, `MemberDep`, `OwnerDep`, `EditorDep` (`require_role`), argon2 `hash_pw` / `verify_pw` |
-| `routers/household.py` | household name, members (role, remove), invites (create, list, revoke), public invite info |
+| `routers/household.py` | household name, settings (data-source switches), data-sources list, members (role, remove), invites (create, list, revoke), public invite info |
 | `routers/auth.py` | status, register (new household or via invite), login (IP throttle), logout, me (with role + household), password |
 | `environment.py` | **pure** environment engine v2: analog-year `Climatology` (build, recency weights, trend), window probabilities, daily curves/bands, GDD, days-to-GDD, water deficit |
+| `weather.py` | **pure** forecast rows, past/future split, last-30-days anomaly |
+| `scheduler.py` | background job registry + runner (thread per run), status for `/api/health` |
+| `routers/weather.py` | forecast refresh (3 h), `forecast` job, `GET /api/v1/sites/current/weather` |
 | `climate.py` | **pure** climate card description: season stats, frost dates at a risk, zone, daylight, monthly means, rain season, extremes, `summarize`, `report` |
 | `external.py` | Open-Meteo archive fetch (`ARCHIVE_VARIABLES`), Nominatim search, `ExternalError` |
 | `routers/garden.py` | site `GET`/`PUT /api/v1/sites/current`, climate archive refresh + in-process climatology cache, `…/climate`, `…/climate/probability`, `…/climate/bands`, `/places` |
@@ -62,14 +66,16 @@ Target architecture (engines, data model, API) is specified in `docs/SPEC.md` §
 | `CROPSTACK_ALLOW_REGISTRATION` | `auto` | `auto` / `true` / `false` |
 | `CROPSTACK_SECURE_COOKIES` | `false` | HTTPS-only cookies |
 | `CROPSTACK_CATALOG_DIR` | repo `catalog/` (`/app/catalog` in image) | bundled catalog; private pack is `<data>/catalog-private/` |
+| `CROPSTACK_SCHEDULER` | `true` | background jobs (forecast refresh) |
 | `CROPSTACK_PORT` | `8430` | compose host port only |
 
-## DB schema (SQLite, Alembic migrations; head 0005)
+## DB schema (SQLite, Alembic migrations; head 0006)
 - **user**: id, username (unique, lowercased), password_hash (argon2id), display_name, created_at, prefs JSON (start, units)
-- **household**: id, name, created_at
+- **household**: id, name, created_at, settings JSON (forecast, place_search)
 - **membership**: user_id (PK → user, CASCADE), household_id (→ household, CASCADE, indexed), role (owner|member|viewer), created_at
 - **invite**: token_hash (PK, SHA-256), household_id (→ household, CASCADE), role, created_by (→ user, SET NULL), created_at, expires_at, used_at
 - **site**: id, household_id (→ household, unique, CASCADE), name, latitude, longitude, postal_code, frost_probability (10–90), created_at, updated_at
+- **forecast**: site_id (PK → site, CASCADE), latitude, longitude, raw JSON (Open-Meteo forecast response), fetched_at
 - **catalogoverride**: (household_id → household CASCADE, kind, slug, path) PK, value JSON (a cited `Value`), updated_at
 - **climatearchive**: site_id (PK → site, CASCADE), latitude, longitude (where it was fetched), version (`ARCHIVE_VERSION`), last_year, raw JSON (Open-Meteo daily response, ~0.5 MB), fetched_at
 

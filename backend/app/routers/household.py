@@ -30,6 +30,52 @@ class InviteIn(BaseModel):
     role: Role = "member"
 
 
+class HouseholdSettings(BaseModel):
+    """Household-wide switches. Turning a source off stops every call to it; features that need it say so."""
+
+    forecast: bool = True
+    place_search: bool = True
+
+
+def household_settings(household: Household) -> HouseholdSettings:
+    return HouseholdSettings(**household.settings)
+
+
+# What leaves the server, shown on Settings → Data sources (SPEC §16, P7).
+DATA_SOURCES = [
+    {
+        "id": "climate",
+        "name": "Open-Meteo historical weather (ERA5, ERA5-Land)",
+        "url": "https://open-meteo.com/en/docs/historical-weather-api",
+        "sends": "Garden coordinates",
+        "when": "Once per location, and once a year for the newest year",
+        "used_for": "Climate, frost risk, planting windows",
+        "licence": "CC BY 4.0",
+        "switch": None,  # everything depends on it; there is no manual fallback yet
+    },
+    {
+        "id": "forecast",
+        "name": "Open-Meteo forecast",
+        "url": "https://open-meteo.com/en/docs",
+        "sends": "Garden coordinates",
+        "when": "About every 3 hours",
+        "used_for": "Today's weather, the next 16 days, this month against normal",
+        "licence": "CC BY 4.0",
+        "switch": "forecast",
+    },
+    {
+        "id": "place_search",
+        "name": "OpenStreetMap Nominatim",
+        "url": "https://nominatim.org/",
+        "sends": "What you type in place search",
+        "when": "Only when you search",
+        "used_for": "Finding your garden by town, address or postal code",
+        "licence": "ODbL",
+        "switch": "place_search",
+    },
+]
+
+
 def _owners(db: Session, household_id: int) -> int:
     query = select(func.count()).select_from(Membership)
     return db.exec(query.where(Membership.household_id == household_id, Membership.role == "owner")).one()
@@ -66,6 +112,31 @@ def rename_household(body: HouseholdIn, owner: OwnerDep, db: SessionDep) -> dict
     db.add(household)
     db.commit()
     return {"id": household.id, "name": household.name}
+
+
+@router.get("/household/settings")
+def get_settings(me: MemberDep, db: SessionDep) -> HouseholdSettings:
+    household = db.get(Household, me.household_id)
+    assert household
+    return household_settings(household)
+
+
+@router.put("/household/settings")
+def save_settings(body: HouseholdSettings, owner: OwnerDep, db: SessionDep) -> HouseholdSettings:
+    household = db.get(Household, owner.household_id)
+    assert household
+    household.settings = body.model_dump()
+    db.add(household)
+    db.commit()
+    return body
+
+
+@router.get("/household/data-sources")
+def data_sources(me: MemberDep, db: SessionDep) -> list[dict]:
+    household = db.get(Household, me.household_id)
+    assert household
+    switches = household_settings(household).model_dump()
+    return [s | {"enabled": switches.get(s["switch"], True) if s["switch"] else True} for s in DATA_SOURCES]
 
 
 @router.put("/household/members/{user_id}")

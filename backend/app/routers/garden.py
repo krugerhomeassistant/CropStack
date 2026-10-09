@@ -9,8 +9,8 @@ from sqlmodel import Session, select
 
 from .. import climate, external
 from .. import environment as env
-from ..deps import MemberDep, OwnerDep, SessionDep, UserDep
-from ..models import ClimateArchive, Site, now
+from ..deps import MemberDep, OwnerDep, SessionDep
+from ..models import ClimateArchive, Household, Site, now
 
 router = APIRouter(prefix="/api/v1", tags=["site"])
 
@@ -145,7 +145,12 @@ def climate_bands(me: MemberDep, db: SessionDep, var: EngineVar) -> dict:
 
 
 @router.get("/places")
-def search_places(_: UserDep, q: str = Query(min_length=2, max_length=120)) -> list[dict]:
+def search_places(me: MemberDep, db: SessionDep, q: str = Query(min_length=2, max_length=120)) -> list[dict]:
+    from .household import household_settings  # household imports nothing from here; avoid a cycle at import time
+
+    household = db.get(Household, me.household_id)
+    if household and not household_settings(household).place_search:
+        raise HTTPException(409, "Place search is turned off (More → Settings → Data sources)")
     try:
         return external.search_places(q)
     except external.ExternalError as e:

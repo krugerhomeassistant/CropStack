@@ -39,6 +39,14 @@ Self-hosted, Docker-based garden and homestead planner. It turns a location (coo
 - **Hardiness zone**: mean of each season's minimum → °F → USDA scale (1a from −60 °F, 5 °F half-zones); a comparable number worldwide.
 - **Daylight**: astronomical day length on the 15th of each month (−0.833° incl. refraction).
 
+## Weather (v0.8.0)
+- **Forecast**: Open-Meteo forecast API, `past_days=92`, `forecast_days=16`, `timezone=auto`, 9 daily variables (the archive's seven + `precipitation_probability_max`, `weather_code`). Stored per site in `forecast`; refreshed on request when older than 3 h and by the background job every 30 min; a failed refresh keeps the old copy (`stale: true`). "Today" is the site's local date (`utc_offset_seconds`).
+- **Engine**: `environment.with_forecast` writes the forecast into every analog year, so near-term questions use the forecast and later days the climate.
+- **Last 30 days vs normal** (`weather.anomaly`): mean temperature difference against the same 30 days in the site's climate, rain total and its percentile among past years; wording: "close to normal" between the 30th and 70th percentile, "wetter/drier than n in 10 years" beyond, "almost every year on record" beyond 95/5.
+- **Weather icons**: WMO weather codes mapped to icons/labels for display only.
+- **Background jobs** (`app/scheduler.py`): `@job(name, every)`; ticks every 60 s; first run 60 s after start; failures recorded, never fatal; `/api/health` → `jobs`. Disabled with `CROPSTACK_SCHEDULER=false`.
+- **Data sources** (Settings): lists climate (required), forecast and place search with what is sent and when; owners switch forecast and place search off (`PUT /api/v1/household/settings`); turned-off sources are never called (endpoints answer 409, Today hides the weather card, setup hides place search).
+
 ## Place search
 `GET /api/places?q=` → Nominatim `/search` (free text: town, address or postal code; postcodes work in South Africa where Open-Meteo's geocoder found none). Search on submit only (Nominatim policy ≤ 1 req/s, identifying User-Agent `CropStack/<version> (+repo URL)`).
 

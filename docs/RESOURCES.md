@@ -12,6 +12,8 @@
 | DB engine | `backend/app/db.py` |
 | App factory, health, SPA fallback | `backend/app/main.py` |
 | Environment engine | `backend/app/environment.py` |
+| Weather (pure / API / jobs) | `backend/app/weather.py`, `routers/weather.py`, `scheduler.py` |
+| Weather card / data sources UI | `frontend/src/components/{WeatherCard,DataSources}.tsx` |
 | Climate card description | `backend/app/climate.py` |
 | No-presets check | `backend/tests/test_no_presets.py` |
 | Outside services | `backend/app/external.py` |
@@ -35,7 +37,7 @@
 | Data (runtime) | `./data/cropstack.db`, `./data/secret.key` |
 
 ## Endpoints (docs at `/api/docs`)
-`GET /api/health` · everything else under `/api/v1`: auth `GET status`, `POST register` (optional `invite`), `POST login`, `POST logout`, `GET me`, `PUT prefs`, `POST password` · household `GET|PUT household`, `PUT|DELETE household/members/{user_id}`, `GET|POST household/invites`, `DELETE household/invites/{id}`, public `GET invites/{token}` · site `GET|PUT sites/current`, `GET sites/current/climate`, `GET sites/current/climate/probability?var&op&x`, `GET sites/current/climate/bands?var` · `GET places?q=` · catalog `GET catalog`, `POST catalog/reload`, `GET catalog/{kind}`, `GET catalog/{kind}/{slug}`, `PUT|DELETE catalog/{kind}/{slug}/overrides`
+`GET /api/health` · everything else under `/api/v1`: auth `GET status`, `POST register` (optional `invite`), `POST login`, `POST logout`, `GET me`, `PUT prefs`, `POST password` · household `GET|PUT household`, `PUT|DELETE household/members/{user_id}`, `GET|POST household/invites`, `DELETE household/invites/{id}`, public `GET invites/{token}` · site `GET|PUT sites/current`, `GET sites/current/climate`, `GET sites/current/climate/probability?var&op&x`, `GET sites/current/climate/bands?var` · `GET places?q=` · weather `GET sites/current/weather` · household `GET|PUT household/settings`, `GET household/data-sources` · catalog `GET catalog`, `POST catalog/reload`, `GET catalog/{kind}`, `GET catalog/{kind}/{slug}`, `PUT|DELETE catalog/{kind}/{slug}/overrides`
 
 ## Repos
 - CropStack: https://github.com/krugerhomeassistant/CropStack

@@ -12,3 +12,6 @@ export const rain = (mm: number, units: Units) =>
 
 export const length = (m: number, units: Units) =>
   units === 'imperial' ? `${Math.round(m * 3.28084)} ft` : `${Math.round(m)} m`
+
+export const speed = (kmh: number, units: Units) =>
+  units === 'imperial' ? `${Math.round(kmh / 1.609)} mph` : `${Math.round(kmh)} km/h`

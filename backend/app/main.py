@@ -1,5 +1,6 @@
 """FastAPI app factory: API under /api, the built PWA served for every other path."""
 
+import asyncio
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from pathlib import Path
@@ -9,17 +10,20 @@ from fastapi.responses import FileResponse
 from sqlalchemy import text
 from starlette.middleware.sessions import SessionMiddleware
 
-from . import VERSION
+from . import VERSION, scheduler
 from .config import get_settings
 from .db import get_engine, init_db
-from .routers import auth, catalog, garden, household
+from .routers import auth, catalog, garden, household, weather
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     init_db()
     app.state.catalog = catalog.load_catalog()  # a broken bundled catalog stops start-up; CI catches it first
+    jobs = asyncio.create_task(scheduler.run_forever()) if get_settings().scheduler else None
     yield
+    if jobs:
+        jobs.cancel()
 
 
 def create_app() -> FastAPI:
@@ -46,14 +50,14 @@ def create_app() -> FastAPI:
             resp.headers.setdefault("Cache-Control", "no-store")
         return resp
 
-    for router in (auth.router, garden.router, household.router, catalog.router):
+    for router in (auth.router, garden.router, household.router, catalog.router, weather.router):
         app.include_router(router)
 
     @app.get("/api/health", tags=["system"])
-    def health() -> dict[str, str]:
+    def health() -> dict:
         with get_engine().connect() as conn:
             conn.execute(text("SELECT 1"))
-        return {"status": "ok", "version": VERSION}
+        return {"status": "ok", "version": VERSION, "jobs": scheduler.status()}
 
     static: Path = settings.static_dir
     if static.is_dir():

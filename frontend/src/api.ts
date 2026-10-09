@@ -56,6 +56,42 @@ export type Climate = {
   source: string
 }
 
+export type DayWeather = {
+  date: string
+  tmin: number | null
+  tmax: number | null
+  precip: number | null
+  precip_prob: number | null
+  et0: number | null
+  rh: number | null
+  wind: number | null
+  soil_t: number | null
+  code: number | null
+}
+
+export type Weather = {
+  today: DayWeather | null
+  days: DayWeather[]
+  recent: { days: number; temp_diff_c: number; rain_mm: number; rain_normal_mm: number; rain_percentile: number } | null
+  timezone: string
+  fetched_at: string
+  stale: boolean
+  source: string
+}
+
+export type HouseholdSettings = { forecast: boolean; place_search: boolean }
+export type DataSource = {
+  id: string
+  name: string
+  url: string
+  sends: string
+  when: string
+  used_for: string
+  licence: string
+  switch: keyof HouseholdSettings | null
+  enabled: boolean
+}
+
 export class ApiError extends Error {
   constructor(
     public status: number,
@@ -100,5 +136,9 @@ export const api = {
   saveGarden: (garden: GardenInput) => request<Garden>('PUT', '/sites/current', garden),
   climate: () => request<Climate>('GET', '/sites/current/climate'),
   savePrefs: (prefs: Prefs) => request<Prefs>('PUT', '/auth/prefs', prefs),
+  weather: () => request<Weather>('GET', '/sites/current/weather'),
+  householdSettings: () => request<HouseholdSettings>('GET', '/household/settings'),
+  saveHouseholdSettings: (settings: HouseholdSettings) => request<HouseholdSettings>('PUT', '/household/settings', settings),
+  dataSources: () => request<DataSource[]>('GET', '/household/data-sources'),
   places: (q: string) => request<Place[]>('GET', `/places?q=${encodeURIComponent(q)}`),
 }

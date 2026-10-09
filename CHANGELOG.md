@@ -5,6 +5,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+### Added
+- **Weather on Today**: today's high and low, rain chance and wind, the next 7 days with icons, and how the last 30 days compare with normal ("2 °C warmer than normal; drier than 8 in 10 years").
+- The forecast refreshes itself in the background about every 3 hours, so Today opens instantly; if Open-Meteo is unreachable the last forecast is shown with its time.
+- **Settings → Data sources**: every outside service CropStack talks to, what it sends and when. Owners can switch the forecast and place search off.
+
 ## [0.7.0] - 2026-10-09
 
 ### Added

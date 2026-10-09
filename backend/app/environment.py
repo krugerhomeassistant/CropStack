@@ -282,3 +282,28 @@ def water_deficit(c: Climatology, start_doy: int, days: int, kc: float) -> list[
         got = sum(rv or 0.0 for rv in r)
         out.append((max(0.0, need - got), w))
     return out
+
+
+# ---------------------------------------------------------------- forecast conditioning (SPEC §4.4)
+
+
+def with_forecast(c: Climatology, start: date, values: dict[str, Values]) -> Climatology:
+    """The same climatology with the forecast written into every year from `start` on: the next days are then
+    the same in all analog futures, and the years only differ after the forecast ends.
+
+    shortcut: forecast days are treated as certain and there is no blending into climatology for days 17-46
+    (SPEC §4.4 asks for lead-time spread and a blend); add both when window decisions show the hard edge."""
+    first = doy(start) - 1
+    series = {name: [list(year) for year in years] for name, years in c.series.items()}
+    for name, forecast in values.items():
+        if name not in series:
+            continue
+        years = series[name]
+        for i in range(len(years)):
+            for k, v in enumerate(forecast):
+                if v is None:
+                    continue
+                y, d = divmod(first + k, YEAR_DAYS)
+                if i + y < len(years):
+                    years[i + y][d] = v
+    return Climatology(c.years, series, c.weights, c.trends, c.as_of_year)

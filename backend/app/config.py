@@ -19,6 +19,7 @@ class Settings(BaseSettings):
     # "auto" = open only until the first account exists; "true" = always open; "false" = closed
     allow_registration: str = "auto"
     session_max_age_days: int = 30
+    scheduler: bool = True  # background jobs (forecast refresh); tests turn it off
 
     @property
     def private_catalog_dir(self) -> Path:

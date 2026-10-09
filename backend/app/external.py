@@ -11,6 +11,7 @@ from . import VERSION
 
 USER_AGENT = f"CropStack/{VERSION} (+https://github.com/krugerhomeassistant/CropStack)"  # Nominatim requires one
 ARCHIVE_URL = "https://archive-api.open-meteo.com/v1/archive"
+FORECAST_URL = "https://api.open-meteo.com/v1/forecast"
 NOMINATIM_URL = "https://nominatim.openstreetmap.org/search"
 CLIMATE_YEARS = 30
 # Open-Meteo daily variable -> environment engine name. Seven variables: still one weighted request (≤ 10).
@@ -59,6 +60,26 @@ def fetch_climate_archive(latitude: float, longitude: float, today: date | None 
         "models": "era5_seamless",  # ERA5-Land (~11 km) where available, ERA5 (~25 km) elsewhere, e.g. coasts
     }
     return _get(ARCHIVE_URL, params, timeout=90).json()
+
+
+FORECAST_VARIABLES = ARCHIVE_VARIABLES | {"precipitation_probability_max": "precip_prob", "weather_code": "code"}
+FORECAST_DAYS, PAST_DAYS = 16, 92  # Open-Meteo maximums
+
+
+def fetch_forecast(latitude: float, longitude: float) -> dict:
+    """Daily weather for the past 92 days (observed/analysis) and the next 16 days (forecast), local time.
+
+    Cost: ~8 weighted calls (108 days, 9 variables), so a refresh every 3 hours stays far inside the free tier.
+    Soil temperature falls back from 0-7 cm to 0-10 cm depending on the forecast model."""
+    params = {
+        "latitude": latitude,
+        "longitude": longitude,
+        "daily": ",".join(FORECAST_VARIABLES),
+        "timezone": "auto",
+        "past_days": PAST_DAYS,
+        "forecast_days": FORECAST_DAYS,
+    }
+    return _get(FORECAST_URL, params, timeout=30).json()
 
 
 def search_places(query: str, limit: int = 5) -> list[dict]:

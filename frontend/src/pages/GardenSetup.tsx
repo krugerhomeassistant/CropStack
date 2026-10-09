@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react'
+import { useEffect, useState, type FormEvent } from 'react'
 import { LocateFixed } from 'lucide-react'
 import { api, type Garden, type GardenInput } from '../api'
 import PlaceSearch from '../components/PlaceSearch'
@@ -23,6 +23,11 @@ export default function GardenSetup({ garden, onSaved, onCancel }: Props) {
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
   const set = (patch: Partial<typeof form>) => setForm({ ...form, ...patch })
+  const [placeSearch, setPlaceSearch] = useState<boolean | null>(null) // unknown until loaded: no flicker
+
+  useEffect(() => {
+    api.householdSettings().then((s) => setPlaceSearch(s.place_search), () => setPlaceSearch(true))
+  }, [])
 
   function locate() {
     setError('')
@@ -69,7 +74,7 @@ export default function GardenSetup({ garden, onSaved, onCancel }: Props) {
 
         <fieldset className="flex flex-col gap-2">
           <legend className="mb-2 text-sm font-semibold">{t('Location')}</legend>
-          <PlaceSearch
+          {placeSearch === true && <PlaceSearch
             onPick={(place) =>
               set({
                 latitude: String(place.latitude),
@@ -77,7 +82,7 @@ export default function GardenSetup({ garden, onSaved, onCancel }: Props) {
                 postal_code: place.postal_code || form.postal_code,
               })
             }
-          />
+          />}
           <button type="button" className="btn-secondary" onClick={locate}>
             <LocateFixed className="size-4" aria-hidden /> {t('Use my current location')}
           </button>

@@ -1,4 +1,5 @@
 import { ListTodo } from 'lucide-react'
+import WeatherCard from '../components/WeatherCard'
 import { t } from '../i18n'
 import { useApp } from '../state'
 
@@ -21,6 +22,8 @@ export default function Today() {
           {greeting(now.getHours())}, {user.display_name || user.username}
         </h1>
       </header>
+
+      <WeatherCard units={user.prefs.units} />
 
       {/* shortcut: placeholder until the task engine exists (PLAN Phase 6-7); keeps Today as the home screen. */}
       <section className="card flex flex-col items-center gap-3 py-8 text-center">

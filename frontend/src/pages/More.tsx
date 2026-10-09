@@ -7,7 +7,7 @@ import { useApp } from '../state'
 const LINKS = [
   { to: '/climate', label: 'Climate', hint: 'Temperatures, rain, frost and daylight through the year', icon: ChartLine },
   { to: '/household', label: 'Household', hint: 'People, roles and invites', icon: Users },
-  { to: '/settings', label: 'Settings', hint: 'Start screen and units', icon: SettingsIcon },
+  { to: '/settings', label: 'Settings', hint: 'Start screen, units and data sources', icon: SettingsIcon },
 ]
 
 export default function More() {

@@ -39,6 +39,8 @@ class Household(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
     name: str
     created_at: datetime = Field(default_factory=now)
+    # Household-wide switches (data sources); validated by routers.household.HouseholdSettings.
+    settings: dict[str, Any] = Field(default_factory=dict, sa_column=Column(JSON, nullable=False, server_default="{}"))
 
 
 class Membership(SQLModel, table=True):
@@ -101,3 +103,13 @@ class CatalogOverride(SQLModel, table=True):
     path: str = Field(primary_key=True)  # dotted, e.g. requirements.temperature.lethal_min
     value: Any = Field(sa_column=Column(JSON, nullable=False))
     updated_at: datetime = Field(default_factory=now)
+
+
+class Forecast(SQLModel, table=True):
+    """Latest Open-Meteo forecast for a site: the past 92 days observed and the next 16 days forecast."""
+
+    site_id: int = Field(foreign_key="site.id", primary_key=True, ondelete="CASCADE")
+    latitude: float
+    longitude: float
+    raw: dict[str, Any] = Field(sa_column=Column(JSON, nullable=False))
+    fetched_at: datetime = Field(default_factory=now)

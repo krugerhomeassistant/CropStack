@@ -49,3 +49,14 @@ body {
 @utility btn-secondary {
   @apply flex items-center justify-center gap-2 rounded-xl border border-leaf/40 px-4 py-2 font-semibold text-leaf;
 }
+
+/* Toggle switch for <input type="checkbox" role="switch"> */
+@utility switch {
+  @apply relative h-6 w-11 shrink-0 cursor-pointer appearance-none rounded-full bg-ink/20 transition-colors checked:bg-leaf focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-leaf disabled:cursor-not-allowed disabled:opacity-50;
+  &::before {
+    @apply absolute top-0.5 left-0.5 size-5 rounded-full bg-white shadow transition-transform content-[''];
+  }
+  &:checked::before {
+    @apply translate-x-5;
+  }
+}
