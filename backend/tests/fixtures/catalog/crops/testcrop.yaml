@@ -1,0 +1,17 @@
+# Test fixture with invented numbers.
+kind: crop
+slug: testcrop
+names: {en: [Test crop], af: [Toetsgewas]}
+scientific_name: Testus cropus
+family: Solanaceae
+life_cycle: annual
+requirements:
+  temperature:
+    lethal_min: {value: 0, unit: Cel, evidence: extension-service, sources: [{ref: test-facts, locator: "Table 1"}]}
+    base: {value: 10, unit: Cel, evidence: model, sources: [{ref: test-open}]}
+  soil_temperature:
+    germination: {value: {min: 10, opt: 25, max: 35}, unit: Cel, evidence: extension-service, sources: [{ref: test-facts}]}
+params:
+  days_to_maturity:
+    - {value: 70, unit: d, qualifiers: {region: warm}, evidence: grower-reported, sources: [{ref: test-open}]}
+    - {value: 90, unit: d, qualifiers: {region: cool}, evidence: grower-reported, sources: [{ref: test-open}]}

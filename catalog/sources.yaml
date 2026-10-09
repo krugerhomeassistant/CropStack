@@ -1,0 +1,240 @@
+# Source registry (SPEC §16.1). Every value in catalog/ cites one of these ids.
+# use: bundle     = values may ship here (open licence; CI checks the licence)
+#      facts-only = single cited numbers only; never copy prose, tables, lists or images
+#      link-only  = may be shown as a link, never used as data (CI rejects values citing them)
+# Licences and verdicts from docs/research/catalog-data-sources.md, checked on primary pages 2026-10-09.
+
+- id: wikidata
+  title: Wikidata
+  author: Wikimedia Foundation and contributors
+  url: https://www.wikidata.org/
+  license: CC0-1.0
+  use: bundle
+  tos_reviewed: 2026-10-09
+  access: api
+
+- id: wfo-backbone
+  title: World Flora Online taxonomic backbone (Zenodo snapshot)
+  author: World Flora Online Consortium
+  url: https://zenodo.org/record/7461831
+  license: CC0-1.0
+  use: bundle
+  tos_reviewed: 2026-10-09
+  access: bulk-download
+
+- id: gbif-backbone
+  title: GBIF Backbone Taxonomy
+  author: GBIF Secretariat
+  url: https://www.gbif.org/dataset/d7dddbf4-2cf0-4f39-9b2a-bb099caae36c
+  license: CC-BY-4.0
+  use: bundle
+  tos_reviewed: 2026-10-09
+  access: api
+
+- id: sanbi-checklist-2025
+  title: National Plant Checklist of South Africa 2025
+  author: South African National Biodiversity Institute
+  url: https://zenodo.org/records/15050848
+  license: CC-BY-4.0
+  use: bundle
+  tos_reviewed: 2026-10-09
+  access: bulk-download
+
+- id: fao-ecocrop
+  title: ECOCROP
+  author: FAO Land and Water Division
+  url: https://ecocrop.apps.fao.org/ecocrop/srv/en/home
+  license: CC-BY-4.0
+  use: bundle
+  extra_terms: "No use to promote a commercial enterprise; no implied FAO endorsement (FAO database terms). See NOTICE."
+  tos_reviewed: 2026-10-09
+  access: manual
+
+- id: usda-plants
+  title: USDA PLANTS Database
+  author: USDA Natural Resources Conservation Service
+  url: https://plants.usda.gov/
+  license: CC0-1.0
+  use: bundle
+  tos_reviewed: 2026-10-09
+  access: api
+
+- id: usda-grin
+  title: GRIN-Global
+  author: USDA Agricultural Research Service
+  url: https://npgsweb.ars-grin.gov/gringlobal/search
+  license: US-PD
+  use: bundle
+  tos_reviewed: 2026-10-09
+  access: manual
+
+- id: openfarm-rescue
+  title: OpenFarm crops rescue (340 records rebuilt from Wayback captures)
+  author: thefullnacho and OpenFarm contributors
+  url: https://github.com/thefullnacho/openfarm-crops-rescue
+  license: CC0-1.0
+  use: bundle
+  extra_terms: "Author: treat as a scaffold, not an authority. Values default to evidence: grower-reported."
+  tos_reviewed: 2026-10-09
+  access: bulk-download
+
+- id: fao-56
+  title: "Crop evapotranspiration: guidelines for computing crop water requirements (FAO Irrigation and Drainage Paper 56)"
+  author: Allen, Pereira, Raes and Smith (FAO, 1998)
+  url: https://www.fao.org/4/x0490e/x0490e00.htm
+  license: "© FAO 1998, all rights reserved"
+  use: facts-only
+  extra_terms: "Cite as Allen et al. 1998, FAO-56 Table N. Machine-readable values via pyfao56 (CC0 code)."
+  tos_reviewed: 2026-10-09
+  access: manual
+
+- id: bbch-2018
+  title: Growth stages of mono- and dicotyledonous plants (BBCH Monograph)
+  author: Meier, U. (ed.), Julius Kühn-Institut, 2018
+  url: https://www.openagrar.de/servlets/MCRFileNodeServlet/openagrar_derivate_00016780/BBCH%20ENGLISCH_%20.pdf
+  license: CC-BY-4.0
+  use: bundle
+  tos_reviewed: 2026-10-09
+  access: manual
+
+- id: dssat-genotype
+  title: DSSAT-CSM genotype files
+  author: DSSAT Foundation
+  url: https://github.com/DSSAT/dssat-csm-os/tree/develop/Data/Genotype
+  license: BSD-3-Clause
+  use: bundle
+  extra_terms: "Model-calibration values, not gardener rules: cite with evidence: model."
+  tos_reviewed: 2026-10-09
+  access: bulk-download
+
+- id: usda-ah66
+  title: "The Commercial Storage of Fruits, Vegetables, and Florist and Nursery Stocks (Agriculture Handbook 66, 2016)"
+  author: USDA Agricultural Research Service
+  url: https://www.ars.usda.gov/arsuserfiles/oc/np/commercialstorage/commercialstorage.pdf
+  license: US-PD
+  use: bundle
+  tos_reviewed: 2026-10-09
+  access: manual
+
+- id: harrington-osu
+  title: Soil temperature conditions for vegetable seed germination (after Harrington)
+  author: Oregon State University Extension
+  url: https://extension.oregonstate.edu/es/catalog/soil-temperature-conditions-vegetable-seed-germination
+  license: "© Oregon State University"
+  use: facts-only
+  tos_reviewed: 2026-10-09
+  access: manual
+
+- id: arc-vopi
+  title: ARC Vegetable and Ornamental Plants sowing guidelines
+  author: Agricultural Research Council (South Africa)
+  url: https://www.arc.agric.za/Pages/Terms-and-Conditions.aspx
+  license: "© ARC; no reproduction or adaptation without written permission"
+  use: facts-only
+  extra_terms: "Not requested (2026-10-09). Calendars and tables belong in the owner's private pack, not here."
+  tos_reviewed: 2026-10-09
+  access: manual
+
+- id: eppo-codes
+  title: EPPO Codes
+  author: European and Mediterranean Plant Protection Organization
+  url: https://data.eppo.int/documentation/opendata
+  license: EPPO-Open-Data
+  use: bundle
+  extra_terms: 'Notice required: "Contains EPPO Codes (www.eppo.int)" plus the download date. See NOTICE.'
+  tos_reviewed: 2026-10-09
+  access: bulk-download
+
+- id: wikipedia-companion-plants
+  title: List of companion plants (pinned revision)
+  author: Wikipedia contributors
+  url: https://en.wikipedia.org/wiki/List_of_companion_plants
+  license: CC-BY-SA-4.0
+  use: bundle
+  extra_terms: "Import pairs with evidence: traditional; record the revision id in each source locator."
+  tos_reviewed: 2026-10-09
+  access: manual
+
+- id: fao-dad-is
+  title: Domestic Animal Diversity Information System (DAD-IS)
+  author: FAO
+  url: https://www.fao.org/dad-is/en/
+  license: CC-BY-4.0
+  use: bundle
+  extra_terms: "Structured fields only (no uploaded text or photos). FAO database terms. See NOTICE."
+  tos_reviewed: 2026-10-09
+  access: manual
+
+- id: eu-1999-74-ec
+  title: Council Directive 1999/74/EC (protection of laying hens)
+  author: Council of the European Union
+  url: https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:31999L0074
+  license: "EU legislation (reuse authorised)"
+  use: facts-only
+  tos_reviewed: 2026-10-09
+  access: manual
+
+- id: mbuthia-2022-thi
+  title: "Heat stress in dairy cattle: temperature-humidity index review (Frontiers in Animal Science, 2022)"
+  author: Mbuthia et al.
+  url: https://www.frontiersin.org/journals/animal-science/articles/10.3389/fanim.2022.946592/pdf
+  license: CC-BY-4.0
+  use: bundle
+  tos_reviewed: 2026-10-09
+  access: manual
+
+- id: fao-bulletin-16
+  title: FAO Fertilizer and Plant Nutrition Bulletin 16
+  author: FAO
+  url: https://www.fao.org/4/a0443e/a0443e.pdf
+  license: "Non-commercial reproduction only"
+  use: facts-only
+  tos_reviewed: 2026-10-09
+  access: manual
+
+- id: uc-ipm
+  title: UC Statewide IPM Program
+  author: University of California Agriculture and Natural Resources
+  url: https://ipm.ucanr.edu/
+  license: "© Regents of the University of California"
+  use: facts-only
+  extra_terms: "Degree-day thresholds are US-calibrated: qualify as such."
+  tos_reviewed: 2026-10-09
+  access: manual
+
+- id: hbhc-varroa-9
+  title: Tools for Varroa Management, 9th edition
+  author: Honey Bee Health Coalition
+  url: https://honeybeehealthcoalition.org/wp-content/uploads/2026/08/Tools-for-Varroa-Management-Guide-9th-Edition.pdf
+  license: CC-BY-NC-ND-4.0
+  use: facts-only
+  tos_reviewed: 2026-10-09
+  access: manual
+
+- id: pfaf
+  title: Plants For A Future
+  url: https://pfaf.org/
+  license: CC-BY-NC-SA
+  use: link-only
+  tos_reviewed: 2026-10-09
+
+- id: permapeople
+  title: Permapeople
+  url: https://permapeople.org/
+  license: CC-BY-SA-2.0 (no free commercial API)
+  use: link-only
+  tos_reviewed: 2026-10-09
+
+- id: ppdb
+  title: Pesticide Properties DataBase (AERU)
+  url: https://aeru.herts.ac.uk/aeru/iupac/docs/Conditions_of_use.pdf
+  license: "No redistribution"
+  use: link-only
+  tos_reviewed: 2026-10-09
+
+- id: feedipedia
+  title: Feedipedia
+  url: https://www.feedipedia.org/content/copyright
+  license: "Non-commercial extracts only"
+  use: link-only
+  tos_reviewed: 2026-10-09

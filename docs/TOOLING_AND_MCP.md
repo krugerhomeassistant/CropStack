@@ -21,6 +21,8 @@
 | `fake_server.py` pattern | E2E: run the app with `external.*` monkeypatched to synthetic data (tests/test_climate.synthetic) | no network or quota needed |
 | Alembic 1.20 | schema migrations; `cd backend && alembic revision --autogenerate -m "…"` | standard for SQLAlchemy; batch mode handles SQLite ALTER limits |
 | React Router 8 | client routing (declarative mode, import from `react-router`) | standard; v8 removed `react-router-dom` |
+| PyYAML 6.0.3 | read catalog YAML (`safe_load`) | standard; schema validation stays in Pydantic (no jsonschema dependency) |
+| `scripts/catalog_schema.py` | regenerate `catalog/schema/*.json`; `--check` in CI test | schemas follow the models automatically |
 | Dependabot | `.github/dependabot.yml` | weekly grouped pip / npm / docker / actions updates |
 
 ## Claude session tooling used

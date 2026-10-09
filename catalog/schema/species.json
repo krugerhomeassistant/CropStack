@@ -1,0 +1,887 @@
+{
+  "$defs": {
+    "Chill": {
+      "additionalProperties": false,
+      "properties": {
+        "model": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Value"
+            },
+            {
+              "items": {
+                "$ref": "#/$defs/Value"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Model"
+        },
+        "required": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Value"
+            },
+            {
+              "items": {
+                "$ref": "#/$defs/Value"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Required"
+        }
+      },
+      "title": "Chill",
+      "type": "object"
+    },
+    "Humidity": {
+      "additionalProperties": false,
+      "properties": {
+        "disease_risk_rh": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Value"
+            },
+            {
+              "items": {
+                "$ref": "#/$defs/Value"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Disease Risk Rh"
+        },
+        "thi_alert": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Value"
+            },
+            {
+              "items": {
+                "$ref": "#/$defs/Value"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Thi Alert"
+        },
+        "thi_danger": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Value"
+            },
+            {
+              "items": {
+                "$ref": "#/$defs/Value"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Thi Danger"
+        }
+      },
+      "title": "Humidity",
+      "type": "object"
+    },
+    "Light": {
+      "additionalProperties": false,
+      "properties": {
+        "min_sun_hours": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Value"
+            },
+            {
+              "items": {
+                "$ref": "#/$defs/Value"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Min Sun Hours"
+        }
+      },
+      "title": "Light",
+      "type": "object"
+    },
+    "Photoperiod": {
+      "additionalProperties": false,
+      "properties": {
+        "critical_hours": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Value"
+            },
+            {
+              "items": {
+                "$ref": "#/$defs/Value"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Critical Hours"
+        },
+        "response": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Value"
+            },
+            {
+              "items": {
+                "$ref": "#/$defs/Value"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Response"
+        }
+      },
+      "title": "Photoperiod",
+      "type": "object"
+    },
+    "Range": {
+      "additionalProperties": false,
+      "properties": {
+        "max": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Max"
+        },
+        "min": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Min"
+        },
+        "opt": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Opt"
+        }
+      },
+      "title": "Range",
+      "type": "object"
+    },
+    "Requirements": {
+      "additionalProperties": false,
+      "properties": {
+        "chill": {
+          "$ref": "#/$defs/Chill"
+        },
+        "humidity": {
+          "$ref": "#/$defs/Humidity"
+        },
+        "light": {
+          "$ref": "#/$defs/Light"
+        },
+        "photoperiod": {
+          "$ref": "#/$defs/Photoperiod"
+        },
+        "soil": {
+          "$ref": "#/$defs/Soil"
+        },
+        "soil_temperature": {
+          "$ref": "#/$defs/SoilTemperature"
+        },
+        "temperature": {
+          "$ref": "#/$defs/Temperature"
+        },
+        "vernalization": {
+          "$ref": "#/$defs/Vernalization"
+        },
+        "water": {
+          "$ref": "#/$defs/Water"
+        },
+        "wind_max": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Value"
+            },
+            {
+              "items": {
+                "$ref": "#/$defs/Value"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Wind Max"
+        }
+      },
+      "title": "Requirements",
+      "type": "object"
+    },
+    "Soil": {
+      "additionalProperties": false,
+      "properties": {
+        "drainage": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Value"
+            },
+            {
+              "items": {
+                "$ref": "#/$defs/Value"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Drainage"
+        },
+        "ph": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Value"
+            },
+            {
+              "items": {
+                "$ref": "#/$defs/Value"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ph"
+        }
+      },
+      "title": "Soil",
+      "type": "object"
+    },
+    "SoilTemperature": {
+      "additionalProperties": false,
+      "properties": {
+        "germination": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Value"
+            },
+            {
+              "items": {
+                "$ref": "#/$defs/Value"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Germination"
+        }
+      },
+      "title": "SoilTemperature",
+      "type": "object"
+    },
+    "SourceRef": {
+      "additionalProperties": false,
+      "properties": {
+        "locator": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Locator"
+        },
+        "ref": {
+          "title": "Ref",
+          "type": "string"
+        },
+        "retrieved": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Retrieved"
+        },
+        "snapshot": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Snapshot"
+        }
+      },
+      "required": [
+        "ref"
+      ],
+      "title": "SourceRef",
+      "type": "object"
+    },
+    "Temperature": {
+      "additionalProperties": false,
+      "properties": {
+        "base": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Value"
+            },
+            {
+              "items": {
+                "$ref": "#/$defs/Value"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Base"
+        },
+        "lethal_max": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Value"
+            },
+            {
+              "items": {
+                "$ref": "#/$defs/Value"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Lethal Max"
+        },
+        "lethal_min": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Value"
+            },
+            {
+              "items": {
+                "$ref": "#/$defs/Value"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Lethal Min"
+        },
+        "optimal": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Value"
+            },
+            {
+              "items": {
+                "$ref": "#/$defs/Value"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Optimal"
+        },
+        "stress_max": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Value"
+            },
+            {
+              "items": {
+                "$ref": "#/$defs/Value"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Stress Max"
+        },
+        "stress_min": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Value"
+            },
+            {
+              "items": {
+                "$ref": "#/$defs/Value"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Stress Min"
+        },
+        "upper_cutoff": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Value"
+            },
+            {
+              "items": {
+                "$ref": "#/$defs/Value"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Upper Cutoff"
+        }
+      },
+      "title": "Temperature",
+      "type": "object"
+    },
+    "Value": {
+      "additionalProperties": false,
+      "description": "One cited fact (SPEC \u00a716.1). Conflicting sources become separate qualified Values, never an average.",
+      "properties": {
+        "confidence": {
+          "default": "medium",
+          "enum": [
+            "high",
+            "medium",
+            "low"
+          ],
+          "title": "Confidence",
+          "type": "string"
+        },
+        "estimate": {
+          "default": false,
+          "title": "Estimate",
+          "type": "boolean"
+        },
+        "evidence": {
+          "enum": [
+            "peer-reviewed",
+            "government",
+            "extension-service",
+            "model",
+            "grower-reported",
+            "traditional"
+          ],
+          "title": "Evidence",
+          "type": "string"
+        },
+        "qualifiers": {
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "title": "Qualifiers",
+          "type": "object"
+        },
+        "rank": {
+          "default": "normal",
+          "enum": [
+            "preferred",
+            "normal",
+            "deprecated"
+          ],
+          "title": "Rank",
+          "type": "string"
+        },
+        "sources": {
+          "items": {
+            "$ref": "#/$defs/SourceRef"
+          },
+          "title": "Sources",
+          "type": "array"
+        },
+        "unit": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Unit"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Range"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "title": "Value"
+        }
+      },
+      "required": [
+        "value",
+        "evidence"
+      ],
+      "title": "Value",
+      "type": "object"
+    },
+    "Vernalization": {
+      "additionalProperties": false,
+      "properties": {
+        "below_c": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Value"
+            },
+            {
+              "items": {
+                "$ref": "#/$defs/Value"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Below C"
+        },
+        "hours_needed": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Value"
+            },
+            {
+              "items": {
+                "$ref": "#/$defs/Value"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Hours Needed"
+        },
+        "required": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Value"
+            },
+            {
+              "items": {
+                "$ref": "#/$defs/Value"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Required"
+        }
+      },
+      "title": "Vernalization",
+      "type": "object"
+    },
+    "Water": {
+      "additionalProperties": false,
+      "properties": {
+        "depletion_fraction": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Value"
+            },
+            {
+              "items": {
+                "$ref": "#/$defs/Value"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Depletion Fraction"
+        },
+        "drought_tolerance": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Value"
+            },
+            {
+              "items": {
+                "$ref": "#/$defs/Value"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Drought Tolerance"
+        },
+        "kc_initial": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Value"
+            },
+            {
+              "items": {
+                "$ref": "#/$defs/Value"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Kc Initial"
+        },
+        "kc_late": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Value"
+            },
+            {
+              "items": {
+                "$ref": "#/$defs/Value"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Kc Late"
+        },
+        "kc_mid": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Value"
+            },
+            {
+              "items": {
+                "$ref": "#/$defs/Value"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Kc Mid"
+        },
+        "root_depth": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Value"
+            },
+            {
+              "items": {
+                "$ref": "#/$defs/Value"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Root Depth"
+        },
+        "waterlogging_tolerance": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Value"
+            },
+            {
+              "items": {
+                "$ref": "#/$defs/Value"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Waterlogging Tolerance"
+        }
+      },
+      "title": "Water",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "description": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Description"
+    },
+    "kind": {
+      "const": "species",
+      "title": "Kind",
+      "type": "string"
+    },
+    "names": {
+      "additionalProperties": {
+        "items": {
+          "type": "string"
+        },
+        "type": "array"
+      },
+      "title": "Names",
+      "type": "object"
+    },
+    "params": {
+      "additionalProperties": {
+        "anyOf": [
+          {
+            "$ref": "#/$defs/Value"
+          },
+          {
+            "items": {
+              "$ref": "#/$defs/Value"
+            },
+            "type": "array"
+          }
+        ]
+      },
+      "title": "Params",
+      "type": "object"
+    },
+    "requirements": {
+      "$ref": "#/$defs/Requirements"
+    },
+    "scientific_name": {
+      "title": "Scientific Name",
+      "type": "string"
+    },
+    "slug": {
+      "maxLength": 80,
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+      "title": "Slug",
+      "type": "string"
+    }
+  },
+  "required": [
+    "kind",
+    "slug",
+    "names",
+    "scientific_name"
+  ],
+  "title": "Species",
+  "type": "object"
+}

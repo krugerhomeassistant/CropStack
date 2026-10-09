@@ -5,6 +5,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+### Added
+- **Catalog foundation**: the format for crops, varieties, animal species and breeds, pests and beneficials, with a source and evidence level on every value, checked automatically (including licences). Content follows in the next releases.
+- **Your own values win**: each household can override any catalog value (for example how much cold its tomatoes survive), and reset it.
+- **Private pack**: a folder on your server (`/DATA/AppData/cropstack/catalog-private/` on ZimaOS) for your own crop and animal entries, in the same format, for personal use. It is never published.
+
 ## [0.6.0] - 2026-10-09
 
 ### Added

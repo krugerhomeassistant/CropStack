@@ -90,3 +90,14 @@ class ClimateArchive(SQLModel, table=True):
     last_year: int  # last complete year in the record
     raw: dict[str, Any] = Field(sa_column=Column(JSON, nullable=False))
     fetched_at: datetime = Field(default_factory=now)
+
+
+class CatalogOverride(SQLModel, table=True):
+    """A household's own value for one catalog field (e.g. its tomatoes' lethal_min), winning over the catalog."""
+
+    household_id: int = Field(foreign_key="household.id", primary_key=True, ondelete="CASCADE")
+    kind: str = Field(primary_key=True)
+    slug: str = Field(primary_key=True)
+    path: str = Field(primary_key=True)  # dotted, e.g. requirements.temperature.lethal_min
+    value: Any = Field(sa_column=Column(JSON, nullable=False))
+    updated_at: datetime = Field(default_factory=now)

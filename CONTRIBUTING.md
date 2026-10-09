@@ -31,6 +31,10 @@ cd backend && alembic revision --autogenerate -m "add planting table"
 
 Review the generated file in `app/migrations/versions/` (autogenerate misses renames and data moves), then run the tests: `test_migrations.py` fails if models and migrations differ. The app applies migrations automatically on start.
 
+## Catalog changes
+
+Catalog data lives in `catalog/` (CC BY-SA 4.0); see [`catalog/README.md`](catalog/README.md) for the format and rules. Every value cites a source registered in `catalog/sources.yaml`; write descriptions in your own words. After changing the models in `backend/app/catalog.py`, run `python scripts/catalog_schema.py`. The app (and the tests) refuse to start on an invalid catalog.
+
 ## Checks (same as CI)
 
 ```bash

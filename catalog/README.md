@@ -1,0 +1,50 @@
+# CropStack catalog
+
+What CropStack knows about crops, varieties, animal species and breeds, organisms (pests, diseases, beneficials,
+weeds, deficiencies) and task templates. Licensed **CC BY-SA 4.0** ([LICENSE](LICENSE), [NOTICE](NOTICE));
+the app code is MIT, which does not cover this folder.
+
+## Layout
+
+| Path | Contents |
+|---|---|
+| `sources.yaml` | Registry of every source: licence, how it may be used (`bundle`, `facts-only`, `link-only`), terms review date |
+| `crops/`, `varieties/` | One YAML file per crop or variety (`kind: crop` / `kind: variety` with `parent`) |
+| `species/`, `breeds/` | Animal species and breeds |
+| `organisms/` | Pests, diseases, beneficials, pollinators, weeds, deficiencies |
+| `task-templates/` | Reusable task templates |
+| `schema/` | JSON Schema files generated from `backend/app/catalog.py` (`python scripts/catalog_schema.py`) for editors and tooling |
+
+## A value
+
+Every number or fact is a cited statement (SPEC §16.1):
+
+```yaml
+requirements:
+  temperature:
+    lethal_min:
+      value: -1
+      unit: Cel
+      evidence: extension-service   # peer-reviewed | government | extension-service | model | grower-reported | traditional
+      confidence: medium            # high | medium | low
+      rank: preferred               # preferred | normal | deprecated
+      sources:
+        - {ref: some-source-id, retrieved: 2026-10-09, locator: "Table 2"}
+```
+
+Ranges use `value: {min: …, opt: …, max: …}`. When sources disagree by region or cultivar, give a list of
+values with `qualifiers` instead of averaging. A value with no source must say `estimate: true`.
+
+## Rules (checked in CI)
+
+- Files validate against the schema; slugs are unique per kind; varieties and breeds point to an existing parent.
+- Every cited source exists in `sources.yaml`; `bundle` sources must have an open licence; nothing may cite a
+  `link-only` source.
+- Write descriptions fresh. Never copy prose, tables, lists or images from a source.
+
+## Private pack
+
+A server can add its own entries in `<data>/catalog-private/` (same format, same folders). They are loaded after
+this catalog and win field by field, are never committed or shipped, and skip the licence check, so they can
+hold values looked up for personal use. Errors in a private pack are shown to the household owner instead of
+stopping the app. After editing, use the reload endpoint (`POST /api/v1/catalog/reload`) or restart.

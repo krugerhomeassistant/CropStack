@@ -1,0 +1,85 @@
+{
+  "items": {
+    "additionalProperties": false,
+    "properties": {
+      "access": {
+        "default": "manual",
+        "enum": [
+          "api",
+          "bulk-download",
+          "html-scrape",
+          "manual"
+        ],
+        "title": "Access",
+        "type": "string"
+      },
+      "author": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Author"
+      },
+      "extra_terms": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Extra Terms"
+      },
+      "id": {
+        "maxLength": 80,
+        "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+        "title": "Id",
+        "type": "string"
+      },
+      "license": {
+        "title": "License",
+        "type": "string"
+      },
+      "title": {
+        "title": "Title",
+        "type": "string"
+      },
+      "tos_reviewed": {
+        "format": "date",
+        "title": "Tos Reviewed",
+        "type": "string"
+      },
+      "url": {
+        "title": "Url",
+        "type": "string"
+      },
+      "use": {
+        "enum": [
+          "bundle",
+          "facts-only",
+          "link-only"
+        ],
+        "title": "Use",
+        "type": "string"
+      }
+    },
+    "required": [
+      "id",
+      "title",
+      "url",
+      "license",
+      "use",
+      "tos_reviewed"
+    ],
+    "title": "Source",
+    "type": "object"
+  },
+  "type": "array"
+}

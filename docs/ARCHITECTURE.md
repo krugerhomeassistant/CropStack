@@ -15,7 +15,7 @@ Target architecture (engines, data model, API) is specified in `docs/SPEC.md` §
 ## Stack (pinned 2026-10-09)
 | Layer | Tech |
 |---|---|
-| Backend | Python 3.14 (runtime, CI) / 3.13+ (dev), FastAPI 0.143.0, uvicorn 0.54.0, SQLModel 0.0.48, pydantic-settings 2.15.0, alembic 1.20.0, argon2-cffi 25.1.0, itsdangerous 2.2.0, httpx 0.28.1, tzdata 2026.5 |
+| Backend | Python 3.14 (runtime, CI) / 3.13+ (dev), FastAPI 0.143.0, uvicorn 0.54.0, SQLModel 0.0.48, pydantic-settings 2.15.0, PyYAML 6.0.3, alembic 1.20.0, argon2-cffi 25.1.0, itsdangerous 2.2.0, httpx 0.28.1, tzdata 2026.5 |
 | Frontend | React 19.3, React Router 8.4 (declarative, `react-router` package), Vite 8.3, TypeScript 7.0, Tailwind 4.3 (`@tailwindcss/vite`), vite-plugin-pwa 2.0, lucide-react 1.53, @fontsource-variable/nunito (self-hosted font) |
 | Tooling | ruff (lint + format), pytest, GitHub Actions, Dependabot, GHCR |
 
@@ -26,6 +26,8 @@ Target architecture (engines, data model, API) is specified in `docs/SPEC.md` §
 | `config.py` | `Settings` (env `CROPSTACK_*`), secret auto-generation |
 | `db.py` | engine (WAL + FK pragmas), `init_db` (Alembic `upgrade head`, foreign keys off while migrating), `get_session` dependency |
 | `migrations/` | Alembic env + revisions (`0001_baseline` = v0.4.0 schema, creates only missing tables) |
+| `catalog.py` | catalog models (value + provenance, requirement profile, item kinds, sources), loader with licence gate, private pack, `effective()`, override checks |
+| `routers/catalog.py` | catalog status/reload, list, item (effective + sources), household overrides |
 | `models.py` | `User`, `Household`, `Membership` (PK user_id → one household per user), `Invite` (hashed token), `Site` (one per household), `ClimateCache` |
 | `deps.py` | `SessionDep`, `UserDep`, `MemberDep`, `OwnerDep`, `EditorDep` (`require_role`), argon2 `hash_pw` / `verify_pw` |
 | `routers/household.py` | household name, members (role, remove), invites (create, list, revoke), public invite info |
@@ -59,14 +61,16 @@ Target architecture (engines, data model, API) is specified in `docs/SPEC.md` §
 | `CROPSTACK_SECRET_KEY` | auto | session signing |
 | `CROPSTACK_ALLOW_REGISTRATION` | `auto` | `auto` / `true` / `false` |
 | `CROPSTACK_SECURE_COOKIES` | `false` | HTTPS-only cookies |
+| `CROPSTACK_CATALOG_DIR` | repo `catalog/` (`/app/catalog` in image) | bundled catalog; private pack is `<data>/catalog-private/` |
 | `CROPSTACK_PORT` | `8430` | compose host port only |
 
-## DB schema (SQLite, Alembic migrations; head 0004)
+## DB schema (SQLite, Alembic migrations; head 0005)
 - **user**: id, username (unique, lowercased), password_hash (argon2id), display_name, created_at, prefs JSON (start, units)
 - **household**: id, name, created_at
 - **membership**: user_id (PK → user, CASCADE), household_id (→ household, CASCADE, indexed), role (owner|member|viewer), created_at
 - **invite**: token_hash (PK, SHA-256), household_id (→ household, CASCADE), role, created_by (→ user, SET NULL), created_at, expires_at, used_at
 - **site**: id, household_id (→ household, unique, CASCADE), name, latitude, longitude, postal_code, frost_probability (10–90), created_at, updated_at
+- **catalogoverride**: (household_id → household CASCADE, kind, slug, path) PK, value JSON (a cited `Value`), updated_at
 - **climatearchive**: site_id (PK → site, CASCADE), latitude, longitude (where it was fetched), version (`ARCHIVE_VERSION`), last_year, raw JSON (Open-Meteo daily response, ~0.5 MB), fetched_at
 
 Planned: `plant` / `variety`, `bed`, `planting` (variety × bed × season), `task`. Adding columns to existing tables will need a migration tool (Alembic) before the first public release with data worth keeping.

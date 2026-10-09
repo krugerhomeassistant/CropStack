@@ -79,7 +79,9 @@ See `README.md` → Configuration. All env vars use the `CROPSTACK_` prefix (`ba
 - Back up the whole `data/` folder.
 
 ## Catalog data & licensing
-- Catalog values (crops, varieties, organisms, species, breeds) live in `catalog/` (planned) under **CC BY-SA 4.0**; the code is MIT. `catalog/NOTICE` carries FAO and EPPO terms.
+- Catalog values (crops, varieties, organisms, species, breeds, task templates) live in `catalog/` under **CC BY-SA 4.0** (`LICENSE`, `NOTICE` with FAO/EPPO terms); the code is MIT. Format: [`catalog/README.md`](../catalog/README.md); models in `backend/app/catalog.py`; JSON Schemas generated into `catalog/schema/` (`python scripts/catalog_schema.py`, CI checks they're current). No crop content yet (Phase 5).
+- **Layers** (v0.7.0): bundled `catalog/` → private pack `<data>/catalog-private/` (owner's server only, never committed; any source; loaded after bundled and wins field by field; errors shown to the owner, never stop the app) → household overrides in the DB (`catalogoverride`, one row per field path, validated against the schema). Varieties/breeds inherit `requirements` and `params` from their parent. The catalog is held in memory (read-only, loaded at start; `POST /api/v1/catalog/reload` re-reads it).
+- **Gate** (bundled only, at load and in CI): schema valid; unique slugs; parents exist; every value cites a source in `sources.yaml` or says `estimate: true`; `bundle` sources need an open licence; nothing may cite a `link-only` source.
 - Every value is a **cited fact** with an **evidence level**: `peer-reviewed`, `government`, `extension-service`, `model` (crop-model calibration), `grower-reported` (e.g. OpenFarm), `traditional` (folk knowledge, e.g. most companion pairs). The UI shows sources per field and a generated *Data sources & licences* page.
 - Labels for honest limits: `commercial benchmark` (yields converted from t/ha; 1 t/ha = 0.1 kg/m²), `US-calibrated` (pest degree-day models), `estimate`.
 - Bundled only: CC0, public domain, CC BY, CC BY-SA 4.0. Non-commercial or no-derivatives sources (PFAF, Permapeople, PPDB, Feedipedia, CABI, UC IPM text/photos) are read to check facts and linked, never copied.

@@ -9,11 +9,12 @@ RUN npm run build
 # ---- runtime ----
 FROM python:3.14-slim
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 \
-    CROPSTACK_DATA_DIR=/data CROPSTACK_STATIC_DIR=/app/static
+    CROPSTACK_DATA_DIR=/data CROPSTACK_STATIC_DIR=/app/static CROPSTACK_CATALOG_DIR=/app/catalog
 WORKDIR /app
 COPY backend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 COPY backend/app ./app
+COPY catalog ./catalog
 COPY --from=web /web/dist ./static
 COPY backend/entrypoint.sh /entrypoint.sh
 RUN useradd -r -u 10001 -U cropstack && mkdir -p /data && chown cropstack:cropstack /data

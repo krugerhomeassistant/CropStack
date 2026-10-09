@@ -1,0 +1,7 @@
+kind: variety
+slug: testcrop-hardy
+parent: testcrop
+names: {en: [Hardy test crop]}
+requirements:
+  temperature:
+    lethal_min: {value: -3, unit: Cel, evidence: grower-reported, estimate: true}

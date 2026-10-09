@@ -1,0 +1,5 @@
+# Private pack: may cite anything (even link-only sources); wins over the bundled catalog.
+kind: crop
+slug: testcrop
+params:
+  sowing_months: {value: "Feb-Apr", evidence: government, sources: [{ref: test-link}]}

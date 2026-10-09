@@ -16,6 +16,9 @@
 | No-presets check | `backend/tests/test_no_presets.py` |
 | Outside services | `backend/app/external.py` |
 | Climate card / place search | `frontend/src/components/{ClimateCard,PlaceSearch}.tsx` |
+| Catalog (data, licence, sources, schema) | `catalog/` (`README.md`, `sources.yaml`, `NOTICE`, `LICENSE`, `schema/`) |
+| Catalog code / API | `backend/app/catalog.py`, `backend/app/routers/catalog.py`, `scripts/catalog_schema.py` |
+| Private pack (runtime) | `<data>/catalog-private/` |
 | Models | `backend/app/models.py` |
 | Auth / household / garden API | `backend/app/routers/{auth,household,garden}.py` |
 | Migrations | `backend/app/migrations/versions/` |
@@ -32,7 +35,7 @@
 | Data (runtime) | `./data/cropstack.db`, `./data/secret.key` |
 
 ## Endpoints (docs at `/api/docs`)
-`GET /api/health` · everything else under `/api/v1`: auth `GET status`, `POST register` (optional `invite`), `POST login`, `POST logout`, `GET me`, `PUT prefs`, `POST password` · household `GET|PUT household`, `PUT|DELETE household/members/{user_id}`, `GET|POST household/invites`, `DELETE household/invites/{id}`, public `GET invites/{token}` · site `GET|PUT sites/current`, `GET sites/current/climate`, `GET sites/current/climate/probability?var&op&x`, `GET sites/current/climate/bands?var` · `GET places?q=`
+`GET /api/health` · everything else under `/api/v1`: auth `GET status`, `POST register` (optional `invite`), `POST login`, `POST logout`, `GET me`, `PUT prefs`, `POST password` · household `GET|PUT household`, `PUT|DELETE household/members/{user_id}`, `GET|POST household/invites`, `DELETE household/invites/{id}`, public `GET invites/{token}` · site `GET|PUT sites/current`, `GET sites/current/climate`, `GET sites/current/climate/probability?var&op&x`, `GET sites/current/climate/bands?var` · `GET places?q=` · catalog `GET catalog`, `POST catalog/reload`, `GET catalog/{kind}`, `GET catalog/{kind}/{slug}`, `PUT|DELETE catalog/{kind}/{slug}/overrides`
 
 ## Repos
 - CropStack: https://github.com/krugerhomeassistant/CropStack

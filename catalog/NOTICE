@@ -1,0 +1,40 @@
+CropStack catalog
+=================
+
+The contents of this catalog/ directory are licensed under the Creative Commons Attribution-ShareAlike 4.0
+International licence (see LICENSE). The CropStack application code elsewhere in this repository is licensed
+separately under MIT; the MIT licence does NOT cover catalog/.
+
+Every value in the catalog cites its source by id; the full list of sources, their licences and the date their
+terms were reviewed is in sources.yaml. Values are stated as single facts with citations; no source's prose,
+tables, lists or images are reproduced.
+
+Attributions and additional terms
+---------------------------------
+
+FAO (ECOCROP, DAD-IS)
+  Values derived from FAO databases are used under CC BY 4.0 and the FAO database terms of use
+  (https://www.fao.org/contact-us/terms/db-terms-of-use/en/). Citation format:
+    FAO. [year]. ECOCROP. Accessed on [date]. https://ecocrop.apps.fao.org/ Licence: CC-BY-4.0.
+    FAO. [year]. Domestic Animal Diversity Information System (DAD-IS). Accessed on [date].
+      https://www.fao.org/dad-is/en/ Licence: CC-BY-4.0.
+  Additional FAO terms that apply to these values: they may not be used to promote a commercial enterprise,
+  and their use does not imply any endorsement by FAO.
+
+EPPO Codes
+  Contains EPPO Codes (www.eppo.int). Download date: recorded with each import in sources.yaml / the
+  value's source locator.
+
+Wikipedia
+  Companion-planting pairs from "List of companion plants" (Wikipedia contributors), CC BY-SA 4.0, pinned
+  revision recorded in each value's source locator.
+
+FAO-56
+  Crop coefficients, stage lengths, root depths and depletion fractions are cited as facts from
+  Allen, R.G., Pereira, L.S., Raes, D. and Smith, M. (1998). Crop evapotranspiration. FAO Irrigation and
+  Drainage Paper 56. FAO, Rome.
+
+Private packs
+-------------
+A CropStack server may also load a private pack from its own data volume (<data>/catalog-private/). Private
+packs are personal, are never part of this repository or its releases, and are not covered by this NOTICE.

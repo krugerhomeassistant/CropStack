@@ -1,3 +1,4 @@
+import uuid
 from datetime import date
 
 import pytest
@@ -93,7 +94,7 @@ def test_garden_create_update_and_isolation(client):
     "bad", [{"latitude": 91}, {"longitude": -181}, {"frost_probability": 5}, {"name": ""}, {"latitude": None}]
 )
 def test_garden_validation(client, bad):
-    register(client, f"val{abs(hash(str(bad))) % 10_000}")
+    register(client, f"val{uuid.uuid4().hex[:8]}")
     assert client.put("/api/v1/sites/current", json=GARDEN | bad).status_code == 422
 
 

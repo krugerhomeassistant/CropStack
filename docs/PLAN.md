@@ -54,13 +54,15 @@ Goal: the foundations everything else needs, before data volume makes changes ex
 
 **3.4 Catalog infrastructure**
 > ✅ Sourcing research done (2026-10-09): [`research/catalog-data-sources.md`](research/catalog-data-sources.md); storage = YAML in `catalog/` (CC BY-SA 4.0) per SPEC §16.1.
-- [ ] JSON Schemas: `catalog/schema/{requirement_profile,crop,variety,species,breed,organism,task_template}.json` (§5, §6.1, §8.1, §11.3).
-- [ ] Loader: validate `catalog/**/*.yaml` at startup and in CI; upsert into DB with `catalog_version`; never overwrite user overrides.
-- [ ] Override mechanism (`override` table, JSON-path per field) + merged view helper `effective(entity, household)`; tests for override/reset.
-- [ ] Source tracking: every value carries the provenance block of SPEC §16.1 → `catalog/sources.yaml`.
-- [ ] `catalog/LICENSE` (CC BY-SA 4.0) + `catalog/NOTICE` (FAO extra terms, EPPO notice, citation strings); README/WIKI state MIT does not cover `catalog/`.
-- [ ] CI licence gate: fail on any source whose licence is NC, ND or unknown.
-- [ ] Private pack: load `/data/catalog-private/**/*.yaml` (same schema) after the bundled catalog; never committed; excluded from the licence gate; `origin: private` shown as a badge (SPEC §16.1).
+- [x] Models in `backend/app/catalog.py` (Pydantic: `Value` with provenance, `Range`, requirement profile §5, `Crop`, `Variety`, `Species`, `Breed`, `Organism`, `TaskTemplate`, `Source`); JSON Schemas generated into `catalog/schema/` by `scripts/catalog_schema.py` (CI test checks they're current). Kind-specific fields live in `params` until their engines need typed fields.
+- [x] Loader: bundled catalog validated at start (any problem stops start-up; tests run the same check in CI); held in memory, not copied to the DB (read-only data; deviation from the original "upsert into DB" idea).
+- [x] Overrides: `catalogoverride` table (migration 0005), dotted field paths, validated against the schema; `effective()` = parent → item → private → household overrides; API `GET/PUT/DELETE /api/v1/catalog/{kind}/{slug}[/overrides]`, editors only.
+- [x] Provenance per value (SPEC §16.1) + `catalog/sources.yaml` (26 sources from the research, with `use: bundle | facts-only | link-only`).
+- [x] `catalog/LICENSE` (CC BY-SA 4.0, SPDX text) + `catalog/NOTICE` + `catalog/README.md`; README states MIT doesn't cover `catalog/`.
+- [x] Licence gate: `bundle` needs an open licence; values may not cite unknown or `link-only` sources.
+- [x] Private pack: `<data>/catalog-private/` loaded after bundled, errors collected for the owner, `origin` = private / bundled+private; `POST /api/v1/catalog/reload`.
+- [x] Tests: 16 (real catalog loads, inheritance, private pack, 7 invalid-content cases, licence gate, parents, browse, override/reset/validation, roles + household isolation).
+- [ ] → Phase 5: catalog browser UI with source popovers and the "Data sources & licences" page.
 
 **Acceptance**: v0.4.0 DB upgrades cleanly; a second member (e.g. the user's wife) can be invited, chooses Today as start screen and never sees the climate page unless she opens it; catalog YAML with a schema error fails CI.
 

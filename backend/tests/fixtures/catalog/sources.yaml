@@ -1,0 +1,19 @@
+# Test fixture: invented sources and values, for loader tests only.
+- id: test-open
+  title: Test open source
+  url: https://example.org/open
+  license: CC-BY-4.0
+  use: bundle
+  tos_reviewed: 2026-10-09
+- id: test-facts
+  title: Test closed source cited as facts
+  url: https://example.org/facts
+  license: "All rights reserved"
+  use: facts-only
+  tos_reviewed: 2026-10-09
+- id: test-link
+  title: Test link-only source
+  url: https://example.org/link
+  license: CC-BY-NC-4.0
+  use: link-only
+  tos_reviewed: 2026-10-09

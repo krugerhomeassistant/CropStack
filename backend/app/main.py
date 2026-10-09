@@ -12,12 +12,13 @@ from starlette.middleware.sessions import SessionMiddleware
 from . import VERSION
 from .config import get_settings
 from .db import get_engine, init_db
-from .routers import auth, garden, household
+from .routers import auth, catalog, garden, household
 
 
 @asynccontextmanager
-async def lifespan(_: FastAPI) -> AsyncIterator[None]:
+async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     init_db()
+    app.state.catalog = catalog.load_catalog()  # a broken bundled catalog stops start-up; CI catches it first
     yield
 
 
@@ -45,7 +46,7 @@ def create_app() -> FastAPI:
             resp.headers.setdefault("Cache-Control", "no-store")
         return resp
 
-    for router in (auth.router, garden.router, household.router):
+    for router in (auth.router, garden.router, household.router, catalog.router):
         app.include_router(router)
 
     @app.get("/api/health", tags=["system"])
