@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Search } from 'lucide-react'
 import { api, type Place } from '../api'
+import { t } from '../i18n'
 
 type Props = { onPick: (place: Place) => void }
 
@@ -13,13 +14,13 @@ export default function PlaceSearch({ onPick }: Props) {
 
   // Not a <form>: it lives inside the garden form, and forms can't nest.
   async function search() {
-    if (query.trim().length < 2) return setError('Type at least 2 characters.')
+    if (query.trim().length < 2) return setError(t('Type at least 2 characters.'))
     setBusy(true)
     setError('')
     try {
       setResults(await api.places(query.trim()))
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Search failed')
+      setError(err instanceof Error ? err.message : t('Search failed'))
     } finally {
       setBusy(false)
     }
@@ -29,12 +30,12 @@ export default function PlaceSearch({ onPick }: Props) {
     <div className="flex flex-col gap-2">
       <div className="flex gap-2" role="search">
         <label className="sr-only" htmlFor="place-query">
-          Town, address or postal code
+          {t('Town, address or postal code')}
         </label>
         <input
           id="place-query"
           className="input"
-          placeholder="Town, address or postal code"
+          placeholder={t('Town, address or postal code')}
           maxLength={120}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
@@ -45,7 +46,7 @@ export default function PlaceSearch({ onPick }: Props) {
             }
           }}
         />
-        <button type="button" className="btn-secondary shrink-0" disabled={busy} aria-label="Search" onClick={search}>
+        <button type="button" className="btn-secondary shrink-0" disabled={busy} aria-label={t('Search')} onClick={search}>
           <Search className="size-4" aria-hidden />
         </button>
       </div>
@@ -55,8 +56,8 @@ export default function PlaceSearch({ onPick }: Props) {
         </p>
       )}
       {results && (
-        <ul className="flex flex-col gap-1" aria-label="Search results">
-          {results.length === 0 && <li className="text-sm text-muted">No places found. Try a nearby town.</li>}
+        <ul className="flex flex-col gap-1" aria-label={t('Search results')}>
+          {results.length === 0 && <li className="text-sm text-muted">{t('No places found. Try a nearby town.')}</li>}
           {results.map((place) => (
             <li key={`${place.latitude},${place.longitude}`}>
               <button
@@ -73,7 +74,7 @@ export default function PlaceSearch({ onPick }: Props) {
           ))}
         </ul>
       )}
-      <p className="text-xs text-muted">Search by © OpenStreetMap contributors</p>
+      <p className="text-xs text-muted">{t('Search by © OpenStreetMap contributors')}</p>
     </div>
   )
 }

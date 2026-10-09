@@ -3,6 +3,7 @@
 import hashlib
 import time
 from collections import defaultdict, deque
+from typing import Literal
 
 from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel, Field
@@ -12,7 +13,7 @@ from ..config import get_settings
 from ..deps import SessionDep, UserDep, hash_pw, verify_pw
 from ..models import Household, Invite, Membership, User, now
 
-router = APIRouter(prefix="/api/auth", tags=["auth"])
+router = APIRouter(prefix="/api/v1/auth", tags=["auth"])
 
 
 class Credentials(BaseModel):
@@ -23,6 +24,13 @@ class Credentials(BaseModel):
 
 class Registration(Credentials):
     invite: str | None = Field(None, max_length=128)  # joins that household instead of creating one
+
+
+class Prefs(BaseModel):
+    """Personal settings; each person in a household chooses their own."""
+
+    start: Literal["today", "garden", "climate"] = "today"  # screen the app opens on
+    units: Literal["metric", "imperial"] = "metric"
 
 
 class PasswordChange(BaseModel):
@@ -50,6 +58,7 @@ def public_user(user: User, db: Session) -> dict:
     membership = db.get(Membership, user.id)
     household = db.get(Household, membership.household_id) if membership else None
     return user.model_dump(include={"id", "username", "display_name", "created_at"}) | {
+        "prefs": Prefs(**user.prefs).model_dump(),
         "role": membership.role if membership else None,
         "household": {"id": household.id, "name": household.name} if household else None,
     }
@@ -125,6 +134,14 @@ def logout(request: Request) -> dict:
 @router.get("/me")
 def me(user: UserDep, db: SessionDep) -> dict:
     return public_user(user, db)
+
+
+@router.put("/prefs")
+def save_prefs(body: Prefs, user: UserDep, db: SessionDep) -> dict:
+    user.prefs = body.model_dump()
+    db.add(user)
+    db.commit()
+    return user.prefs
 
 
 @router.post("/password")

@@ -8,7 +8,7 @@ from .. import climate, external
 from ..deps import MemberDep, OwnerDep, SessionDep, UserDep
 from ..models import ClimateCache, Site, now
 
-router = APIRouter(prefix="/api", tags=["garden"])
+router = APIRouter(prefix="/api/v1", tags=["site"])
 
 
 class GardenIn(BaseModel):
@@ -19,8 +19,8 @@ class GardenIn(BaseModel):
     frost_probability: int = Field(50, ge=10, le=90)
 
 
-# shortcut: the API still says "garden" (one site per household); /api/v1/sites arrives with PLAN 3.3.
-@router.get("/garden")
+# shortcut: one site per household, addressed as "current" until the multi-site UI exists (SPEC 4.1).
+@router.get("/sites/current")
 def get_garden(me: MemberDep, db: SessionDep) -> Site:
     return _site(me.household_id, db)
 
@@ -32,7 +32,7 @@ def _site(household_id: int, db: Session) -> Site:
     return site
 
 
-@router.put("/garden")
+@router.put("/sites/current")
 def save_garden(body: GardenIn, owner: OwnerDep, db: SessionDep) -> Site:
     site = db.exec(select(Site).where(Site.household_id == owner.household_id)).first() or Site(
         household_id=owner.household_id, latitude=body.latitude, longitude=body.longitude
@@ -44,7 +44,7 @@ def save_garden(body: GardenIn, owner: OwnerDep, db: SessionDep) -> Site:
     return site
 
 
-@router.get("/garden/climate")
+@router.get("/sites/current/climate")
 def get_climate(me: MemberDep, db: SessionDep) -> dict:
     """Frost dates, zone and monthly normals for the site; fetched once per location, then cached."""
     site = _site(me.household_id, db)

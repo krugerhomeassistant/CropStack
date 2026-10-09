@@ -1,16 +1,19 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { ArrowLeft, Copy, Link2, Trash2 } from 'lucide-react'
-import { api, type Household as HouseholdData, type NewInvite, type PendingInvite, type Role, type User } from '../api'
+import { useNavigate } from 'react-router'
+import { api, type Household as HouseholdData, type NewInvite, type PendingInvite, type Role } from '../api'
+import { N_, t } from '../i18n'
+import { useApp } from '../state'
 
 const ROLES: { value: Role; label: string; hint: string }[] = [
-  { value: 'member', label: 'Member', hint: 'Sees and does the daily tasks, logs harvests and notes' },
-  { value: 'viewer', label: 'Viewer', hint: 'Can look, but not change anything' },
-  { value: 'owner', label: 'Owner', hint: 'Everything, including the garden location and members' },
+  { value: 'member', label: N_('Member'), hint: N_('Sees and does the daily tasks, logs harvests and notes') },
+  { value: 'viewer', label: N_('Viewer'), hint: N_('Can look, but not change anything') },
+  { value: 'owner', label: N_('Owner'), hint: N_('Everything, including the garden location and members') },
 ]
 
-type Props = { user: User; onBack: () => void }
-
-export default function Household({ user, onBack }: Props) {
+export default function Household() {
+  const { user } = useApp()
+  const navigate = useNavigate()
   const [data, setData] = useState<HouseholdData | null>(null)
   const [invites, setInvites] = useState<PendingInvite[]>([])
   const [fresh, setFresh] = useState<NewInvite | null>(null)
@@ -27,7 +30,7 @@ export default function Household({ user, onBack }: Props) {
       setName(household.name)
       if (household.my_role === 'owner') setInvites(await api.invites())
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load')
+      setError(err instanceof Error ? err.message : t('Failed to load'))
     }
   }
 
@@ -41,7 +44,7 @@ export default function Household({ user, onBack }: Props) {
       await action()
       await load()
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Something went wrong')
+      setError(err instanceof Error ? err.message : t('Something went wrong'))
     }
   }
 
@@ -58,12 +61,12 @@ export default function Household({ user, onBack }: Props) {
   const inviteUrl = fresh ? `${location.origin}${fresh.path}` : ''
 
   return (
-    <main className="mx-auto flex min-h-dvh max-w-md flex-col gap-6 px-6 py-10">
+    <>
       <header className="flex items-center gap-3">
-        <button onClick={onBack} aria-label="Back" className="text-muted">
+        <button onClick={() => navigate(-1)} aria-label={t('Back')} className="text-muted">
           <ArrowLeft className="size-5" aria-hidden />
         </button>
-        <h1 className="text-2xl font-extrabold">Household</h1>
+        <h1 className="text-2xl font-extrabold">{t('Household')}</h1>
       </header>
 
       {error && (
@@ -76,7 +79,7 @@ export default function Household({ user, onBack }: Props) {
         <>
           <form className="card flex flex-col gap-3" onSubmit={rename}>
             <label className="field">
-              <span>Household name</span>
+              <span>{t('Household name')}</span>
               <input
                 className="input"
                 value={name}
@@ -86,25 +89,25 @@ export default function Household({ user, onBack }: Props) {
                 onChange={(e) => setName(e.target.value)}
               />
             </label>
-            {isOwner && name.trim() !== data.name && <button className="btn">Save name</button>}
+            {isOwner && name.trim() !== data.name && <button className="btn">{t('Save name')}</button>}
           </form>
 
           <section className="card flex flex-col gap-3" aria-labelledby="members-title">
             <h2 id="members-title" className="font-bold">
-              People
+              {t('People')}
             </h2>
             <ul className="flex flex-col divide-y divide-ink/10">
               {data.members.map((m) => (
                 <li key={m.user_id} className="flex flex-wrap items-center gap-2 py-2">
                   <span className="min-w-0 flex-1">
                     <span className="font-semibold">{m.display_name || m.username}</span>
-                    {m.user_id === user.id && <span className="text-sm text-muted"> (you)</span>}
+                    {m.user_id === user.id && <span className="text-sm text-muted"> {t('(you)')}</span>}
                     <span className="block text-xs text-muted">@{m.username}</span>
                   </span>
                   {isOwner && m.user_id !== user.id ? (
                     <>
                       <label className="sr-only" htmlFor={`role-${m.user_id}`}>
-                        Role for {m.display_name || m.username}
+                        {t('Role for {name}', { name: m.display_name || m.username })}
                       </label>
                       <select
                         id={`role-${m.user_id}`}
@@ -114,7 +117,7 @@ export default function Household({ user, onBack }: Props) {
                       >
                         {ROLES.map((r) => (
                           <option key={r.value} value={r.value}>
-                            {r.label}
+                            {t(r.label)}
                           </option>
                         ))}
                       </select>
@@ -123,12 +126,12 @@ export default function Household({ user, onBack }: Props) {
                           className="rounded-lg bg-red-600 px-2 py-1 text-sm font-semibold text-white"
                           onClick={() => run(() => api.removeMember(m.user_id))}
                         >
-                          Remove login?
+                          {t('Remove login?')}
                         </button>
                       ) : (
                         <button
                           className="text-muted"
-                          aria-label={`Remove ${m.display_name || m.username}`}
+                          aria-label={t('Remove {name}', { name: m.display_name || m.username })}
                           onClick={() => setConfirmRemove(m.user_id)}
                         >
                           <Trash2 className="size-4" aria-hidden />
@@ -136,7 +139,7 @@ export default function Household({ user, onBack }: Props) {
                       )}
                     </>
                   ) : (
-                    <span className="text-sm text-muted capitalize">{m.role}</span>
+                    <span className="text-sm text-muted">{t(ROLES.find((r) => r.value === m.role)?.label ?? m.role)}</span>
                   )}
                 </li>
               ))}
@@ -146,10 +149,10 @@ export default function Household({ user, onBack }: Props) {
           {isOwner && (
             <section className="card flex flex-col gap-3" aria-labelledby="invite-title">
               <h2 id="invite-title" className="font-bold">
-                Invite someone
+                {t('Invite someone')}
               </h2>
               <fieldset className="flex flex-col gap-2">
-                <legend className="sr-only">Role for the new person</legend>
+                <legend className="sr-only">{t('Role for the new person')}</legend>
                 {ROLES.map((r) => (
                   <label key={r.value} className="flex items-start gap-3 rounded-xl border border-ink/10 p-3">
                     <input
@@ -160,45 +163,47 @@ export default function Household({ user, onBack }: Props) {
                       onChange={() => setInviteRole(r.value)}
                     />
                     <span>
-                      <span className="font-semibold">{r.label}</span>
-                      <span className="block text-sm text-muted">{r.hint}</span>
+                      <span className="font-semibold">{t(r.label)}</span>
+                      <span className="block text-sm text-muted">{t(r.hint)}</span>
                     </span>
                   </label>
                 ))}
               </fieldset>
               <button className="btn-secondary" onClick={invite}>
-                <Link2 className="size-4" aria-hidden /> Create invite link
+                <Link2 className="size-4" aria-hidden /> {t('Create invite link')}
               </button>
 
               {fresh && (
                 <div className="flex flex-col gap-2 rounded-xl bg-sprout/20 p-3 text-sm">
-                  <p>Send this link to the person. It works once and expires in 7 days.</p>
+                  <p>{t('Send this link to the person. It works once and expires in 7 days.')}</p>
                   <input
                     className="input text-xs select-all"
                     readOnly
                     value={inviteUrl}
-                    aria-label="Invite link"
+                    aria-label={t('Invite link')}
                     onFocus={(e) => e.target.select()}
                   />
                   {/* The clipboard API only works over HTTPS or localhost; on a LAN http:// install, select the text. */}
                   {window.isSecureContext && (
                     <button className="btn-secondary" onClick={() => navigator.clipboard.writeText(inviteUrl)}>
-                      <Copy className="size-4" aria-hidden /> Copy link
+                      <Copy className="size-4" aria-hidden /> {t('Copy link')}
                     </button>
                   )}
                 </div>
               )}
 
               {invites.length > 0 && (
-                <ul className="flex flex-col gap-1 text-sm" aria-label="Open invites">
+                <ul className="flex flex-col gap-1 text-sm" aria-label={t('Open invites')}>
                   {invites.map((i) => (
                     <li key={i.id} className="flex items-center justify-between gap-2">
                       <span>
-                        <span className="capitalize">{i.role}</span> invite, expires{' '}
-                        {new Date(i.expires_at).toLocaleDateString()}
+                        {t('{role} invite, expires {date}', {
+                          role: t(ROLES.find((r) => r.value === i.role)?.label ?? i.role),
+                          date: new Date(i.expires_at).toLocaleDateString(),
+                        })}
                       </span>
                       <button className="text-sm text-muted underline" onClick={() => run(() => api.revokeInvite(i.id))}>
-                        Cancel
+                        {t('Cancel')}
                       </button>
                     </li>
                   ))}
@@ -208,6 +213,6 @@ export default function Household({ user, onBack }: Props) {
           )}
         </>
       )}
-    </main>
+    </>
   )
 }

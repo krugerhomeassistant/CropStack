@@ -21,6 +21,11 @@
   }
 }
 
+:root {
+  /* Bottom nav height incl. the iPhone home indicator; anything anchored above the nav uses this. */
+  --nav-h: calc(3.5rem + env(safe-area-inset-bottom));
+}
+
 body {
   @apply bg-canvas text-ink font-sans antialiased;
 }

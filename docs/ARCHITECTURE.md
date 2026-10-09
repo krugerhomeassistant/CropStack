@@ -16,7 +16,7 @@ Target architecture (engines, data model, API) is specified in `docs/SPEC.md` §
 | Layer | Tech |
 |---|---|
 | Backend | Python 3.14 (runtime, CI) / 3.13+ (dev), FastAPI 0.143.0, uvicorn 0.54.0, SQLModel 0.0.48, pydantic-settings 2.15.0, alembic 1.20.0, argon2-cffi 25.1.0, itsdangerous 2.2.0, httpx 0.28.1, tzdata 2026.5 |
-| Frontend | React 19.3, Vite 8.3, TypeScript 7.0, Tailwind 4.3 (`@tailwindcss/vite`), vite-plugin-pwa 2.0, lucide-react 1.53, @fontsource-variable/nunito (self-hosted font) |
+| Frontend | React 19.3, React Router 8.4 (declarative, `react-router` package), Vite 8.3, TypeScript 7.0, Tailwind 4.3 (`@tailwindcss/vite`), vite-plugin-pwa 2.0, lucide-react 1.53, @fontsource-variable/nunito (self-hosted font) |
 | Tooling | ruff (lint + format), pytest, GitHub Actions, Dependabot, GHCR |
 
 ## Backend modules (`backend/app/`)
@@ -40,8 +40,12 @@ Target architecture (engines, data model, API) is specified in `docs/SPEC.md` §
 |---|---|
 | `src/main.tsx` | entry, service-worker registration |
 | `src/api.ts` | typed fetch client, `ApiError` |
-| `src/App.tsx` | screen state machine: loading → auth → garden setup → home |
-| `src/pages/` | `Auth`, `GardenSetup`, `Home` |
+| `src/App.tsx` | bootstrap state (loading → auth/invite → owner setup or member waiting → app) + routes |
+| `src/state.tsx` | `AppContext` / `useApp()`: user, garden, setGarden, reload, logout |
+| `src/i18n.ts` | `t()` / `N_()` translation layer (English only for now) |
+| `src/units.ts` | SI → metric/imperial display helpers |
+| `src/components/Layout.tsx` | page frame + bottom nav (`--nav-h` incl. safe area) |
+| `src/pages/` | `Auth` (incl. invite), `GardenSetup`, `Today`, `Garden`, `More`, `Climate`, `Household`, `Settings` |
 | `src/components/` | `PlaceSearch` (not a form: nested in the garden form), `ClimateCard` |
 | `src/index.css` | Tailwind theme tokens (canvas, ink, muted, leaf, sprout, soil, card) + dark mode |
 | `vite.config.ts` | PWA manifest, `/api` dev proxy → :8000 |
@@ -56,8 +60,8 @@ Target architecture (engines, data model, API) is specified in `docs/SPEC.md` §
 | `CROPSTACK_SECURE_COOKIES` | `false` | HTTPS-only cookies |
 | `CROPSTACK_PORT` | `8430` | compose host port only |
 
-## DB schema (SQLite, Alembic migrations; head 0002)
-- **user**: id, username (unique, lowercased), password_hash (argon2id), display_name, created_at
+## DB schema (SQLite, Alembic migrations; head 0003)
+- **user**: id, username (unique, lowercased), password_hash (argon2id), display_name, created_at, prefs JSON (start, units)
 - **household**: id, name, created_at
 - **membership**: user_id (PK → user, CASCADE), household_id (→ household, CASCADE, indexed), role (owner|member|viewer), created_at
 - **invite**: token_hash (PK, SHA-256), household_id (→ household, CASCADE), role, created_by (→ user, SET NULL), created_at, expires_at, used_at

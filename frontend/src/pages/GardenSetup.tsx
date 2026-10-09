@@ -2,13 +2,14 @@ import { useState, type FormEvent } from 'react'
 import { LocateFixed } from 'lucide-react'
 import { api, type Garden, type GardenInput } from '../api'
 import PlaceSearch from '../components/PlaceSearch'
+import { N_, t } from '../i18n'
 
 type Props = { garden: Garden | null; onSaved: (garden: Garden) => void; onCancel?: () => void }
 
 const FROST_CHOICES = [
-  { value: 10, label: 'Cautious', hint: 'frost after the spring date in 1 year out of 10' },
-  { value: 50, label: 'Typical', hint: 'the median frost date' },
-  { value: 90, label: 'Bold', hint: 'plant early, accept more frost risk' },
+  { value: 10, label: N_('Cautious'), hint: N_('frost after the spring date in 1 year out of 10') },
+  { value: 50, label: N_('Typical'), hint: N_('the median frost date') },
+  { value: 90, label: N_('Bold'), hint: N_('plant early, accept more frost risk') },
 ]
 
 export default function GardenSetup({ garden, onSaved, onCancel }: Props) {
@@ -25,11 +26,11 @@ export default function GardenSetup({ garden, onSaved, onCancel }: Props) {
 
   function locate() {
     setError('')
-    if (!navigator.geolocation) return setError('Location is not available in this browser.')
+    if (!navigator.geolocation) return setError(t('Location is not available in this browser.'))
     navigator.geolocation.getCurrentPosition(
       (pos) => set({ latitude: pos.coords.latitude.toFixed(4), longitude: pos.coords.longitude.toFixed(4) }),
       // Browsers only share location over HTTPS or localhost, so a LAN install (http://zima-ip) lands here.
-      () => setError('Could not get your location. Enter it by hand (e.g. from Google Maps: right-click → coordinates).'),
+      () => setError(t('Could not get your location. Enter it by hand (e.g. from Google Maps: right-click → coordinates).')),
     )
   }
 
@@ -41,22 +42,22 @@ export default function GardenSetup({ garden, onSaved, onCancel }: Props) {
     try {
       onSaved(await api.saveGarden(body))
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Something went wrong')
+      setError(err instanceof Error ? err.message : t('Something went wrong'))
     } finally {
       setBusy(false)
     }
   }
 
   return (
-    <main className="mx-auto flex min-h-dvh max-w-md flex-col gap-6 px-6 py-10">
+    <div className="flex flex-col gap-6">
       <header>
-        <h1 className="text-2xl font-extrabold">{garden ? 'Edit your garden' : 'Where is your garden?'}</h1>
-        <p className="text-muted">Your location sets your climate: hardiness zone, frost dates and daylight.</p>
+        <h1 className="text-2xl font-extrabold">{garden ? t('Edit your garden') : t('Where is your garden?')}</h1>
+        <p className="text-muted">{t('Your location sets your climate: temperatures, rain, frost and daylight.')}</p>
       </header>
 
       <form className="card flex flex-col gap-4" onSubmit={submit}>
         <label className="field">
-          <span>Garden name</span>
+          <span>{t('Garden name')}</span>
           <input
             className="input"
             required
@@ -67,7 +68,7 @@ export default function GardenSetup({ garden, onSaved, onCancel }: Props) {
         </label>
 
         <fieldset className="flex flex-col gap-2">
-          <legend className="mb-2 text-sm font-semibold">Location</legend>
+          <legend className="mb-2 text-sm font-semibold">{t('Location')}</legend>
           <PlaceSearch
             onPick={(place) =>
               set({
@@ -78,11 +79,11 @@ export default function GardenSetup({ garden, onSaved, onCancel }: Props) {
             }
           />
           <button type="button" className="btn-secondary" onClick={locate}>
-            <LocateFixed className="size-4" aria-hidden /> Use my current location
+            <LocateFixed className="size-4" aria-hidden /> {t('Use my current location')}
           </button>
           <div className="grid grid-cols-2 gap-3">
             <label className="field">
-              <span>Latitude</span>
+              <span>{t('Latitude')}</span>
               <input
                 className="input"
                 inputMode="decimal"
@@ -96,7 +97,7 @@ export default function GardenSetup({ garden, onSaved, onCancel }: Props) {
               />
             </label>
             <label className="field">
-              <span>Longitude</span>
+              <span>{t('Longitude')}</span>
               <input
                 className="input"
                 inputMode="decimal"
@@ -111,7 +112,7 @@ export default function GardenSetup({ garden, onSaved, onCancel }: Props) {
             </label>
           </div>
           <label className="field">
-            <span>Postal code (optional)</span>
+            <span>{t('Postal code (optional)')}</span>
             <input
               className="input"
               maxLength={16}
@@ -122,7 +123,7 @@ export default function GardenSetup({ garden, onSaved, onCancel }: Props) {
         </fieldset>
 
         <fieldset className="flex flex-col gap-2">
-          <legend className="mb-2 text-sm font-semibold">Frost risk</legend>
+          <legend className="mb-2 text-sm font-semibold">{t('Frost risk')}</legend>
           {FROST_CHOICES.map((c) => (
             <label key={c.value} className="flex items-start gap-3 rounded-xl border border-ink/10 p-3">
               <input
@@ -133,8 +134,8 @@ export default function GardenSetup({ garden, onSaved, onCancel }: Props) {
                 onChange={() => set({ frost_probability: c.value })}
               />
               <span>
-                <span className="font-semibold">{c.label}</span>
-                <span className="block text-sm text-muted">{c.hint}</span>
+                <span className="font-semibold">{t(c.label)}</span>
+                <span className="block text-sm text-muted">{t(c.hint)}</span>
               </span>
             </label>
           ))}
@@ -146,14 +147,14 @@ export default function GardenSetup({ garden, onSaved, onCancel }: Props) {
           </p>
         )}
         <button className="btn" disabled={busy}>
-          Save garden
+          {t('Save garden')}
         </button>
         {onCancel && (
           <button type="button" className="text-sm text-muted underline" onClick={onCancel}>
-            Cancel
+            {t('Cancel')}
           </button>
         )}
       </form>
-    </main>
+    </div>
   )
 }

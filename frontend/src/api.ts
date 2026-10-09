@@ -1,6 +1,11 @@
+import type { Units } from './units'
+
 export type Role = 'owner' | 'member' | 'viewer'
 
+export type Prefs = { start: 'today' | 'garden' | 'climate'; units: Units }
+
 export type User = {
+  prefs: Prefs
   id: number
   username: string
   display_name: string
@@ -60,7 +65,7 @@ export class ApiError extends Error {
 }
 
 async function request<T>(method: string, path: string, body?: unknown): Promise<T> {
-  const resp = await fetch(`/api${path}`, {
+  const resp = await fetch(`/api/v1${path}`, {
     method,
     headers: body === undefined ? undefined : { 'Content-Type': 'application/json' },
     body: body === undefined ? undefined : JSON.stringify(body),
@@ -90,8 +95,9 @@ export const api = {
   revokeInvite: (id: string) => request<{ ok: boolean }>('DELETE', `/household/invites/${id}`),
   inviteInfo: (token: string) => request<InviteInfo>('GET', `/invites/${encodeURIComponent(token)}`),
   logout: () => request<{ ok: boolean }>('POST', '/auth/logout'),
-  garden: () => request<Garden>('GET', '/garden'),
-  saveGarden: (garden: GardenInput) => request<Garden>('PUT', '/garden', garden),
-  climate: () => request<Climate>('GET', '/garden/climate'),
+  garden: () => request<Garden>('GET', '/sites/current'),
+  saveGarden: (garden: GardenInput) => request<Garden>('PUT', '/sites/current', garden),
+  climate: () => request<Climate>('GET', '/sites/current/climate'),
+  savePrefs: (prefs: Prefs) => request<Prefs>('PUT', '/auth/prefs', prefs),
   places: (q: string) => request<Place[]>('GET', `/places?q=${encodeURIComponent(q)}`),
 }

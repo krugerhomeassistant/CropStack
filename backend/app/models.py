@@ -26,6 +26,8 @@ class User(SQLModel, table=True):
     password_hash: str
     display_name: str = ""
     created_at: datetime = Field(default_factory=now)
+    # Personal settings (start screen, units); validated by routers.auth.Prefs, defaults filled on read.
+    prefs: dict[str, Any] = Field(default_factory=dict, sa_column=Column(JSON, nullable=False, server_default="{}"))
 
 
 ROLES = ("owner", "member", "viewer")  # owner: everything · member: plan, log, do tasks · viewer: read-only

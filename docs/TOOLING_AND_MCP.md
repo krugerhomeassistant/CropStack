@@ -20,6 +20,7 @@
 | Nominatim | place / postal-code search (`external.search_places`) | finds SA postal codes Open-Meteo geocoding missed |
 | `fake_server.py` pattern | E2E: run the app with `external.*` monkeypatched to synthetic data (tests/test_climate.synthetic) | no network or quota needed |
 | Alembic 1.20 | schema migrations; `cd backend && alembic revision --autogenerate -m "…"` | standard for SQLAlchemy; batch mode handles SQLite ALTER limits |
+| React Router 8 | client routing (declarative mode, import from `react-router`) | standard; v8 removed `react-router-dom` |
 | Dependabot | `.github/dependabot.yml` | weekly grouped pip / npm / docker / actions updates |
 
 ## Claude session tooling used

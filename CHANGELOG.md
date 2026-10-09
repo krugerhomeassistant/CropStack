@@ -9,6 +9,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - **Households**: invite your family with a link (member, viewer or owner). Everyone shares the same garden; members do the daily work, viewers can only look, owners manage the garden location and people. Invite links work once, expire after 7 days and work even when public sign-up is closed.
 - Sign-up asks for your name.
 
+- **New layout**: Today · Garden · More at the bottom of the screen. The climate summary moved to More → Climate, so the home screen is about what to do.
+- **Settings** (More → Settings): each person picks the screen the app opens on and metric or imperial units.
+
 ### Changed
 - Your account and garden move into a household of your own automatically when you update. The climate data is fetched again once.
 - The database now upgrades itself safely on start (versioned migrations). Existing installs from v0.1–v0.4 are upgraded in place; no action needed.

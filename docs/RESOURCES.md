@@ -20,14 +20,15 @@
 | ZimaOS install | `docker-compose.zimaos.yml` |
 | Tests | `backend/tests/` |
 | Theme tokens | `frontend/src/index.css` |
-| App shell | `frontend/src/App.tsx` |
+| App shell + routes | `frontend/src/App.tsx`, `src/components/Layout.tsx`, `src/state.tsx` |
+| Translations / units | `frontend/src/i18n.ts`, `src/units.ts` |
 | PWA config | `frontend/vite.config.ts` |
 | Release script | `scripts/bump.py` |
 | CI + release | `.github/workflows/ci.yml` |
 | Data (runtime) | `./data/cropstack.db`, `./data/secret.key` |
 
-## Endpoints (under `/api`, docs at `/api/docs`)
-`GET health` · auth: `GET status`, `POST register`, `POST login`, `POST logout`, `GET me`, `POST password` · household: `GET|PUT household`, `PUT|DELETE household/members/{user_id}`, `GET|POST household/invites`, `DELETE household/invites/{id}`, public `GET invites/{token}` · `GET|PUT garden` · `GET garden/climate` · `GET places?q=`
+## Endpoints (docs at `/api/docs`)
+`GET /api/health` · everything else under `/api/v1`: auth `GET status`, `POST register` (optional `invite`), `POST login`, `POST logout`, `GET me`, `PUT prefs`, `POST password` · household `GET|PUT household`, `PUT|DELETE household/members/{user_id}`, `GET|POST household/invites`, `DELETE household/invites/{id}`, public `GET invites/{token}` · site `GET|PUT sites/current`, `GET sites/current/climate` · `GET places?q=`
 
 ## Repos
 - CropStack: https://github.com/krugerhomeassistant/CropStack

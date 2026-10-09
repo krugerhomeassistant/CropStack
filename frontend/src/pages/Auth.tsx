@@ -1,12 +1,13 @@
 import { useState, type FormEvent } from 'react'
 import { Sprout } from 'lucide-react'
 import { api, type InviteInfo } from '../api'
+import { N_, t } from '../i18n'
 
 export type Invite = InviteInfo & { token: string }
 
 type Props = { registrationOpen: boolean; invite?: Invite; notice?: string; onDone: () => void }
 
-const ROLE_TEXT = { owner: 'an owner', member: 'a member', viewer: 'a viewer' }
+const ROLE_TEXT = { owner: N_('an owner'), member: N_('a member'), viewer: N_('a viewer') }
 
 export default function Auth({ registrationOpen, invite, notice, onDone }: Props) {
   const canRegister = registrationOpen || !!invite
@@ -26,7 +27,7 @@ export default function Auth({ registrationOpen, invite, notice, onDone }: Props
       else await api.register(username, password, displayName.trim(), invite?.token)
       onDone()
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Something went wrong')
+      setError(err instanceof Error ? err.message : t('Something went wrong'))
     } finally {
       setBusy(false)
     }
@@ -34,10 +35,10 @@ export default function Auth({ registrationOpen, invite, notice, onDone }: Props
 
   const subtitle =
     mode === 'login'
-      ? 'Welcome back.'
+      ? t('Welcome back.')
       : invite
-        ? `You're invited to join ${invite.household} as ${ROLE_TEXT[invite.role]}.`
-        : 'Create your account to start planning.'
+        ? t("You're invited to join {household} as {role}.", { household: invite.household, role: t(ROLE_TEXT[invite.role]) })
+        : t('Create your account to start planning.')
 
   return (
     <main className="mx-auto flex min-h-dvh max-w-sm flex-col justify-center gap-6 px-6">
@@ -56,7 +57,7 @@ export default function Auth({ registrationOpen, invite, notice, onDone }: Props
       <form className="card flex flex-col gap-4" onSubmit={submit}>
         {mode === 'register' && (
           <label className="field">
-            <span>Your name</span>
+            <span>{t('Your name')}</span>
             <input
               className="input"
               autoComplete="name"
@@ -67,7 +68,7 @@ export default function Auth({ registrationOpen, invite, notice, onDone }: Props
           </label>
         )}
         <label className="field">
-          <span>Username</span>
+          <span>{t('Username')}</span>
           <input
             className="input"
             autoComplete="username"
@@ -80,7 +81,7 @@ export default function Auth({ registrationOpen, invite, notice, onDone }: Props
           />
         </label>
         <label className="field">
-          <span>Password</span>
+          <span>{t('Password')}</span>
           <input
             className="input"
             type="password"
@@ -97,7 +98,7 @@ export default function Auth({ registrationOpen, invite, notice, onDone }: Props
           </p>
         )}
         <button className="btn" disabled={busy}>
-          {mode === 'login' ? 'Log in' : invite ? `Join ${invite.household}` : 'Create account'}
+          {mode === 'login' ? t('Log in') : invite ? t('Join {household}', { household: invite.household }) : t('Create account')}
         </button>
       </form>
 
@@ -106,7 +107,7 @@ export default function Auth({ registrationOpen, invite, notice, onDone }: Props
           className="text-sm text-leaf underline"
           onClick={() => setMode(mode === 'login' ? 'register' : 'login')}
         >
-          {mode === 'login' ? 'Create an account instead' : 'I already have an account'}
+          {mode === 'login' ? t('Create an account instead') : t('I already have an account')}
         </button>
       )}
     </main>

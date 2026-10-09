@@ -36,22 +36,24 @@ Goal: the foundations everything else needs, before data volume makes changes ex
 **3.2 Households, roles, sites**
 - [x] Tables `household`, `membership(role)` (one household per user for now), `invite`; migration 0002 makes each existing user the owner of their own household (household.id = user.id).
 - [x] `garden` → `site` owned by the household (same ids; one site per household for now); climate cache rebuilt empty (refetches). `elevation`/`boundary` deferred to Phase 4 / Phase 8 when used.
-- [ ] API: `/api/garden` stays until 3.3 moves everything to `/api/v1` (sites endpoint then).
+- [x] API moved to `/api/v1` in 3.3 (`/sites/current`).
 - [x] Role checks (`MemberDep`, `OwnerDep`, `EditorDep`, `require_role`); garden location = owner only.
 - [x] Invites: owner creates a link (role, 7 days, single use, SHA-256 hash stored); public `GET /api/invites/{token}`; registration with invite works when sign-up is closed.
 - [x] Household page: rename, people with role change and remove (removes their login; last-owner and self guards), invite link with copy (secure context) or select, open invites with cancel. Members without a garden see a waiting screen; edit button only for owners.
 - [x] Tests: 6 API tests (ownership, invite join, single use + hashing, expiry/revoke, roles/removal, cross-household isolation) + migration tests for 0002 + Playwright two-browser invite E2E.
 
 **3.3 API & app shell**
-- [ ] Version API under `/api/v1` (keep `/api/health` unversioned); update frontend client.
-- [ ] Router + navigation per §11.1 (Today · Calendar · Garden · Animals · More); per-user start screen and visible sections stored in user preferences.
-- [ ] Move the v0.4 climate card off Home into More → Climate (temporary until Phase 11 charts).
-- [ ] i18n layer from day one: `t()` / `_()` (Bloomery pattern), English strings extracted, CI missing-string checker.
-- [ ] Units preference (metric/imperial) with formatting helpers; store SI.
-- [ ] Background scheduler task (asyncio, single worker) with job registry, last-run status in `/api/health`.
-- [ ] Settings → Data sources page (§16): services, what is sent, enable/disable switches.
+- [x] API under `/api/v1` (`/api/health` unversioned); garden → `/api/v1/sites/current` (+ `/climate`); no aliases (pre-1.0, PWA auto-updates).
+- [x] React Router 8 (declarative) + bottom nav **Today · Garden · More** (Calendar/Animals tabs join when they have content); More → Climate, Household, Settings, Log out, version.
+- [x] Per-user prefs (`user.prefs` JSON, migration 0003): start screen (today/garden/climate) and units; Settings page with optimistic radios. Hidden-sections setting dropped: analysis already lives under More, so nobody sees it unless they open it.
+- [x] v0.4 climate card moved off Home to More → Climate (until Phase 11 charts); Today placeholder explains what arrives.
+- [x] i18n layer: every UI string through `t()` / `N_()` (`src/i18n.ts`); locale files + CI missing-string checker added with the first translation (Phase 14).
+- [x] Units helpers (`src/units.ts`: °C/°F, mm/in, m/ft); climate card converts; storage stays SI.
+- [ ] → Phase 4.2: background scheduler (first job = forecast refresh; nothing to schedule yet).
+- [ ] → Phase 4.2: Settings → Data sources page with enable/disable (only meaningful once there is more than one source and manual fallback).
 
 **3.4 Catalog infrastructure**
+> ⏸ Input pending: the user is running a separate deep-research chat on **where and how to source and store** crop/animal/organism data (2026-10-09). Do not lock the storage format (YAML in repo vs DB-first vs imported packs) or sources until its findings are in; then update SPEC §6.1/§16 and these tasks.
 - [ ] JSON Schemas: `data/schema/{requirement_profile,crop,variety,species,breed,organism,task_template}.json` (§5, §6.1, §8.1, §11.3).
 - [ ] Loader: validate `data/**/*.yaml` at startup and in CI; upsert into DB with `catalog_version`; never overwrite user overrides.
 - [ ] Override mechanism (`override` table, JSON-path per field) + merged view helper `effective(entity, household)`; tests for override/reset.
@@ -84,6 +86,7 @@ Goal: probabilistic, self-updating environment; remove v1 heuristics (§18).
 **Acceptance**: AC-P1, AC-P2 (cold tail appears/disappears), AC-P3 pass on the environment layer; forecast refresh stays within quota budget in a 24 h simulated run.
 
 ## Phase 5 — Crop & organism catalog content (v0.7.0) §6.1, §11.3
+> ⏸ Sources and licences come from the user's separate deep-research chat (see 3.4 note). Merge its findings before writing content.
 - [ ] Source list `data/sources.yaml`: extension services (university extension guides; ARC South Africa where reusable), FAO-56 Kc table, ECOCROP (verify terms), literature; licence notes per source.
 - [ ] Verify ECOCROP reuse terms; if reusable, script `scripts/import_ecocrop.py` to seed temperature/rain ranges with citation.
 - [ ] Write 60 vegetable & herb crops (`data/crops/*.yaml`): profile (§5), phenology GDD targets or DTM, spacing, depth, germination curve, family, nutrient demand per stage, Kc, companions (with evidence level), harvest ripeness cues, storage/preservation, yield/m², how-to text for each task type.

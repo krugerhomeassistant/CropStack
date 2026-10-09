@@ -12,7 +12,7 @@ from ..deps import MemberDep, OwnerDep, SessionDep
 from ..models import Household, Invite, Membership, User, now
 from .auth import token_hash, valid_invite
 
-router = APIRouter(prefix="/api", tags=["household"])
+router = APIRouter(prefix="/api/v1", tags=["household"])
 
 INVITE_DAYS = 7
 Role = Literal["owner", "member", "viewer"]
