@@ -6,29 +6,36 @@ import pytest
 from app import climate
 
 
-def synthetic(mean: float, amplitude: float, coldest: date, years: int = 30, year_shift: float = 0.0) -> dict:
+def synthetic(
+    mean: float,
+    amplitude: float,
+    coldest: date,
+    years: int = 30,
+    year_shift: float = 0.0,
+    day_range: float = 12.0,
+    rain_cold: float = 1.0,
+    rain_warm: float = 1.0,
+) -> dict:
     """Fake Open-Meteo archive: a cosine annual cycle of daily minimum temperature.
 
-    year_shift spreads the years apart (°C) so frost dates differ between years.
+    year_shift spreads the years apart (°C) so frost dates differ between years; day_range = max - min;
+    rain_cold / rain_warm = mm per day in the colder / warmer half of the year.
     """
     start = date(1995, 1, 1)
     days = [start + timedelta(days=i) for i in range((date(1995 + years, 1, 1) - start).days)]
     cold = coldest.timetuple().tm_yday
-    tmin = [
-        mean
-        + year_shift * ((d.year % 10) - 4.5) / 4.5
-        + amplitude * math.cos(2 * math.pi * (d.timetuple().tm_yday - cold) / 365 + math.pi)
-        for d in days
-    ]
-    # cos(...+pi) = -1 on the coldest day: tmin = mean - amplitude there
+    # -cos(...) = -1 on the coldest day: tmin = mean - amplitude there
+    cycle = [-math.cos(2 * math.pi * (d.timetuple().tm_yday - cold) / 365) for d in days]
+    tmin = [mean + year_shift * ((d.year % 10) - 4.5) / 4.5 + amplitude * c for d, c in zip(days, cycle, strict=True)]
     return {
         "elevation": 1339.0,
         "timezone": "Africa/Johannesburg",
         "daily": {
             "time": [d.isoformat() for d in days],
             "temperature_2m_min": tmin,
-            "temperature_2m_max": [t + 12 for t in tmin],
+            "temperature_2m_max": [t + day_range for t in tmin],
             "soil_temperature_0_to_7cm_mean": [t + 6 for t in tmin],
+            "precipitation_sum": [rain_cold if c < 0 else rain_warm for c in cycle],
         },
     }
 
@@ -102,3 +109,28 @@ def test_day_length():
 def test_monthly_means_skip_missing_values():
     days = [date(2020, 1, 1), date(2020, 1, 2), date(2020, 2, 1)]
     assert climate.monthly_means(days, [1.0, None, 4.0])[:3] == [1.0, 4.0, None]
+
+
+def test_mediterranean_climate_western_cape_like():
+    """Mild wet winters, hot dry summers: frost rare, rain in winter, hot days in Dec-Feb."""
+    raw = synthetic(mean=11, amplitude=5, coldest=date(2001, 7, 15), day_range=15, rain_cold=2.5, rain_warm=0.3)
+    report = climate.report(climate.summarize(raw), latitude=-33.9, frost_probability=50)
+    assert report["frost_free"]
+    assert report["rainfall_regime"] == "winter"
+    assert 480 <= report["annual_rain_mm"] <= 540
+    hot = report["monthly"]["hot_days"]
+    assert report["hot_days_per_year"] > 0
+    assert hot[0] > 0 and hot[6] == 0  # January hot, July never
+
+
+def test_rainfall_regimes():
+    tmin = [20, 20, 18, 14, 10, 7, 6, 7, 10, 13, 16, 19]  # southern hemisphere: cold Jun-Aug
+    assert climate.rainfall_regime([5, 5, 10, 40, 80, 100, 100, 90, 50, 25, 10, 5], tmin) == "winter"
+    assert climate.rainfall_regime([100, 90, 80, 40, 10, 5, 5, 5, 20, 50, 80, 100], tmin) == "summer"
+    assert climate.rainfall_regime([50] * 12, tmin) == "year-round"
+    assert climate.rainfall_regime([0] * 12, tmin) == "dry"
+
+
+def test_monthly_totals_average_per_year():
+    days = [date(2020, 1, 1), date(2020, 1, 2), date(2021, 1, 1)]
+    assert climate.monthly_totals(days, [2.0, 3.0, 5.0])[0] == 5.0  # (2 + 3 + 5) mm over 2 Januaries

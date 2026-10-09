@@ -27,7 +27,7 @@ CropStack is an open-source, self-hosted web app that guides gardeners and homes
 ## ✨ Features
 
 ### 📍 Location-aware planning
-- **Automatic climate setup** from coordinates or postal code: USDA hardiness zone, last spring and first fall frost dates, soil temperatures and daylight curves.
+- **Automatic climate setup** from a town, postal code or coordinates: hardiness zone, rainfall pattern (winter / summer rainfall), hot days, frost dates where frost matters, soil temperatures and daylight. Works worldwide, Southern Hemisphere included.
 - **Smart calendar & task engine**: a rolling schedule for indoor sowing, hardening off, transplanting, direct sowing, pruning, fertilising, pest checks and harvest windows.
 - **Adaptive weather**: heatwaves, surprise frosts and heavy rain shift watering and transplant tasks automatically (public weather APIs or your own station).
 
@@ -105,6 +105,7 @@ API docs are served at `/api/docs`; `/api/health` reports status and version.
 | Multi-arch Docker image, CI, automatic releases | ✅ v0.1.0 |
 | Accounts & garden profile (location, frost-risk preference) | ✅ v0.2.0 |
 | Climate: zone, frost dates, season length, daylight, monthly normals | ✅ v0.3.0 |
+| Climate: rainfall pattern, rain and hot days per month | ✅ v0.4.0 |
 | Place search (town, address, postal code) | ✅ v0.3.0 |
 | Plant encyclopedia & task calendar | 🔜 next |
 | Garden mapper & rotation | ⏳ |

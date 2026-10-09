@@ -1,8 +1,15 @@
+from datetime import date
+
 import pytest
 from fastapi.testclient import TestClient
+from sqlmodel import Session, select
 
+from app import external
+from app.db import get_engine
 from app.main import app
+from app.models import ClimateCache
 from app.routers import auth
+from tests.test_climate import synthetic
 
 GARDEN = {"name": "Back yard", "latitude": -33.92, "longitude": 18.42, "postal_code": "8001", "frost_probability": 30}
 
@@ -90,14 +97,11 @@ def test_garden_validation(client, bad):
 
 
 def test_climate_is_fetched_once_per_location(client, monkeypatch):
-    from app import external
-    from tests.test_climate import synthetic
-
     calls = []
 
     def fake_fetch(lat, lon):
         calls.append((lat, lon))
-        return synthetic(mean=5, amplitude=10, coldest=__import__("datetime").date(2001, 7, 15))
+        return synthetic(mean=5, amplitude=10, coldest=date(2001, 7, 15))
 
     monkeypatch.setattr(external, "fetch_climate_archive", fake_fetch)
     register(client, "fiona")
@@ -115,10 +119,17 @@ def test_climate_is_fetched_once_per_location(client, monkeypatch):
     client.get("/api/garden/climate")
     assert calls == [(GARDEN["latitude"], GARDEN["longitude"]), (-26.2, GARDEN["longitude"])]
 
+    # A cache written by an older summary format is refetched once.
+    with Session(get_engine()) as db:
+        cache = db.exec(select(ClimateCache)).all()[-1]
+        cache.summary = {k: v for k, v in cache.summary.items() if k != "version"}
+        db.add(cache)
+        db.commit()
+    assert "rainfall_regime" in client.get("/api/garden/climate").json()
+    assert len(calls) == 3
+
 
 def test_climate_service_failure_is_reported(client, monkeypatch):
-    from app import external
-
     def failing(lat, lon):
         raise external.ExternalError("archive-api.open-meteo.com answered 429: Daily API request limit exceeded")
 
@@ -130,8 +141,6 @@ def test_climate_service_failure_is_reported(client, monkeypatch):
 
 
 def test_place_search(client, monkeypatch):
-    from app import external
-
     monkeypatch.setattr(external, "search_places", lambda q: [{"label": q, "latitude": 1.0, "longitude": 2.0}])
     assert client.get("/api/places", params={"q": "0081"}).status_code == 401
     register(client, "hank")

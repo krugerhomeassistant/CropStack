@@ -25,13 +25,16 @@ def _get(url: str, params: dict, timeout: float) -> httpx.Response:
     except httpx.HTTPError as e:
         raise ExternalError(f"Could not reach {httpx.URL(url).host}: {e.__class__.__name__}") from e
     if resp.status_code != 200:
-        reason = resp.json().get("reason", resp.text[:200]) if resp.content else resp.reason_phrase
+        try:
+            reason = resp.json().get("reason", resp.reason_phrase)  # Open-Meteo errors are {"error", "reason"}
+        except ValueError:
+            reason = resp.reason_phrase
         raise ExternalError(f"{httpx.URL(url).host} answered {resp.status_code}: {reason}")
     return resp
 
 
 def fetch_climate_archive(latitude: float, longitude: float, today: date | None = None) -> dict:
-    """Daily min/max air temperature and topsoil temperature for the last CLIMATE_YEARS complete years.
+    """Daily min/max air temperature, topsoil temperature and rain for the last CLIMATE_YEARS complete years.
 
     Cost: ~800 of Open-Meteo's 10,000 free daily calls (long ranges are weighted), so callers must cache.
     """
@@ -41,7 +44,7 @@ def fetch_climate_archive(latitude: float, longitude: float, today: date | None 
         "longitude": longitude,
         "start_date": f"{end_year - CLIMATE_YEARS + 1}-01-01",
         "end_date": f"{end_year}-12-31",
-        "daily": "temperature_2m_min,temperature_2m_max,soil_temperature_0_to_7cm_mean",
+        "daily": "temperature_2m_min,temperature_2m_max,soil_temperature_0_to_7cm_mean,precipitation_sum",
         "timezone": "auto",
         "models": "era5_seamless",  # ERA5-Land (~11 km) where available, ERA5 (~25 km) elsewhere, e.g. coasts
     }

@@ -48,7 +48,8 @@ def get_climate(user: UserDep, db: SessionDep) -> dict:
     """Frost dates, zone and monthly normals for the garden; fetched once per location, then cached."""
     garden = _garden(user.id, db)
     cache = db.get(ClimateCache, garden.id)
-    if not cache or (cache.latitude, cache.longitude) != (garden.latitude, garden.longitude):
+    stale = not cache or cache.summary.get("version") != climate.SUMMARY_VERSION
+    if stale or (cache.latitude, cache.longitude) != (garden.latitude, garden.longitude):
         try:
             summary = climate.summarize(external.fetch_climate_archive(garden.latitude, garden.longitude))
         except external.ExternalError as e:

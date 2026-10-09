@@ -1,16 +1,16 @@
 # ACTIVE CONTEXT
 
-**Date:** 2026-10-09 · **Version:** 0.3.0
+**Date:** 2026-10-09 · **Version:** 0.4.0
 
 ## Current subtask
-Phase 2 (climate engine) done and released as v0.3.0. User has CropStack installed on ZimaOS (fixed port after importing the wrong compose file).
+v0.4.0: rain + heat in the climate engine and card, after user feedback (Western Cape, South Africa: little frost; limits are summer heat/drought and the winter-rain season).
 
 ## Last execution results
-- Backend 30/30, ruff clean, frontend build OK. E2E with faked services: place search fills coords + postal code, climate card renders (12-month table fits 390 px), Cautious risk moves spring frost later (25 Aug → 12 Sep on synthetic data). No page errors.
-- Real Open-Meteo call not verified: sandbox IP over the free daily limit.
+- Backend 33/33, ruff clean, frontend build OK. E2E with faked services: Mediterranean layout (rain + heat lead, frost one line) and frosty layout (frost dates shown). No page errors.
+- Real Open-Meteo call still not verified (sandbox IP over the free daily limit).
 
 ## Blockers
-- None. Needs a real-world check of the climate card on the user's ZimaOS install (their IP, their quota).
+- None. Needs a real-world check on the user's ZimaOS install.
 
 ## Immediate next step
-Ask the user to update on ZimaOS, open Home and report the zone/frost dates (sanity-check vs local knowledge). Then Phase 3: plant encyclopedia data (licence-checked sources) and the task/calendar engine.
+User updates on ZimaOS and reports what the card shows for their garden. Then Phase 3: plant encyclopedia + calendar driven by per-crop temperature windows vs monthly normals (see WIKI "Planned scheduling rules"). Research licence-clean plant data sources first.

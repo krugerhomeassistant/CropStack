@@ -32,3 +32,4 @@ CropStack-specific:
 22. **Playwright `getByText('Your climate')` matched the loading text** → `getByText` is case-insensitive substring by default → wait for a unique final element (`/^Zone /`).
 23. **Zone test values on a boundary** (−17.78 °C = −0.004 °F → 6b, not 7a) → pick test temperatures inside a half-zone, not on its edge.
 24. **Day lengths at ±latitude don't sum to 24 h** → refraction (−0.833°) lengthens both → ~24.7 h at 60°; test ranges, not symmetry.
+25. **Climate card was frost-centric; user in the Western Cape barely gets frost** → designed from a northern/US gardening frame (frost dates as the anchor) → lead with what limits the garden locally (rain season, heat), show frost only where it occurs in ≥ 50 % of years; plan crop calendars from temperature windows, not frost offsets. Ask "what limits your garden?" before anchoring a feature on one hazard.

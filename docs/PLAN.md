@@ -36,7 +36,15 @@
 - [ ] Optional: compare frost dates with a known station (e.g. a local SAWS / NOAA normal) for sanity
 - [ ] Optional: monthly chart instead of the table
 
-## Phase 3 — Encyclopedia & task engine (v0.4.0)
+## Phase 2b — Rain & heat (v0.4.0, user feedback: Western Cape has little frost)
+- [x] Fetch `precipitation_sum`; monthly rain, rainfall regime (winter / summer / year-round / dry)
+- [x] Hot days ≥ 30 °C per month / year
+- [x] Climate card leads with rain + heat; frost headline only where frost occurs in ≥ 50 % of years
+- [x] Summary versioning → old caches refetched once
+- [x] Tests: Mediterranean synthetic climate, regimes, monthly totals, version refetch (33 total) + E2E both layouts
+
+## Phase 3 — Encyclopedia & task engine (next)
+- [ ] Calendar driven by per-crop temperature windows vs monthly normals (not frost-centric; see WIKI "Planned scheduling rules")
 - [ ] Plant data schema (When/How/What), seed dataset (start with ~40 common crops), licence-checked sources
 - [ ] `schedule.py`: tasks from variety timing × climate (rules in WIKI)
 - [ ] Calendar + task list UI, mark done/skip

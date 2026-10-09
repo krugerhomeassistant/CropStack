@@ -5,6 +5,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-10-09
+
+### Added
+- **Rain and heat** in *Your climate*: rainfall pattern (winter, summer, year-round or dry) with a plain-language hint, rain per year and per month, and hot days (≥ 30 °C) per year and per month.
+
+### Changed
+- Frost only takes the headline where it happens in at least half of all years. In mild climates such as the Western Cape the card leads with rain and heat, and frost is a single line ("Frost is rare" or "No frost").
+- Climate data saved by v0.3.0 is refreshed once automatically to add rain and heat.
+
 ## [0.3.0] - 2026-10-09
 
 ### Added
@@ -29,7 +38,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - CI: ruff lint and format, backend tests, frontend build, image publishing to GHCR and automatic GitHub releases on a version bump.
 - Project docs: README, wiki, architecture, roadmap, contributing guide, security policy and Code of Conduct.
 
-[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/krugerhomeassistant/CropStack/releases/tag/v0.1.0

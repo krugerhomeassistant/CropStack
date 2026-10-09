@@ -25,7 +25,10 @@ export type Climate = {
   zone: string
   extreme_min_c: number
   daylight_hours: number[]
-  monthly: { tmin: Monthly; tmax: Monthly; soil: Monthly }
+  monthly: { tmin: Monthly; tmax: Monthly; soil: Monthly; rain: Monthly; hot_days: Monthly }
+  rainfall_regime: 'winter' | 'summer' | 'year-round' | 'dry'
+  annual_rain_mm: number
+  hot_days_per_year: number
   elevation_m: number | null
   period: string
   southern_hemisphere: boolean

@@ -32,12 +32,17 @@ Self-hosted, Docker-based garden and homestead planner. It turns a location (coo
 - **Frost dates at risk p**: per season, first frost (autumn) and last frost (spring) offsets; seasons without frost count as ±∞. With k = floor(p·n): spring date = the value with k seasons later than it; autumn date = the value with k seasons earlier. `None` (shown as "Rare") when frost is rarer than the risk. Frost-free season = autumn − spring + 365 (autumn is in the next season); 365 when either is `None`.
 - **Hardiness zone**: mean of each season's minimum → °F → USDA scale (zone 1a from −60 °F, 5 °F half-zones, clamped 1a–13b). Applied worldwide as a comparable number; gridded data underestimates cold in valleys.
 - **Daylight**: astronomical day length on the 15th of each month (sun centre −0.833°, includes refraction).
+- **Rain**: `precipitation_sum` → average mm per calendar month (`monthly_totals`: total ÷ number of years with that month). **Rainfall regime**: share of annual rain in the 6 coldest months (by mean daily minimum, so hemisphere-independent): ≥ 60 % winter, ≤ 40 % summer, else year-round; 0 mm = dry.
+- **Hot days**: days with maximum ≥ 30 °C (`HOT_C`), average per month and per year. Most cool-season crops bolt or stall and fruit set suffers above this.
+- **Frost relevance**: the app headlines frost dates only when frost occurs in ≥ 50 % of seasons; otherwise one line ("No frost" / "Frost is rare (x % of years)"). Rationale: in Mediterranean climates (Western Cape) the limits are summer heat and drought and the winter-rain season, not frost.
+- **Cache versioning**: `summary.version` = `climate.SUMMARY_VERSION` (now 2). A cache with another version is refetched once.
 - **Report** (`GET /api/garden/climate`): computed on every request from the cache + the garden's current `frost_probability`, so changing risk needs no refetch; moving the garden refetches. Errors from Open-Meteo → 502 with the service's reason.
 
 ## Place search
 `GET /api/places?q=` → Nominatim `/search` (free text: town, address or postal code; postcodes work in South Africa where Open-Meteo's geocoder found none). Search on submit only (Nominatim policy ≤ 1 req/s, identifying User-Agent `CropStack/<version> (+repo URL)`).
 
 ## Planned scheduling rules (to be confirmed during implementation)
+**Principle (user feedback 2026-10-09):** the calendar must not be frost-centric. Each crop gets temperature windows (germination soil temperature, ideal / max air temperature, heat and frost tolerance); sowing and transplant windows are the months whose climate normals fit, with frost dates as an extra constraint only where frost matters, and rain season as a watering signal. In a winter-rainfall climate this naturally gives autumn/winter sowing of cool-season crops and spring planting of warm-season crops before the heat.
 - Indoor sowing = LSF − (variety weeks before LSF).
 - Hardening off starts 7–10 days before transplant.
 - Transplant / direct sow = LSF + variety offset, gated on minimum soil temperature when known.

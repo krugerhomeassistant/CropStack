@@ -57,7 +57,7 @@ Planned optional services: weather API client (httpx), MQTT client for Home Assi
 ## DB schema (SQLite, `create_all`; no migrations yet)
 - **user**: id, username (unique, lowercased), password_hash (argon2id), display_name, created_at
 - **garden**: id, user_id → user (unique, CASCADE), name, latitude, longitude, postal_code, frost_probability (10–90, default 50), created_at, updated_at
-- **climatecache**: garden_id (PK) → garden (CASCADE), latitude, longitude (location it was fetched for), summary JSON (`season_start`, `first_frost[]`, `last_frost[]`, `annual_min[]`, `monthly{tmin,tmax,soil}`, `elevation_m`, `timezone`, `period`), fetched_at. New *table* rather than new garden columns, so existing installs need no migration.
+- **climatecache**: garden_id (PK) → garden (CASCADE), latitude, longitude (location it was fetched for), summary JSON (`version`, `season_start`, `first_frost[]`, `last_frost[]`, `annual_min[]`, `monthly{tmin,tmax,soil,rain,hot_days}`, `elevation_m`, `timezone`, `period`), fetched_at. New *table* rather than new garden columns, so existing installs need no migration.
 
 Planned: `plant` / `variety`, `bed`, `planting` (variety × bed × season), `task`. Adding columns to existing tables will need a migration tool (Alembic) before the first public release with data worth keeping.
 
