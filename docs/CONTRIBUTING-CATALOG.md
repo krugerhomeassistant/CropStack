@@ -41,6 +41,7 @@ source is not registered, or `COVERAGE.md` is stale.
 | `requirements.temperature.optimal` | Season quality score |
 | `requirements.soil_temperature.germination` | Earliest sowing day |
 | `params.cycle_days` | Days from sowing to harvest |
+| `params.transplant_age_days` | Seedling age at set-out; enables the indoor-start windows |
 | `requirements.water.*` | Watering (coming) |
 
 ## How collection keeps going

@@ -22,6 +22,7 @@ class CropProfile:
     lethal_min: float | None = None  # night temperature that kills or badly damages the crop, °C
     stress_max: float | None = None  # day temperature above which growth stops, °C
     optimal: tuple[float, float] | None = None  # mean-temperature band of best growth, °C
+    transplant_age: float | None = None  # days a seedling is raised indoors before it is set out
     estimates: tuple[str, ...] = ()  # fields whose values are estimates rather than sourced facts
     missing: tuple[str, ...] = field(default=())  # why a window cannot be worked out
 
@@ -94,6 +95,7 @@ def profile_from_item(item: dict) -> CropProfile:
         lethal_min=_number(item, *temp, "lethal_min"),
         stress_max=_number(item, *temp, "stress_max"),
         optimal=band,
+        transplant_age=_number(item, "params", "transplant_age_days"),
         estimates=estimates,
         missing=tuple(missing),
     )

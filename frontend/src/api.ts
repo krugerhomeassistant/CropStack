@@ -68,17 +68,20 @@ export type SowWindow = {
   success: number
   days_to_maturity: { p10: number; p50: number; p90: number }
 }
+export type SowAnalysis = {
+  windows: SowWindow[]
+  success_by_day: number[]
+  verdict: { state: 'yes' | 'risky' | 'no'; best_success: number; threshold: number; blockers: string[] }
+}
 export type CropWindows =
   | { slug: string; usable: false; missing: string[] }
-  | {
+  | ({
       slug: string
       usable: true
-      method: string
       estimates: string[]
-      windows: SowWindow[]
-      success_by_day: number[]
-      verdict: { state: 'yes' | 'risky' | 'no'; best_success: number; threshold: number; blockers: string[] }
-    }
+      /** Seedlings raised indoors and set out; dates are set-out dates. */
+      transplant?: SowAnalysis & { age_days: number }
+    } & SowAnalysis)
 export type Probability = { var: string; days: number[]; years: string }
 
 export type DayWeather = {

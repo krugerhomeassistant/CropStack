@@ -14,10 +14,11 @@ from dataclasses import dataclass
 from itertools import accumulate
 
 from ..environment import YEAR_DAYS, Climatology, doy_to_date, gdd_day, weighted_quantile
-from .phenology import EMERGENCE_DAYS, CropProfile
+from .phenology import EMERGENCE_DAYS, CropProfile, design_days
 
 HEAT_DAYS_TO_FAIL = 5  # days at or above stress_max, within the exposed part of the season
 SLOW_FACTOR = 2.0  # a crop that needs more than this many times its longest cycle does not mature in practice
+HEAD_START_CAP = 0.35  # the most of the heat-sum target a seedling raised indoors is credited with
 BEST_SHARE = 0.95  # the best sub-window: days scoring within 5 % of the best day
 
 
@@ -86,15 +87,24 @@ def _years(c: Climatology, p: CropProfile) -> list[_Year]:
 FACTORS = ("matures", "germination", "frost", "heat")
 
 
-def _one_start(y: _Year, s: int, p: CropProfile) -> dict | None:
-    """What happens in one year when sowing on day s (0-364): which risks hit, when it matures, how good it is."""
-    germ_ok = y.cum_soil_ok[s + EMERGENCE_DAYS] - y.cum_soil_ok[s] >= EMERGENCE_DAYS * 0.5  # half the days warm enough
-    end = bisect_left(y.cum_gdd, y.cum_gdd[s] + p.gdd_to_maturity)  # first day index (1-based) with enough heat
+def _one_start(y: _Year, s: int, p: CropProfile, age: float = 0.0) -> dict | None:
+    """What happens in one year when sowing (or, with `age` > 0, setting out a seedling raised indoors for `age`
+    days) on day s (0-364): which risks hit, when it matures, how good it is."""
+    if age:
+        germ_ok = True  # germinated indoors
+        credit = min(HEAD_START_CAP, age / design_days(p.cycle_days)) * p.gdd_to_maturity
+        emerge = 0  # already up: exposed to frost and heat from the day it goes out
+    else:
+        germ_ok = y.cum_soil_ok[s + EMERGENCE_DAYS] - y.cum_soil_ok[s] >= EMERGENCE_DAYS * 0.5  # half the days warm
+        credit, emerge = 0.0, EMERGENCE_DAYS
+    end = bisect_left(
+        y.cum_gdd, y.cum_gdd[s] + p.gdd_to_maturity - credit
+    )  # first day index (1-based) with enough heat
     longest = SLOW_FACTOR * p.cycle_days[1]
-    matures = end < len(y.cum_gdd) and end - s <= longest
+    matures = end < len(y.cum_gdd) and end - s + age <= longest
     if not matures:
         return {"matures": False, "germination": germ_ok, "frost": True, "heat": True, "days": None, "quality": 0.0}
-    exposed_from = s + EMERGENCE_DAYS
+    exposed_from = s + emerge
     frost_hit = y.cum_frost[end] - y.cum_frost[exposed_from] > 0
     heat_hit = y.cum_heat[end] - y.cum_heat[exposed_from] >= HEAT_DAYS_TO_FAIL
     quality = (y.cum_optimal[end] - y.cum_optimal[s]) / (end - s) if p.optimal else 1.0
@@ -103,12 +113,12 @@ def _one_start(y: _Year, s: int, p: CropProfile) -> dict | None:
         "germination": germ_ok,
         "frost": not frost_hit,
         "heat": not heat_hit,
-        "days": float(end - s),
+        "days": float(end - s + age),
         "quality": quality,
     }
 
 
-def evaluate(c: Climatology, p: CropProfile) -> list[dict]:
+def evaluate(c: Climatology, p: CropProfile, age: float = 0.0) -> list[dict]:
     """For each sowing day of the year (index 0 = 1 January): joint success, each factor on its own, season
     quality (share of days in the optimal band) and the spread of days to maturity in years that succeed."""
     if not p.usable:
@@ -116,7 +126,7 @@ def evaluate(c: Climatology, p: CropProfile) -> list[dict]:
     years = _years(c, p)
     days = []
     for s in range(YEAR_DAYS):
-        runs = [(y.weight, _one_start(y, s, p)) for y in years]
+        runs = [(y.weight, _one_start(y, s, p, age)) for y in years]
         factors = {f: sum(w for w, r in runs if r and r[f]) for f in FACTORS}
         good = [(w, r) for w, r in runs if r and all(r[f] for f in FACTORS)]
         success = sum(w for w, _ in good)
@@ -204,11 +214,20 @@ def verdict(days: list[dict], windows: list[dict], threshold: float, p: CropProf
     return {"state": state, "best_success": round(best, 3), "threshold": round(threshold, 3), "blockers": blockers}
 
 
-def analyse(c: Climatology, p: CropProfile, threshold: float) -> dict:
-    days = evaluate(c, p)
+def _analyse(c: Climatology, p: CropProfile, threshold: float, age: float = 0.0) -> dict:
+    days = evaluate(c, p, age)
     windows = find_windows(days, threshold)
     return {
         "verdict": verdict(days, windows, threshold, p),
         "windows": windows,
         "success_by_day": [round(d["success"], 3) for d in days],
     }
+
+
+def analyse(c: Climatology, p: CropProfile, threshold: float) -> dict:
+    """Direct sowing, plus (when the crop has a transplant age) setting out seedlings raised indoors; for the
+    second, dates are set-out dates and `age_days` says how long before that to sow indoors."""
+    result = _analyse(c, p, threshold)
+    if p.transplant_age:
+        result["transplant"] = _analyse(c, p, threshold, p.transplant_age) | {"age_days": round(p.transplant_age)}
+    return result

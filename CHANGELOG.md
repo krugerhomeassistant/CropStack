@@ -5,6 +5,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.15.0] - 2026-10-09
+
+### Added
+- **Start indoors, set out seedlings** on crop pages, next to sowing in the ground: the set-out dates that work, how many days before to sow indoors, and the chance of success for each day. Seedlings get a head start, so it often opens a longer season than direct sowing.
+- Seedling ages at set-out for 17 crops (marked as estimates until sourced).
+
 ## [0.14.0] - 2026-10-09
 
 ### Added

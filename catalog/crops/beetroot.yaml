@@ -255,3 +255,10 @@ params:
     confidence: medium
     sources:
     - {ref: fao-ecocrop, locator: 'ECOCROP code 458, GMIN, GMAX (via Recocrop)', retrieved: 2026-10-09, snapshot: 'sha256:90a21d908419e304e4e4c38c92df62d93b25cb373420fcd0a711247b1f47f358'}
+  transplant_age_days:
+    value: 28
+    unit: d
+    evidence: traditional
+    confidence: low
+    estimate: true
+    qualifiers: {basis: usual seedling age at set-out from standard extension and seed-company guides}

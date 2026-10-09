@@ -73,6 +73,7 @@ try {
   await owner.getByRole('heading', { name: 'Sowing' }).waitFor()
   await owner.getByRole('heading', { name: 'Growing conditions' }).waitFor()
   await owner.getByRole('heading', { name: 'When to sow here' }).waitFor()
+  await owner.getByRole('heading', { name: 'Start indoors, set out seedlings' }).waitFor()
   await owner.getByText(/Grows between .* best between/).waitFor()
   await owner.getByRole('link', { name: 'Source 1' }).first().waitFor()
   assert.ok(await owner.getByRole('heading', { name: 'Sources' }).isVisible())

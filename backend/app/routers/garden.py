@@ -175,7 +175,6 @@ def crop_windows(slug: str, me: MemberDep, db: SessionDep, c: CatalogDep) -> dic
     return {
         "slug": slug,
         "usable": True,
-        "method": "direct sowing",
         "estimates": list(profile.estimates),
         **result,
     }

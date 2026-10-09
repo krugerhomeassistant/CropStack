@@ -64,3 +64,13 @@ def test_same_crop_different_climates_get_different_windows():
     lettuce = analyse(frosty, LETTUCE, 0.8)
     assert min(w["start"] for w in lettuce["windows"]) < min(w["start"] for w in tomato_frosty["windows"])
     assert tomato_mild["verdict"]["state"] == "yes"
+
+
+def test_transplants_extend_the_season_in_a_frosty_climate():
+    frosty = climate(mean=5, amplitude=14)
+    tender = CropProfile(**{**TOMATO.__dict__, "transplant_age": 42})
+    result = analyse(frosty, tender, 0.8)
+    direct, set_out = total(result), total(result["transplant"])
+    assert result["transplant"]["age_days"] == 42
+    assert set_out > direct  # a head start lets it ripen from later set-out dates
+    assert analyse(frosty, TOMATO, 0.8).get("transplant") is None  # no age, no transplant method

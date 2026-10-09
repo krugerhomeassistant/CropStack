@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { api, ApiError, type CropWindows } from '../api'
+import { api, ApiError, type CropWindows, type SowAnalysis } from '../api'
 import { t } from '../i18n'
 import { YearChart } from './charts'
 import { ErrorState, Section, Skeleton } from './ui'
@@ -17,6 +17,52 @@ const day = (md: string) =>
     day: 'numeric',
     month: 'short',
   })
+
+/** One way of growing it: the sentence, the best stretch, the blockers and the chance-by-day chart. */
+function Method({ a, title, noun, extra }: { a: SowAnalysis; title: string; noun: string; extra?: string }) {
+  const { verdict, windows } = a
+  const best = windows[0]
+  const headline =
+    verdict.state === 'yes'
+      ? windows.map((w) => (w.all_year ? t('Any time of year') : `${day(w.start)} – ${day(w.end)}`)).join(', ')
+      : verdict.state === 'risky'
+        ? t('Only with a real risk of losing it: the best day works in {pct}% of years.', {
+            pct: Math.round(verdict.best_success * 100),
+          })
+        : t('Not likely to succeed here this way.')
+  return (
+    <div className="flex flex-col gap-2">
+      <h3 className="font-display text-lg font-bold">{title}</h3>
+      <p className="text-lg font-semibold">{headline}</p>
+      {extra && verdict.state === 'yes' && <p className="text-muted">{extra}</p>}
+      {best && !best.all_year && (
+        <p className="text-muted">
+          {t('Best: {from} – {to}. Ready after about {days} days (most years {low}–{high}).', {
+            from: day(best.best_start),
+            to: day(best.best_end),
+            days: best.days_to_maturity.p50,
+            low: best.days_to_maturity.p10,
+            high: best.days_to_maturity.p90,
+          })}
+        </p>
+      )}
+      {verdict.state !== 'yes' && verdict.blockers.length > 0 && (
+        <ul className="list-disc pl-5 text-muted">
+          {verdict.blockers.map((b) => (
+            <li key={b}>{t(FACTOR[b] ?? b)}</li>
+          ))}
+        </ul>
+      )}
+      <YearChart
+        title={t('Chance of success by {noun} day', { noun })}
+        series={[{ name: t('Chance of success'), color: 'var(--color-leaf)', values: a.success_by_day.map((p) => p * 100) }]}
+        format={(v) => `${Math.round(v)}%`}
+        yMin={0}
+        yMax={100}
+      />
+    </div>
+  )
+}
 
 /** When to direct-sow this crop here, worked out from its requirements and the local climate record. */
 export default function SowingWindows({ slug }: { slug: string }) {
@@ -50,50 +96,22 @@ export default function SowingWindows({ slug }: { slug: string }) {
       </Section>
     )
 
-  const { verdict, windows } = data
-  const best = windows[0]
-  const headline =
-    verdict.state === 'yes'
-      ? windows.map((w) => (w.all_year ? t('Any time of year') : `${day(w.start)} – ${day(w.end)}`)).join(', ')
-      : verdict.state === 'risky'
-        ? t('Only with a real risk of losing it: the best day works in {pct}% of years.', {
-            pct: Math.round(verdict.best_success * 100),
-          })
-        : t('Not likely to succeed here when sown directly.')
-
   return (
     <Section
       title={title}
-      description={t('Direct sowing. Each year on record is one possible season; a day counts when the crop succeeds in at least {pct}% of them.', {
-        pct: Math.round(verdict.threshold * 100),
+      description={t('Each year on record is one possible season; a day counts when the crop succeeds in at least {pct}% of them.', {
+        pct: Math.round(data.verdict.threshold * 100),
       })}
     >
-      <p className="text-lg font-semibold">{headline}</p>
-      {best && !best.all_year && (
-        <p className="text-muted">
-          {t('Best: {from} – {to}. Ready after about {days} days (most years {low}–{high}).', {
-            from: day(best.best_start),
-            to: day(best.best_end),
-            days: best.days_to_maturity.p50,
-            low: best.days_to_maturity.p10,
-            high: best.days_to_maturity.p90,
-          })}
-        </p>
+      <Method a={data} title={t('Sow in the ground')} noun={t('sowing')} />
+      {data.transplant && (
+        <Method
+          a={data.transplant}
+          title={t('Start indoors, set out seedlings')}
+          noun={t('set-out')}
+          extra={t('Sow indoors about {days} days before the set-out date.', { days: data.transplant.age_days })}
+        />
       )}
-      {verdict.state !== 'yes' && verdict.blockers.length > 0 && (
-        <ul className="list-disc pl-5 text-muted">
-          {verdict.blockers.map((b) => (
-            <li key={b}>{t(FACTOR[b] ?? b)}</li>
-          ))}
-        </ul>
-      )}
-      <YearChart
-        title={t('Chance of success by sowing day')}
-        series={[{ name: t('Chance of success'), color: 'var(--color-leaf)', values: data.success_by_day.map((p) => p * 100) }]}
-        format={(v) => `${Math.round(v)}%`}
-        yMin={0}
-        yMax={100}
-      />
       {data.estimates.length > 0 && (
         <p className="text-sm text-muted">{t('Some limits used here are estimates, marked in the sources below.')}</p>
       )}

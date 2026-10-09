@@ -33,7 +33,7 @@ Target architecture (engines, data model, API) is specified in `docs/SPEC.md` §
 | `deps.py` | `SessionDep`, `UserDep`, `MemberDep`, `OwnerDep`, `EditorDep` (`require_role`), argon2 `hash_pw` / `verify_pw` |
 | `routers/household.py` | household name, settings (data-source switches), data-sources list, members (role, remove), invites (create, list, revoke), public invite info |
 | `routers/auth.py` | status, register (new household or via invite), login (IP throttle), logout, me (with role + household), password |
-| `engine/phenology.py`, `engine/windows.py` | **pure** crop engine: catalog item → `CropProfile` (GDD base/target, frost and heat limits); per-day sowing success over analog years; viable and best windows; verdict with blockers |
+| `engine/phenology.py`, `engine/windows.py` | **pure** crop engine: catalog item → `CropProfile` (GDD base/target, frost and heat limits); per-day sowing and set-out success over analog years (direct, and transplant when `params.transplant_age_days` exists); viable and best windows; verdict with blockers |
 | `environment.py` | **pure** environment engine v2: analog-year `Climatology` (build, recency weights, trend), window probabilities, daily curves/bands, GDD, days-to-GDD, water deficit |
 | `weather.py` | **pure** forecast rows, past/future split, last-30-days anomaly |
 | `scheduler.py` | background job registry + runner (thread per run), status for `/api/health` |

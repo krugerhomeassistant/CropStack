@@ -135,7 +135,7 @@ Goal: probabilistic, self-updating environment; remove v1 heuristics (§18).
 - [x] Tests with synthetic climates (hand-computed GDD sums still open; GDD itself is tested in test_environment).
 
 **6.2 Window finder**
-- [x] (v0.13.0, direct sowing only; indoor/transplant/protected open) `engine/windows.py`: daily candidate starts over 18 months × methods; success-probability factors; quality score; viable windows at risk tolerance; best sub-window; protected-growing rerun with structure modifiers.
+- [x] (v0.13.0 direct sowing; v0.15.0 indoor start + set-out; protected growing and hardening-off steps open) `engine/windows.py`: daily candidate starts over 18 months × methods; success-probability factors; quality score; viable windows at risk tolerance; best sub-window; protected-growing rerun with structure modifiers.
 - [x] "Can I grow X here?" verdict + blockers; API `GET /api/v1/crops/{slug}/windows` (varieties later) and crop-page section.
 - [ ] Performance benchmark: 50 varieties ≤ 2 s on CI runner (scaled target for Pi documented).
 
