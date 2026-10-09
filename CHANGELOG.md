@@ -5,6 +5,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-10-09
+
 ### Added
 - **Weather on Today**: today's high and low, rain chance and wind, the next 7 days with icons, and how the last 30 days compare with normal ("2 °C warmer than normal; drier than 8 in 10 years").
 - The forecast refreshes itself in the background about every 3 hours, so Today opens instantly; if Open-Meteo is unreachable the last forecast is shown with its time.
@@ -78,7 +80,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - CI: ruff lint and format, backend tests, frontend build, image publishing to GHCR and automatic GitHub releases on a version bump.
 - Project docs: README, wiki, architecture, roadmap, contributing guide, security policy and Code of Conduct.
 
-[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.7.0...HEAD
+[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.8.0...HEAD
+[0.8.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.5.1...v0.6.0
 [0.5.1]: https://github.com/krugerhomeassistant/CropStack/compare/v0.5.0...v0.5.1

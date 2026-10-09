@@ -1,12 +1,12 @@
 # ACTIVE CONTEXT
 
-**Date:** 2026-10-09 · **Version:** 0.7.0
+**Date:** 2026-10-09 · **Version:** 0.8.0
 
 ## Current subtask
 Phase 4.2 (forecast, scheduler, data sources) done, target v0.8.0. Remaining Phase 4: 4.3 calibration hooks (sensors, observations).
 
 ## Last execution results
-- Backend 86/86, ruff clean, frontend build OK. Playwright: Today weather card (light + dark), data-source switches (toggle style), forecast off hides the card, place search off hides search. Pending before tagging: run the CI-built image and see the `forecast` job in `/api/health`.
+- Backend 86/86, ruff clean, frontend build OK. Playwright: Today weather card (light + dark), data-source switches (toggle style), forecast off hides the card, place search off hides search. CI image verified: `forecast` job runs ~60 s after start, failure recorded in `/api/health` (sandbox proxy cert), container stays healthy.
 - v0.7.0 released earlier today (catalog foundation).
 
 ## Handoff to the implementing session
@@ -21,4 +21,4 @@ Phase 4.2 (forecast, scheduler, data sources) done, target v0.8.0. Remaining Pha
 - None. Decided 2026-10-09 (user: personal, non-commercial use; repo stays public): public `catalog/` = CC BY-SA 4.0; no ARC request for now; personal-use values go in a private pack on the server (SPEC §16.1, §19 Q6–7).
 
 ## Immediate next step
-Verify the CI image (scheduler job in `/api/health`), release v0.8.0. Then 4.3 (sensor + observation tables, manual entry, bias fit) or Phase 6.9 design system → 5 catalog content → 6 crop engine → 7 Today tasks.
+4.3 (sensor + observation tables, manual entry, bias fit) or Phase 6.9 design system → 5 catalog content → 6 crop engine → 7 Today tasks.
