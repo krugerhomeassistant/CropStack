@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { CloudRain, Mountain, Snowflake, Sun, Thermometer, TrendingUp } from 'lucide-react'
 import { api, type Climate } from '../api'
 import { t } from '../i18n'
+import { Badge, ErrorState, Skeleton } from './ui'
 import { length, rain, rainUnit, rainValue, temp, tempUnit, tempValue, type Units } from '../units'
 
 const MONTHS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((m) =>
@@ -37,18 +38,19 @@ export default function ClimateCard({ gardenKey, units }: { gardenKey: string; u
 
   if (error)
     return (
-      <section className="card flex flex-col gap-3 text-sm">
-        <p role="alert">{error}</p>
-        <button className="btn-secondary" onClick={load}>
-          {t('Try again')}
-        </button>
+      <section className="card">
+        <ErrorState message={error} onRetry={load} />
       </section>
     )
 
   if (!climate)
     return (
-      <section className="card text-sm text-muted" role="status">
-        {t('Working out your climate from 30 years of weather records… (only slow the first time)')}
+      <section className="card flex flex-col gap-4" role="status" aria-busy="true">
+        <p className="text-sm text-muted">
+          {t('Working out your climate from 30 years of weather records… (only slow the first time)')}
+        </p>
+        <Skeleton className="h-24" />
+        <Skeleton className="h-40" />
       </section>
     )
 
@@ -76,10 +78,8 @@ export default function ClimateCard({ gardenKey, units }: { gardenKey: string; u
   return (
     <section className="card flex flex-col gap-4" aria-label={t('Your climate')}>
       <div className="flex items-baseline justify-between">
-        <h2 className="text-lg font-extrabold">{t('Your climate')}</h2>
-        <span className="rounded-full bg-sprout/40 px-3 py-1 text-sm font-bold">
-          {t('Zone {zone}', { zone: climate.zone })}
-        </span>
+        <h2 className="text-xl font-bold">{t('Your climate')}</h2>
+        <Badge>{t('Zone {zone}', { zone: climate.zone })}</Badge>
       </div>
 
       <dl className="grid grid-cols-2 gap-3">
@@ -179,7 +179,7 @@ export default function ClimateCard({ gardenKey, units }: { gardenKey: string; u
                 {label}
               </th>
               {row.map((v, i) => (
-                <td key={i} className={key === 'frost' && v ? 'text-sky-600' : undefined}>
+                <td key={i} className={key === 'frost' && v ? 'text-water' : undefined}>
                   {fmt(v, digits)}
                 </td>
               ))}

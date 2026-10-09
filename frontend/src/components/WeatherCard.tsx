@@ -14,6 +14,7 @@ import {
 } from 'lucide-react'
 import { api, ApiError, type DayWeather, type Weather } from '../api'
 import { N_, t } from '../i18n'
+import { Skeleton } from './ui'
 import { rain, speed, tempUnit, tempValue, type Units } from '../units'
 
 /** WMO weather interpretation codes (Open-Meteo `weather_code`) → icon and label. Display only. */
@@ -75,7 +76,10 @@ export default function WeatherCard({ units }: { units: Units }) {
 
   if (state === 'off') return null // the household turned the forecast off; Today simply has no weather
   if (state === 'loading')
-    return <section className="card h-40 animate-pulse" aria-busy="true" aria-label={t('Loading the weather')} />
+    return <section className="card flex flex-col gap-4" aria-busy="true" aria-label={t('Loading the weather')}>
+        <Skeleton className="h-14" />
+        <Skeleton className="h-20" />
+      </section>
   if (state === 'error' || !weather?.today)
     return <section className="card text-sm text-muted">{t('The weather forecast is not available right now.')}</section>
 
@@ -89,7 +93,7 @@ export default function WeatherCard({ units }: { units: Units }) {
       <div className="flex items-center gap-4">
         <Icon className="size-12 shrink-0 text-leaf" aria-hidden />
         <div className="flex-1">
-          <p className="text-2xl font-extrabold">
+          <p className="font-display text-[1.9375rem] leading-none font-extrabold">
             {deg(today.tmax, units)} <span className="text-lg font-semibold text-muted">/ {deg(today.tmin, units)}</span>
           </p>
           <p className="text-sm text-muted">{t(now.label)}</p>
@@ -101,7 +105,7 @@ export default function WeatherCard({ units }: { units: Units }) {
           </dt>
           <dd>
             {today.precip_prob === null ? '–' : `${today.precip_prob}%`}
-            {today.precip ? ` · ${rain(today.precip, units)}` : ''}
+            {today.precip ? `, ${rain(today.precip, units)}` : ''}
           </dd>
           <dt>
             <Wind className="size-4 text-muted" aria-hidden />
@@ -120,7 +124,7 @@ export default function WeatherCard({ units }: { units: Units }) {
               <DayIcon className="size-5 text-ink/70" aria-label={t(look(d.code).label)} />
               <span className="font-semibold">{deg(d.tmax, units)}</span>
               <span className="text-muted">{deg(d.tmin, units)}</span>
-              <span className="text-[10px] text-sky-700 dark:text-sky-400">
+              <span className="text-xs text-water">
                 {d.precip_prob ? `${d.precip_prob}%` : ' '}
               </span>
             </li>

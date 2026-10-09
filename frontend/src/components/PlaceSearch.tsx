@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Search } from 'lucide-react'
 import { api, type Place } from '../api'
 import { t } from '../i18n'
+import { ErrorMessage } from './ui'
 
 type Props = { onPick: (place: Place) => void }
 
@@ -50,11 +51,7 @@ export default function PlaceSearch({ onPick }: Props) {
           <Search className="size-4" aria-hidden />
         </button>
       </div>
-      {error && (
-        <p className="text-sm text-red-600" role="alert">
-          {error}
-        </p>
-      )}
+      {error && <ErrorMessage>{error}</ErrorMessage>}
       {results && (
         <ul className="flex flex-col gap-1" aria-label={t('Search results')}>
           {results.length === 0 && <li className="text-sm text-muted">{t('No places found. Try a nearby town.')}</li>}
@@ -62,7 +59,7 @@ export default function PlaceSearch({ onPick }: Props) {
             <li key={`${place.latitude},${place.longitude}`}>
               <button
                 type="button"
-                className="w-full rounded-lg px-2 py-1.5 text-left text-sm hover:bg-leaf/10"
+                className="w-full min-h-11 rounded-[var(--radius-row)] px-3 py-2 text-left text-sm hover:bg-sunken"
                 onClick={() => {
                   onPick(place)
                   setResults(null)

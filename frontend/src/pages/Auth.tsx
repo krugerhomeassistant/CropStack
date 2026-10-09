@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { Sprout } from 'lucide-react'
 import { api, type InviteInfo } from '../api'
 import { N_, t } from '../i18n'
+import { Button, ErrorMessage } from '../components/ui'
 
 export type Invite = InviteInfo & { token: string }
 
@@ -41,10 +42,10 @@ export default function Auth({ registrationOpen, invite, notice, onDone }: Props
         : t('Create your account to start planning.')
 
   return (
-    <main className="mx-auto flex min-h-dvh max-w-sm flex-col justify-center gap-6 px-6">
+    <main className="mx-auto flex min-h-dvh max-w-sm flex-col justify-center gap-6 px-4">
       <header className="flex flex-col items-center gap-2 text-center">
         <Sprout className="size-12 text-leaf" aria-hidden />
-        <h1 className="text-3xl font-extrabold">CropStack</h1>
+        <h1 className="text-[2.4375rem] leading-none font-extrabold">CropStack</h1>
         <p className="text-muted">{subtitle}</p>
       </header>
 
@@ -92,23 +93,20 @@ export default function Auth({ registrationOpen, invite, notice, onDone }: Props
             onChange={(e) => setPassword(e.target.value)}
           />
         </label>
-        {error && (
-          <p className="text-sm text-red-600" role="alert">
-            {error}
-          </p>
-        )}
-        <button className="btn" disabled={busy}>
+        {error && <ErrorMessage>{error}</ErrorMessage>}
+        <Button type="submit" disabled={busy}>
           {mode === 'login' ? t('Log in') : invite ? t('Join {household}', { household: invite.household }) : t('Create account')}
-        </button>
+        </Button>
       </form>
 
       {canRegister && (
-        <button
-          className="text-sm text-leaf underline"
+        <Button
+          variant="ghost"
+          className="self-center text-leaf"
           onClick={() => setMode(mode === 'login' ? 'register' : 'login')}
         >
           {mode === 'login' ? t('Create an account instead') : t('I already have an account')}
-        </button>
+        </Button>
       )}
     </main>
   )

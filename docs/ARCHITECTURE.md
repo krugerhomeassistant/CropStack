@@ -3,7 +3,7 @@
 ## Topology
 ```
 Browser/PWA ──HTTP──▶ cropstack container :8000 (host :8430)
-                        ├─ FastAPI  /api/*            (session-cookie auth, planned)
+                        ├─ FastAPI  /api/*            (session-cookie auth)
                         ├─ static SPA /*              (Vite build, service worker precache)
                         ├─ SQLite  /data/cropstack.db (WAL, foreign keys on)
                         ├─ scheduler (asyncio, 1 worker) ──▶ forecast refresh every 30 min
@@ -17,7 +17,7 @@ Target architecture (engines, data model, API) is specified in `docs/SPEC.md` §
 | Layer | Tech |
 |---|---|
 | Backend | Python 3.14 (runtime, CI) / 3.13+ (dev), FastAPI 0.143.0, uvicorn 0.54.0, SQLModel 0.0.48, pydantic-settings 2.15.0, PyYAML 6.0.3, alembic 1.20.0, argon2-cffi 25.1.0, itsdangerous 2.2.0, httpx 0.28.1, tzdata 2026.5 |
-| Frontend | React 19.3, React Router 8.4 (declarative, `react-router` package), Vite 8.3, TypeScript 7.0, Tailwind 4.3 (`@tailwindcss/vite`), vite-plugin-pwa 2.0, lucide-react 1.53, @fontsource-variable/nunito (self-hosted font) |
+| Frontend | React 19.3, React Router 8.4 (declarative, `react-router` package), Vite 8.3, TypeScript 7.0, Tailwind 4.3 (`@tailwindcss/vite`), vite-plugin-pwa 2.0, lucide-react 1.53, @fontsource-variable/bricolage-grotesque + atkinson-hyperlegible-next 5.3 (self-hosted fonts); Playwright 1.64 (dev: `npm run screenshots`) |
 | Tooling | ruff (lint + format), pytest, GitHub Actions, Dependabot, GHCR |
 
 ## Backend modules (`backend/app/`)
@@ -51,10 +51,12 @@ Target architecture (engines, data model, API) is specified in `docs/SPEC.md` §
 | `src/state.tsx` | `AppContext` / `useApp()`: user, garden, setGarden, reload, logout |
 | `src/i18n.ts` | `t()` / `N_()` translation layer (English only for now) |
 | `src/units.ts` | SI → metric/imperial display helpers |
-| `src/components/Layout.tsx` | page frame + bottom nav (`--nav-h` incl. safe area) |
+| `src/components/Layout.tsx` | page frame: bottom nav < 1024 px (`--nav-h` incl. safe area), left rail ≥ 1024 px; content max 960 px |
+| `src/components/ui/index.tsx` | UI kit (DESIGN.md): Button, IconButton, PageHeader, Section, Field, RadioCards, Switch, Badge, ErrorMessage, ErrorState, EmptyState, Skeleton |
 | `src/pages/` | `Auth` (incl. invite), `GardenSetup`, `Today`, `Garden`, `More`, `Climate`, `Household`, `Settings` |
-| `src/components/` | `PlaceSearch` (not a form: nested in the garden form), `ClimateCard` |
-| `src/index.css` | Tailwind theme tokens (canvas, ink, muted, leaf, sprout, soil, card) + dark mode |
+| `src/components/` | `PlaceSearch` (not a form: nested in the garden form), `ClimateCard`, `WeatherCard`, `DataSources` |
+| `src/index.css` | Tailwind `@theme` tokens (canvas, surface, sunken, line, ink, muted, leaf, on-leaf, marigold, water, feed, harvest, check, animals, danger; radii; fonts), dark values via `prefers-color-scheme`, primitives (`card`, `field`, `input`, `btn*`, `switch`, `radio`) |
+| `scripts/screenshots.mjs` | every page × light/dark × phone/desktop → `frontend/screenshots/` (git-ignored) |
 | `vite.config.ts` | PWA manifest, `/api` dev proxy → :8000 |
 
 ## Environment variables (no secrets in repo)

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { ExternalLink } from 'lucide-react'
 import { api, type DataSource, type HouseholdSettings } from '../api'
 import { t } from '../i18n'
+import { ErrorMessage, Section, Switch } from './ui'
 
 /** Settings → Data sources: every outside service, what is sent and when (SPEC P7). Owners switch the optional ones. */
 export default function DataSources({ isOwner }: { isOwner: boolean }) {
@@ -28,19 +29,12 @@ export default function DataSources({ isOwner }: { isOwner: boolean }) {
   }
 
   return (
-    <section className="card flex flex-col gap-3" aria-labelledby="sources-title">
-      <h2 id="sources-title" className="font-bold">
-        {t('Data sources')}
-      </h2>
-      <p className="text-sm text-muted">
-        {t('Everything else stays on your server. These are the only outside services CropStack talks to.')}
-      </p>
-      {error && (
-        <p className="text-sm text-red-600" role="alert">
-          {error}
-        </p>
-      )}
-      <ul className="flex flex-col divide-y divide-ink/10">
+    <Section
+      title={t('Data sources')}
+      description={t('Everything else stays on your server. These are the only outside services CropStack talks to.')}
+    >
+      {error && <ErrorMessage>{error}</ErrorMessage>}
+      <ul className="-my-3 flex flex-col divide-y divide-line">
         {sources?.map((s) => (
           <li key={s.id} className="flex items-start gap-3 py-3">
             <div className="flex-1 text-sm">
@@ -49,22 +43,22 @@ export default function DataSources({ isOwner }: { isOwner: boolean }) {
                 <ExternalLink className="ml-1 inline size-3 align-baseline" aria-hidden />
               </a>
               <p className="text-muted">{t(s.used_for)}</p>
-              <p className="text-xs text-muted">
-                {t('Sends: {what} · {when} · {licence}', { what: t(s.sends), when: t(s.when), licence: s.licence })}
-              </p>
+              <dl className="mt-1 grid grid-cols-[auto_1fr] gap-x-2 text-xs text-muted">
+                <dt className="font-semibold">{t('Sends')}</dt>
+                <dd>{t(s.sends)}</dd>
+                <dt className="font-semibold">{t('When')}</dt>
+                <dd>{t(s.when)}</dd>
+                <dt className="font-semibold">{t('Licence')}</dt>
+                <dd>{s.licence}</dd>
+              </dl>
             </div>
             {s.switch ? (
-              <label className="flex shrink-0 items-center gap-2 text-sm">
-                <span className="sr-only">{t('Use {name}', { name: s.name })}</span>
-                <input
-                  type="checkbox"
-                  role="switch"
-                  className="switch"
-                  checked={s.enabled}
-                  disabled={!isOwner}
-                  onChange={() => toggle(s)}
-                />
-              </label>
+              <Switch
+                label={t('Use {name}', { name: s.name })}
+                checked={s.enabled}
+                disabled={!isOwner}
+                onChange={() => toggle(s)}
+              />
             ) : (
               <span className="shrink-0 text-xs text-muted">{t('Required')}</span>
             )}
@@ -72,6 +66,6 @@ export default function DataSources({ isOwner }: { isOwner: boolean }) {
         ))}
       </ul>
       {!isOwner && <p className="text-xs text-muted">{t('Only an owner can switch sources on or off.')}</p>}
-    </section>
+    </Section>
   )
 }

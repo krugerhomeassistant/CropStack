@@ -23,6 +23,8 @@
 | React Router 8 | client routing (declarative mode, import from `react-router`) | standard; v8 removed `react-router-dom` |
 | PyYAML 6.0.3 | read catalog YAML (`safe_load`) | standard; schema validation stays in Pydantic (no jsonschema dependency) |
 | `scripts/catalog_schema.py` | regenerate `catalog/schema/*.json`; `--check` in CI test | schemas follow the models automatically |
+| `npm run screenshots` | `CROPSTACK_URL=… CHROMIUM_PATH=/opt/pw-browsers/chromium npm run screenshots` (Playwright 1.64 dev dependency) | visual check of every page × light/dark × phone/desktop before a release (DESIGN.md) |
+| Fonts | `@fontsource-variable/bricolage-grotesque`, `@fontsource-variable/atkinson-hyperlegible-next` | self-hosted (offline PWA, no Google Fonts call) |
 | Dependabot | `.github/dependabot.yml` | weekly grouped pip / npm / docker / actions updates |
 
 ## Claude session tooling used

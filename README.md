@@ -4,61 +4,60 @@
 
 # CropStack
 
-**From seed to storehouse: automated, location-aware homestead management.**
+**From seed to storehouse: a self-hosted garden and homestead planner that works from your own weather.**
 
 [![CI](https://github.com/krugerhomeassistant/CropStack/actions/workflows/ci.yml/badge.svg)](https://github.com/krugerhomeassistant/CropStack/actions/workflows/ci.yml)
-[![Docker](https://img.shields.io/badge/ghcr.io-cropstack-3F7D3A?logo=docker&logoColor=white)](https://github.com/krugerhomeassistant/CropStack/pkgs/container/cropstack)
-![Platforms](https://img.shields.io/badge/arch-amd64%20%7C%20arm64-8A5A3B)
-![Python](https://img.shields.io/badge/FastAPI-Python%203.14-3776AB?logo=python&logoColor=white)
-![React](https://img.shields.io/badge/React%2019-PWA-61DAFB?logo=react&logoColor=black)
-[![License: MIT](https://img.shields.io/badge/license-MIT-23301F)](LICENSE)
-
-[Features](#-features) · [Spec](docs/SPEC.md) · [Plan](docs/PLAN.md) · [Install](#-install) · [Configuration](#%EF%B8%8F-configuration) · [Status](#-project-status) · [Contributing](#-contributing)
+[![Release](https://img.shields.io/github/v/release/krugerhomeassistant/CropStack?color=2E6B3F)](https://github.com/krugerhomeassistant/CropStack/releases)
+[![Docker](https://img.shields.io/badge/ghcr.io-cropstack-2E6B3F?logo=docker&logoColor=white)](https://github.com/krugerhomeassistant/CropStack/pkgs/container/cropstack)
+![Platforms](https://img.shields.io/badge/arch-amd64%20%7C%20arm64-56645A)
+[![License: MIT](https://img.shields.io/badge/code-MIT-18261C)](LICENSE)
+[![Catalog: CC BY-SA 4.0](https://img.shields.io/badge/catalog-CC%20BY--SA%204.0-18261C)](catalog/LICENSE)
 
 </div>
 
 ---
 
-CropStack is an open-source, self-hosted homestead app that tells you **what to do today, and how**: what to plant, water, feed and harvest, which animals need what, and which bugs to keep or remove. It works it out from your own space, water, time and goals and from your location's real weather data, and it keeps re-deciding as conditions change. It runs on **your** hardware (a NAS, a Raspberry Pi, a home server): one container, one SQLite file, no telemetry.
+CropStack tells you **what to do in the garden today, and how**: what to plant, water, feed and harvest, what to look out for, and which animals need what. It works this out from 30 years of your location's weather, this season's actual weather and the forecast, and from what each crop and animal needs. There are no climate presets or regional modes: a winter-rainfall garden in the Western Cape and a frosty one in Minnesota get different advice from the same rules.
+
+It runs on your own hardware (a NAS, a Raspberry Pi, a home server) as one container with one SQLite file. No telemetry, no account with us.
+
+<p align="center">
+  <img src="docs/images/today-phone.png" width="260" alt="Today screen on a phone: greeting, today's weather with a 7-day outlook, and the daily jobs section" />
+  &nbsp;
+  <img src="docs/images/settings-phone.png" width="260" alt="Settings on a phone: start screen, units and data sources" />
+</p>
+<p align="center">
+  <img src="docs/images/today-desktop-dark.png" width="820" alt="Today screen on a desktop in dark mode, with the side navigation" />
+</p>
 
 > [!NOTE]
-> CropStack is in early development. Today you can set up your garden and see its local climate. Everything below is specified in [docs/SPEC.md](docs/SPEC.md) and scheduled in [docs/PLAN.md](docs/PLAN.md); [Project status](#-project-status) shows what works now.
+> CropStack is in active development (v0.9). The foundations work today: households, your garden's climate and weather, and the data catalog format. The daily jobs, crop planner and animal care are next. See [what works now](#-what-works-now) and the [roadmap](#-roadmap).
 
-## ✨ Features
+## ✅ What works now
 
-### ✅ Today: what to do, how, and why
-- One screen with today's jobs grouped as **Protect · Plant · Water · Feed · Harvest · Animals · Check · Maintain**.
-- Every job says where, how much and how (depth, spacing, litres, dose), and *why now* in plain words.
-- Fits the time you have; the rest moves to the next good day. Works offline in the garden.
+- **Your garden's climate.** Enter a place, postal code or coordinates and CropStack downloads 30 years of daily weather for that spot, then describes it in plain words: rain per year and when it falls, the hottest day and coldest night of a typical year, frost dates if frost happens at your chosen risk level, daylight, and warming or cooling trends. Recent years count more.
+- **Today's weather.** Today and the next 7 days, plus how the last 30 days compare with normal ("2.3 °C warmer than normal; drier than almost every year on record"). Refreshed in the background.
+- **A probability engine.** Behind the scenes every year on record is treated as a possible future, so CropStack can answer questions like "how likely is soil above 10 °C by this date?" for any threshold. This is what the crop planner will build on.
+- **Households.** Share one garden with your family. Owners invite people by link as *member* (does the daily work) or *viewer* (looks only).
+- **Your choices.** Each person picks the screen the app opens on and metric or imperial units.
+- **Privacy you can see.** Settings lists every outside service CropStack talks to, what it sends and when. Owners can switch off the forecast and place search.
+- **Installable app.** Works as a phone app (PWA) in light and dark mode, with a desktop layout for larger screens.
+- **Catalog foundation.** The format for crops, varieties, pests, animals and tasks, with a source and evidence level on every value and a licence check on every source. Content arrives in the next phase.
 
-### 🧭 Fully dynamic, anywhere
-- **No presets, no modes, no regions.** Each crop variety and animal breed has requirements (temperatures, water, daylight, humidity); your location has 30 years of weather, this season's actual weather and a 16-day forecast. Every date and warning comes from comparing the two.
-- Frost, heat, drought or humidity appear only when the data says they matter for **what you grow and keep**, and appear by themselves if your climate changes.
-- Climate data refreshes itself, weights recent years more and learns from your own sensors and observations (e.g. a frost pocket).
+## 🗺️ Roadmap
 
-### 🧑‍🌾 Guided setup and a plan that fits
-- A short interview: space, sun, water (tanks, restrictions), soil, household size and what you eat, how much you want to grow, time, budget, experience.
-- A **plan generator** proposes crops, quantities, successions and animals that fit your space, water and time, shows what is covered each month, and the single change that would help most.
+The full product is specified in [docs/SPEC.md](docs/SPEC.md) and broken into steps in [docs/PLAN.md](docs/PLAN.md).
 
-### 🗺️ Layout editor
-- Draw your property, beds, containers, structures, trees and buildings to scale; sun and shade hours computed from the sun path and obstacle heights.
-- Auto-layout from the plan, spacing and rotation checks, a date slider to see beds through the season, printable bed sheets.
-
-### 🐔 Animals
-- Poultry, goats, sheep, cattle, pigs, rabbits and bees: daily care, feeding and water, egg/milk/honey records, breeding planner, heat-stress and cold alerts from the forecast, medication withdrawal periods.
-
-### 🐞 Keep or remove?
-- Weekly "what to look for" per crop based on weather and growth stage, with photos, look-alikes and least-harm actions; beneficial insects are flagged as keepers.
-
-### 📦 Harvest, pantry and seeds
-- Harvest log with yields, preservation and pantry stock with best-before reminders, seed vault with germination tests and reorder reminders.
-
-### 📈 Climate explorer (for the curious)
-- Charts of temperatures, soil temperature, rain, evaporation and daylight through the year, probabilities for any threshold you pick, trends and this season against normal. Kept off the home screen unless you want it there.
-
-### 🏠 Home Assistant & 🤖 AI co-pilot (optional)
-- Sensors in, irrigation and ventilation requests out, calendar and to-do entities.
-- Local (Ollama) or cloud AI that answers questions from your own garden data and identifies pests from photos.
+| Next | What you get |
+|---|---|
+| Crop catalog | Vegetables, herbs, fruit, cover crops, pests, beneficial insects and weeds, each with cited requirements |
+| Crop engine | Planting windows from your climate, growth stages, watering from rain and evaporation, feeding and scouting |
+| **Today** | Your daily jobs grouped as Protect, Plant, Water, Feed, Harvest, Animals, Check and Maintain, each with how and why |
+| Setup and planning | A short interview (space, water, household, diet, time, budget), a layout editor drawn to scale with sun and shade, and a plan generator |
+| Animals | Poultry, goats, sheep, cattle, pigs, rabbits and bees: daily care, feed and water, records, breeding, heat and cold alerts |
+| Harvest and pantry | Harvest log, preserving, pantry stock, seed vault |
+| Climate explorer | Charts of temperatures, rain, soil, evaporation and daylight through the year |
+| Integrations | Home Assistant (sensors in, irrigation out, tasks on your dashboard) and an optional local or cloud AI co-pilot |
 
 ## 🚀 Install
 
@@ -70,26 +69,34 @@ curl -O https://raw.githubusercontent.com/krugerhomeassistant/CropStack/main/doc
 docker compose up -d
 ```
 
-Open **http://localhost:8430**. Data lives in `./data` next to the compose file; back up that folder.
+Open **http://localhost:8430** and create your account (by default only the first account can sign up; invite everyone else from the Household page). Data lives in `./data` next to the compose file; back up that folder.
 
-Build from source instead:
+Update with `docker compose pull && docker compose up -d`. Database upgrades run automatically on start.
+
+<details>
+<summary><b>ZimaOS / CasaOS</b></summary>
+
+1. Dashboard → **App Store** → **+** → **Install a customized app** → **Import**.
+2. Paste the contents of [`docker-compose.zimaos.yml`](docker-compose.zimaos.yml) (not `docker-compose.yml`) → **Install**.
+3. Open `http://<zima-ip>:8430` and create your account.
+
+Data lives in `/DATA/AppData/cropstack`; memory is capped at 256 MB.
+
+To update, open the app's settings in the dashboard and press **Save** without changes; ZimaOS pulls the newest image and recreates the container. If the version shown under More doesn't change, run `docker pull ghcr.io/krugerhomeassistant/cropstack:latest` in a terminal and press **Save** again. Your data is kept.
+
+</details>
+
+<details>
+<summary><b>Build from source</b></summary>
 
 ```bash
 git clone https://github.com/krugerhomeassistant/CropStack.git && cd CropStack
 docker compose up -d --build
 ```
 
-Update: `docker compose pull && docker compose up -d`.
+Development setup (backend, frontend, tests) is in [CONTRIBUTING.md](CONTRIBUTING.md).
 
-### 🧊 ZimaOS / CasaOS
-
-1. Dashboard → **App Store** → **+** → **Install a customized app** → **Import**
-2. Paste [`docker-compose.zimaos.yml`](docker-compose.zimaos.yml) → **Install**
-3. Open `http://<zima-ip>:8430` and create your account (the first account is the only one that can sign up).
-
-Data lives in `/DATA/AppData/cropstack`; memory is capped at 256 MB.
-
-**Updating:** the app uses the `latest` image, which CI rebuilds on every change to `main`. To update, open the app's settings in the dashboard and press **Save** without changes; ZimaOS re-pulls the image and recreates the container. If it doesn't pick up the new version (check `/api/health`), run `docker pull ghcr.io/krugerhomeassistant/cropstack:latest` in a terminal first, then press **Save** again. Your data in `/DATA/AppData/cropstack` is kept.
+</details>
 
 ## ⚙️ Configuration
 
@@ -98,70 +105,43 @@ All settings are optional environment variables (copy [`.env.example`](.env.exam
 | Variable | Default | Purpose |
 |---|---|---|
 | `CROPSTACK_PORT` | `8430` | Host port |
-| `CROPSTACK_SECRET_KEY` | auto-generated in `data/secret.key` | Session signing key |
-| `CROPSTACK_SECURE_COOKIES` | `false` | Set `true` behind HTTPS |
-| `CROPSTACK_ALLOW_REGISTRATION` | `auto` | `auto` = only the first account can sign up, `true` = open, `false` = closed |
+| `CROPSTACK_SECRET_KEY` | generated in `data/secret.key` | Session signing key |
+| `CROPSTACK_SECURE_COOKIES` | `false` | Set `true` when served over HTTPS |
+| `CROPSTACK_ALLOW_REGISTRATION` | `auto` | `auto`: only the first account can sign up; `true`: open; `false`: closed (invite links still work) |
 
-API docs are served at `/api/docs`; `/api/health` reports status and version.
+`/api/health` reports the status, version and background jobs; the API reference is at `/api/docs`.
 
-## 📦 Project status
+## 🔒 Privacy and data sources
 
-| Area | Status |
-|---|---|
-| Server, SQLite storage, health check | ✅ v0.1.0 |
-| Installable PWA shell (light/dark) | ✅ v0.1.0 |
-| Multi-arch Docker image, CI, automatic releases | ✅ v0.1.0 |
-| Accounts & garden profile (location, frost-risk preference) | ✅ v0.2.0 |
-| Climate: zone, frost dates, season length, daylight, monthly normals | ✅ v0.3.0 |
-| Climate: rainfall pattern, rain and hot days per month | ✅ v0.4.0 |
-| Place search (town, address, postal code) | ✅ v0.3.0 |
+CropStack has no telemetry. It talks to three free public services, all listed in the app under Settings → Data sources:
 
-The specification ([docs/SPEC.md](docs/SPEC.md)) describes the full product; the roadmap ([docs/PLAN.md](docs/PLAN.md)) breaks it into phases:
+| Feature | Service | What is sent | When |
+|---|---|---|---|
+| Climate (required) | [Open-Meteo](https://open-meteo.com) historical weather, ERA5 / ERA5-Land (CC BY 4.0) | Garden coordinates | Once per location, then once a year |
+| Forecast (can be switched off) | [Open-Meteo](https://open-meteo.com) forecast (CC BY 4.0) | Garden coordinates | About every 3 hours |
+| Place search (can be switched off) | [OpenStreetMap Nominatim](https://nominatim.org) (ODbL) | Your search text | Only when you search |
 
-| Phase | Delivers |
-|---|---|
-| 3 · Platform | Households & invites (shared with family), per-person start screen, migrations, translations, catalog framework |
-| 4 · Environment engine | Probabilistic, self-updating climate + forecast + sensor calibration; removes today's fixed rules |
-| 5 · Catalog | 60+ vegetables & herbs, 20 fruits, cover crops, 40 pests/beneficials/weeds, all sourced and editable |
-| 6 · Crop engine | Growth-stage model, planting windows, tasks for sowing, care, water, feeding and scouting |
-| 7 · Today & calendar | The Today screen, calendars, offline use, notifications |
-| 8 · Setup & planning | Guided interview, layout editor with sun mapping, plan generator |
-| 9 · Animals | Care, alerts, breeding, production |
-| 10 · Harvest & pantry | Harvests, preservation, seed vault, inputs |
-| 11 · Climate explorer | Charts and insights |
-| 12–13 · Integrations | Home Assistant, AI co-pilot |
-| 14 · v1.0 | Afrikaans, accessibility, performance, backups |
+Climate values are estimates for a 10–25 km grid cell; hollows, slopes and the coast can differ.
 
 ## 🧭 How it's built
 
 ```mermaid
 flowchart LR
-  B[Browser / PWA] -->|HTTP| C[cropstack container :8000]
-  C --> API[FastAPI /api]
-  C --> SPA[Static React PWA]
-  API --> DB[(SQLite /data)]
+  B[Browser / PWA] -->|HTTPS or LAN HTTP| C[cropstack container]
+  C --> API[FastAPI /api/v1]
+  C --> SPA[React PWA]
+  C --> J[Background jobs]
+  API --> DB[(SQLite in /data)]
+  API --> CAT[Catalog: bundled + private pack]
+  API & J -->|httpx| EXT[Open-Meteo / Nominatim]
 ```
 
-Single image: Node builds the PWA, Python 3.14 serves it and the API. Details in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md); concepts and workflows in the [wiki](docs/WIKI.md).
-
-## 🔒 Privacy & data sources
-
-CropStack has no telemetry. Three features talk to free public services (listed in the app under More → Settings → Data sources):
-
-| Feature | Service | What is sent |
-|---|---|---|
-| Climate (once per location, then cached) | [Open-Meteo](https://open-meteo.com) historical weather API (ERA5 / ERA5-Land, CC BY 4.0) | Garden coordinates |
-| Forecast (about every 3 hours; can be switched off) | [Open-Meteo](https://open-meteo.com) forecast API | Garden coordinates |
-| Place search (only when you search; can be switched off) | [OpenStreetMap Nominatim](https://nominatim.org) | Your search text |
-
-Both are used within their free non-commercial terms. Climate values are estimates for a 10–25 km grid cell; frost pockets and slopes can differ.
-
-The crop, pest and animal catalog (format and checks in place; content in progress) is built from openly licensed data and cited facts, with a source and evidence level on every value. See [catalog data sources](docs/research/catalog-data-sources.md).
+One multi-arch image: Python 3.14 with FastAPI, SQLModel and Alembic serves the API and a React 19 + Tailwind PWA. Details are in [ARCHITECTURE](docs/ARCHITECTURE.md), how things work in the [wiki](docs/WIKI.md), and the visual system in [DESIGN](docs/DESIGN.md).
 
 ## 🤝 Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for the dev setup, code standards and release process. Report security issues privately ([SECURITY.md](SECURITY.md)).
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the development setup, code standards and release process. Please report security issues privately ([SECURITY.md](SECURITY.md)).
 
 ## 📄 License
 
-Code: [MIT](LICENSE). The catalog data in [`catalog/`](catalog/) is licensed separately under [CC BY-SA 4.0](catalog/LICENSE), with attribution and extra terms in [`catalog/NOTICE`](catalog/NOTICE); the MIT licence does not cover it.
+Code: [MIT](LICENSE). The catalog data in [`catalog/`](catalog/) is licensed separately under [CC BY-SA 4.0](catalog/LICENSE), with attribution and extra terms in [`catalog/NOTICE`](catalog/NOTICE). Weather data © Open-Meteo.com (CC BY 4.0); place search © OpenStreetMap contributors.

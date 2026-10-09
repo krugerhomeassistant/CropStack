@@ -5,7 +5,7 @@
 |---|---|
 | Product spec | `docs/SPEC.md` |
 | Catalog data-source research (licences, gaps, pipeline) | `docs/research/catalog-data-sources.md` |
-| Catalog (planned, CC BY-SA 4.0) | `catalog/` (`sources.yaml`, `crops/`, `organisms/`, `species/`, `schema/`) |
+| Catalog (CC BY-SA 4.0) | `catalog/` (`sources.yaml`, `crops/`, `organisms/`, `species/`, `schema/`) |
 | Roadmap | `docs/PLAN.md` |
 | Version | `backend/app/__init__.py` (+ `frontend/package.json`) |
 | Settings/env | `backend/app/config.py`, `.env.example` |
@@ -28,7 +28,8 @@
 | Screens | `frontend/src/pages/*.tsx` |
 | ZimaOS install | `docker-compose.zimaos.yml` |
 | Tests | `backend/tests/` |
-| Theme tokens | `frontend/src/index.css` |
+| Design system (rules, tokens, components) | `docs/DESIGN.md`, `frontend/src/index.css`, `frontend/src/components/ui/index.tsx` |
+| Screenshot review | `frontend/scripts/screenshots.mjs` → `frontend/screenshots/` (git-ignored); README images in `docs/images/` |
 | App shell + routes | `frontend/src/App.tsx`, `src/components/Layout.tsx`, `src/state.tsx` |
 | Translations / units | `frontend/src/i18n.ts`, `src/units.ts` |
 | PWA config | `frontend/vite.config.ts` |

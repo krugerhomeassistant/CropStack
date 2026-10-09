@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { api, type Prefs } from '../api'
 import DataSources from '../components/DataSources'
 import { N_, t } from '../i18n'
+import { ErrorMessage, PageHeader, RadioCards, Section } from '../components/ui'
 import { useApp } from '../state'
 
 const START = [
@@ -11,10 +12,11 @@ const START = [
 ] as const
 
 const UNITS = [
-  { value: 'metric', label: N_('Metric'), hint: '°C · mm · m' },
-  { value: 'imperial', label: N_('Imperial'), hint: '°F · in · ft' },
+  { value: 'metric', label: N_('Metric'), hint: '°C, mm, m' },
+  { value: 'imperial', label: N_('Imperial'), hint: '°F, in, ft' },
 ] as const
 
+/** One preference as its own section; the section title is the radio group's visible label. */
 function Choice<V extends string>(props: {
   legend: string
   name: string
@@ -23,24 +25,16 @@ function Choice<V extends string>(props: {
   onChange: (v: V) => void
 }) {
   return (
-    <fieldset className="card flex flex-col gap-2">
-      <legend className="float-left mb-2 font-bold">{props.legend}</legend>
-      {props.options.map((o) => (
-        <label key={o.value} className="flex items-start gap-3 rounded-xl border border-ink/10 p-3">
-          <input
-            type="radio"
-            name={props.name}
-            className="mt-1 accent-leaf"
-            checked={props.value === o.value}
-            onChange={() => props.onChange(o.value)}
-          />
-          <span>
-            <span className="font-semibold">{t(o.label)}</span>
-            <span className="block text-sm text-muted">{t(o.hint)}</span>
-          </span>
-        </label>
-      ))}
-    </fieldset>
+    <Section title={props.legend}>
+      <RadioCards
+        legend={props.legend}
+        hideLegend
+        name={props.name}
+        options={props.options.map((o) => ({ ...o, label: t(o.label), hint: t(o.hint) }))}
+        value={props.value}
+        onChange={props.onChange}
+      />
+    </Section>
   )
 }
 
@@ -64,13 +58,11 @@ export default function Settings() {
 
   return (
     <>
-      <h1 className="text-2xl font-extrabold">{t('Settings')}</h1>
-      <p className="-mt-4 text-sm text-muted">{t('These are yours only; everyone in the household chooses their own.')}</p>
-      {error && (
-        <p className="text-sm text-red-600" role="alert">
-          {error}
-        </p>
-      )}
+      <PageHeader
+        title={t('Settings')}
+        subtitle={t('These are yours only; everyone in the household chooses their own.')}
+      />
+      {error && <ErrorMessage>{error}</ErrorMessage>}
       <Choice
         legend={t('Open the app on')}
         name="start"

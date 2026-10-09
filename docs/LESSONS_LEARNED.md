@@ -56,3 +56,7 @@ CropStack-specific:
 46. **Playwright `getByLabel('Weather')` matched the loading skeleton ("Loading the weather")** → label matching is substring and case-insensitive → wait for an element that only exists when loaded (`getByRole('list', { name: 'Next 7 days' })`).
 47. **"drier than 10 in 10 years"** → percentile wording breaks at the extremes → say "almost every year on record" beyond the 95th/5th percentile.
 48. **Background job touched other households in tests** → the scheduler refreshes all sites → assert on the household's own rows, not on global call counts; tests disable the scheduler (`CROPSTACK_SCHEDULER=false`) so nothing calls outside services.
+49. **`pkill -f fake_server2` killed the Bash tool's own shell (exit 144)** → `-f` matches the full command line, which contained the pattern → find the PID with `pgrep -f "python /path/fake…"` and `kill <pid>`, or keep the server's PID when starting it.
+50. **Screenshots showed the old user after "restarting" the fake server** → the old process still held port 8512, the new one failed to bind and the script talked to the old one → check `pgrep`/the server log before trusting a rerun.
+51. **README and wiki drifted far behind the app (user, 2026-10-09)** → they were only patched per feature, never reread → review both on every release (in the release checklist, WIKI → Release process).
+

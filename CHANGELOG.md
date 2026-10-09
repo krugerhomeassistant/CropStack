@@ -5,6 +5,18 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-10-09
+
+### Added
+- **Desktop layout**: on screens 1024 px and wider a side menu replaces the bottom bar, and Today shows your jobs and the weather side by side.
+- A design system (docs/DESIGN.md) and a shared set of components, so every page looks and behaves the same: headings, sections, buttons, choice cards, switches, badges, loading, empty and error states.
+- `npm run screenshots` captures every page in light and dark mode on a phone and a desktop for review before each release.
+
+### Changed
+- New look: a cool green-grey background, ruled sections instead of shadowed cards, Bricolage Grotesque for headings and Atkinson Hyperlegible Next (designed for legibility) for text. Colours pass WCAG AA contrast in light and dark mode.
+- Today, Garden and Climate have designed placeholders and loading states; data-source details are listed as Sends, When and Licence.
+- README and wiki rewritten to match the current app.
+
 ## [0.8.0] - 2026-10-09
 
 ### Added

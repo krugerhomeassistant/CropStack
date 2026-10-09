@@ -18,6 +18,7 @@ On Windows, activate the venv with `.venv\Scripts\activate` and set variables wi
 
 - **Python**: ruff for lint and format (config in `pyproject.toml`), type hints on public functions, docstrings on modules. Keep domain logic (climate, scheduling, rotation) in pure functions with tests.
 - **TypeScript**: `strict` mode, function components, Tailwind theme tokens from `frontend/src/index.css` instead of raw colours.
+- **UI**: build screens from `frontend/src/components/ui/` and follow [docs/DESIGN.md](docs/DESIGN.md). Before a release run `npm run screenshots` (against a running server: `CROPSTACK_URL=http://127.0.0.1:8000`) and look at every changed page in light and dark, phone and desktop.
 - **Commits**: small and focused, imperative subject ("Add frost-date lookup").
 - **Docs**: update `README.md` and `docs/WIKI.md` in the same PR as any user-facing change, and add a line under `[Unreleased]` in `CHANGELOG.md`.
 
@@ -45,7 +46,7 @@ cd frontend && npm run build
 
 ## Releasing (maintainers)
 
-1. Note changes under `## [Unreleased]` in `CHANGELOG.md` as you go.
+1. Note changes under `## [Unreleased]` in `CHANGELOG.md` as you go, and reread `README.md` and `docs/WIKI.md` so they match the release.
 2. `python scripts/bump.py X.Y.Z` (updates backend and frontend versions and the changelog).
 3. `git commit -am "Release vX.Y.Z" && git push`
 

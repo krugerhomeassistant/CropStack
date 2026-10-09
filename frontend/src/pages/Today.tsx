@@ -1,4 +1,5 @@
 import { ListTodo } from 'lucide-react'
+import { EmptyState, PageHeader, Section } from '../components/ui'
 import WeatherCard from '../components/WeatherCard'
 import { t } from '../i18n'
 import { useApp } from '../state'
@@ -14,27 +15,28 @@ export default function Today() {
   const now = new Date()
   return (
     <>
-      <header>
-        <p className="text-sm text-muted">
-          {now.toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long' })} · {garden.name}
-        </p>
-        <h1 className="text-2xl font-extrabold">
-          {greeting(now.getHours())}, {user.display_name || user.username}
-        </h1>
-      </header>
+      <PageHeader
+        title={`${greeting(now.getHours())}, ${user.display_name || user.username}`}
+        subtitle={t('{date} in {garden}', {
+          date: now.toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long' }),
+          garden: garden.name,
+        })}
+      />
 
-      <WeatherCard units={user.prefs.units} />
-
-      {/* shortcut: placeholder until the task engine exists (PLAN Phase 6-7); keeps Today as the home screen. */}
-      <section className="card flex flex-col items-center gap-3 py-8 text-center">
-        <ListTodo className="size-10 text-leaf" aria-hidden />
-        <h2 className="text-lg font-bold">{t('Your daily jobs will appear here')}</h2>
-        <p className="text-sm text-muted">
-          {t(
-            'What to plant, water, feed and harvest, what to look out for, and how to do each job. They arrive with the crop planner, coming next.',
-          )}
-        </p>
-      </section>
+      {/* Phone: weather first, then jobs. Desktop: jobs | weather (DESIGN.md, Layout). */}
+      <div className="flex flex-col gap-6 lg:grid lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-start">
+        <div className="lg:order-2">
+          <WeatherCard units={user.prefs.units} />
+        </div>
+        {/* shortcut: placeholder until the task engine exists (PLAN Phase 6-7); keeps Today as the home screen. */}
+        <Section title={t("Today's jobs")} className="lg:order-1">
+          <EmptyState icon={ListTodo} title={t('Your daily jobs will appear here')}>
+            {t(
+              'What to plant, water, feed and harvest, what to look out for, and how to do each job. They arrive with the crop planner, coming next.',
+            )}
+          </EmptyState>
+        </Section>
+      </div>
     </>
   )
 }

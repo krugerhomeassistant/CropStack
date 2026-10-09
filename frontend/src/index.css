@@ -1,62 +1,126 @@
 @import 'tailwindcss';
-@import '@fontsource-variable/nunito';
+@import '@fontsource-variable/bricolage-grotesque';
+@import '@fontsource-variable/atkinson-hyperlegible-next';
 
+/* Design tokens: see docs/DESIGN.md. Light values here, dark values below. */
 @theme {
-  --font-sans: 'Nunito Variable', system-ui, sans-serif;
-  --color-canvas: #f7f5ee;
-  --color-ink: #23301f;
-  --color-muted: #6b7564;
-  --color-leaf: #3f7d3a;
-  --color-sprout: #b7e07a;
-  --color-soil: #8a5a3b;
-  --color-card: #ffffff;
+  --font-sans: 'Atkinson Hyperlegible Next Variable', system-ui, sans-serif;
+  --font-display: 'Bricolage Grotesque Variable', 'Atkinson Hyperlegible Next Variable', system-ui, sans-serif;
+
+  --color-canvas: #f2f5f1;
+  --color-surface: #ffffff;
+  --color-sunken: #e7ece5;
+  --color-line: #d9e1d7;
+  --color-ink: #18261c;
+  --color-muted: #56645a;
+  --color-leaf: #2e6b3f;
+  --color-on-leaf: #ffffff;
+  --color-marigold: #e8a317;
+  --color-water: #1f6aa8;
+  --color-feed: #7a5230;
+  --color-harvest: #b83e22;
+  --color-check: #5e4b98;
+  --color-animals: #8a5e14;
+  --color-danger: #b3261e;
+
+  --radius-section: 1rem;
+  --radius-row: 0.625rem;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --color-canvas: #141a12;
-    --color-ink: #e9eee4;
-    --color-muted: #9aa592;
-    --color-card: #1d251a;
+    --color-canvas: #101611;
+    --color-surface: #18211a;
+    --color-sunken: #0c110d;
+    --color-line: #2a352c;
+    --color-ink: #e6ede5;
+    --color-muted: #a3b0a5;
+    --color-leaf: #7cc48a;
+    --color-on-leaf: #101611;
+    --color-marigold: #f2b941;
+    --color-water: #7db6e8;
+    --color-feed: #d2a47c;
+    --color-harvest: #f08a6b;
+    --color-check: #b3a3e6;
+    --color-animals: #e0b45e;
+    --color-danger: #f2b8b5;
   }
 }
 
 :root {
   /* Bottom nav height incl. the iPhone home indicator; anything anchored above the nav uses this. */
-  --nav-h: calc(3.5rem + env(safe-area-inset-bottom));
+  --nav-h: calc(3.75rem + env(safe-area-inset-bottom));
+  color-scheme: light dark;
 }
 
 body {
-  @apply bg-canvas text-ink font-sans antialiased;
+  @apply bg-canvas font-sans text-ink antialiased;
+  font-size: 1rem;
+  line-height: 1.5;
 }
 
+h1,
+h2,
+h3 {
+  @apply font-display text-balance;
+  letter-spacing: -0.01em;
+}
+
+:focus-visible {
+  @apply outline-2 outline-offset-2 outline-leaf;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    transition-duration: 0ms !important;
+    animation-duration: 0ms !important;
+  }
+}
+
+/* ---- primitives used by the ui/ components (and older pages until they move over) ---- */
+
+/* A ruled section on the canvas: hairline border, no shadow (DESIGN.md: shadows only for floating things). */
 @utility card {
-  @apply rounded-2xl bg-card p-5 shadow-sm;
+  @apply rounded-[var(--radius-section)] border border-line bg-surface p-5;
 }
 
 @utility field {
-  @apply flex flex-col gap-1 text-sm font-semibold;
+  @apply flex flex-col gap-1.5 text-sm font-semibold;
 }
 
 @utility input {
-  @apply w-full rounded-xl border border-ink/15 bg-canvas px-3 py-2 text-base font-normal outline-none focus:border-leaf focus:ring-2 focus:ring-leaf/30;
+  @apply min-h-11 w-full rounded-[var(--radius-row)] border border-line bg-surface px-3 py-2 text-base font-normal text-ink placeholder:text-muted/70 focus:border-leaf focus:ring-2 focus:ring-leaf/25 focus:outline-none aria-invalid:border-danger;
 }
 
 @utility btn {
-  @apply rounded-xl bg-leaf px-4 py-2.5 font-bold text-white transition hover:brightness-110 disabled:opacity-50;
+  @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-leaf px-5 font-bold text-on-leaf transition-[filter] hover:brightness-110 active:brightness-95 disabled:cursor-not-allowed disabled:opacity-50;
 }
 
 @utility btn-secondary {
-  @apply flex items-center justify-center gap-2 rounded-xl border border-leaf/40 px-4 py-2 font-semibold text-leaf;
+  @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-line bg-surface px-4 font-semibold text-ink transition-colors hover:border-leaf/50 hover:bg-sunken disabled:cursor-not-allowed disabled:opacity-50;
+}
+
+@utility btn-ghost {
+  @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-3 font-semibold text-muted transition-colors hover:bg-sunken hover:text-ink;
+}
+
+@utility btn-danger {
+  @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-danger px-4 font-bold text-surface transition-[filter] hover:brightness-110;
 }
 
 /* Toggle switch for <input type="checkbox" role="switch"> */
 @utility switch {
-  @apply relative h-6 w-11 shrink-0 cursor-pointer appearance-none rounded-full bg-ink/20 transition-colors checked:bg-leaf focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-leaf disabled:cursor-not-allowed disabled:opacity-50;
+  @apply relative h-7 w-12 shrink-0 cursor-pointer appearance-none rounded-full bg-ink/20 transition-colors checked:bg-leaf disabled:cursor-not-allowed disabled:opacity-50;
   &::before {
-    @apply absolute top-0.5 left-0.5 size-5 rounded-full bg-white shadow transition-transform content-[''];
+    @apply absolute top-1 left-1 size-5 rounded-full bg-surface shadow transition-transform content-[''];
   }
   &:checked::before {
     @apply translate-x-5;
   }
+}
+
+@utility radio {
+  @apply size-5 shrink-0 accent-leaf;
 }

@@ -1,101 +1,93 @@
 # WIKI — CropStack
 
-> The full target behaviour is specified in [`SPEC.md`](SPEC.md). This wiki documents what is **built today**; where they differ, SPEC is the goal and this page is the current state.
+How CropStack works **today** (v0.9). The target product is specified in [`SPEC.md`](SPEC.md) and scheduled in [`PLAN.md`](PLAN.md); where this page and SPEC differ, SPEC is the goal and this page is the current state. Structure and modules: [`ARCHITECTURE.md`](ARCHITECTURE.md). Visual system: [`DESIGN.md`](DESIGN.md).
 
 ## Purpose
-Self-hosted, Docker-based garden and homestead planner. It turns a location (coordinates or postal code) into local climate facts (hardiness zone, frost dates, soil temperature, daylight) and combines them with plant data to produce a rolling task calendar, from indoor sowing to harvest. Local-first: one SQLite file, optional integrations (weather, Home Assistant, AI) are opt-in.
+A self-hosted garden and homestead planner that tells a household what to do today (plant, water, feed, harvest, check, care for animals) and how. It decides from two things only: what each crop, animal or task needs (its **requirement profile**) and what the site's environment does (30 years of daily weather, this season's weather, the forecast, later the household's own sensors and observations). One container, one SQLite file, nothing sent anywhere the household hasn't been shown.
 
-## Users & principles
-- **Core rule (SPEC §2)**: no climate presets, modes or location rules. Every recommendation = a subject's requirement profile (crop variety, animal breed, task) × the site's environment data (distributions, observations, forecasts). Enforced by `tests/test_no_presets.py` (fails on code that branches on hemisphere, latitude sign, country, climate types or global hot/cold constants).
-- **Action first (SPEC P9)**: the home screen will be *Today* (what to plant, water, feed, harvest, check); analysis such as the climate explorer lives on its own page.
-- Home gardeners and homesteaders running their own server (NAS, Pi, home lab).
-- Works offline in the field (PWA); nothing leaves the server unless an integration is enabled.
-- Plans are explainable: every task shows the rule and dates it came from.
+## Principles
+- **No presets (SPEC §2, P1).** No climate types, modes, hemispheres, regions or global "hot/cold" constants. Every recommendation = requirement profile × environment data. Enforced by `backend/tests/test_no_presets.py`, which fails on code that branches on hemisphere, latitude sign, country, climate type or fixed thresholds. If the climate changes, the advice changes by itself.
+- **Action first (P9).** The home screen is *Today*. Analysis (the climate page, later the explorer) lives on its own page.
+- **Explainable.** Every number on screen can be traced to its data; catalog values carry a source and evidence level.
+- **Visible privacy (P7).** Settings lists every outside service, what it sends and when; owners can switch off the optional ones.
+- **Professional quality (SPEC §15).** Every changed screen is checked in light and dark, phone and desktop, before a release (`npm run screenshots`).
 
 ## Glossary
 | Term | Meaning |
 |---|---|
-| Hardiness zone | USDA zone (1a–13b) from average annual extreme minimum temperature |
-| Last spring frost (LSF) | Date after which frost risk drops below the chosen probability; anchor for spring tasks |
-| First fall frost (FFF) | Date the fall frost risk rises above the chosen probability; end of the outdoor season for tender crops |
-| Growing season | Days between LSF and FFF |
-| Days to maturity (DTM) | Seed or transplant to first harvest, per variety |
-| Hardening off | Gradual outdoor exposure of indoor seedlings before transplanting |
-| Succession interval | Days between repeated sowings of the same crop for a continuous harvest |
-| Companion matrix | Beneficial / antagonistic pairings between plants |
-| Crop family | Botanical family used for rotation (e.g. Solanaceae, Brassicaceae) |
-| Rotation conflict | Same crop family in the same bed within the configured number of seasons |
-| Plot / bed | Physical growing area on the garden map (raised bed, row, container, guild) |
-| Frost probability | Chance that frost still occurs after the computed spring date (or before the fall date). Lower = safer, later planting |
-| Task | A dated action generated from plant timing + climate (sow, transplant, harden off, feed, prune, harvest) |
+| Household | The people who share one garden. Every account belongs to exactly one. |
+| Role | `owner` (everything, incl. location and people), `member` (daily work), `viewer` (read only) |
+| Site | The household's garden location (coordinates, optional postal code, name, frost-risk preference). One per household. |
+| Requirement profile | What a crop, variety, animal or task needs: temperature ranges, water, daylight, humidity, timing |
+| Analog years | The engine's model of the future: each year on record is one possible version of the coming year, weighted by recency |
+| Window probability | Share of (weighted) years in which a condition holds on a day or across a window, e.g. "soil ≥ 10 °C" |
+| Frost risk (`frost_probability`) | The household's tolerance: Cautious 10 %, Typical 50 %, Bold 90 %. Used to place frost dates when frost occurs at all. |
+| Hardiness zone | USDA scale from the average yearly minimum; shown as a comparable number, never used to switch behaviour |
+| GDD | Growing degree days: heat accumulated above a crop's base temperature, used for development timing |
+| Water deficit | Evaporation (ET₀) minus rain over a period; the basis for watering advice |
+| Catalog | The data on crops, varieties, organisms, animals and tasks (`catalog/`, CC BY-SA 4.0) |
+| Private pack | Extra catalog data on the owner's server only (`<data>/catalog-private/`), never committed |
+| Evidence level | How strong a catalog value is: peer-reviewed, government, extension service, model, grower-reported, traditional |
 
-## Climate (v0.6.0)
-- **Data**: Open-Meteo archive, `models=era5_seamless` (ERA5-Land ~11 km, ERA5 ~25 km where Land has no data), last 30 complete years, `timezone=auto`, daily `temperature_2m_min/max`, `soil_temperature_0_to_7cm_mean`, `precipitation_sum`, `et0_fao_evapotranspiration`, `relative_humidity_2m_mean`, `wind_speed_10m_max`. One request ≈ 800 of the 10,000 free daily calls. Stored raw per site in `climatearchive`.
-- **Refresh** (on access, no scheduler): site moved, a newer complete year exists, or `ARCHIVE_VERSION` changed. If the refresh fails and the site hasn't moved, the existing record is used.
-- **Engine** (`environment.py`, SPEC §4.2): analog years: each of the ~30 years is a possible future; answers = weighted share of years. 365-day years (29 Feb dropped); recency weights (half-life 10 y); significant temperature trends removed by shifting past years to today's level. Weighted quantile = inverse CDF, averaging only on exact boundaries. Built climatologies are cached in-process per site and fetch time.
-- **Endpoints**: `GET sites/current/climate` (card), `…/climate/probability?var&op&x` (365 daily chances, e.g. `tmin le 0`), `…/climate/bands?var` (q10/q50/q90 per day + trend per decade). `var` ∈ tmin, tmax, soil_t, precip, et0, rh, wind.
-- **Card** (`climate.py` + `ClimateCard.tsx`): describes, never classifies: rain per year and the 6-month stretch that gets most of it, hottest day and coldest night of a typical year, frost dates whenever frost occurs at the person's risk level (otherwise how often frost happens), significant trend per decade, daylight, elevation, monthly highs/lows/soil/rain/frost nights. Frost = 0 °C used only as a description; crop decisions will use each crop's own lethal temperature.
-- **Frost dates at risk p** (season-year anchored at the warmest day, so each season holds one whole cold period anywhere): with k = floor(p·n), spring date = the value with k seasons later; autumn date = the value with k seasons earlier; seasons without frost count as ±∞.
-- **Hardiness zone**: mean of each season's minimum → °F → USDA scale (1a from −60 °F, 5 °F half-zones); a comparable number worldwide.
-- **Daylight**: astronomical day length on the 15th of each month (−0.833° incl. refraction).
+## Screens and navigation
+- **Phone** (< 1024 px): bottom bar with Today, Garden, More. More holds Climate, Household, Settings, Log out and the version.
+- **Desktop** (≥ 1024 px): left rail with Today, Garden, Climate, Household, Settings, Log out and the version.
+- `/` and unknown paths open each person's start screen (Settings → Open the app on).
+- **Today**: greeting with the date and garden; weather (today, next 7 days, last 30 days against normal); the daily jobs section (placeholder until the crop engine, PLAN 6–7). Desktop shows jobs and weather side by side.
+- **Garden**: garden name and location (owners can edit); beds section (placeholder until the layout editor, PLAN 8).
+- **Climate**: the climate description card (charts arrive with the climate explorer, PLAN 11).
+- **Household**: name, people and roles, invites (owners).
+- **Settings**: start screen, units (per person), data sources (switches for owners).
+- **App start** (`App.tsx`): loading → sign in / sign up (or invite) → garden setup (owner, no site yet) or "waiting for the owner" (member) → app. A failed load shows a retry screen.
+- **Stale app after an update**: if a request fails, the app checks `/api/health`; when the server version differs from the build it reloads once per version. Any change that breaks old clients (API paths, response shapes) needs a version bump.
 
-## Weather (v0.8.0)
-- **Forecast**: Open-Meteo forecast API, `past_days=92`, `forecast_days=16`, `timezone=auto`, 9 daily variables (the archive's seven + `precipitation_probability_max`, `weather_code`). Stored per site in `forecast`; refreshed on request when older than 3 h and by the background job every 30 min; a failed refresh keeps the old copy (`stale: true`). "Today" is the site's local date (`utc_offset_seconds`).
+## Accounts and households
+- **Sign up**: without an invite, a new household ("<name>'s homestead") is created with you as owner. `CROPSTACK_ALLOW_REGISTRATION`: `auto` (default, open until the first account exists), `true`, `false`. Invite links work even when sign-up is closed.
+- **Invites**: owner → Household → Invite someone → role → link `/invite/<token>`; single use, 7 days, only a SHA-256 hash is stored. Removing a person deletes their login. A household always keeps at least one owner.
+- **Log in**: usernames lowercased; argon2id passwords (min 8); 10 failures per 15 min per IP; signed session cookie `cropstack_session`, 30 days.
+- **Personal settings**: `PUT /api/v1/auth/prefs` `{start: today|garden|climate, units: metric|imperial}`. Values are stored in SI units and converted for display (`frontend/src/units.ts`).
+
+## Garden setup
+Name; place search (town, address or postal code via Nominatim, on submit only, ≤ 1 request per second); "Use my current location" (browsers allow this only over HTTPS or localhost, so on a LAN `http://` install enter coordinates by hand); latitude and longitude; optional postal code; frost risk. `PUT /api/v1/sites/current` creates or updates the household's site (owners only).
+
+## Climate
+- **Data**: Open-Meteo archive, `models=era5_seamless` (ERA5-Land ~11 km, ERA5 ~25 km where Land has no data), the last 30 complete years, `timezone=auto`, 7 daily variables: min/max air temperature, soil temperature 0–7 cm, precipitation, ET₀, mean relative humidity, max wind. Stored raw per site (`climatearchive`).
+- **Refresh** (on access): when the site moves, a newer complete year exists, or the archive format version changes. If a refresh fails and the site hasn't moved, the stored record is used.
+- **Engine** (`environment.py`): analog years with 365-day years (29 Feb dropped); recency weights `0.5^((last − year) / 10)`; significant temperature trends removed by shifting past years to today's level; weighted quantiles by inverse CDF; window probabilities that wrap across the year end; GDD and days-to-GDD; water deficit. Built climatologies are cached in memory per site.
+- **Description card** (`climate.py`): describes, never classifies. Rain per year and the 6-month stretch that gets most of it; hottest day and coldest night of a typical year; frost dates when frost occurs at the household's risk level, otherwise how often frost happens at all; significant trend per decade; daylight range; elevation; monthly highs, lows, soil temperature, rain and frost nights. 0 °C appears only as a description; crop decisions will use each crop's own limits.
+- **Frost dates at risk p**: seasons are anchored at the warmest day so each holds one whole cold period anywhere on Earth; with k = floor(p·n), the spring date is the value with k seasons later, the autumn date the value with k seasons earlier; frost-free seasons count as ±∞.
+- **Endpoints**: `GET /api/v1/sites/current/climate` (card), `…/climate/probability?var&op&x` (365 daily chances, e.g. `tmin le 0`), `…/climate/bands?var` (10th/50th/90th percentile per day and trend per decade). `var` ∈ tmin, tmax, soil_t, precip, et0, rh, wind.
+
+## Weather
+- **Forecast**: Open-Meteo forecast, `past_days=92`, `forecast_days=16`, the archive's 7 variables plus rain probability and weather code. Stored per site (`forecast`); refreshed when older than 3 hours on request and by the background job every 30 minutes; a failed refresh keeps the old copy and marks it `stale`. "Today" is the site's local date.
 - **Engine**: `environment.with_forecast` writes the forecast into every analog year, so near-term questions use the forecast and later days the climate.
-- **Last 30 days vs normal** (`weather.anomaly`): mean temperature difference against the same 30 days in the site's climate, rain total and its percentile among past years; wording: "close to normal" between the 30th and 70th percentile, "wetter/drier than n in 10 years" beyond, "almost every year on record" beyond 95/5.
-- **Weather icons**: WMO weather codes mapped to icons/labels for display only.
-- **Background jobs** (`app/scheduler.py`): `@job(name, every)`; ticks every 60 s; first run 60 s after start; failures recorded, never fatal; `/api/health` → `jobs`. Disabled with `CROPSTACK_SCHEDULER=false`.
-- **Data sources** (Settings): lists climate (required), forecast and place search with what is sent and when; owners switch forecast and place search off (`PUT /api/v1/household/settings`); turned-off sources are never called (endpoints answer 409, Today hides the weather card, setup hides place search).
+- **Last 30 days vs normal** (`weather.anomaly`): temperature difference against the same days in the site's climate; rain total and its percentile among past years. Wording: "close to normal" between the 30th and 70th percentile, "wetter/drier than n in 10 years" beyond, "almost every year on record" beyond 95/5.
+- **Icons**: WMO weather codes map to an icon and label for display only.
+- `GET /api/v1/sites/current/weather` answers 409 when the household switched the forecast off; Today then hides the weather.
 
-## Place search
-`GET /api/places?q=` → Nominatim `/search` (free text: town, address or postal code; postcodes work in South Africa where Open-Meteo's geocoder found none). Search on submit only (Nominatim policy ≤ 1 req/s, identifying User-Agent `CropStack/<version> (+repo URL)`).
+## Background jobs
+`app/scheduler.py`: `@job(name, every)` registry, one asyncio worker ticking every 60 s, first run 60 s after start. Failures are recorded and never stop the app. `/api/health` → `jobs` shows each job's last run, success and error. `CROPSTACK_SCHEDULER=false` turns jobs off (tests).
 
-## Planned scheduling rules (to be confirmed during implementation)
-**Principle (user feedback 2026-10-09):** the calendar must not be frost-centric. Each crop gets temperature windows (germination soil temperature, ideal / max air temperature, heat and frost tolerance); sowing and transplant windows are the months whose climate normals fit, with frost dates as an extra constraint only where frost matters, and rain season as a watering signal. In a winter-rainfall climate this naturally gives autumn/winter sowing of cool-season crops and spring planting of warm-season crops before the heat.
-- Indoor sowing = LSF − (variety weeks before LSF).
-- Hardening off starts 7–10 days before transplant.
-- Transplant / direct sow = LSF + variety offset, gated on minimum soil temperature when known.
-- Harvest window = sow or transplant date + DTM (± variety spread).
-- Last viable sowing = FFF − DTM − buffer (fall planting).
-- Weather overrides shift or flag tasks (frost alert → protect or delay tender transplants; heat → extra watering; heavy rain → skip watering).
+## Data sources
+`GET /api/v1/household/data-sources` lists each outside service with what it sends, when, its licence and whether it can be switched off. Owners change the switches with `PUT /api/v1/household/settings` (`forecast`, `place_search`). A switched-off source is never called: its endpoints answer 409 and the screens hide the feature.
 
-## Workflows
-- **Households**: every account belongs to exactly one household with a role: `owner` (everything, incl. garden location and people), `member` (daily work), `viewer` (read-only). Signing up without an invite creates a new household ("<name>'s homestead") with you as owner. The garden (`site`) belongs to the household, so everyone in it sees the same garden.
-- **Invites**: owner → Household → Invite someone → role → link `/invite/<token>` (single use, 7 days; only a SHA-256 hash is stored). Opening it signed-out shows "You're invited to join …" and a sign-up form that works even when public sign-up is closed. Removing a person deletes their login. A household always keeps at least one owner.
-- **Sign up / log in**: `GET /api/auth/status` tells the app whether to show sign-up. Registration modes (`CROPSTACK_ALLOW_REGISTRATION`): `auto` (default) = open until the first account exists, `true`, `false`. Usernames are stored lowercased. Passwords: argon2id, min 8 chars. Login failures are throttled per client IP (10 per 15 min, in memory). Session = signed cookie `cropstack_session`, 30 days.
-- **Garden setup**: after login, if `GET /api/garden` is 404 the app shows setup: name, place search (fills coordinates and postal code), latitude/longitude (browser geolocation works only over HTTPS or localhost; on a LAN `http://` install enter coordinates by hand), optional postal code, frost risk (Cautious 10 % · Typical 50 % · Bold 90 %, stored as `frost_probability`). `PUT /api/garden` creates or updates; one garden per user.
-- **Health check**: `GET /api/health` → `{status, version}`; also runs `SELECT 1` against SQLite. Used by the Docker `HEALTHCHECK`.
-- **Navigation** (v0.5): bottom tabs Today · Garden · More. More holds Climate, Household, Settings and Log out. `/` opens each person's own start screen (Settings → "Open the app on"). Members don't see edit controls for the garden location.
-- **Personal settings**: `PUT /api/v1/auth/prefs` `{start: today|garden|climate, units: metric|imperial}`; returned in `/auth/me` as `prefs` with defaults. Values are stored SI and converted for display (`src/units.ts`).
-- **API**: everything under `/api/v1` except `/api/health`.
-- **Stale app after an update**: the PWA can run the previous build from its cache for a few seconds after a server update. When a request fails, the app checks `/api/health`; if the server version differs from the build's `__APP_VERSION__` it reloads once per server version (sessionStorage guard), otherwise it shows the real error ("Cannot reach…" only when health is unreachable). Any change that breaks old clients (API paths, response shapes) must come with a version bump.
-- **App shell** (`App.tsx`): loading → `auth` (no session) → `setup` (no garden) → `home`; any network failure shows a retry screen.
-- **Climate page** (More → Climate): `ClimateCard` (loads `/api/v1/sites/current/climate`; reloads when location or frost risk changes; error card with retry).
-- **Routing**: `/api/*` = API (404 JSON for unknown routes); every other path serves a built file if it exists inside the build dir, else `index.html` (client-side routing; traversal attempts fall back to `index.html`).
+## Catalog
+- **Format**: Pydantic models in `backend/app/catalog.py`; JSON Schemas generated into `catalog/schema/` (`python scripts/catalog_schema.py`; CI checks they are current). Kinds: crops, varieties, organisms, species, breeds, task templates. Every value is a fact with provenance: `sources`, `evidence`, or `estimate: true`. Varieties and breeds inherit `requirements` and `params` from their parent. Format reference: [`catalog/README.md`](../catalog/README.md).
+- **Layers**: bundled `catalog/` → private pack `<data>/catalog-private/` (loaded after bundled, wins field by field; errors are shown to the owner and never stop the app) → household overrides in the database (`catalogoverride`, one row per field path, validated against the schema). Held in memory; `POST /api/v1/catalog/reload` re-reads it.
+- **Licence gate** (bundled data, at load and in CI): schema valid, unique slugs, parents exist, every value cites a source in `catalog/sources.yaml` or is marked an estimate, `bundle` sources have an open licence, nothing cites a `link-only` source.
+- **Policy** (SPEC §16, §16.1): bundled only CC0, public domain, CC BY, CC BY-SA 4.0. Non-commercial or no-derivatives sources are read to check facts and linked, never copied. Withdrawal periods are never bundled (the user enters the label's days). Research and the source table: [`research/catalog-data-sources.md`](research/catalog-data-sources.md).
+- **Content**: none yet (PLAN Phase 5).
 
-## Configuration
-See `README.md` → Configuration. All env vars use the `CROPSTACK_` prefix (`backend/app/config.py`).
+## Design system
+Tokens in `frontend/src/index.css`, components in `frontend/src/components/ui/` (`Button`, `IconButton`, `PageHeader`, `Section`, `Field`, `RadioCards`, `Switch`, `Badge`, `ErrorMessage`, `ErrorState`, `EmptyState`, `Skeleton`). Pages use these rather than ad-hoc classes. Rules and the reasons behind them: [`DESIGN.md`](DESIGN.md).
 
-## Database migrations
-- Alembic, scripts in `backend/app/migrations/versions/`. The app upgrades the database to the latest revision on every start (`app/db.py: init_db`).
-- Every model change needs a revision: `cd backend && alembic revision --autogenerate -m "what changed"`, then review it. CI fails if models and migrations differ (`tests/test_migrations.py`).
-- Migrations run with SQLite foreign keys **off**: batch mode rebuilds tables (copy, drop, rename) and a cascade on drop would delete child rows.
-- Baseline `0001` = v0.4.0 schema; older installs are upgraded in place (missing tables created, data kept).
+## Data, backups and migrations
+- `data/cropstack.db` (SQLite, WAL) and `data/secret.key` (generated, mode 600); the private catalog pack lives in `data/catalog-private/`. Back up the whole `data/` folder.
+- Alembic migrations in `backend/app/migrations/versions/` run on every start. Every model change needs a revision (`alembic revision --autogenerate -m "…"`, then review it); CI fails when models and migrations differ.
+- Migrations run with SQLite foreign keys off: batch mode rebuilds tables, and a cascade on drop would delete child rows. Upgrades from older versions are tested with stored fixtures.
 
-## Data
-- `./data/cropstack.db` (SQLite, WAL) and `./data/secret.key` (auto-generated session key, mode 600).
-- Back up the whole `data/` folder.
-
-## Catalog data & licensing
-- Catalog values (crops, varieties, organisms, species, breeds, task templates) live in `catalog/` under **CC BY-SA 4.0** (`LICENSE`, `NOTICE` with FAO/EPPO terms); the code is MIT. Format: [`catalog/README.md`](../catalog/README.md); models in `backend/app/catalog.py`; JSON Schemas generated into `catalog/schema/` (`python scripts/catalog_schema.py`, CI checks they're current). No crop content yet (Phase 5).
-- **Layers** (v0.7.0): bundled `catalog/` → private pack `<data>/catalog-private/` (owner's server only, never committed; any source; loaded after bundled and wins field by field; errors shown to the owner, never stop the app) → household overrides in the DB (`catalogoverride`, one row per field path, validated against the schema). Varieties/breeds inherit `requirements` and `params` from their parent. The catalog is held in memory (read-only, loaded at start; `POST /api/v1/catalog/reload` re-reads it).
-- **Gate** (bundled only, at load and in CI): schema valid; unique slugs; parents exist; every value cites a source in `sources.yaml` or says `estimate: true`; `bundle` sources need an open licence; nothing may cite a `link-only` source.
-- Every value is a **cited fact** with an **evidence level**: `peer-reviewed`, `government`, `extension-service`, `model` (crop-model calibration), `grower-reported` (e.g. OpenFarm), `traditional` (folk knowledge, e.g. most companion pairs). The UI shows sources per field and a generated *Data sources & licences* page.
-- Labels for honest limits: `commercial benchmark` (yields converted from t/ha; 1 t/ha = 0.1 kg/m²), `US-calibrated` (pest degree-day models), `estimate`.
-- Bundled only: CC0, public domain, CC BY, CC BY-SA 4.0. Non-commercial or no-derivatives sources (PFAF, Permapeople, PPDB, Feedipedia, CABI, UC IPM text/photos) are read to check facts and linked, never copied.
-- Rotation: family groups (APG IV) with a 3-year default, overridden by disease links that cross families (clubroot 7 y, Sclerotinia ≥ 5 y, Verticillium 4–5 y, Fusarium 4–7 y, onion white rot: rotation ineffective).
-- Withdrawal periods are never bundled: the user enters the label's days; CropStack computes the safe date.
-- Research and source list: [`docs/research/catalog-data-sources.md`](research/catalog-data-sources.md). Policy: SPEC §16.1.
+## Routing
+`/api/v1/*` is the API (everything except `/api/health`); unknown API paths return JSON 404. Every other path serves a built file if one exists, otherwise `index.html` for client-side routing.
 
 ## Release process
-`python scripts/bump.py X.Y.Z` → commit → push to `main`. CI publishes `ghcr.io/krugerhomeassistant/cropstack:X.Y.Z` and creates the GitHub release from `CHANGELOG.md`.
+`python scripts/bump.py X.Y.Z` → update `CHANGELOG.md` → commit → push to `main`. CI tags the release, publishes `ghcr.io/krugerhomeassistant/cropstack:X.Y.Z` and `latest` (amd64, arm64) and creates the GitHub release from the changelog. README and this wiki are reviewed on every release.

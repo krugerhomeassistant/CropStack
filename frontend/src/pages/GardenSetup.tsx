@@ -3,6 +3,7 @@ import { LocateFixed } from 'lucide-react'
 import { api, type Garden, type GardenInput } from '../api'
 import PlaceSearch from '../components/PlaceSearch'
 import { N_, t } from '../i18n'
+import { Button, ErrorMessage, PageHeader, RadioCards } from '../components/ui'
 
 type Props = { garden: Garden | null; onSaved: (garden: Garden) => void; onCancel?: () => void }
 
@@ -55,10 +56,10 @@ export default function GardenSetup({ garden, onSaved, onCancel }: Props) {
 
   return (
     <div className="flex flex-col gap-6">
-      <header>
-        <h1 className="text-2xl font-extrabold">{garden ? t('Edit your garden') : t('Where is your garden?')}</h1>
-        <p className="text-muted">{t('Your location sets your climate: temperatures, rain, frost and daylight.')}</p>
-      </header>
+      <PageHeader
+        title={garden ? t('Edit your garden') : t('Where is your garden?')}
+        subtitle={t('Your location sets your climate: temperatures, rain, frost and daylight.')}
+      />
 
       <form className="card flex flex-col gap-4" onSubmit={submit}>
         <label className="field">
@@ -83,9 +84,9 @@ export default function GardenSetup({ garden, onSaved, onCancel }: Props) {
               })
             }
           />}
-          <button type="button" className="btn-secondary" onClick={locate}>
+          <Button variant="secondary" onClick={locate}>
             <LocateFixed className="size-4" aria-hidden /> {t('Use my current location')}
-          </button>
+          </Button>
           <div className="grid grid-cols-2 gap-3">
             <label className="field">
               <span>{t('Latitude')}</span>
@@ -127,38 +128,25 @@ export default function GardenSetup({ garden, onSaved, onCancel }: Props) {
           </label>
         </fieldset>
 
-        <fieldset className="flex flex-col gap-2">
-          <legend className="mb-2 text-sm font-semibold">{t('Frost risk')}</legend>
-          {FROST_CHOICES.map((c) => (
-            <label key={c.value} className="flex items-start gap-3 rounded-xl border border-ink/10 p-3">
-              <input
-                type="radio"
-                name="frost"
-                className="mt-1 accent-leaf"
-                checked={form.frost_probability === c.value}
-                onChange={() => set({ frost_probability: c.value })}
-              />
-              <span>
-                <span className="font-semibold">{t(c.label)}</span>
-                <span className="block text-sm text-muted">{t(c.hint)}</span>
-              </span>
-            </label>
-          ))}
-        </fieldset>
+        <RadioCards
+          legend={t('Frost risk')}
+          name="frost"
+          options={FROST_CHOICES.map((c) => ({ ...c, label: t(c.label), hint: t(c.hint) }))}
+          value={form.frost_probability}
+          onChange={(frost_probability) => set({ frost_probability })}
+        />
 
-        {error && (
-          <p className="text-sm text-red-600" role="alert">
-            {error}
-          </p>
-        )}
-        <button className="btn" disabled={busy}>
-          {t('Save garden')}
-        </button>
-        {onCancel && (
-          <button type="button" className="text-sm text-muted underline" onClick={onCancel}>
-            {t('Cancel')}
-          </button>
-        )}
+        {error && <ErrorMessage>{error}</ErrorMessage>}
+        <div className="flex flex-wrap gap-2">
+          <Button type="submit" disabled={busy}>
+            {t('Save garden')}
+          </Button>
+          {onCancel && (
+            <Button variant="ghost" onClick={onCancel}>
+              {t('Cancel')}
+            </Button>
+          )}
+        </div>
       </form>
     </div>
   )

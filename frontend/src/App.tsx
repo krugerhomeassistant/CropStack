@@ -99,7 +99,7 @@ export default function App() {
     case 'loading':
     case 'error':
       return (
-        <main className="mx-auto flex min-h-dvh max-w-md flex-col items-center justify-center gap-3 px-6 text-center">
+        <main className="mx-auto flex min-h-dvh max-w-md flex-col items-center justify-center gap-3 px-4 text-center">
           <Sprout className="size-12 text-leaf" aria-hidden />
           <p className="text-muted" role="status">
             {state.screen === 'error' ? state.message : t('Loading…')}
@@ -118,13 +118,13 @@ export default function App() {
       )
     case 'setup':
       return (
-        <main className="mx-auto flex min-h-dvh max-w-md flex-col gap-6 px-6 py-10">
+        <main className="mx-auto flex min-h-dvh max-w-xl flex-col gap-6 px-4 py-10 sm:px-8">
           <GardenSetup garden={null} onSaved={(garden) => setState({ screen: 'app', user: state.user, garden })} />
         </main>
       )
     case 'waiting':
       return (
-        <main className="mx-auto flex min-h-dvh max-w-md flex-col items-center justify-center gap-4 px-6 text-center">
+        <main className="mx-auto flex min-h-dvh max-w-md flex-col items-center justify-center gap-4 px-4 text-center">
           <Sprout className="size-12 text-leaf" aria-hidden />
           <h1 className="text-2xl font-extrabold">{t('Welcome to {name}', { name: state.user.household.name })}</h1>
           <p className="text-muted">
@@ -133,7 +133,7 @@ export default function App() {
           <button className="btn-secondary" onClick={load}>
             {t('Check again')}
           </button>
-          <button className="text-sm text-muted underline" onClick={logout}>
+          <button className="btn-ghost" onClick={logout}>
             {t('Log out')}
           </button>
         </main>
