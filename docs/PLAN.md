@@ -144,10 +144,10 @@ Goal: probabilistic, self-updating environment; remove v1 heuristics (§18).
 - [x] (v0.16.0; list per bed and timeline open) UI: add planting from a window ("Plant this"), plantings list on the Garden page.
 
 **6.4 Task engine core**
-- [ ] `task`, `task_change` tables; generator interface (`generate(household, horizon) -> [TaskSpec]`) keyed by `generator_key` for idempotent regeneration; user-locked handling; change log with reasons.
-- [ ] Crop schedule generator (sow indoors, harden-off steps, transplant, direct sow, successions, harvest window with ripeness cues).
+- [x] (v0.17.0; user-locked dates have no UI yet, and the change log has no UI) `task`, `task_change` tables; generator interface (`generate(household, horizon) -> [TaskSpec]`) keyed by `generator_key` for idempotent regeneration; user-locked handling; change log with reasons.
+- [x] (v0.17.0: sow, set out, first harvest; harden-off steps, successions and ripeness cues open) Crop schedule generator (sow indoors, harden-off steps, transplant, direct sow, successions, harvest window with ripeness cues).
 - [ ] Crop care generator (thin, stake, mulch, prune/pinch, protect from forecast lethal/stress events).
-- [ ] Recompute job (nightly + on forecast/observation/edit); AC-P6 test.
+- [~] Recompute job: on planting edits and every 12 h (v0.17.0); on forecast/observation open; AC-P6 test open.
 
 **6.5 Water** §6.6
 - [ ] Per-bed soil-water balance (FAO-56 simplified), soil water-holding capacity from texture, root depth by stage; irrigation tasks with litres and best time of day; sensor override; water budget tracking vs household budget.
@@ -172,8 +172,8 @@ Goal: probabilistic, self-updating environment; remove v1 heuristics (§18).
 - [x] Replace placeholder copy (Today, Garden) with designed empty states.
 
 ## Phase 7 — Today screen & calendar §11.2, §9.2
-- [ ] `GET /api/v1/today`: grouped actions (Protect, Plant, Water, Feed, Harvest, Animals, Check, Maintain), weather header with plain-language advice, load vs available time, next-7-days strip.
-- [ ] Task card component: how-to steps, why-now, minutes, Done (with quantity/photo), Skip, Snooze, Not possible today; optimistic UI.
+- [~] (v0.17.0: grouped jobs and next 14 days; weather advice, load vs time open) `GET /api/v1/today`: grouped actions (Protect, Plant, Water, Feed, Harvest, Animals, Check, Maintain), weather header with plain-language advice, load vs available time, next-7-days strip.
+- [~] (v0.17.0: why-now, Done, Skip) Task card component: how-to steps, why-now, minutes, Done (with quantity/photo), Skip, Snooze, Not possible today; optimistic UI.
 - [ ] Load balancing: overflow low-priority tasks to the next suitable day.
 - [ ] Offline: cache today/week + how-tos; queued completions with idempotency keys; sync banner.
 - [ ] Calendar views: week agenda, month, year wheel, per-subject timeline.

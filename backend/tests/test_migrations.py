@@ -14,7 +14,7 @@ from app.db import init_db
 
 V040_SCHEMA = (Path(__file__).parent / "fixtures" / "schema_v0_4_0.sql").read_text()
 V020_SCHEMA = V040_SCHEMA.split("CREATE TABLE climatecache")[0]  # v0.2.0 had no climate cache
-HEAD = "0007"
+HEAD = "0008"
 
 
 @pytest.fixture

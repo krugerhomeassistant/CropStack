@@ -1,5 +1,5 @@
-import { ListTodo } from 'lucide-react'
-import { EmptyState, PageHeader, Section } from '../components/ui'
+import Jobs from '../components/Jobs'
+import { PageHeader } from '../components/ui'
 import WeatherCard from '../components/WeatherCard'
 import { t } from '../i18n'
 import { useApp } from '../state'
@@ -28,14 +28,7 @@ export default function Today() {
         <div className="lg:order-2">
           <WeatherCard units={user.prefs.units} />
         </div>
-        {/* shortcut: placeholder until the task engine exists (PLAN Phase 6-7); keeps Today as the home screen. */}
-        <Section title={t("Today's jobs")} className="lg:order-1">
-          <EmptyState icon={ListTodo} title={t('Your daily jobs will appear here')}>
-            {t(
-              'What to plant, water, feed and harvest, what to look out for, and how to do each job. They arrive with the crop planner, coming next.',
-            )}
-          </EmptyState>
-        </Section>
+        <Jobs />
       </div>
     </>
   )

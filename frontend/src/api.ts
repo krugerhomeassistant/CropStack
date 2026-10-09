@@ -95,6 +95,19 @@ export type Planting = {
   notes: string
 }
 export type PlantingIn = Pick<Planting, 'crop' | 'method' | 'start_date' | 'set_out_date' | 'quantity' | 'location' | 'notes'>
+export type Job = {
+  id: number
+  kind: 'sow' | 'set_out' | 'harvest'
+  group: string
+  title: string
+  reason: string
+  earliest: string
+  ideal: string
+  latest: string
+  overdue: boolean
+  planting_id: number | null
+}
+export type TodayData = { date: string; groups: { group: string; tasks: Job[] }[]; upcoming: Job[] }
 export type Probability = { var: string; days: number[]; years: string }
 
 export type DayWeather = {
@@ -222,6 +235,8 @@ export const api = {
   probability: (name: string, op: 'le' | 'ge', x: number) =>
     request<Probability>('GET', `/sites/current/climate/probability?var=${name}&op=${op}&x=${x}`),
   cropWindows: (slug: string) => request<CropWindows>('GET', `/crops/${encodeURIComponent(slug)}/windows`),
+  today: () => request<TodayData>('GET', '/today'),
+  finishJob: (id: number, status: 'done' | 'skipped') => request<Job>('PATCH', `/tasks/${id}`, { status }),
   plantings: () => request<Planting[]>('GET', '/plantings'),
   addPlanting: (body: PlantingIn) => request<Planting>('POST', '/plantings', body),
   updatePlanting: (id: number, body: Partial<Pick<Planting, 'status' | 'quantity' | 'location' | 'notes'>>) =>

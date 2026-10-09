@@ -3,7 +3,7 @@
 from datetime import UTC, date, datetime
 from typing import Any
 
-from sqlalchemy import JSON, Column
+from sqlalchemy import JSON, Column, UniqueConstraint
 from sqlmodel import Field, SQLModel
 
 # Named constraints let Alembic batch mode drop/alter them later on SQLite.
@@ -130,3 +130,36 @@ class Planting(SQLModel, table=True):
     notes: str = ""
     created_by: int | None = Field(default=None, foreign_key="user.id", ondelete="SET NULL")
     created_at: datetime = Field(default_factory=now)
+
+
+class Task(SQLModel, table=True):
+    """A job to do, made by a generator from the household's plantings. `generator_key` makes regeneration update
+    the same task instead of adding another (SPEC §9.2)."""
+
+    __table_args__ = (UniqueConstraint("household_id", "generator_key"),)
+
+    id: int | None = Field(default=None, primary_key=True)
+    household_id: int = Field(foreign_key="household.id", ondelete="CASCADE", index=True)
+    generator_key: str  # e.g. "planting:12:sow"; unique per household
+    planting_id: int | None = Field(default=None, foreign_key="planting.id", ondelete="CASCADE")
+    kind: str  # sow, set_out, harvest
+    group: str  # the Today group: Plant, Harvest, ...
+    title: str
+    reason: str = ""  # why now, in plain words (every task explains itself)
+    earliest: date
+    ideal: date
+    latest: date
+    status: str = "open"  # open, done, skipped
+    locked: bool = False  # the user fixed the dates; the generator warns instead of moving it
+    completed_at: datetime | None = None
+    completed_by: int | None = Field(default=None, foreign_key="user.id", ondelete="SET NULL")
+    created_at: datetime = Field(default_factory=now)
+
+
+class TaskChange(SQLModel, table=True):
+    """Why a task changed: the log behind "moved 5 days later: forecast frost"."""
+
+    id: int | None = Field(default=None, primary_key=True)
+    task_id: int = Field(foreign_key="task.id", ondelete="CASCADE", index=True)
+    at: datetime = Field(default_factory=now)
+    what: str

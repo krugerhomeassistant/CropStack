@@ -30,7 +30,7 @@ try {
   await owner.getByLabel('Longitude').fill('18.86')
   await owner.getByLabel(/Cautious/).check()
   await owner.getByRole('button', { name: 'Save garden' }).click()
-  await owner.getByText('Your daily jobs will appear here').waitFor()
+  await owner.getByText('Nothing to do today').waitFor()
   assert.equal(path(owner), '/today')
   await owner.getByRole('list', { name: 'Next 7 days' }).waitFor()
   step('sign up, garden setup, Today with weather')
@@ -95,6 +95,18 @@ try {
   await owner.getByText('Sown', { exact: true }).waitFor()
   step('plant from a window, list and advance')
 
+  // A job that is due today shows on Today with its reason, and finishing it moves the planting
+  const todayIso = new Date().toISOString().slice(0, 10)
+  await owner.request.post(`${base}/api/v1/plantings`, {
+    data: { crop: 'lettuce', method: 'direct', start_date: todayIso, quantity: 3, location: 'Bed 2' },
+  })
+  await nav(owner, 'Today')
+  await owner.getByRole('heading', { name: 'Sow lettuce (3) in Bed 2' }).waitFor()
+  await owner.getByText('You planned to sow on').first().waitFor()
+  await owner.getByRole('button', { name: 'Mark sown' }).first().click()
+  await owner.getByRole('heading', { name: 'Sow lettuce (3) in Bed 2' }).waitFor({ state: 'detached' })
+  step('Today shows the due job and finishing it moves the planting')
+
   // Settings: start screen and units persist after a reload
   await owner.goto(`${base}/settings`)
   await owner.getByLabel(/Imperial/).check()
@@ -140,7 +152,7 @@ try {
   await member.getByLabel('Username').fill('marie')
   await member.getByLabel('Password').fill('garden456')
   await member.getByRole('button', { name: 'Join Kruger homestead' }).click()
-  await member.getByText('Your daily jobs will appear here').waitFor()
+  await member.getByText('Nothing to do today').waitFor()
   await nav(member, 'Garden')
   await member.getByRole('heading', { name: 'Back yard' }).waitFor()
   assert.equal(await member.getByRole('button', { name: 'Edit garden' }).count(), 0)

@@ -10,6 +10,7 @@ from sqlmodel import select
 from ..deps import EditorDep, MemberDep, SessionDep
 from ..models import Planting
 from .catalog import CatalogDep
+from .today import refresh_tasks
 
 router = APIRouter(prefix="/api/v1/plantings", tags=["plantings"])
 
@@ -70,12 +71,13 @@ def add_planting(body: PlantingIn, me: EditorDep, db: SessionDep, c: CatalogDep)
     row = Planting(household_id=me.household_id, created_by=me.user_id, **body.model_dump())
     db.add(row)
     db.commit()
+    refresh_tasks(db, me.household_id, c)  # commits, which expires `row`
     db.refresh(row)
     return row
 
 
 @router.patch("/{planting_id}")
-def update_planting(planting_id: int, body: PlantingPatch, me: EditorDep, db: SessionDep) -> Planting:
+def update_planting(planting_id: int, body: PlantingPatch, me: EditorDep, db: SessionDep, c: CatalogDep) -> Planting:
     row = _own(db, me.household_id, planting_id)
     changes = body.model_dump(exclude_unset=True)
     status = changes.pop("status", None)
@@ -89,11 +91,12 @@ def update_planting(planting_id: int, body: PlantingPatch, me: EditorDep, db: Se
         setattr(row, key, value)
     db.add(row)
     db.commit()
+    refresh_tasks(db, me.household_id, c)  # commits, which expires `row`
     db.refresh(row)
     return row
 
 
 @router.delete("/{planting_id}", status_code=204)
 def delete_planting(planting_id: int, me: EditorDep, db: SessionDep) -> None:
-    db.delete(_own(db, me.household_id, planting_id))
+    db.delete(_own(db, me.household_id, planting_id))  # its tasks go with it (ON DELETE CASCADE)
     db.commit()

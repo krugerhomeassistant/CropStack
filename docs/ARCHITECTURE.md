@@ -37,6 +37,9 @@ Target architecture (engines, data model, API) is specified in `docs/SPEC.md` §
 | `environment.py` | **pure** environment engine v2: analog-year `Climatology` (build, recency weights, trend), window probabilities, daily curves/bands, GDD, days-to-GDD, water deficit |
 | `weather.py` | **pure** forecast rows, past/future split, last-30-days anomaly |
 | `scheduler.py` | background job registry + runner (thread per run), status for `/api/health` |
+| `tasks.py` | task engine core: pure `crop_schedule` generator (sow, set out, first harvest) and `sync`, which updates stored tasks by `generator_key`, logs changes, leaves done/skipped/locked tasks alone |
+| `routers/plantings.py` | plantings CRUD with forward-only status rules; regenerates tasks on every change |
+| `routers/today.py` | `GET /api/v1/today` (due jobs grouped Protect…Maintain, next 14 days), `PATCH /api/v1/tasks/{id}` (done/skipped; done moves the planting along), 12-hourly `tasks` job |
 | `routers/weather.py` | forecast refresh (3 h), `forecast` job, `GET /api/v1/sites/current/weather` |
 | `climate.py` | **pure** climate card description: season stats, frost dates at a risk, zone, daylight, monthly means, rain season, extremes, `summarize`, `report` |
 | `external.py` | Open-Meteo archive fetch (`ARCHIVE_VARIABLES`), Nominatim search, `ExternalError` |
@@ -74,7 +77,7 @@ Target architecture (engines, data model, API) is specified in `docs/SPEC.md` §
 | `CROPSTACK_SCHEDULER` | `true` | background jobs (forecast refresh) |
 | `CROPSTACK_PORT` | `8430` | compose host port only |
 
-## DB schema (SQLite, Alembic migrations; head 0007)
+## DB schema (SQLite, Alembic migrations; head 0008)
 - **user**: id, username (unique, lowercased), password_hash (argon2id), display_name, created_at, prefs JSON (start, units)
 - **household**: id, name, created_at, settings JSON (forecast, place_search)
 - **membership**: user_id (PK → user, CASCADE), household_id (→ household, CASCADE, indexed), role (owner|member|viewer), created_at
@@ -84,8 +87,10 @@ Target architecture (engines, data model, API) is specified in `docs/SPEC.md` §
 - **catalogoverride**: (household_id → household CASCADE, kind, slug, path) PK, value JSON (a cited `Value`), updated_at
 - **climatearchive**: site_id (PK → site, CASCADE), latitude, longitude (where it was fetched), version (`ARCHIVE_VERSION`), last_year, raw JSON (Open-Meteo daily response, ~0.5 MB), fetched_at
 - **planting**: id, household_id (→ household, CASCADE, indexed), crop (catalog slug), method (direct|transplant), status (planned|sown|germinated|transplanted|harvesting|finished|failed), start_date, set_out_date, quantity, location (free text until beds exist), notes, created_by (→ user, SET NULL), created_at
+- **task**: id, household_id (→ household, CASCADE), generator_key (unique per household), planting_id (→ planting, CASCADE), kind (sow|set_out|harvest), group (Today group), title, reason, earliest/ideal/latest, status (open|done|skipped), locked, completed_at/by, created_at
+- **taskchange**: id, task_id (→ task, CASCADE), at, what ("Moved from 4 Oct to 9 Oct")
 
-Planned: `bed`, `task`; `planting.location` becomes a bed reference with the layout editor.
+Planned: `bed`; `planting.location` becomes a bed reference with the layout editor.
 
 ## Invariants
 - **No presets (SPEC P1)**: no code branches on country, hemisphere, climate type or region; decisions come from requirement profiles × environment data. CI banned-pattern check planned (PLAN 4.4).

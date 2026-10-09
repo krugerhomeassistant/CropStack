@@ -49,6 +49,7 @@ It runs on your own hardware (a NAS, a Raspberry Pi, a home server) as one conta
 - **Privacy you can see.** Settings lists every outside service CropStack talks to, what it sends and when. Owners can switch off the forecast and place search.
 - **Installable app.** Works as a phone app (PWA) in light and dark mode, with a desktop layout for larger screens.
 - **When to sow here.** Every crop page works out, from your own climate, the dates you can sow it in the ground and the dates you can set out seedlings started indoors, with the best stretch, days to harvest and the chance of success for each day. Nothing to configure; where a crop can't succeed it says why.
+- **Today's jobs.** From your plantings, Today lists what to do now (sow, set out seedlings, start harvesting), each with why now. Mark a job done and the planting moves along; the next two weeks are listed below.
 - **Plantings.** Choose *Plant this* on a window, and the Garden tab keeps track: what, how many, where, and whether it is sown, up, set out, harvesting, finished or failed.
 - **Crop catalog.** 29 common vegetables, searchable in English or Afrikaans: when they germinate and how fast at each soil temperature, how much water they use and how deep their roots go, spacing, and growth stages. Every number shows where it comes from and how strong the evidence is; a credits page lists every source and its licence.
 
@@ -60,7 +61,7 @@ The full product is specified in [docs/SPEC.md](docs/SPEC.md) and broken into st
 |---|---|
 | More catalog | More vegetables and herbs, varieties, fruit, cover crops, pests, beneficial insects and weeds, temperature limits from FAO ECOCROP |
 | Crop engine | Growth stages, protected growing, watering from rain and evaporation, feeding and scouting |
-| **Today** | Your daily jobs grouped as Protect, Plant, Water, Feed, Harvest, Animals, Check and Maintain, each with how and why |
+| **Today, fuller** | Watering, feeding, protecting from frost and heat, animals and what to look out for, each with how and why (Plant and Harvest jobs are already there) |
 | Setup and planning | A short interview (space, water, household, diet, time, budget), a layout editor drawn to scale with sun and shade, and a plan generator |
 | Animals | Poultry, goats, sheep, cattle, pigs, rabbits and bees: daily care, feed and water, records, breeding, heat and cold alerts |
 | Harvest and pantry | Harvest log, preserving, pantry stock, seed vault |

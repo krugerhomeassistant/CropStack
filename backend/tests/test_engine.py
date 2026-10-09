@@ -74,3 +74,17 @@ def test_transplants_extend_the_season_in_a_frosty_climate():
     assert result["transplant"]["age_days"] == 42
     assert set_out > direct  # a head start lets it ripen from later set-out dates
     assert analyse(frosty, TOMATO, 0.8).get("transplant") is None  # no age, no transplant method
+
+
+def test_maturity_matches_hand_computed_heat_sum():
+    """Constant 10 °C nights and 22 °C days: mean 16 °C, base 10 → 6 GDD a day; 600 GDD takes 100 days."""
+    from datetime import date as d
+
+    from app.engine.windows import maturity
+
+    steady = env.from_open_meteo(synthetic(mean=10, amplitude=0, coldest=d(2001, 1, 15), day_range=12))
+    crop = CropProfile(slug="x", base=10, cutoff=None, gdd_to_maturity=600, cycle_days=(80, 120))
+    assert maturity(steady, crop, d(2026, 3, 1)) == {"p10": 100, "p50": 100, "p90": 100}
+    head_start = maturity(steady, crop, d(2026, 3, 1), age=30)  # credit = min(.35, 30/110) * 600 = 163.6 → 73 + 30
+    assert head_start["p50"] == 103 or head_start["p50"] == 104
+    assert maturity(steady, CropProfile(**{**crop.__dict__, "gdd_to_maturity": 60000}), d(2026, 3, 1)) is None

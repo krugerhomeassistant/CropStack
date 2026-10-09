@@ -11,9 +11,10 @@ from __future__ import annotations
 import math
 from bisect import bisect_left
 from dataclasses import dataclass
+from datetime import date
 from itertools import accumulate
 
-from ..environment import YEAR_DAYS, Climatology, doy_to_date, gdd_day, weighted_quantile
+from ..environment import YEAR_DAYS, Climatology, doy, doy_to_date, gdd_day, weighted_quantile
 from .phenology import EMERGENCE_DAYS, CropProfile, design_days
 
 HEAT_DAYS_TO_FAIL = 5  # days at or above stress_max, within the exposed part of the season
@@ -231,3 +232,14 @@ def analyse(c: Climatology, p: CropProfile, threshold: float) -> dict:
     if p.transplant_age:
         result["transplant"] = _analyse(c, p, threshold, p.transplant_age) | {"age_days": round(p.transplant_age)}
     return result
+
+
+def maturity(c: Climatology, p: CropProfile, start: date, age: float = 0.0) -> dict[str, int] | None:
+    """Days from sowing to harvest (p10, p50, p90 over the years that get there) for a crop sown on `start`, or,
+    with `age`, set out on `start` after `age` days indoors (the days then count from the indoor sowing).
+    None when no year on record ripens it from that day."""
+    s = doy(start) - 1
+    pairs = [(r["days"], y.weight) for y in _years(c, p) if (r := _one_start(y, s, p, age)) and r["matures"]]
+    if not pairs:
+        return None
+    return {q: round(weighted_quantile(pairs, v)) for q, v in (("p10", 0.1), ("p50", 0.5), ("p90", 0.9))}

@@ -33,12 +33,14 @@ if (await latitude.isVisible()) {
   await setup.getByRole('button', { name: 'Save garden' }).click()
   await setup.waitForURL(/\/today$/)
 }
-// A few plantings, so the Garden screen is shown with content.
+const ago = (days) => new Date(Date.now() - days * 864e5).toISOString().slice(0, 10)
+// A few plantings, so the Garden and Today screens is shown with content.
 if (!(await setup.request.get(`${base}/api/v1/plantings`).then((r) => r.json())).length)
   for (const body of [
-    { crop: 'tomato', method: 'transplant', start_date: '2026-08-10', set_out_date: '2026-09-21', quantity: 6, location: 'Bed 1' },
-    { crop: 'lettuce', method: 'direct', start_date: '2026-09-15', quantity: 24, location: 'Bed 2' },
-    { crop: 'carrot', method: 'direct', start_date: '2026-10-20', quantity: 40, location: '' },
+    { crop: 'tomato', method: 'transplant', start_date: ago(35), set_out_date: ago(0), quantity: 6, location: 'Bed 1' },
+    { crop: 'lettuce', method: 'direct', start_date: ago(0), quantity: 24, location: 'Bed 2' },
+    { crop: 'carrot', method: 'direct', start_date: ago(5), quantity: 40, location: '' },
+    { crop: 'radish', method: 'direct', start_date: ago(-6), quantity: 30, location: 'Bed 2' },
   ])
     await setup.request.post(`${base}/api/v1/plantings`, { data: body })
 const state = await setup.context().storageState()

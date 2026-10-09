@@ -5,6 +5,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.17.0] - 2026-10-09
+
+### Added
+- **Today shows real jobs.** From your plantings, CropStack makes the jobs: sow, set out seedlings and start harvesting, each with the reason ("Sown on 4 September, tomato usually ripens after about 95 days, worked out from its heat needs and your climate"). Jobs due today are grouped (Plant, Harvest), overdue ones are marked, and the next two weeks are listed under Coming up. Mark a job sown, set out or harvest started, or skip it; the planting moves along with it. Jobs follow the planting if you change it and disappear if it fails or is deleted.
+
+### Development
+- Task engine core: `task` and `taskchange` tables (migration 0008), generators keyed so regeneration updates instead of duplicating, a change log, and a 12-hourly refresh job. `GET /api/v1/today`, `PATCH /api/v1/tasks/{id}`.
+- `engine.windows.maturity`: days from sowing to harvest for a given start date (p10/p50/p90 over the years on record).
+
 ## [0.16.0] - 2026-10-09
 
 ### Added
