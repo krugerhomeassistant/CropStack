@@ -59,4 +59,6 @@ CropStack-specific:
 49. **`pkill -f fake_server2` killed the Bash tool's own shell (exit 144)** → `-f` matches the full command line, which contained the pattern → find the PID with `pgrep -f "python /path/fake…"` and `kill <pid>`, or keep the server's PID when starting it.
 50. **Screenshots showed the old user after "restarting" the fake server** → the old process still held port 8512, the new one failed to bind and the script talked to the old one → check `pgrep`/the server log before trusting a rerun.
 51. **README and wiki drifted far behind the app (user, 2026-10-09)** → they were only patched per feature, never reread → review both on every release (in the release checklist, WIKI → Release process).
+52. **`pgrep -f "python /tmp/…/fake" | xargs kill` killed the Bash tool's shell again (exit 144)** → the pattern also matches the shell running that very command line → start background servers with `nohup … & echo $! > server.pid` and stop them with `kill $(cat server.pid)`; never match by command line from the same shell.
+53. **E2E `getByText('Marie')` matched the name, `@marie` and the sr-only "Role for Marie" label** → text locators are substring matches across visible and screen-reader text → wait on a unique string (`@marie`) or use `{ exact: true }`.
 

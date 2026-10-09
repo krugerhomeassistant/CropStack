@@ -21,6 +21,15 @@ Roadmap implementing [`SPEC.md`](SPEC.md). Every task is atomic and resumable in
 - [x] Open-Meteo archive (`era5_seamless`, 30 y), climate cache, frost dates at risk, zone, daylight, monthly normals, rain + regime, hot days; place search (Nominatim); card on Home.
 - [ ] User: confirm real values on ZimaOS install (rain regime, rain/yr, hot days look right for the Western Cape).
 
+## Open follow-ups (carry-over, check first)
+Items left open by earlier releases. Close them before or alongside the phase they belong to.
+- [x] v0.9.0: rerun the browser flows after the redesign (sign up, garden setup and edit, household rename, invite link, role change, remove member, settings switches, log out) and commit them as an E2E script.
+- [x] v0.9.0: run `npm run screenshots` in CI against a seeded server and upload the images as artifacts (PLAN 6.9).
+- [ ] v0.9.0: Sheet/Dialog, Tabs, Toast, Select in the UI kit with the first screen that needs them (PLAN 6.9).
+- [x] v0.9.0: unchecked radio in dark mode renders as a filled grey dot (browser `accent-color`); style the radio to match the tokens.
+- [ ] Owner: confirm real climate and forecast values from the ZimaOS install (first real Open-Meteo call; the sandbox gets 429/proxy errors).
+- [ ] Climate page is the v0.4 card restyled; charts come with the climate explorer (Phase 11).
+
 ---
 
 ## Phase 3 — Platform for growth (v0.5.0)
@@ -151,7 +160,7 @@ Goal: probabilistic, self-updating environment; remove v1 heuristics (§18).
 - [ ] Sheet/Dialog, Tabs, Toast, Select: add with the first screen that needs them (Phase 7 task card, Phase 8 setup).
 - [x] Desktop layout (side nav ≥ 1024 px) alongside the mobile bottom nav.
 - [x] Playwright screenshots of every page in light/dark × phone/desktop: `npm run screenshots` (v0.9.0), reviewed before each release.
-- [ ] Run it in CI against a seeded server and upload the images as artifacts.
+- [x] Run it in CI against the stubbed server (`tests/e2e_server.py`) and upload the images as artifacts.
 - [x] Replace placeholder copy (Today, Garden) with designed empty states.
 
 ## Phase 7 — Today screen & calendar (v0.10.0) §11.2, §9.2

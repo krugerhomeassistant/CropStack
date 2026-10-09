@@ -18,7 +18,8 @@
 | Playwright (Chromium) | E2E script: sign up → garden setup → reload → logout → bad login, 390×844 screenshots | real-browser check of each screen |
 | Open-Meteo archive API | climate data (`external.fetch_climate_archive`) | free, global, ERA5-Land 11 km, CC BY 4.0, no key |
 | Nominatim | place / postal-code search (`external.search_places`) | finds SA postal codes Open-Meteo geocoding missed |
-| `fake_server.py` pattern | E2E: run the app with `external.*` monkeypatched to synthetic data (tests/test_climate.synthetic) | no network or quota needed |
+| `backend/tests/e2e_server.py` | `python -m tests.e2e_server --port 8512`: the app with Open-Meteo and Nominatim stubbed (synthetic climate from `tests/test_climate.synthetic`) | E2E and screenshots with no network or quota |
+| `npm run e2e` | `frontend/scripts/e2e.mjs`, Playwright, fresh data folder | main flows in a real browser, also in CI |
 | Alembic 1.20 | schema migrations; `cd backend && alembic revision --autogenerate -m "…"` | standard for SQLAlchemy; batch mode handles SQLite ALTER limits |
 | React Router 8 | client routing (declarative mode, import from `react-router`) | standard; v8 removed `react-router-dom` |
 | PyYAML 6.0.3 | read catalog YAML (`safe_load`) | standard; schema validation stays in Pydantic (no jsonschema dependency) |

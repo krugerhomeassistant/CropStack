@@ -3,7 +3,7 @@
 **Date:** 2026-10-09 · **Version:** 0.9.0
 
 ## Current subtask
-Phase 6.9 design system done, released as v0.9.0 together with the README and WIKI rewrite.
+Carry-over from v0.9.0 closed (committed E2E + CI screenshots, dark radio). Next: Phase 5 catalog content.
 
 ## Last execution results
 - All pages and components moved to the UI kit and tokens; desktop rail ≥ 1024 px; Today two columns on desktop; designed empty states for Today jobs and Garden beds. `npm run screenshots` reviewed (24 images, light/dark × phone/desktop). Build and type check clean.

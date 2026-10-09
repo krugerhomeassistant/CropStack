@@ -18,7 +18,7 @@ On Windows, activate the venv with `.venv\Scripts\activate` and set variables wi
 
 - **Python**: ruff for lint and format (config in `pyproject.toml`), type hints on public functions, docstrings on modules. Keep domain logic (climate, scheduling, rotation) in pure functions with tests.
 - **TypeScript**: `strict` mode, function components, Tailwind theme tokens from `frontend/src/index.css` instead of raw colours.
-- **UI**: build screens from `frontend/src/components/ui/` and follow [docs/DESIGN.md](docs/DESIGN.md). Before a release run `npm run screenshots` (against a running server: `CROPSTACK_URL=http://127.0.0.1:8000`) and look at every changed page in light and dark, phone and desktop.
+- **UI**: build screens from `frontend/src/components/ui/` and follow [docs/DESIGN.md](docs/DESIGN.md). Before a release look at the `npm run screenshots` images (see E2E and screenshots below) for every changed page in light and dark, phone and desktop.
 - **Commits**: small and focused, imperative subject ("Add frost-date lookup").
 - **Docs**: update `README.md` and `docs/WIKI.md` in the same PR as any user-facing change, and add a line under `[Unreleased]` in `CHANGELOG.md`.
 
@@ -43,6 +43,20 @@ pip install ruff && ruff check . && ruff format --check .
 python -m pytest
 cd frontend && npm run build
 ```
+
+### E2E and screenshots
+
+Browser tests run against a server whose outside services (Open-Meteo, Nominatim) are stubbed, so they need no network. Start it on an empty data folder, then run the flows and the screenshots:
+
+```bash
+cd frontend && npm run build
+(cd ../backend && CROPSTACK_DATA_DIR=/tmp/cs-e2e CROPSTACK_STATIC_DIR=../frontend/dist CROPSTACK_SCHEDULER=false python -m tests.e2e_server --port 8512 &)
+npx playwright install chromium   # once
+CROPSTACK_URL=http://127.0.0.1:8512 npm run e2e
+CROPSTACK_URL=http://127.0.0.1:8512 CROPSTACK_USER=jan CROPSTACK_PASSWORD=garden123 npm run screenshots
+```
+
+`npm run e2e` expects a fresh data folder (it signs up the first account). CI runs both and uploads the screenshots as the `screenshots` artifact.
 
 ## Releasing (maintainers)
 

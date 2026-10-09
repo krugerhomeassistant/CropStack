@@ -5,6 +5,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+### Changed
+- Radio buttons are drawn in the app's own style, so unselected options no longer look selected in dark mode.
+
+### Development
+- `npm run e2e` checks the main flows in a real browser (sign up, garden setup and edit, settings, data sources, household, invites, roles, log out, desktop navigation) against `tests/e2e_server.py`, a server with outside services stubbed. CI runs it and the screenshots on every push and keeps the images as an artifact.
+
 ## [0.9.0] - 2026-10-09
 
 ### Added

@@ -27,7 +27,7 @@
 | API client | `frontend/src/api.ts` |
 | Screens | `frontend/src/pages/*.tsx` |
 | ZimaOS install | `docker-compose.zimaos.yml` |
-| Tests | `backend/tests/` |
+| Tests | `backend/tests/`; browser: `frontend/scripts/e2e.mjs` + `backend/tests/e2e_server.py` |
 | Design system (rules, tokens, components) | `docs/DESIGN.md`, `frontend/src/index.css`, `frontend/src/components/ui/index.tsx` |
 | Screenshot review | `frontend/scripts/screenshots.mjs` → `frontend/screenshots/` (git-ignored); README images in `docs/images/` |
 | App shell + routes | `frontend/src/App.tsx`, `src/components/Layout.tsx`, `src/state.tsx` |

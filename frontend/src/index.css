@@ -122,5 +122,5 @@ h3 {
 }
 
 @utility radio {
-  @apply size-5 shrink-0 accent-leaf;
+  @apply size-5 shrink-0 cursor-pointer appearance-none rounded-full border-2 border-muted bg-surface transition-[border-width] checked:border-[6px] checked:border-leaf;
 }
