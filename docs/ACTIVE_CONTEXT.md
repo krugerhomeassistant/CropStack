@@ -15,6 +15,9 @@ Phase 3.4 catalog infrastructure done (target v0.7.0): `catalog.py` models + loa
 - Treat `licence_conflicts_resolved.md` as overriding the other notes where they disagree.
 - Values marked "unverified" in the notes must not be bundled until checked.
 
+## Standing requirements
+- **Professional look and feel** (owner, 2026-10-09): "just for me" is about licensing only. Design system (PLAN 6.9) comes before the Today screen; every changed screen gets a visual check in light/dark and phone/desktop before release.
+
 ## Blockers
 - None. Decided 2026-10-09 (user: personal, non-commercial use; repo stays public): public `catalog/` = CC BY-SA 4.0; no ARC request for now; personal-use values go in a private pack on the server (SPEC §16.1, §19 Q6–7).
 

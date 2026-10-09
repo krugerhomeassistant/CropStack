@@ -400,6 +400,7 @@ REST under `/api/v1`, JSON, session cookie auth (+ API keys for integrations, sc
 
 ## 15. Non-functional requirements
 
+- **Professional quality** (owner, 2026-10-09): personal, non-commercial use only changes licensing, never the bar. The app must look and feel like a polished product: a consistent design system (tokens, type scale, spacing, components, icons, motion), designed empty/loading/error states, no placeholder copy in releases, light and dark themes, responsive phone → desktop, and a visual check of every changed screen before release.
 - **Footprint**: container idle RAM ≤ 150 MB, ≤ 256 MB under load; single uvicorn worker + background scheduler task; SQLite WAL.
 - **Performance**: window search for 50 varieties × 1 site ≤ 2 s on a Raspberry Pi 4 class CPU (vectorised DOY arrays, cached per site/version).
 - **Offline**: PWA caches app shell, today's/this week's tasks, catalog, and queues writes (task completion, logs, observations) with idempotency keys; sync on reconnect; conflict rule: last write wins per field with change log.

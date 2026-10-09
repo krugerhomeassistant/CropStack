@@ -143,6 +143,13 @@ Goal: probabilistic, self-updating environment; remove v1 heuristics (§18).
 
 **Acceptance**: for a synthetic Mediterranean and a synthetic frosty climate, the same tomato and lettuce varieties get different, sensible windows without configuration (AC-P2/P3); all tasks have reason traces (AC-P4).
 
+## Phase 6.9 — Design system (before the Today screen) §15 "Professional quality"
+- [ ] `docs/DESIGN.md`: brand basics, colour tokens (light/dark, contrast-checked), type scale, spacing/radius/elevation, iconography (lucide sizes/strokes), motion, voice & tone for copy.
+- [ ] Component kit in `frontend/src/components/ui/`: Button, Card, Field, Select, Radio cards, Sheet/Dialog, Tabs, Toast, Badge, Empty state, Skeleton loaders, Error state; replace ad-hoc classes in existing pages.
+- [ ] Desktop layout (side nav ≥ 1024 px) alongside the mobile bottom nav.
+- [ ] Visual regression: Playwright screenshots of every page in light/dark × phone/desktop in CI artifacts; reviewed before each release.
+- [ ] Replace placeholder copy (Today, Garden) with designed empty states.
+
 ## Phase 7 — Today screen & calendar (v0.9.0) §11.2, §9.2
 - [ ] `GET /api/v1/today`: grouped actions (Protect, Plant, Water, Feed, Harvest, Animals, Check, Maintain), weather header with plain-language advice, load vs available time, next-7-days strip.
 - [ ] Task card component: how-to steps, why-now, minutes, Done (with quantity/photo), Skip, Snooze, Not possible today; optimistic UI.
