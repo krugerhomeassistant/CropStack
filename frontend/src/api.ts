@@ -36,22 +36,23 @@ export type Place = { label: string; latitude: number; longitude: number; postal
 type Monthly = (number | null)[]
 
 export type Climate = {
-  last_spring_frost: string | null // "MM-DD"
+  last_spring_frost: string | null // "MM-DD", null when frost is rarer than the chosen risk
   first_fall_frost: string | null
   growing_season_days: number
   frost_free: boolean
   frost_years_pct: number
   frost_probability: number
+  frost_nights_per_year: number
   zone: string
   extreme_min_c: number
+  hottest_day_c: number | null
   daylight_hours: number[]
-  monthly: { tmin: Monthly; tmax: Monthly; soil: Monthly; rain: Monthly; hot_days: Monthly }
-  rainfall_regime: 'winter' | 'summer' | 'year-round' | 'dry'
+  monthly: { tmin: Monthly; tmax: Monthly; soil: Monthly; rain: Monthly; frost_nights: Monthly }
   annual_rain_mm: number
-  hot_days_per_year: number
+  rain_season: { start_month: number; end_month: number; share_pct: number } | null
+  trend_per_decade: { tmin?: number; tmax?: number }
   elevation_m: number | null
   period: string
-  southern_hemisphere: boolean
   source: string
 }
 

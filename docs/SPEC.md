@@ -100,24 +100,20 @@ Output of the interview: a **household profile** (persisted, versioned), a first
 A household has 1..n **sites** (home garden, allotment, paddock). Each site: name, point location (lat/lon), optional boundary polygon, elevation (auto, overridable), aspect/slope (optional), timezone (auto). All environment data is per site.
 
 ### 4.2 Climatology (long-term expectation)
-Source: Open-Meteo archive (`era5_seamless`), daily, **rolling last 30 complete years**, refreshed automatically each January and whenever the site moves (≥ 1 km).
+Source: Open-Meteo archive (`era5_seamless`), daily, **rolling last 30 complete years**.
 
-Stored per site as **day-of-year (DOY) distributions** (366 bins, circular 15-day smoothing window) for:
-- `tmin`, `tmax`, `tmean` (°C) — empirical quantiles q05…q95 + mean, sd
-- `soil_t` 0–7 cm (°C)
-- `precip` (mm/day): mean, P(wet day > 1 mm), dry-spell length distribution
-- `et0` reference evapotranspiration (mm/day)
-- `rh` relative humidity (for animal THI, disease pressure), `wind_max`
-- `daylight` (computed astronomically; not fetched)
+Stored per site as the **raw daily record** (`climatearchive`): `tmin`, `tmax`, `soil_t` (0–7 cm), `precip`, `et0` (FAO reference evapotranspiration), `rh` (mean relative humidity), `wind` (max). `daylight` is computed astronomically.
 
-Derived on demand (never stored as thresholds):
-- `P(tmin ≤ x on DOY d)` for any x (empirical CDF per DOY bin)
-- `P(tmax ≥ x on DOY d)`
-- Expected growing-degree-days between any two dates for any base/upper cutoff
-- Chill hours/portions accumulation (from tmin/tmax diurnal model) for fruit dormancy
-- Water balance (precip − ET0 × Kc) for any period and crop coefficient
+**Analog years** (implemented v0.6.0, `backend/app/environment.py`): each historical year is treated as one plausible future and every question is answered by running it through each year and taking the weighted share of years in which it happens. This keeps day-to-day sequences intact, so window questions are exact rather than combined from daily averages:
+- `P(any day with var op x within [d, d+n))` (e.g. a night ≤ a crop's `lethal_min` during its exposed stage), crossing 31 December into the following year
+- per-day curves `P(var op x on DOY d)` and quantile bands (q10/q50/q90), pooled over a 15-day window
+- days needed to reach a GDD target from a start date (distribution; years that never reach it show as "doesn't mature")
+- GDD totals and water deficit (`ET0 × Kc − rain`) over any window
+- Chill accumulation is added with the perennial phenology (PLAN 6.1).
 
-**Recency weighting & trend**: each year has weight `w = 0.5^((Y_last − y)/H)` with half-life `H` (default 10 years, configurable). A per-DOY linear trend is fitted; if significant (p < 0.05) the distribution is shifted to the current year's trend value. The UI shows "Your climate is warming ~0.3 °C/decade (1995–2024)" when significant, nothing otherwise.
+**Recency weighting & trend**: each year has weight `w = 0.5^((Y_last − y)/H)` with half-life `H` (default 10 years). For temperature variables a linear trend of annual means is fitted; if significant (two-sided 5 %), every past year is shifted to the current level (`value + slope × (as_of − year)`). The UI shows the trend per decade when significant, nothing otherwise.
+
+**Refresh**: on access, when the site moved, a newer complete year exists (each January), or the stored format changed; if the refresh fails and the site hasn't moved, the existing record keeps answering.
 
 **Projection (optional, off by default)**: Open-Meteo Climate API (CMIP6 HighResMIP, bias-corrected to ERA5-Land) can be enabled per site to view 2030/2040 shifts for perennial planting decisions (trees live 30+ years).
 
@@ -469,7 +465,7 @@ Module-level acceptance criteria are listed with each phase in `PLAN.md`.
 
 ## 18. Superseded behaviour (to remove)
 
-The v0.3/v0.4 climate card used fixed heuristics that violate P1/P2 and MUST be replaced in Phase 4:
+The v0.3/v0.4 climate card used fixed heuristics that violated P1/P2. **Done in v0.6.0** (kept here for history):
 - `HOT_C = 30` global hot-day threshold → replaced by per-subject `stress_max` probabilities.
 - "Show frost dates only if frost occurs in ≥ 50% of years" → replaced by relevance ranking (11).
 - Rainfall regime labels (≥ 60% / ≤ 40% cold-half share) → kept only as a descriptive sentence generated from the distribution, never used for decisions.

@@ -126,7 +126,7 @@ def test_climate_is_fetched_once_per_location(client, monkeypatch):
         archive.version = 0
         db.add(archive)
         db.commit()
-    assert "rainfall_regime" in client.get("/api/v1/sites/current/climate").json()
+    assert "rain_season" in client.get("/api/v1/sites/current/climate").json()
     assert len(calls) == 3
     with Session(get_engine()) as db:
         archive = db.exec(select(ClimateArchive)).all()[-1]

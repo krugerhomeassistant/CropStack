@@ -6,7 +6,7 @@
 Self-hosted, Docker-based garden and homestead planner. It turns a location (coordinates or postal code) into local climate facts (hardiness zone, frost dates, soil temperature, daylight) and combines them with plant data to produce a rolling task calendar, from indoor sowing to harvest. Local-first: one SQLite file, optional integrations (weather, Home Assistant, AI) are opt-in.
 
 ## Users & principles
-- **Core rule (SPEC §2)**: no climate presets, modes or location rules. Every recommendation = a subject's requirement profile (crop variety, animal breed, task) × the site's environment data (distributions, observations, forecasts). The v0.3/v0.4 climate card still contains fixed heuristics (`HOT_C`, the 50 % frost-headline rule, rainfall-regime labels); they are scheduled for removal in PLAN Phase 4 (SPEC §18).
+- **Core rule (SPEC §2)**: no climate presets, modes or location rules. Every recommendation = a subject's requirement profile (crop variety, animal breed, task) × the site's environment data (distributions, observations, forecasts). Enforced by `tests/test_no_presets.py` (fails on code that branches on hemisphere, latitude sign, country, climate types or global hot/cold constants).
 - **Action first (SPEC P9)**: the home screen will be *Today* (what to plant, water, feed, harvest, check); analysis such as the climate explorer lives on its own page.
 - Home gardeners and homesteaders running their own server (NAS, Pi, home lab).
 - Works offline in the field (PWA); nothing leaves the server unless an integration is enabled.
@@ -29,18 +29,15 @@ Self-hosted, Docker-based garden and homestead planner. It turns a location (coo
 | Frost probability | Chance that frost still occurs after the computed spring date (or before the fall date). Lower = safer, later planting |
 | Task | A dated action generated from plant timing + climate (sow, transplant, harden off, feed, prune, harvest) |
 
-## Climate engine (`backend/app/climate.py`, v0.3.0)
-- **Data**: Open-Meteo archive, `models=era5_seamless` (ERA5-Land ~11 km, ERA5 ~25 km where Land has no data), daily `temperature_2m_min`, `temperature_2m_max`, `soil_temperature_0_to_7cm_mean`, last 30 complete years, `timezone=auto`. One request ≈ 800 of the 10,000 free daily calls → fetched once per garden location and stored condensed in `climatecache`.
-- **Season-year**: starts on the climatologically warmest day (31-day smoothed mean daily minimum), so each season holds one whole cold period in either hemisphere. Partial seasons (<360 days) at the ends are dropped (→ 29 seasons).
-- **Frost day**: daily minimum air temperature at 2 m ≤ 0 °C.
-- **Frost dates at risk p**: per season, first frost (autumn) and last frost (spring) offsets; seasons without frost count as ±∞. With k = floor(p·n): spring date = the value with k seasons later than it; autumn date = the value with k seasons earlier. `None` (shown as "Rare") when frost is rarer than the risk. Frost-free season = autumn − spring + 365 (autumn is in the next season); 365 when either is `None`.
-- **Hardiness zone**: mean of each season's minimum → °F → USDA scale (zone 1a from −60 °F, 5 °F half-zones, clamped 1a–13b). Applied worldwide as a comparable number; gridded data underestimates cold in valleys.
-- **Daylight**: astronomical day length on the 15th of each month (sun centre −0.833°, includes refraction).
-- **Rain**: `precipitation_sum` → average mm per calendar month (`monthly_totals`: total ÷ number of years with that month). **Rainfall regime**: share of annual rain in the 6 coldest months (by mean daily minimum, so hemisphere-independent): ≥ 60 % winter, ≤ 40 % summer, else year-round; 0 mm = dry.
-- **Hot days**: days with maximum ≥ 30 °C (`HOT_C`), average per month and per year. Most cool-season crops bolt or stall and fruit set suffers above this.
-- **Frost relevance**: the app headlines frost dates only when frost occurs in ≥ 50 % of seasons; otherwise one line ("No frost" / "Frost is rare (x % of years)"). Rationale: in Mediterranean climates (Western Cape) the limits are summer heat and drought and the winter-rain season, not frost.
-- **Cache versioning**: `summary.version` = `climate.SUMMARY_VERSION` (now 2). A cache with another version is refetched once.
-- **Report** (`GET /api/garden/climate`): computed on every request from the cache + the garden's current `frost_probability`, so changing risk needs no refetch; moving the garden refetches. Errors from Open-Meteo → 502 with the service's reason.
+## Climate (v0.6.0)
+- **Data**: Open-Meteo archive, `models=era5_seamless` (ERA5-Land ~11 km, ERA5 ~25 km where Land has no data), last 30 complete years, `timezone=auto`, daily `temperature_2m_min/max`, `soil_temperature_0_to_7cm_mean`, `precipitation_sum`, `et0_fao_evapotranspiration`, `relative_humidity_2m_mean`, `wind_speed_10m_max`. One request ≈ 800 of the 10,000 free daily calls. Stored raw per site in `climatearchive`.
+- **Refresh** (on access, no scheduler): site moved, a newer complete year exists, or `ARCHIVE_VERSION` changed. If the refresh fails and the site hasn't moved, the existing record is used.
+- **Engine** (`environment.py`, SPEC §4.2): analog years: each of the ~30 years is a possible future; answers = weighted share of years. 365-day years (29 Feb dropped); recency weights (half-life 10 y); significant temperature trends removed by shifting past years to today's level. Weighted quantile = inverse CDF, averaging only on exact boundaries. Built climatologies are cached in-process per site and fetch time.
+- **Endpoints**: `GET sites/current/climate` (card), `…/climate/probability?var&op&x` (365 daily chances, e.g. `tmin le 0`), `…/climate/bands?var` (q10/q50/q90 per day + trend per decade). `var` ∈ tmin, tmax, soil_t, precip, et0, rh, wind.
+- **Card** (`climate.py` + `ClimateCard.tsx`): describes, never classifies: rain per year and the 6-month stretch that gets most of it, hottest day and coldest night of a typical year, frost dates whenever frost occurs at the person's risk level (otherwise how often frost happens), significant trend per decade, daylight, elevation, monthly highs/lows/soil/rain/frost nights. Frost = 0 °C used only as a description; crop decisions will use each crop's own lethal temperature.
+- **Frost dates at risk p** (season-year anchored at the warmest day, so each season holds one whole cold period anywhere): with k = floor(p·n), spring date = the value with k seasons later; autumn date = the value with k seasons earlier; seasons without frost count as ±∞.
+- **Hardiness zone**: mean of each season's minimum → °F → USDA scale (1a from −60 °F, 5 °F half-zones); a comparable number worldwide.
+- **Daylight**: astronomical day length on the 15th of each month (−0.833° incl. refraction).
 
 ## Place search
 `GET /api/places?q=` → Nominatim `/search` (free text: town, address or postal code; postcodes work in South Africa where Open-Meteo's geocoder found none). Search on submit only (Nominatim policy ≤ 1 req/s, identifying User-Agent `CropStack/<version> (+repo URL)`).
@@ -65,7 +62,7 @@ Self-hosted, Docker-based garden and homestead planner. It turns a location (coo
 - **API**: everything under `/api/v1` except `/api/health`.
 - **Stale app after an update**: the PWA can run the previous build from its cache for a few seconds after a server update. When a request fails, the app checks `/api/health`; if the server version differs from the build's `__APP_VERSION__` it reloads once per server version (sessionStorage guard), otherwise it shows the real error ("Cannot reach…" only when health is unreachable). Any change that breaks old clients (API paths, response shapes) must come with a version bump.
 - **App shell** (`App.tsx`): loading → `auth` (no session) → `setup` (no garden) → `home`; any network failure shows a retry screen.
-- **Home**: garden card + `ClimateCard` (loads `/api/garden/climate`; reloads when location or frost risk changes; error card with retry).
+- **Climate page** (More → Climate): `ClimateCard` (loads `/api/v1/sites/current/climate`; reloads when location or frost risk changes; error card with retry).
 - **Routing**: `/api/*` = API (404 JSON for unknown routes); every other path serves a built file if it exists inside the build dir, else `index.html` (client-side routing; traversal attempts fall back to `index.html`).
 
 ## Configuration

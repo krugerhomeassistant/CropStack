@@ -9,9 +9,9 @@ import math
 from collections import defaultdict
 from datetime import date, timedelta
 
-FROST_C = 0.0  # air frost at 2 m; plants on the ground can frost a little above this
-HOT_C = 30.0  # daily maximum at which most cool-season crops bolt or stall and fruit set starts to suffer
-SUMMARY_VERSION = 2  # bump when summarize() output changes; older caches are refetched
+# Freezing point of water at 2 m air temperature, used only to *describe* frost. Decisions about a crop use
+# that crop's own lethal temperature against the probability engine (environment.py), never this constant.
+FROST_C = 0.0
 REF_YEAR = 2001  # non-leap year used to turn day offsets into month-day labels
 MIN_SEASON_DAYS = 360  # skip partial seasons at the ends of the record
 
@@ -132,27 +132,37 @@ def monthly_totals(days: list[date], values: list[float | None]) -> list[float |
     return [round(s / len(y), 1) if y else None for s, y in zip(sums, years, strict=True)]
 
 
-def rainfall_regime(rain: list[float | None], tmin: list[float | None]) -> str:
-    """'winter', 'summer' or 'year-round': where the rain falls relative to the 6 coldest months.
+def rain_season(rain: list[float | None]) -> dict | None:
+    """The six consecutive months (wrapping the year) that get the most rain, and their share of the total.
 
-    Using the coldest months rather than calendar months makes it hemisphere-independent.
-    """
-    pairs = [(t, r or 0.0) for t, r in zip(tmin, rain, strict=True) if t is not None]
-    total = sum(r for _, r in pairs)
+    A description generated from the data, the same way everywhere; no climate labels or thresholds."""
+    months = [r or 0.0 for r in rain]
+    total = sum(months)
     if not total:
-        return "dry"
-    cold_share = sum(r for _, r in sorted(pairs)[:6]) / total
-    return "winter" if cold_share >= 0.6 else "summer" if cold_share <= 0.4 else "year-round"
+        return None
+    start = max(range(12), key=lambda m: sum(months[(m + k) % 12] for k in range(6)))
+    share = sum(months[(start + k) % 12] for k in range(6)) / total
+    return {"start_month": start + 1, "end_month": (start + 5) % 12 + 1, "share_pct": round(100 * share)}
+
+
+def annual_extremes(days: list[date], tmax: list[float | None]) -> float | None:
+    """Mean over complete years of each year's hottest day."""
+    by_year: dict[int, list[float]] = defaultdict(list)
+    for d, t in zip(days, tmax, strict=True):
+        if t is not None:
+            by_year[d.year].append(t)
+    maxima = [max(v) for v in by_year.values() if len(v) >= 360]
+    return round(sum(maxima) / len(maxima), 1) if maxima else None
 
 
 def summarize(raw: dict) -> dict:
-    """Condense an Open-Meteo daily archive response into what we store (a few KB)."""
+    """Condense an Open-Meteo daily archive response into the numbers the climate card describes."""
     daily = raw["daily"]
     days = [date.fromisoformat(d) for d in daily["time"]]
     tmin, tmax = daily["temperature_2m_min"], daily["temperature_2m_max"]
     return {
-        "version": SUMMARY_VERSION,
         **season_stats(days, tmin),
+        "hottest_day_c": annual_extremes(days, tmax),
         "elevation_m": raw.get("elevation"),
         "timezone": raw.get("timezone"),
         "period": f"{days[0].year}-{days[-1].year}",
@@ -161,18 +171,20 @@ def summarize(raw: dict) -> dict:
             "tmax": monthly_means(days, tmax),
             "soil": monthly_means(days, daily["soil_temperature_0_to_7cm_mean"]),
             "rain": monthly_totals(days, daily["precipitation_sum"]),
-            "hot_days": monthly_totals(days, [None if t is None else float(t >= HOT_C) for t in tmax]),
+            "frost_nights": monthly_totals(days, [None if t is None else float(t <= FROST_C) for t in tmin]),
         },
     }
 
 
-def report(summary: dict, latitude: float, frost_probability: int) -> dict:
-    """Everything the app shows, computed from the stored summary and the garden's risk preference."""
+def report(summary: dict, latitude: float, frost_probability: int, trends: dict[str, float] | None = None) -> dict:
+    """What the climate card shows, from the summary, the garden's risk preference and any significant trend."""
     monthly = summary["monthly"]
     return {
-        "rainfall_regime": rainfall_regime(monthly["rain"], monthly["tmin"]),
         "annual_rain_mm": round(sum(r or 0 for r in monthly["rain"])),
-        "hot_days_per_year": round(sum(h or 0 for h in monthly["hot_days"])),
+        "rain_season": rain_season(monthly["rain"]),
+        "hottest_day_c": summary["hottest_day_c"],
+        "frost_nights_per_year": round(sum(n or 0 for n in monthly["frost_nights"]), 1),
+        "trend_per_decade": {k: round(v * 10, 2) for k, v in (trends or {}).items() if k in ("tmin", "tmax")},
         **frost_dates(summary, frost_probability),
         **hardiness_zone(summary["annual_min"]),
         "frost_probability": frost_probability,
@@ -180,5 +192,4 @@ def report(summary: dict, latitude: float, frost_probability: int) -> dict:
         "monthly": monthly,
         "elevation_m": summary["elevation_m"],
         "period": summary["period"],
-        "southern_hemisphere": latitude < 0,
     }

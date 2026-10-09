@@ -5,6 +5,16 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-10-09
+
+### Added
+- **New climate engine**: your location's last 30 years are kept day by day and each year is treated as a possible future, so the app can answer questions like "chance of a night below −2 °C in these three weeks" or "days until this crop has had enough warmth". Recent years count more, and a real warming or cooling trend is taken out of older years. The record refreshes itself each January.
+- Climate shows a warming/cooling trend per decade when it is statistically real.
+
+### Changed
+- **Climate is described from your data, never classified.** No "winter/summer rainfall" labels, no fixed "hot day" threshold, no rule for when frost is shown. You see rain per year and when most of it falls, the hottest day and coldest night of a typical year, frost dates whenever frost happens at your risk level, and frost nights per month.
+- Climate data is downloaded once more after this update (more variables: evaporation, humidity, wind).
+
 ## [0.5.1] - 2026-10-09
 
 ### Fixed
@@ -56,7 +66,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - CI: ruff lint and format, backend tests, frontend build, image publishing to GHCR and automatic GitHub releases on a version bump.
 - Project docs: README, wiki, architecture, roadmap, contributing guide, security policy and Code of Conduct.
 
-[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.5.1...HEAD
+[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.6.0...HEAD
+[0.6.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.5.1...v0.6.0
 [0.5.1]: https://github.com/krugerhomeassistant/CropStack/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.3.0...v0.4.0

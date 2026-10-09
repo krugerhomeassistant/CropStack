@@ -49,8 +49,8 @@ Goal: the foundations everything else needs, before data volume makes changes ex
 - [x] v0.4 climate card moved off Home to More → Climate (until Phase 11 charts); Today placeholder explains what arrives.
 - [x] i18n layer: every UI string through `t()` / `N_()` (`src/i18n.ts`); locale files + CI missing-string checker added with the first translation (Phase 14).
 - [x] Units helpers (`src/units.ts`: °C/°F, mm/in, m/ft); climate card converts; storage stays SI.
-- [ ] → Phase 4.2: background scheduler (first job = forecast refresh; nothing to schedule yet).
-- [ ] → Phase 4.2: Settings → Data sources page with enable/disable (only meaningful once there is more than one source and manual fallback).
+- [ ] → 4.2: background scheduler (first job = forecast refresh).
+- [ ] → 4.2: Settings → Data sources page with enable/disable (once there is more than one source and a manual fallback).
 
 **3.4 Catalog infrastructure**
 > ✅ Sourcing research done (2026-10-09): [`research/catalog-data-sources.md`](research/catalog-data-sources.md); storage = YAML in `catalog/` (CC BY-SA 4.0) per SPEC §16.1.
@@ -66,14 +66,17 @@ Goal: the foundations everything else needs, before data volume makes changes ex
 ## Phase 4 — Environment engine v2 (v0.6.0) §4
 Goal: probabilistic, self-updating environment; remove v1 heuristics (§18).
 
-**4.1 Climatology distributions**
-- [ ] `environment/climatology.py`: build 366 DOY bins with ±7-day circular window; per bin weighted quantiles q05…q95, mean, sd for tmin/tmax/tmean/soil_t; precip mean, P(wet), dry-spell stats; et0; rh mean (fetch `relative_humidity_2m_mean`, `et0_fao_evapotranspiration`, `wind_speed_10m_max` daily).
-- [ ] Recency weights (half-life H, default 10 y, setting) and per-DOY linear trend with significance; shift to current-year trend when p < 0.05.
-- [ ] Storage `env_climatology` (compressed JSON/numpy blob), versioned; auto refresh each January + on site move ≥ 1 km (scheduler job).
-- [ ] Query API: `prob(var, op, x, doy)`, `expected_gdd(start, end, base, cutoff)`, `chill(start, end, model)`, `water_balance(start, end, kc)`; vectorised (numpy) and unit-tested against synthetic data with known answers.
-- [ ] Property tests (Hypothesis): monotonic CDF; hemisphere mirror (AC-P3); recency weighting moves stats toward recent years.
+**4.1 Climatology** ✅ (v0.6.0; design changed from DOY bins to analog years, SPEC §4.2)
+- [x] `environment.py`: analog-year `Climatology` from the raw record (365-day years), recency weights (half-life 10 y), significant temperature trend removed (shift past years to today's level).
+- [x] Queries: `prob_any` (windows incl. year-end wrap), `daily_prob`, `daily_quantiles`, `gdd_totals`, `days_to_gdd` (∞ = doesn't mature), `water_deficit`; weighted inverse-CDF quantiles.
+- [x] Storage `climatearchive` (raw daily record, 7 variables, migration 0004 drops `climatecache`); refresh on access when moved / new complete year / format change; stale record kept if refresh fails.
+- [x] Endpoints `…/climate/probability`, `…/climate/bands`; in-process climatology cache.
+- [x] Tests (AC-P2 cold tail, AC-P3 hemisphere mirror, recency, trend vs noise, year-end wrap, GDD, water) — 13 engine + 6 API/description tests.
+- [ ] → PLAN 6.1: chill accumulation (needs perennial phenology).
 
-**4.2 Recent weather & forecast**
+**4.2 Recent weather & forecast** (next; ships as v0.6.x/v0.7.0)
+- [ ] Background scheduler (asyncio task in the single worker) with job registry and last-run status in `/api/health`.
+- [ ] Settings → Data sources page (what is sent where; enable/disable where a fallback exists).
 - [ ] `env_daily` table; jobs: forecast (16 d, every 3 h, small variable set) and past 92 days (daily); quota budget + backoff; dedupe on restart.
 - [ ] Blending function per §4.4 with lead-time uncertainty; tests for each horizon band.
 - [ ] Season anomaly (GDD and rain vs normal to date).
@@ -82,8 +85,9 @@ Goal: probabilistic, self-updating environment; remove v1 heuristics (§18).
 - [ ] `sensor`, `sensor_reading`, `calibration` tables; manual sensor entry API; bias fit after ≥ 14 overlapping days (robust linear fit); apply to forecasts/climatology per target.
 - [ ] `observation` table + API (frost seen, first flower, first harvest, laying stopped…).
 
-**4.4 Remove v1 heuristics**
-- [ ] Delete `HOT_C`, frost-headline rule, regime-driven logic; keep descriptive sentence generator only (§18). CI banned-pattern check (AC-P1).
+**4.4 Remove v1 heuristics** ✅ (v0.6.0)
+- [x] `HOT_C`, the 50 % frost-headline rule and rainfall-regime labels removed; card describes data (rain season share, annual extremes, frost nights, frost dates at the person's risk, trend).
+- [x] `tests/test_no_presets.py` (AC-P1): fails on hemisphere/latitude-sign/country/climate-type branches or global HOT/COLD constants.
 
 **Acceptance**: AC-P1, AC-P2 (cold tail appears/disappears), AC-P3 pass on the environment layer; forecast refresh stays within quota budget in a 24 h simulated run.
 

@@ -66,7 +66,6 @@ def test_southern_hemisphere_is_mirrored():
     assert abs(days_between("09-14", report["last_spring_frost"])) <= 2
     assert abs(days_between("05-15", report["first_fall_frost"])) <= 2
     assert 240 <= report["growing_season_days"] <= 246
-    assert report["southern_hemisphere"]
 
 
 def test_risk_level_moves_dates_the_right_way():
@@ -116,23 +115,33 @@ def test_monthly_means_skip_missing_values():
 
 
 def test_mediterranean_climate_western_cape_like():
-    """Mild wet winters, hot dry summers: frost rare, rain in winter, hot days in Dec-Feb."""
+    """Mild wet winters, hot dry summers: described from the data, no climate label involved."""
     raw = synthetic(mean=11, amplitude=5, coldest=date(2001, 7, 15), day_range=15, rain_cold=2.5, rain_warm=0.3)
     report = climate.report(climate.summarize(raw), latitude=-33.9, frost_probability=50)
-    assert report["frost_free"]
-    assert report["rainfall_regime"] == "winter"
+    assert report["frost_free"] and report["frost_nights_per_year"] == 0
     assert 480 <= report["annual_rain_mm"] <= 540
-    hot = report["monthly"]["hot_days"]
-    assert report["hot_days_per_year"] > 0
-    assert hot[0] > 0 and hot[6] == 0  # January hot, July never
+    season = report["rain_season"]
+    assert season["start_month"] in (4, 5) and season["share_pct"] > 80  # most rain ~Apr/May-Sep/Oct
+    assert report["hottest_day_c"] == pytest.approx(31, abs=0.5)  # mean 11 + amplitude 5 + range 15
 
 
-def test_rainfall_regimes():
-    tmin = [20, 20, 18, 14, 10, 7, 6, 7, 10, 13, 16, 19]  # southern hemisphere: cold Jun-Aug
-    assert climate.rainfall_regime([5, 5, 10, 40, 80, 100, 100, 90, 50, 25, 10, 5], tmin) == "winter"
-    assert climate.rainfall_regime([100, 90, 80, 40, 10, 5, 5, 5, 20, 50, 80, 100], tmin) == "summer"
-    assert climate.rainfall_regime([50] * 12, tmin) == "year-round"
-    assert climate.rainfall_regime([0] * 12, tmin) == "dry"
+def test_frosty_climate_counts_frost_nights_by_month():
+    report = climate.report(climate.summarize(synthetic(mean=3, amplitude=10, coldest=date(2001, 1, 15))), 50, 50)
+    nights = report["monthly"]["frost_nights"]
+    assert nights[0] > 25 and nights[6] == 0  # nearly every January night, never in July
+    assert report["frost_nights_per_year"] == pytest.approx(sum(nights), abs=0.5)
+
+
+def test_rain_season_wraps_the_year_and_handles_dry_places():
+    summer_rain = [100, 90, 80, 40, 10, 5, 5, 5, 20, 50, 80, 100]
+    assert climate.rain_season(summer_rain) == {"start_month": 10, "end_month": 3, "share_pct": 85}
+    assert climate.rain_season([50] * 12)["share_pct"] == 50
+    assert climate.rain_season([0] * 12) is None
+
+
+def test_significant_trend_is_reported_per_decade():
+    report = climate.report(climate.summarize(synthetic(5, 10, date(2001, 1, 15))), 50, 50, {"tmin": 0.031})
+    assert report["trend_per_decade"] == {"tmin": 0.31}
 
 
 def test_monthly_totals_average_per_year():

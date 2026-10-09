@@ -100,7 +100,8 @@ def get_climate(me: MemberDep, db: SessionDep) -> dict:
     """Climate summary for the site's card (frost dates, zone, monthly normals, rain, daylight)."""
     site = _site(me.household_id, db)
     archive = _archive(site, db)
-    return climate.report(climate.summarize(archive.raw), site.latitude, site.frost_probability) | {
+    trends = _climatology(archive).trends
+    return climate.report(climate.summarize(archive.raw), site.latitude, site.frost_probability, trends) | {
         "fetched_at": archive.fetched_at,
         "source": SOURCE,
     }
