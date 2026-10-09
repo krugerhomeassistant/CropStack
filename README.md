@@ -50,6 +50,7 @@ It runs on your own hardware (a NAS, a Raspberry Pi, a home server) as one conta
 - **Installable app.** Works as a phone app (PWA) in light and dark mode, with a desktop layout for larger screens.
 - **When to sow here.** Every crop page works out, from your own climate, the dates you can sow it in the ground and the dates you can set out seedlings started indoors, with the best stretch, days to harvest and the chance of success for each day. Nothing to configure; where a crop can't succeed it says why.
 - **Today's jobs.** From your plantings, Today lists what to do now (sow, set out seedlings, start harvesting), each with why now. Mark a job done and the planting moves along; the next two weeks are listed below.
+- **Frost and heat alerts.** If the forecast shows a night too cold or a day too hot for something you have growing, Today lists a Protect job with the figure and the crop's limit.
 - **Plantings.** Choose *Plant this* on a window, and the Garden tab keeps track: what, how many, where, and whether it is sown, up, set out, harvesting, finished or failed.
 - **Crop catalog.** 29 common vegetables, searchable in English or Afrikaans: when they germinate and how fast at each soil temperature, how much water they use and how deep their roots go, spacing, and growth stages. Every number shows where it comes from and how strong the evidence is; a credits page lists every source and its licence.
 

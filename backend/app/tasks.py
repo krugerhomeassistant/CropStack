@@ -2,8 +2,9 @@
 
 A generator is a pure function from a planting (and what the climate says about it) to `TaskSpec`s with stable keys,
 so running it again updates tasks instead of duplicating them. Tasks that are done, skipped or locked are not moved.
-shortcut: one generator (the crop schedule: sow, set out, first harvest) and English text; care, water and weather
-alerts arrive with the engines they need (PLAN 6.4-6.7), and generated text moves into the i18n layer with Today.
+shortcut: two generators (the crop schedule, and frost/heat protection from the forecast) and English text with
+temperatures in °C; care and water jobs arrive with the engines they need (PLAN 6.4-6.7), and generated text and
+units move into the i18n layer with Today.
 """
 
 from collections.abc import Callable
@@ -100,9 +101,67 @@ def crop_schedule(
     return specs
 
 
-def sync(db: Session, household_id: int, make_specs: Callable[[Planting], list[TaskSpec]]) -> None:
-    """Make the household's open tasks match what the generators now say. Caller commits."""
-    existing = {t.generator_key: t for t in db.exec(select(Task).where(Task.household_id == household_id))}
+EXPOSED = ("sown", "germinated", "transplanted", "harvesting")
+
+
+def weather_alerts(
+    p: Planting,
+    name: str,
+    lethal_min: float | None,
+    stress_max: float | None,
+    forecast: list[dict],
+    horizon: int = 7,
+) -> list[TaskSpec]:
+    """Protect jobs for a planting that is outdoors: the first forecast night at or below its killing temperature,
+    and the first day at or above the temperature where it stops growing. `forecast` = daily rows from today on."""
+    outdoors = p.status in EXPOSED and not (p.method == "transplant" and p.status in ("sown", "germinated"))
+    if not outdoors:
+        return []
+    where = f" in {p.location}" if p.location else ""
+    specs = []
+    days = [r for r in forecast[:horizon] if r.get("tmin") is not None and r.get("tmax") is not None]
+    for kind, title, hit, text in (
+        (
+            "frost",
+            "Cover {name}{where} against frost",
+            lambda r: lethal_min is not None and r["tmin"] <= lethal_min,
+            lambda r: (
+                f"A night of {r['tmin']:.0f} °C is forecast for {_day(date.fromisoformat(r['date']))}; {name} is damaged at {lethal_min:.0f} °C or below. Cover it that evening."
+            ),
+        ),
+        (
+            "heat",
+            "Shade and water {name}{where} in the heat",
+            lambda r: stress_max is not None and r["tmax"] >= stress_max,
+            lambda r: (
+                f"A high of {r['tmax']:.0f} °C is forecast for {_day(date.fromisoformat(r['date']))}; {name} stops growing above {stress_max:.0f} °C. Water well and give it shade."
+            ),
+        ),
+    ):
+        first = next((r for r in days if hit(r)), None)
+        if first:
+            day = date.fromisoformat(first["date"])
+            specs.append(
+                TaskSpec(
+                    f"planting:{p.id}:{kind}",
+                    kind,
+                    "Protect",
+                    title.format(name=name, where=where),
+                    text(first),
+                    day - timedelta(days=2),
+                    day - timedelta(days=1),
+                    day,
+                )
+            )
+    return specs
+
+
+def sync(db: Session, household_id: int, make_specs: Callable[[Planting], list[TaskSpec]], kinds: set[str]) -> None:
+    """Make the household's tasks of these kinds match what the generator now says. Caller commits."""
+    existing = {
+        t.generator_key: t
+        for t in db.exec(select(Task).where(Task.household_id == household_id, Task.kind.in_(kinds)))  # type: ignore[attr-defined]
+    }
     plantings = db.exec(select(Planting).where(Planting.household_id == household_id)).all()
     wanted: dict[str, tuple[Planting, TaskSpec]] = {s.key: (p, s) for p in plantings for s in make_specs(p)}
 
@@ -128,6 +187,9 @@ def sync(db: Session, household_id: int, make_specs: Callable[[Planting], list[T
                     )
                 )
             continue
+        if task.status == "skipped" and task.completed_by is None and not spec.done:
+            task.status, task.completed_at = "open", None  # skipped by the engine, not a person: needed again
+            log(task, "Reopened: needed again")
         if task.status != "open":
             continue
         if spec.done:

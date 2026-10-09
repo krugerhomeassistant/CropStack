@@ -97,7 +97,7 @@ export type Planting = {
 export type PlantingIn = Pick<Planting, 'crop' | 'method' | 'start_date' | 'set_out_date' | 'quantity' | 'location' | 'notes'>
 export type Job = {
   id: number
-  kind: 'sow' | 'set_out' | 'harvest'
+  kind: 'sow' | 'set_out' | 'harvest' | 'frost' | 'heat'
   group: string
   title: string
   reason: string

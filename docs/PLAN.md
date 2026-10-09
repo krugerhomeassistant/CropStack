@@ -146,7 +146,7 @@ Goal: probabilistic, self-updating environment; remove v1 heuristics (§18).
 **6.4 Task engine core**
 - [x] (v0.17.0; user-locked dates have no UI yet, and the change log has no UI) `task`, `task_change` tables; generator interface (`generate(household, horizon) -> [TaskSpec]`) keyed by `generator_key` for idempotent regeneration; user-locked handling; change log with reasons.
 - [x] (v0.17.0: sow, set out, first harvest; harden-off steps, successions and ripeness cues open) Crop schedule generator (sow indoors, harden-off steps, transplant, direct sow, successions, harvest window with ripeness cues).
-- [ ] Crop care generator (thin, stake, mulch, prune/pinch, protect from forecast lethal/stress events).
+- [~] (v0.18.0: protect from forecast frost and heat; thin, stake, mulch, prune/pinch open) Crop care generator (thin, stake, mulch, prune/pinch, protect from forecast lethal/stress events).
 - [~] Recompute job: on planting edits and every 12 h (v0.17.0); on forecast/observation open; AC-P6 test open.
 
 **6.5 Water** §6.6

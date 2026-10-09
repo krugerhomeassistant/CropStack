@@ -5,6 +5,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.18.0] - 2026-10-09
+
+### Added
+- **Protect jobs on Today.** When the forecast for the next 7 days shows a night at or below a growing crop's killing temperature, or a day above the heat where it stops growing, Today lists a Protect job ("Cover tomato in Bed 1 against frost") with the forecast figure and the crop's limit. It uses each crop's own limits, so hardy crops are left alone, and it moves or disappears as the forecast changes. Seedlings still indoors and plantings not yet sown are not included.
+
+### Note
+- Frost-kill and heat limits for many crops are still estimates (marked as such in the catalog), and the text uses °C for now.
+
 ## [0.17.0] - 2026-10-09
 
 ### Added

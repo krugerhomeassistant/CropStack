@@ -8,12 +8,12 @@ from pydantic import BaseModel
 from sqlmodel import Session, select
 
 from .. import catalog as cat
-from .. import scheduler
+from .. import scheduler, weather
 from ..db import get_engine
 from ..deps import EditorDep, MemberDep, SessionDep
 from ..engine import phenology, windows
 from ..models import ClimateArchive, Forecast, Planting, Site, Task, now
-from ..tasks import TaskSpec, crop_schedule, sync
+from ..tasks import TaskSpec, crop_schedule, sync, weather_alerts
 from .catalog import CatalogDep, _overrides, load_catalog
 from .garden import _climatology
 from .weather import local_today
@@ -45,7 +45,26 @@ def refresh_tasks(db: Session, household_id: int, c: cat.Catalog) -> None:
         cycle = (round(profile.cycle_days[0]), round(profile.cycle_days[1])) if profile.usable else None
         return crop_schedule(p, name.lower(), maturity, cycle)
 
-    sync(db, household_id, specs)
+    sync(db, household_id, specs, {"sow", "set_out", "harvest"})
+    db.commit()
+    refresh_protect(db, household_id, c)
+
+
+def refresh_protect(db: Session, household_id: int, c: cat.Catalog) -> None:
+    """Frost and heat jobs from the stored forecast; cheap, so it also runs whenever Today is opened."""
+    site = db.exec(select(Site).where(Site.household_id == household_id)).first()
+    stored = db.get(Forecast, site.id) if site else None
+    rows = weather.split(weather.daily_rows(stored.raw), local_today(stored.raw))[1] if stored else []
+
+    def specs(p: Planting) -> list[TaskSpec]:
+        item = cat.effective(c, "crop", p.crop, _overrides(db, household_id, "crop", p.crop))
+        if item is None:
+            return []
+        profile = phenology.profile_from_item(item)
+        name = (item.get("names", {}).get("en") or [p.crop])[0].lower()
+        return weather_alerts(p, name, profile.lethal_min, profile.stress_max, rows)
+
+    sync(db, household_id, specs, {"frost", "heat"})
     db.commit()
 
 
@@ -80,7 +99,8 @@ def _today(db: Session, household_id: int) -> date:
 
 
 @router.get("/today")
-def get_today(me: MemberDep, db: SessionDep) -> dict:
+def get_today(me: MemberDep, db: SessionDep, c: CatalogDep) -> dict:
+    refresh_protect(db, me.household_id, c)
     today = _today(db, me.household_id)
     open_tasks = db.exec(
         select(Task).where(Task.household_id == me.household_id, Task.status == "open").order_by(Task.ideal)
