@@ -1,9 +1,9 @@
 # ACTIVE CONTEXT
 
-**Date:** 2026-10-09 · **Version:** 0.18.0
+**Date:** 2026-10-09 · **Version:** 0.19.0
 
 ## Current subtask
-v0.18.0 (Protect jobs from forecast frost/heat) released after CI; v0.17.0 added the task engine and Today jobs. Next: 6.5 water (soil-water balance → Water jobs), then hardening-off and successions; Today weather advice and the how-to text per job. Process note: `ss` is missing in the sandbox; find the stub server by scanning /proc (see /tmp/restart.sh pattern) and run e2e and screenshots against separate fresh data dirs.
+v0.19.0 (Water jobs from a soil-water balance) released after CI; v0.18.0 added Protect jobs, v0.17.0 the task engine and Today jobs. Next: soil questions in setup (replace the one standard soil), per-job how-to text, 6.6 feeding, 6.7 scouting, then hardening-off and successions; Today weather advice and the how-to text per job. Process note: `ss` is missing in the sandbox; find the stub server by scanning /proc (see /tmp/restart.sh pattern) and run e2e and screenshots against separate fresh data dirs.
 
 ## Open to-dos (owner: "make note of missed/still to dos")
 - UI kit: Sheet/Dialog, Tabs, Toast, Select. Add with the first screen that needs them (PLAN 6.9).

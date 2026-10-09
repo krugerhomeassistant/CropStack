@@ -42,7 +42,10 @@ if (!(await setup.request.get(`${base}/api/v1/plantings`).then((r) => r.json()))
     { crop: 'carrot', method: 'direct', start_date: ago(5), quantity: 40, location: '' },
     { crop: 'radish', method: 'direct', start_date: ago(-6), quantity: 30, location: 'Bed 2' },
   ])
-    await setup.request.post(`${base}/api/v1/plantings`, { data: body })
+  {
+    const made = await setup.request.post(`${base}/api/v1/plantings`, { data: body }).then((r) => r.json())
+    if (body.crop === 'carrot') await setup.request.patch(`${base}/api/v1/plantings/${made.id}`, { data: { status: 'sown' } })
+  }
 const state = await setup.context().storageState()
 await setup.close()
 

@@ -13,6 +13,7 @@ from datetime import date, timedelta
 
 from sqlmodel import Session, select
 
+from .engine import water
 from .models import Planting, Task, TaskChange, now
 
 Maturity = dict[str, int]  # p10 / p50 / p90 days from sowing to harvest
@@ -154,6 +155,44 @@ def weather_alerts(
                 )
             )
     return specs
+
+
+def water_alerts(
+    p: Planting, name: str, profile: water.WaterProfile, last_watered: date | None, rows: list[dict], today: date
+) -> list[TaskSpec]:
+    """A Water job when the soil around an outdoor planting is expected to pass its dry point in the next 3 days.
+    `rows` = daily weather (observed and forecast); the soil counts as full at sowing, at set-out, or when the
+    household last said it watered, whichever is latest. The key includes that date, so each watering starts afresh."""
+    if p.status not in EXPOSED or (p.method == "transplant" and p.status in ("sown", "germinated")):
+        return []
+    wet_since = max(d for d in (p.set_out_date if p.method == "transplant" else None, p.start_date, last_watered) if d)
+    path = water.depletion_path(profile, p.start_date, wet_since, rows)
+    dry = water.first_dry_day(path, today)
+    if not dry:
+        return []
+    since = (
+        "the last watering"
+        if wet_since == last_watered
+        else "it was set out"
+        if wet_since == p.set_out_date and p.method == "transplant"
+        else "sowing"
+    )
+    mm = round(dry["depletion"])
+    where = f" in {p.location}" if p.location else ""
+    day = max(dry["date"], today)
+    return [
+        TaskSpec(
+            f"planting:{p.id}:water:{last_watered or 'start'}",
+            "water",
+            "Water",
+            f"Water {name}{where}",
+            f"The soil is expected to be dry by {_day(dry['date'])}: about {mm} mm of water used since {since} on "
+            f"{_day(wet_since)}, less the rain. Give about {mm} mm, which is {mm} litres for every square metre.",
+            max(wet_since, day - timedelta(days=1)),
+            day,
+            day + timedelta(days=2),
+        )
+    ]
 
 
 def sync(db: Session, household_id: int, make_specs: Callable[[Planting], list[TaskSpec]], kinds: set[str]) -> None:

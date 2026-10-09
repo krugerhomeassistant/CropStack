@@ -5,6 +5,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.19.0] - 2026-10-09
+
+### Added
+- **Water jobs on Today.** For everything you have growing outdoors, CropStack keeps a running account of the water in the soil: what the crop uses each day (from the day's evaporation and the crop's stage), what rain puts back, and how deep the roots reach. When the soil is expected to run dry within three days, Today lists a Water job with how much to give ("about 12 mm, which is 12 litres for every square metre") and why. Say you watered and the count starts again; if rain arrives the job goes away.
+
+### Note
+- Until the setup questions ask about your soil, one standard soil is assumed, and 80 % of rain is counted.
+
 ## [0.18.0] - 2026-10-09
 
 ### Added

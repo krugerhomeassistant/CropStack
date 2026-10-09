@@ -141,3 +141,26 @@ def test_engine_skipped_alert_reopens_but_a_persons_skip_stays(owner):  # noqa: 
         db.add(task)
         db.commit()
         assert run(True).status == "skipped"
+
+
+def test_water_alert_appears_when_the_soil_will_run_dry_and_restarts_after_watering():
+    from app.engine.water import WaterProfile
+    from app.tasks import water_alerts
+
+    w = WaterProfile((0.5, 1.0, 0.8), (10, 10, 20, 10), 0.6, 0.5)
+    start = date(2026, 10, 1)
+    rows = [{"date": str(start + timedelta(days=i)), "et0": 10.0, "precip": 0.0} for i in range(1, 12)]
+    sown = planting(status="sown", start_date=start)
+    today = date(2026, 10, 2)
+
+    (job,) = water_alerts(sown, "tomato", w, None, rows, today)
+    assert job.kind == "water" and job.group == "Water" and job.ideal == date(2026, 10, 5)  # 20 mm >= 16.8 mm on day 4
+    assert "20 mm" in job.reason and "since sowing on 1 October" in job.reason and job.key.endswith(":start")
+
+    watered = date(2026, 10, 5)
+    assert water_alerts(sown, "tomato", w, watered, rows, date(2026, 10, 6)) == []  # starts full again
+    (again,) = water_alerts(sown, "tomato", w, watered, rows, date(2026, 10, 8))
+    assert again.key.endswith(":2026-10-05") and "the last watering" in again.reason  # a new job, a new key
+    rainy = [r | {"precip": 20.0} for r in rows]
+    assert water_alerts(sown, "tomato", w, None, rainy, today) == []
+    assert water_alerts(planting(), "tomato", w, None, rows, today) == []  # not sown yet

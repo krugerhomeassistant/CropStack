@@ -15,7 +15,7 @@ const GROUP: Record<string, string> = {
   Check: N_('Check'),
   Maintain: N_('Maintain'),
 }
-const DONE: Record<Job['kind'], string> = { sow: N_('Mark sown'), set_out: N_('Mark set out'), harvest: N_('Mark harvest started'), frost: N_('Covered'), heat: N_('Done') }
+const DONE: Record<Job['kind'], string> = { sow: N_('Mark sown'), set_out: N_('Mark set out'), harvest: N_('Mark harvest started'), frost: N_('Covered'), heat: N_('Done'), water: N_('Watered') }
 
 const day = (iso: string) => new Date(`${iso}T00:00:00`).toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' })
 

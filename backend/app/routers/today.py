@@ -11,9 +11,9 @@ from .. import catalog as cat
 from .. import scheduler, weather
 from ..db import get_engine
 from ..deps import EditorDep, MemberDep, SessionDep
-from ..engine import phenology, windows
+from ..engine import phenology, water, windows
 from ..models import ClimateArchive, Forecast, Planting, Site, Task, now
-from ..tasks import TaskSpec, crop_schedule, sync, weather_alerts
+from ..tasks import TaskSpec, crop_schedule, sync, water_alerts, weather_alerts
 from .catalog import CatalogDep, _overrides, load_catalog
 from .garden import _climatology
 from .weather import local_today
@@ -51,10 +51,18 @@ def refresh_tasks(db: Session, household_id: int, c: cat.Catalog) -> None:
 
 
 def refresh_protect(db: Session, household_id: int, c: cat.Catalog) -> None:
-    """Frost and heat jobs from the stored forecast; cheap, so it also runs whenever Today is opened."""
+    """Frost, heat and water jobs from the stored weather; cheap, so it also runs whenever Today is opened."""
     site = db.exec(select(Site).where(Site.household_id == household_id)).first()
     stored = db.get(Forecast, site.id) if site else None
-    rows = weather.split(weather.daily_rows(stored.raw), local_today(stored.raw))[1] if stored else []
+    today = local_today(stored.raw) if stored else datetime.now(UTC).date()
+    all_rows = weather.daily_rows(stored.raw) if stored else []
+    ahead = weather.split(all_rows, today)[1]
+    watered: dict[int, date] = {}  # planting -> the last day a person said they watered it
+    for t in db.exec(
+        select(Task).where(Task.household_id == household_id, Task.kind == "water", Task.status == "done")
+    ):
+        if t.planting_id and t.completed_at:
+            watered[t.planting_id] = max(watered.get(t.planting_id, date.min), t.completed_at.date())
 
     def specs(p: Planting) -> list[TaskSpec]:
         item = cat.effective(c, "crop", p.crop, _overrides(db, household_id, "crop", p.crop))
@@ -62,9 +70,11 @@ def refresh_protect(db: Session, household_id: int, c: cat.Catalog) -> None:
             return []
         profile = phenology.profile_from_item(item)
         name = (item.get("names", {}).get("en") or [p.crop])[0].lower()
-        return weather_alerts(p, name, profile.lethal_min, profile.stress_max, rows)
+        out = weather_alerts(p, name, profile.lethal_min, profile.stress_max, ahead)
+        thirst = water.profile_from_item(item, profile.cycle_days if profile.usable else None)
+        return out + (water_alerts(p, name, thirst, watered.get(p.id), all_rows, today) if thirst and all_rows else [])
 
-    sync(db, household_id, specs, {"frost", "heat"})
+    sync(db, household_id, specs, {"frost", "heat", "water"})
     db.commit()
 
 
@@ -124,7 +134,7 @@ class TaskPatch(BaseModel):
 
 # Completing a job moves its planting along; later states are never moved back.
 _ORDER = ["planned", "sown", "germinated", "transplanted", "harvesting", "finished", "failed"]
-_AFTER = {"sow": "sown", "set_out": "transplanted", "harvest": "harvesting"}
+_AFTER = {"sow": "sown", "set_out": "transplanted", "harvest": "harvesting"}  # frost, heat and water change nothing
 
 
 @router.patch("/tasks/{task_id}")
