@@ -74,7 +74,7 @@ Target architecture (engines, data model, API) is specified in `docs/SPEC.md` §
 | `CROPSTACK_SCHEDULER` | `true` | background jobs (forecast refresh) |
 | `CROPSTACK_PORT` | `8430` | compose host port only |
 
-## DB schema (SQLite, Alembic migrations; head 0006)
+## DB schema (SQLite, Alembic migrations; head 0007)
 - **user**: id, username (unique, lowercased), password_hash (argon2id), display_name, created_at, prefs JSON (start, units)
 - **household**: id, name, created_at, settings JSON (forecast, place_search)
 - **membership**: user_id (PK → user, CASCADE), household_id (→ household, CASCADE, indexed), role (owner|member|viewer), created_at
@@ -83,8 +83,9 @@ Target architecture (engines, data model, API) is specified in `docs/SPEC.md` §
 - **forecast**: site_id (PK → site, CASCADE), latitude, longitude, raw JSON (Open-Meteo forecast response), fetched_at
 - **catalogoverride**: (household_id → household CASCADE, kind, slug, path) PK, value JSON (a cited `Value`), updated_at
 - **climatearchive**: site_id (PK → site, CASCADE), latitude, longitude (where it was fetched), version (`ARCHIVE_VERSION`), last_year, raw JSON (Open-Meteo daily response, ~0.5 MB), fetched_at
+- **planting**: id, household_id (→ household, CASCADE, indexed), crop (catalog slug), method (direct|transplant), status (planned|sown|germinated|transplanted|harvesting|finished|failed), start_date, set_out_date, quantity, location (free text until beds exist), notes, created_by (→ user, SET NULL), created_at
 
-Planned: `plant` / `variety`, `bed`, `planting` (variety × bed × season), `task`. Adding columns to existing tables will need a migration tool (Alembic) before the first public release with data worth keeping.
+Planned: `bed`, `task`; `planting.location` becomes a bed reference with the layout editor.
 
 ## Invariants
 - **No presets (SPEC P1)**: no code branches on country, hemisphere, climate type or region; decisions come from requirement profiles × environment data. CI banned-pattern check planned (PLAN 4.4).

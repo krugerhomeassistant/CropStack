@@ -1,9 +1,9 @@
 # ACTIVE CONTEXT
 
-**Date:** 2026-10-09 · **Version:** 0.15.0
+**Date:** 2026-10-09 · **Version:** 0.16.0
 
 ## Current subtask
-v0.15.0 (indoor-start/set-out windows) released after CI; v0.14.0 added contribution tooling. Next: 6.2b remainder (protected growing, hardening-off steps), then 6.3 plantings. Process note: `ss` is missing in the sandbox; find the stub server by scanning /proc (see /tmp/restart.sh pattern) and run e2e and screenshots against separate fresh data dirs.
+v0.16.0 (plantings: table, API, Plant this, Garden list) released after CI. Next: 6.4 task engine core (generates Today's jobs from plantings × climate; reason traces), 6.2b remainder (protected growing, hardening-off). Process note: `ss` is missing in the sandbox; find the stub server by scanning /proc (see /tmp/restart.sh pattern) and run e2e and screenshots against separate fresh data dirs.
 
 ## Open to-dos (owner: "make note of missed/still to dos")
 - UI kit: Sheet/Dialog, Tabs, Toast, Select. Add with the first screen that needs them (PLAN 6.9).

@@ -140,8 +140,8 @@ Goal: probabilistic, self-updating environment; remove v1 heuristics (§18).
 - [ ] Performance benchmark: 50 varieties ≤ 2 s on CI runner (scaled target for Pi documented).
 
 **6.3 Plantings**
-- [ ] `planting` table + API (CRUD, status transitions, actual stage dates, successions link).
-- [ ] UI: add planting from a window ("Plant this"), list per bed, planting timeline.
+- [x] (v0.16.0; actual stage dates, successions link and per-bed placement open) `planting` table + API (CRUD, status transitions).
+- [x] (v0.16.0; list per bed and timeline open) UI: add planting from a window ("Plant this"), plantings list on the Garden page.
 
 **6.4 Task engine core**
 - [ ] `task`, `task_change` tables; generator interface (`generate(household, horizon) -> [TaskSpec]`) keyed by `generator_key` for idempotent regeneration; user-locked handling; change log with reasons.

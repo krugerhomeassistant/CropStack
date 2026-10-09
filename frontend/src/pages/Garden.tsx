@@ -3,6 +3,7 @@ import { LayoutGrid, MapPin, Pencil } from 'lucide-react'
 import { EmptyState, IconButton, PageHeader, Section } from '../components/ui'
 import { t } from '../i18n'
 import { useApp } from '../state'
+import Plantings from '../components/Plantings'
 import GardenSetup from './GardenSetup'
 
 export default function GardenPage() {
@@ -37,6 +38,7 @@ export default function GardenPage() {
           user.role === 'owner' && <IconButton icon={Pencil} label={t('Edit garden')} onClick={() => setEditing(true)} />
         }
       />
+      <Plantings />
       {/* shortcut: placeholder until beds and the layout editor exist (PLAN Phase 8). */}
       <Section title={t('Beds')}>
         <EmptyState icon={LayoutGrid} title={t('No beds yet')}>

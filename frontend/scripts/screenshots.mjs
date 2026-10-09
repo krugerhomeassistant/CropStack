@@ -33,6 +33,14 @@ if (await latitude.isVisible()) {
   await setup.getByRole('button', { name: 'Save garden' }).click()
   await setup.waitForURL(/\/today$/)
 }
+// A few plantings, so the Garden screen is shown with content.
+if (!(await setup.request.get(`${base}/api/v1/plantings`).then((r) => r.json())).length)
+  for (const body of [
+    { crop: 'tomato', method: 'transplant', start_date: '2026-08-10', set_out_date: '2026-09-21', quantity: 6, location: 'Bed 1' },
+    { crop: 'lettuce', method: 'direct', start_date: '2026-09-15', quantity: 24, location: 'Bed 2' },
+    { crop: 'carrot', method: 'direct', start_date: '2026-10-20', quantity: 40, location: '' },
+  ])
+    await setup.request.post(`${base}/api/v1/plantings`, { data: body })
 const state = await setup.context().storageState()
 await setup.close()
 

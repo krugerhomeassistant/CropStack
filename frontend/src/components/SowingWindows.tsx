@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { api, ApiError, type CropWindows, type SowAnalysis } from '../api'
 import { t } from '../i18n'
+import PlantForm from './PlantForm'
 import { YearChart } from './charts'
 import { ErrorState, Section, Skeleton } from './ui'
 
@@ -19,7 +20,23 @@ const day = (md: string) =>
   })
 
 /** One way of growing it: the sentence, the best stretch, the blockers and the chance-by-day chart. */
-function Method({ a, title, noun, extra }: { a: SowAnalysis; title: string; noun: string; extra?: string }) {
+function Method({
+  a,
+  title,
+  noun,
+  extra,
+  crop,
+  method,
+  ageDays,
+}: {
+  a: SowAnalysis
+  title: string
+  noun: string
+  extra?: string
+  crop: string
+  method: 'direct' | 'transplant'
+  ageDays?: number
+}) {
   const { verdict, windows } = a
   const best = windows[0]
   const headline =
@@ -53,6 +70,7 @@ function Method({ a, title, noun, extra }: { a: SowAnalysis; title: string; noun
           ))}
         </ul>
       )}
+      {best && <PlantForm crop={crop} method={method} date={best.best_start} ageDays={ageDays} />}
       <YearChart
         title={t('Chance of success by {noun} day', { noun })}
         series={[{ name: t('Chance of success'), color: 'var(--color-leaf)', values: a.success_by_day.map((p) => p * 100) }]}
@@ -103,12 +121,15 @@ export default function SowingWindows({ slug }: { slug: string }) {
         pct: Math.round(data.verdict.threshold * 100),
       })}
     >
-      <Method a={data} title={t('Sow in the ground')} noun={t('sowing')} />
+      <Method a={data} title={t('Sow in the ground')} noun={t('sowing')} crop={slug} method="direct" />
       {data.transplant && (
         <Method
           a={data.transplant}
           title={t('Start indoors, set out seedlings')}
           noun={t('set-out')}
+          crop={slug}
+          method="transplant"
+          ageDays={data.transplant.age_days}
           extra={t('Sow indoors about {days} days before the set-out date.', { days: data.transplant.age_days })}
         />
       )}

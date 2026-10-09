@@ -77,10 +77,23 @@ try {
   await owner.getByText(/Grows between .* best between/).waitFor()
   await owner.getByRole('link', { name: 'Source 1' }).first().waitFor()
   assert.ok(await owner.getByRole('heading', { name: 'Sources' }).isVisible())
+  await owner.getByRole('button', { name: 'Plant this' }).first().click()
+  await owner.getByLabel('How many').fill('6')
+  await owner.getByLabel('Where').fill('Bed 1')
+  await owner.getByRole('button', { name: 'Save planting' }).click()
+  await owner.getByText('Added to your plantings').waitFor()
   await owner.getByLabel('Back').click()
   await owner.getByRole('link', { name: 'Where the crop data comes from' }).click()
   await owner.getByRole('heading', { name: 'Included in CropStack' }).waitFor()
   step('crop catalog: search, detail with sources, credits')
+
+  // The planting is listed on the Garden page and moves along
+  await owner.goto(`${base}/garden`)
+  await owner.getByRole('heading', { name: 'Plantings' }).waitFor()
+  await owner.getByText('6 planted · Bed 1').waitFor()
+  await owner.getByRole('button', { name: 'Mark sown' }).click()
+  await owner.getByText('Sown', { exact: true }).waitFor()
+  step('plant from a window, list and advance')
 
   // Settings: start screen and units persist after a reload
   await owner.goto(`${base}/settings`)

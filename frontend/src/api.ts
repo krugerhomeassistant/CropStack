@@ -82,6 +82,19 @@ export type CropWindows =
       /** Seedlings raised indoors and set out; dates are set-out dates. */
       transplant?: SowAnalysis & { age_days: number }
     } & SowAnalysis)
+export type PlantingStatus = 'planned' | 'sown' | 'germinated' | 'transplanted' | 'harvesting' | 'finished' | 'failed'
+export type Planting = {
+  id: number
+  crop: string
+  method: 'direct' | 'transplant'
+  status: PlantingStatus
+  start_date: string
+  set_out_date: string | null
+  quantity: number
+  location: string
+  notes: string
+}
+export type PlantingIn = Pick<Planting, 'crop' | 'method' | 'start_date' | 'set_out_date' | 'quantity' | 'location' | 'notes'>
 export type Probability = { var: string; days: number[]; years: string }
 
 export type DayWeather = {
@@ -209,6 +222,11 @@ export const api = {
   probability: (name: string, op: 'le' | 'ge', x: number) =>
     request<Probability>('GET', `/sites/current/climate/probability?var=${name}&op=${op}&x=${x}`),
   cropWindows: (slug: string) => request<CropWindows>('GET', `/crops/${encodeURIComponent(slug)}/windows`),
+  plantings: () => request<Planting[]>('GET', '/plantings'),
+  addPlanting: (body: PlantingIn) => request<Planting>('POST', '/plantings', body),
+  updatePlanting: (id: number, body: Partial<Pick<Planting, 'status' | 'quantity' | 'location' | 'notes'>>) =>
+    request<Planting>('PATCH', `/plantings/${id}`, body),
+  deletePlanting: (id: number) => request<null>('DELETE', `/plantings/${id}`),
   savePrefs: (prefs: Prefs) => request<Prefs>('PUT', '/auth/prefs', prefs),
   weather: () => request<Weather>('GET', '/sites/current/weather'),
   householdSettings: () => request<HouseholdSettings>('GET', '/household/settings'),

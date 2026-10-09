@@ -1,6 +1,6 @@
 """Database tables."""
 
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime
 from typing import Any
 
 from sqlalchemy import JSON, Column
@@ -113,3 +113,20 @@ class Forecast(SQLModel, table=True):
     longitude: float
     raw: dict[str, Any] = Field(sa_column=Column(JSON, nullable=False))
     fetched_at: datetime = Field(default_factory=now)
+
+
+class Planting(SQLModel, table=True):
+    """Something the household has planted or means to: a crop, how, when, how many, and how it is getting on."""
+
+    id: int | None = Field(default=None, primary_key=True)
+    household_id: int = Field(foreign_key="household.id", ondelete="CASCADE", index=True)
+    crop: str  # catalog crop slug
+    method: str  # "direct" or "transplant"
+    status: str = "planned"  # planned, sown, germinated, transplanted, harvesting, finished, failed
+    start_date: date  # when it is (or will be) sown: in the ground, or indoors for a transplant
+    set_out_date: date | None = None  # transplants only
+    quantity: int = 1
+    location: str = ""  # free text until beds exist (PLAN Phase 8)
+    notes: str = ""
+    created_by: int | None = Field(default=None, foreign_key="user.id", ondelete="SET NULL")
+    created_at: datetime = Field(default_factory=now)

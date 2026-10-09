@@ -5,6 +5,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.16.0] - 2026-10-09
+
+### Added
+- **Plantings.** On a crop page, *Plant this* fills in the best date from the sowing or set-out window and records what you are planting, how many and where. The Garden tab lists your plantings and lets you move each one along (sown, up, set out, harvesting, finished) or mark it failed. Viewers can see plantings but not change them.
+
+### Development
+- `planting` table (migration 0007) and `/api/v1/plantings` (list, add, update, delete) with forward-only status rules.
+
 ## [0.15.0] - 2026-10-09
 
 ### Added
