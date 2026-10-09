@@ -11,7 +11,7 @@
 - [x] README, CHANGELOG, CONTRIBUTING, SECURITY, CODE_OF_CONDUCT, LICENSE
 - [x] Living docs in `docs/`
 - [x] Create GitHub repo and push `main` (rebased on GitHub's LICENSE commit)
-- [ ] User: after first CI run, set GHCR package `cropstack` visibility to Public
+- [x] GHCR image `cropstack` is publicly pullable (verified anonymous manifest fetch, 2026-10-09)
 - [x] ZimaOS compose (`docker-compose.zimaos.yml`, /DATA/AppData/cropstack, 256 MiB) + README guide incl. updating
 - [ ] User: install on ZimaOS
 - [ ] Verify `docker compose up -d --build` on the user's host
@@ -29,6 +29,7 @@
 - [ ] `climate.py` pure functions: zone, LSF/FFF at a probability, season length, daylight curve
 - [ ] Geocoding for postal codes (Open-Meteo / Nominatim), cached in DB
 - [ ] Tests with fixed fixtures (no network)
+- [ ] Southern Hemisphere support (frost season Jun–Aug) and non-US zones (compute zone from local extreme-minimum temperature)
 
 ## Phase 3 — Encyclopedia & task engine (v0.4.0)
 - [ ] Plant data schema (When/How/What), seed dataset (start with ~40 common crops), licence-checked sources
