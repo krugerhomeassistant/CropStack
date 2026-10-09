@@ -5,6 +5,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-10-09
+
 ### Added
 - **Households**: invite your family with a link (member, viewer or owner). Everyone shares the same garden; members do the daily work, viewers can only look, owners manage the garden location and people. Invite links work once, expire after 7 days and work even when public sign-up is closed.
 - Sign-up asks for your name.
@@ -49,7 +51,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - CI: ruff lint and format, backend tests, frontend build, image publishing to GHCR and automatic GitHub releases on a version bump.
 - Project docs: README, wiki, architecture, roadmap, contributing guide, security policy and Code of Conduct.
 
-[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.1.0...v0.2.0

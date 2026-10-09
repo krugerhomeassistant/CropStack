@@ -1,16 +1,16 @@
 # ACTIVE CONTEXT
 
-**Date:** 2026-10-09 · **Version:** 0.4.0 (code) · Spec v1 draft
+**Date:** 2026-10-09 · **Version:** 0.5.0
 
 ## Current subtask
-Specification and roadmap written after user feedback: fully dynamic (no presets/modes/regions), action-first Today screen for the household (wife: what to plant, water, feed, harvest; what to look for; keep or remove), climate as charts on a secondary page (for the user), guided setup interview (space, water, people, diet, time, budget), layout editor, plan generator, animals with calendars.
+Phase 3 (platform) released as v0.5.0: Alembic migrations (0001 baseline, 0002 households/sites, 0003 user prefs), households with roles + invite links, app shell (Today · Garden · More), personal settings (start screen, units), /api/v1, translation layer.
 
 ## Last execution results
-- `docs/SPEC.md` (sections 0–19, principles P1–P9, acceptance criteria AC-P1…P8) and `docs/PLAN.md` (Phases 3–14, atomic tasks) written; README features/roadmap rewritten to match; WIKI/ARCHITECTURE/RESOURCES/TOOLING/LESSONS updated.
-- No code changes in this step. Backend 33/33 and CI green as of v0.4.0.
+- Backend 45/45, ruff clean, frontend build OK. Migration tests upgrade real v0.2.0/v0.4.0 schemas (fixtures from git tags) and prove the foreign-keys-off guard prevents cascade deletes. Playwright E2E: owner signup → setup → Today; settings (imperial, start = climate) persist; invite → wife joins, sees Today, no edit controls, no invite section.
+- One unreproduced test error seen once during 3.3 (passed 7 reruns); watch CI.
 
 ## Blockers
-- None. Open questions listed in SPEC §19 (multi-site timing, seasonal tilt default, catalog contribution, pasture model, language order).
+- Phase 3.4 (catalog storage) and Phase 5 (catalog content) wait for the user's separate deep-research chat on data sources and storage.
 
 ## Immediate next step
-User reviews SPEC/PLAN. Then start PLAN Phase 3.1 (Alembic baseline matching `user`, `garden`, `climatecache`; entrypoint runs `alembic upgrade head`; migration test from a v0.4.0 DB fixture).
+Phase 4.1: environment engine v2 (DOY distributions with recency weighting/trend; query API prob/gdd/chill/water_balance; numpy decision: check arm64 wheel + RAM). Independent of the catalog research.
