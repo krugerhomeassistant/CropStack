@@ -1,0 +1,13 @@
+services:
+  cropstack:
+    image: ghcr.io/krugerhomeassistant/cropstack:latest   # prebuilt; `--build` builds locally instead
+    build: .
+    container_name: cropstack
+    restart: unless-stopped
+    ports:
+      - "${CROPSTACK_PORT:-8430}:8000"
+    env_file:
+      - path: .env
+        required: false   # optional; copy .env.example to customise
+    volumes:
+      - ./data:/data

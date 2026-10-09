@@ -1,0 +1,16 @@
+# Tooling config only (the backend is not packaged). Versions live in backend/app/__init__.py
+# and frontend/package.json; change them with scripts/bump.py.
+[tool.ruff]
+line-length = 120
+target-version = "py313"
+extend-exclude = ["frontend"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "SIM", "ASYNC", "RUF"]
+ignore = ["E501", "B008"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["app"]
+
+[tool.pytest.ini_options]
+testpaths = ["backend/tests"]
