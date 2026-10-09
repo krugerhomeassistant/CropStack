@@ -41,3 +41,4 @@ CropStack-specific:
 31. **React Router 8 removed `react-router-dom`** → import everything from `react-router` (DOM bits from `react-router/dom`); needs React ≥ 19.2.7 and Node ≥ 22.22.
 32. **Settings radios jumped back after a click** → controlled by the server value, which only changed after save + reload → keep a local optimistic copy, revert on error.
 33. **Playwright `count()` right after a nav click returned 0** → `count()` doesn't wait → wait for the destination's heading first, then count.
+34. **Syncing the E: copy with `cp -rT fresh_clone E:\…\CropStack` left a deleted file behind (`Home.tsx`)** → copy only adds/overwrites; deletion is off in connected folders → after each sync run `git status --short` there and move `??` leftovers into `E:\Projects\Personal\_to_delete\` (user deletes).
