@@ -337,3 +337,9 @@ Owner idea 2026-10-10: a slow real-time game that is also the garden tracker. Pi
 - [ ] Multi-site UI (data model already supports it)
 - [ ] Catalog sharing (export/import custom crops, community packs)
 - [ ] Equipment & maintenance tracking
+
+## Phase 13 — Pantry and meals
+- [x] (v0.37.0) Pantry: put-by food with method, amount, use-by (generic shelf life per method), location, use-first list.
+- [ ] Storage life per crop and method from USDA AH-66 (registered source) instead of the generic default; freezer and canning batch tracking with batch labels.
+- [ ] Link a pantry item to the harvest it came from; "what can I preserve now" from current harvests; recipes for the harvest (assistant).
+- [ ] Mealie integration (owner does not run Mealie yet): read recipes and meal plans through Mealie's REST API, suggest meals from pantry and harvest, push shopping lists for what the garden cannot supply.

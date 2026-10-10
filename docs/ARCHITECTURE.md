@@ -123,3 +123,5 @@ Planned: `bed`; `planting.location` becomes a bed reference with the layout edit
 | `merge.py` | records → cited `Value` dicts; merge rule (empty or same-source fields only); YAML dump (flow style for small flat maps, no anchors) |
 | `crosswalk.yaml` | crop slug → each source's row name |
 
+
+| `routers/pantry.py` | `GET/POST /pantry`, `PATCH/DELETE /pantry/{id}`; table `pantryitem` (migration 0015) |

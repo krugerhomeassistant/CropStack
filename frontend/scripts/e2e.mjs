@@ -288,6 +288,18 @@ try {
   assert.equal(await member.getByRole('heading', { name: 'Invite someone' }).count(), 0)
   step('member joins by invite with member rights')
 
+  // Pantry: put food by, see it, use one
+  await owner.goto(`${base}/pantry`)
+  await owner.getByRole('button', { name: 'Add food' }).click()
+  await owner.getByLabel('What is it?').fill('Tomato sauce')
+  await owner.getByLabel('Amount').fill('2')
+  await owner.getByRole('button', { name: 'Add to pantry' }).click()
+  await owner.getByText(/2 jars · Use by/).waitFor()
+  await owner.getByRole('button', { name: 'Use one Tomato sauce' }).click()
+  await owner.getByText(/1 jars · Use by/).waitFor()
+  step('pantry: add food, use one')
+  await owner.goto(`${base}/household`)
+
   // Owner: change the member's role, then remove them
   await owner.reload()
   await owner.getByLabel('Role for Marie').selectOption('viewer')

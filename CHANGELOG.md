@@ -5,6 +5,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.37.0] - 2026-10-10
+
+### Added
+- **Pantry** (More → Pantry): record preserved and stored food (canned, frozen, dried, fermented, cellar, fresh) with amount, date put by, use-by date and where it is. A use-by date is worked out from how it is kept when you leave it blank. Anything due within a month or past its date is listed first under "Use first"; "Use one" counts it down and removes it at zero.
+
 ## [0.36.0] - 2026-10-10
 
 ### Added

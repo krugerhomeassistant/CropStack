@@ -131,3 +131,6 @@ Plant tab → Draft a year plan. The drafter takes every crop whose sowing windo
 
 ## Job details (v0.35.0)
 Every sow, set-out, harvest and water job shows facts from its crop's catalog entry (`crop_facts.job_facts`): spacing, thinning, germination soil temperature, days to emerge, light, cycle. Values missing from the catalog are simply left out; fix them in `catalog/crops/<crop>.yaml`.
+
+## Pantry (v0.37.0)
+More → Pantry. Each item: what, how it is kept, amount and unit, put-by date, optional use-by date (default: canned 12 months, frozen 9, dried 12, fermented 6, cellar 3, fresh 7 days), place. Sorted by use-by; items due within 30 days or past date appear under Use first.

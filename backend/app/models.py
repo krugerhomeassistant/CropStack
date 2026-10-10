@@ -204,3 +204,21 @@ class Harvest(SQLModel, table=True):
     notes: str = ""
     created_by: int | None = Field(default=None, foreign_key="user.id", ondelete="SET NULL")
     created_at: datetime = Field(default_factory=now)
+
+
+class PantryItem(SQLModel, table=True):
+    """Food that has been put by: jars, bags, a crate in the cellar. Why: use it before it spoils (PLAN 13)."""
+
+    id: int | None = Field(default=None, primary_key=True)
+    household_id: int = Field(foreign_key="household.id", ondelete="CASCADE", index=True)
+    name: str
+    method: str  # canned, frozen, dried, fermented, cellar or fresh
+    crop: str = ""  # catalog slug when it came from a crop
+    quantity: float
+    unit: str  # jars, bags, kg, g, litres or count
+    made_on: date
+    best_before: date | None = None
+    location: str = ""
+    notes: str = ""
+    created_by: int | None = Field(default=None, foreign_key="user.id", ondelete="SET NULL")
+    created_at: datetime = Field(default_factory=now)

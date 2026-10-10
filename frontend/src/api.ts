@@ -123,6 +123,21 @@ export type PlanItem = {
   until: string
 }
 export type YearPlan = { garden: boolean; beds: boolean; items: PlanItem[] }
+export type PantryMethod = 'canned' | 'frozen' | 'dried' | 'fermented' | 'cellar' | 'fresh'
+export type PantryItem = {
+  id: number
+  name: string
+  method: PantryMethod
+  quantity: number
+  unit: 'jars' | 'bags' | 'kg' | 'g' | 'litres' | 'count'
+  made_on: string
+  best_before: string | null
+  location: string
+  notes: string
+  days_left: number | null
+  state: 'ok' | 'soon' | 'past'
+}
+export type PantryIn = Pick<PantryItem, 'name' | 'method' | 'quantity' | 'unit' | 'made_on' | 'location' | 'notes'> & { best_before?: string | null }
 export type BedKind = 'bed' | 'container' | 'row'
 export type Bed = {
   id: number
@@ -352,6 +367,10 @@ export const api = {
   updatePlanting: (id: number, body: Partial<Pick<Planting, 'status' | 'start_date' | 'set_out_date' | 'quantity' | 'location' | 'bed_id' | 'cells' | 'ends_on' | 'notes'>>) =>
     request<Planting>('PATCH', `/plantings/${id}`, body),
   deletePlanting: (id: number) => request<null>('DELETE', `/plantings/${id}`),
+  pantry: () => request<PantryItem[]>('GET', '/pantry'),
+  addPantry: (body: PantryIn) => request<PantryItem>('POST', '/pantry', body),
+  updatePantry: (id: number, body: Partial<Pick<PantryItem, 'name' | 'quantity' | 'best_before' | 'location' | 'notes'>>) => request<PantryItem>('PATCH', `/pantry/${id}`, body),
+  deletePantry: (id: number) => request<null>('DELETE', `/pantry/${id}`),
   yearPlan: () => request<YearPlan>('GET', '/plan/year'),
   acceptPlan: (items: PlantingIn[]) => request<{ created: number }>('POST', '/plan/year', items),
   recommendations: () => request<Recommendations>('GET', '/recommendations'),

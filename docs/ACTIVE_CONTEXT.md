@@ -52,3 +52,6 @@ Plan facelift (cells + icons per bed), crop-specific job facts (`app/crop_facts.
 
 ## v0.36.0
 sow_depth param (estimate) for 53 crops; Today job cards compact with Details. Next: pests/diseases per crop, needs model, Climate/Crops/More windows, move planting + undo.
+
+## v0.37.0
+Pantry shipped. Owner asked (2026-10-10) for a complete redo of the planner visuals: it looks poor next to the rest of the app. Mealie later.

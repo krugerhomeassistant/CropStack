@@ -214,3 +214,21 @@ def test_many_plantings_at_once_all_succeed(owner):  # noqa: F811
     with ThreadPoolExecutor(8) as pool:
         codes = list(pool.map(lambda i: plant(owner, bed["id"], [[i, 0]], "2026-10-01").status_code, range(12)))
     assert codes == [201] * 12  # job planning is serialised, so no unique-key clash
+
+
+def test_pantry_orders_by_what_to_use_first_and_defaults_a_best_before(owner):  # noqa: F811
+    from datetime import timedelta
+
+    today = datetime.now(UTC).date()
+    jar = {"name": "Tomato sauce", "method": "canned", "quantity": 6, "unit": "jars", "made_on": str(today)}
+    made = owner.post("/api/v1/pantry", json=jar).json()
+    assert made["best_before"] == str(today + timedelta(days=365)) and made["state"] == "ok"
+    soon = owner.post(
+        "/api/v1/pantry", json=jar | {"name": "Peas", "method": "frozen", "best_before": str(today + timedelta(days=5))}
+    )
+    assert soon.json()["state"] == "soon"
+    assert [i["name"] for i in owner.get("/api/v1/pantry").json()] == ["Peas", "Tomato sauce"]
+    assert owner.patch(f"/api/v1/pantry/{made['id']}", json={"quantity": 5}).json()["quantity"] == 5
+    assert owner.post("/api/v1/pantry", json=jar | {"quantity": 0}).status_code == 422
+    assert owner.delete(f"/api/v1/pantry/{made['id']}").status_code == 204
+    assert len(owner.get("/api/v1/pantry").json()) == 1

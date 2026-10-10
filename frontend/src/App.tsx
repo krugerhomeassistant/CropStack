@@ -12,6 +12,7 @@ import Crops from './pages/Crops'
 import GardenPage from './pages/Garden'
 import GardenSetup from './pages/GardenSetup'
 import Household from './pages/Household'
+import Pantry from './pages/Pantry'
 import More from './pages/More'
 import Ask from './pages/Ask'
 import Settings from './pages/Settings'
@@ -162,6 +163,7 @@ export default function App() {
               <Route path="/crops/:slug" element={<Crop />} />
               <Route path="/crop-data" element={<CropData />} />
               <Route path="/household" element={<Household />} />
+              <Route path="/pantry" element={<Pantry />} />
               <Route path="/ask" element={<Ask />} />
               <Route path="/settings" element={<Settings />} />
             </Route>
