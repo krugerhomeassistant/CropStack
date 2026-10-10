@@ -5,6 +5,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.28.1] - 2026-10-10
+
+### Changed
+- The AI feature is now called the **garden assistant** (Settings and Ask) instead of the co-pilot.
+
 ## [0.28.0] - 2026-10-10
 
 ### Added

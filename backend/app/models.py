@@ -41,7 +41,7 @@ class Household(SQLModel, table=True):
     created_at: datetime = Field(default_factory=now)
     # Household-wide switches (data sources); validated by routers.household.HouseholdSettings.
     settings: dict[str, Any] = Field(default_factory=dict, sa_column=Column(JSON, nullable=False, server_default="{}"))
-    # The AI co-pilot's provider, model and key (routers.ai); the key never leaves the server.
+    # The garden assistant's provider, model and key (routers.ai); the key never leaves the server.
     ai: dict[str, Any] = Field(default_factory=dict, sa_column=Column(JSON, nullable=False, server_default="{}"))
 
 

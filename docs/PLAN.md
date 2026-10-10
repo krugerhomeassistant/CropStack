@@ -245,7 +245,7 @@ Goal: probabilistic, self-updating environment; remove v1 heuristics (§18).
 - [ ] HACS custom integration (config flow, calendar + todo entities, services: complete task, log harvest, log observation), Platinum-quality patterns from Bloomery.
 - [ ] Irrigation request events per bed/zone (litres/minutes) for HA automations.
 
-## Phase 13 — AI co-pilot §12.4
+## Phase 13 — Garden assistant §12.4
 - [x] (v0.28.0: Bloomery repo not reachable from the sandbox, so written fresh; Ollama, OpenAI-compatible, Anthropic; key in plain text in SQLite) Provider abstraction, settings UI, key never returned.
 - [~] (v0.28.0: plain-text context of site, plantings, open jobs; no tools, no streaming, no stored history) Grounded context builder + read-only tools (catalog, environment probabilities, plantings, tasks).
 - [ ] Chat; photo diagnosis → organism candidates with confidence, verdict, actions, follow-up task; preservation recipes from pantry; draft custom profiles for review.

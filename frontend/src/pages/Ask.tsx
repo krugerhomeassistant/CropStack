@@ -6,7 +6,7 @@ import { t } from '../i18n'
 import { useApp } from '../state'
 import { Button, EmptyState, ErrorMessage, PageHeader, Section } from '../components/ui'
 
-/** Ask the garden co-pilot: the model sees the garden's place, soil, plantings and open jobs, and can only advise. */
+/** Ask the garden assistant: the model sees the garden's place, soil, plantings and open jobs, and can only advise. */
 export default function Ask() {
   const { user } = useApp()
   const [config, setConfig] = useState<AiConfig | null>(null)
@@ -42,7 +42,7 @@ export default function Ask() {
       <PageHeader title={t('Ask')} subtitle={t('Questions about your garden, answered from what CropStack knows about it.')} back />
       {error && <ErrorMessage>{error}</ErrorMessage>}
       {config && !config.configured ? (
-        <EmptyState icon={Sparkles} title={t('The AI co-pilot is off')}>
+        <EmptyState icon={Sparkles} title={t('The garden assistant is off')}>
           {user.role === 'owner' ? (
             <Link to="/settings" className="font-semibold underline">
               {t('Choose a service and add a key in Settings')}

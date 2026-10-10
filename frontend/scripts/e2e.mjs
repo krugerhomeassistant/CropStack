@@ -168,9 +168,9 @@ try {
   await owner.getByRole('heading', { name: 'Sow lettuce (3) in Bed 2' }).waitFor({ state: 'detached' })
   step('Today shows the due job and finishing it moves the planting')
 
-  // AI co-pilot: off until an owner picks a service; the key is saved but never shown again
+  // Garden assistant: off until an owner picks a service; the key is saved but never shown again
   await owner.goto(`${base}/ask`)
-  await owner.getByText('The AI co-pilot is off').waitFor()
+  await owner.getByText('The garden assistant is off').waitFor()
   await owner.goto(`${base}/settings`)
   await owner.getByLabel('Service').selectOption('openai')
   await owner.getByLabel('Model').fill('test-model')
@@ -182,12 +182,12 @@ try {
   await owner.goto(`${base}/ask`)
   await owner.getByLabel('Your question').waitFor()
   await owner.request.delete(`${base}/api/v1/ai`)
-  step('AI co-pilot: set up in Settings, key never shown')
+  step('Garden assistant: set up in Settings, key never shown')
 
   // Settings: start screen and units persist after a reload
   await owner.goto(`${base}/settings`)
   await owner.getByLabel(/Imperial/).check()
-  await owner.getByLabel(/^Garden/).check()
+  await owner.getByRole('radio', { name: /^Garden / }).check()
   await owner.waitForTimeout(400)
   await owner.goto(base)
   await owner.waitForURL(/\/garden$/)

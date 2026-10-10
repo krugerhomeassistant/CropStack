@@ -1,4 +1,4 @@
-"""The household's AI co-pilot settings."""
+"""The household's Garden assistant settings."""
 
 from collections.abc import Sequence
 

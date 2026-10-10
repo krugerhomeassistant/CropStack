@@ -9,7 +9,7 @@ const PROVIDERS: { value: AiProvider; label: string }[] = [
   { value: 'anthropic', label: 'Anthropic (Claude)' },
 ]
 
-/** Settings → AI co-pilot (owners): which service answers questions in Ask, and its key. The key is never shown again. */
+/** Settings → Garden assistant (owners): which service answers questions in Ask, and its key. The key is never shown again. */
 export default function AiSettings() {
   const [config, setConfig] = useState<AiConfig | null>(null)
   const [provider, setProvider] = useState<AiProvider>('ollama')
@@ -41,7 +41,7 @@ export default function AiSettings() {
   if (!config) return error ? <ErrorMessage>{error}</ErrorMessage> : null
   return (
     <Section
-      title={t('AI co-pilot')}
+      title={t('Garden assistant')}
       description={t('Optional. Questions in Ask go to the service you choose here; nothing is sent until someone asks.')}
     >
       {error && <ErrorMessage>{error}</ErrorMessage>}

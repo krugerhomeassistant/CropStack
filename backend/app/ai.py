@@ -1,4 +1,4 @@
-"""The AI co-pilot's provider calls: Ollama (local), any OpenAI-compatible API, or Anthropic.
+"""The garden assistant's provider calls: Ollama (local), any OpenAI-compatible API, or Anthropic.
 
 `build_request` and `parse_reply` are pure so each provider's wire format is tested without a network.
 """

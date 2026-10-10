@@ -148,7 +148,7 @@ def data_sources(me: MemberDep, db: SessionDep) -> list[dict]:
                 ),
                 "url": household.ai.get("base_url") or DEFAULT_AI_URL[provider],
                 "sends": "Your question, plus the garden's place, soil, plantings and open jobs",
-                "when": "Only when someone asks the co-pilot" + ("" if local else " (leaves your server)"),
+                "when": "Only when someone asks the assistant" + ("" if local else " (leaves your server)"),
                 "used_for": "Answers in Ask",
                 "licence": "Provider terms",
                 "switch": None,

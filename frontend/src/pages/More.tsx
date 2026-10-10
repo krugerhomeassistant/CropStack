@@ -8,7 +8,7 @@ import { PageHeader } from '../components/ui'
 const LINKS = [
   { to: '/crops', label: 'Crops', hint: 'Sowing, water and spacing for each crop, with sources', icon: BookOpen },
   { to: '/climate', label: 'Climate', hint: 'Temperatures, rain, frost and daylight through the year', icon: ChartLine },
-  { to: '/ask', label: 'Ask', hint: 'Garden questions answered by an AI co-pilot', icon: Sparkles },
+  { to: '/ask', label: 'Ask', hint: 'Garden questions answered by the garden assistant', icon: Sparkles },
   { to: '/household', label: 'Household', hint: 'People, roles and invites', icon: Users },
   { to: '/settings', label: 'Settings', hint: 'Start screen, units and data sources', icon: SettingsIcon },
 ]

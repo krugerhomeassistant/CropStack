@@ -6,7 +6,7 @@ body:
     id: area
     attributes:
       label: Where
-      options: [CropStack app, Docker / install, Climate & calendar, Plant encyclopedia, Garden mapper, Home Assistant, AI co-pilot]
+      options: [CropStack app, Docker / install, Climate & calendar, Plant encyclopedia, Garden mapper, Home Assistant, Garden assistant]
     validations: { required: true }
   - type: input
     id: version

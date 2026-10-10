@@ -11,7 +11,7 @@ Browser/PWA ──HTTP──▶ cropstack container :8000 (host :8430)
 ```
 Single image, multi-stage: `node:24-alpine` builds the SPA → `python:3.14-slim` runtime. `entrypoint.sh` starts as root, chowns `$CROPSTACK_DATA_DIR`, then drops to uid 10001 via `setpriv`. One uvicorn worker, access log off, `--proxy-headers` for reverse proxies.
 
-Target architecture (engines, data model, API) is specified in `docs/SPEC.md` §13–15. Planned optional services: weather API client (httpx), MQTT client for Home Assistant, Ollama (compose profile `ai`) or OpenAI-compatible API for the co-pilot. Postgres is an option only if multi-user scale demands it; SQLite is the default.
+Target architecture (engines, data model, API) is specified in `docs/SPEC.md` §13–15. Planned optional services: weather API client (httpx), MQTT client for Home Assistant, Ollama (compose profile `ai`) or OpenAI-compatible API for the assistant. Postgres is an option only if multi-user scale demands it; SQLite is the default.
 
 ## Stack (pinned 2026-10-09)
 | Layer | Tech |

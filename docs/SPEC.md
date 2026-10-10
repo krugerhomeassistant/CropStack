@@ -20,7 +20,7 @@ Keywords **MUST / SHOULD / MAY** follow RFC 2119.
 9. Planning: needs-based plan generator, calendar & task engine
 10. Records: harvests, pantry & preservation, seed vault, inputs, health
 11. App experience: Today, scouting guide, climate explorer, navigation
-12. Integrations: Home Assistant, iCalendar, notifications, AI co-pilot
+12. Integrations: Home Assistant, iCalendar, notifications, Garden assistant
 13. Data model
 14. API
 15. Non-functional requirements
@@ -323,7 +323,7 @@ Bottom navigation (mobile) / sidebar (desktop): **Today · Calendar · Garden** 
 - **Organism catalog** (part of the catalog, same override rules): pests, diseases, beneficial insects and animals, pollinators, weeds, volunteer seedlings, nutrient deficiency patterns. Each entry: how to recognise it (key features, look-alikes, where on the plant, photos with licence), life cycle, which crops it affects or helps, **verdict with context** (keep / remove / tolerate below a threshold: e.g. "a few aphids with ladybird larvae present: keep, the larvae will clear them"), actions ranked least-harm first (hand-pick, water spray, barrier, encourage predators, organic product, conventional product, only shown per the household's preference), and safety notes (pets, bees, withholding periods).
 - **Weekly "what to look for"**: per planting, the organisms whose risk is high now: pest degree-day models and weather-driven disease models (e.g. warm + humid hours for fungal disease) × crop stage. Shown in Today under **Check** with photos.
 - **Weed or seedling?**: for beds with recent sowings, show what the sown seedlings look like at their current age next to common weeds for that season.
-- **Identify**: browse by symptom (holes in leaves, yellowing between veins, white powder, wilting) or, with the AI co-pilot enabled, by photo (12.4), always ending in a verdict + actions + "check again in N days" task.
+- **Identify**: browse by symptom (holes in leaves, yellowing between veins, white powder, wilting) or, with the garden assistant enabled, by photo (12.4), always ending in a verdict + actions + "check again in N days" task.
 - **Logging**: sightings are recorded (observation) and feed local risk calibration ("aphids appear here ~10 days earlier than the model").
 
 ### 11.4 Climate explorer (secondary page)
@@ -348,8 +348,8 @@ Channels: Web Push (HTTPS installs), ntfy, Gotify, Home Assistant, Discord, emai
 ### 12.3 iCalendar
 See 9.
 
-### 12.4 AI co-pilot (optional)
-Providers: Ollama (local), OpenAI-compatible, Anthropic (Bloomery `ai.py` pattern). The co-pilot is **grounded**: it receives the household's structured context (site environment summary, plantings, animals, open tasks, recent records) and can call read-only tools (query catalog, query environment probabilities). Uses: natural-language questions, photo diagnosis (vision models) of pests/deficiencies/disease with confidence and "verify by" steps, preservation recipes from current pantry/harvest, drafting custom crop/breed profiles for user review. The AI never changes data without user confirmation.
+### 12.4 Garden assistant (optional)
+Providers: Ollama (local), OpenAI-compatible, Anthropic (Bloomery `ai.py` pattern). The assistant is **grounded**: it receives the household's structured context (site environment summary, plantings, animals, open tasks, recent records) and can call read-only tools (query catalog, query environment probabilities). Uses: natural-language questions, photo diagnosis (vision models) of pests/deficiencies/disease with confidence and "verify by" steps, preservation recipes from current pantry/harvest, drafting custom crop/breed profiles for user review. The AI never changes data without user confirmation.
 
 ## 13. Data model (target)
 

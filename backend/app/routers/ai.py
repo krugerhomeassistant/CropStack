@@ -1,4 +1,4 @@
-"""The AI co-pilot (SPEC §12.4): the owner picks a provider; members ask questions grounded in the garden.
+"""The garden assistant (SPEC §12.4): the owner picks a provider; members ask questions grounded in the garden.
 
 The key lives in the household row on the server and is never sent back to the browser.
 """
@@ -16,7 +16,7 @@ from ..models import Household, Planting, Site, Task
 router = APIRouter(prefix="/api/v1/ai", tags=["ai"])
 
 SYSTEM = (
-    "You are the garden co-pilot of CropStack, a home garden and homestead planner. Answer briefly and practically "
+    "You are the garden assistant of CropStack, a home garden and homestead planner. Answer briefly and practically "
     "for this household's garden. Use the garden facts below; say so when you are unsure or when a local "
     "extension service should be asked. Never claim to have changed anything: you can only advise.\n\n"
 )
@@ -58,12 +58,12 @@ def _public(household: Household) -> dict:
 
 def _configured(household: Household) -> dict:
     if not household.ai.get("provider"):
-        raise HTTPException(409, "The AI co-pilot is not set up yet. An owner can do it in Settings.")
+        raise HTTPException(409, "The garden assistant is not set up yet. An owner can do it in Settings.")
     return household.ai
 
 
 def context(db, household_id: int) -> str:
-    """What the co-pilot may know: the site, the plantings and the open jobs. No names, no account data."""
+    """What the assistant may know: the site, the plantings and the open jobs. No names, no account data."""
     site = db.exec(select(Site).where(Site.household_id == household_id)).first()
     lines = (
         [f"Garden: {site.name} at {site.latitude:.2f}, {site.longitude:.2f}; soil: {site.soil or 'unknown'}"]
