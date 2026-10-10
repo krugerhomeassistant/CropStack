@@ -4,6 +4,7 @@ import { api, type Bed, type CropSummary, type Placement, type PlanItem, type Re
 import { t } from '../i18n'
 import { useApp } from '../state'
 import { CropSheet, toRequest, type PlantRequest } from './Recommendations'
+import { cropIcon } from './cropIcon'
 import { Button, ErrorMessage, Field, IconButton } from './ui'
 
 const iso = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
@@ -285,8 +286,13 @@ export default function BedGrid({
                   strokeDasharray={marked || g ? '0.15 0.1' : undefined}
                 />
                 {(p[0] || g) && (
-                  <text x={c + 0.5} y={r + 0.6} textAnchor="middle" fontSize={0.32} className="pointer-events-none fill-ink">
-                    {(p[0]?.name ?? g!.name).slice(0, 4)}
+                  <text textAnchor="middle" className="pointer-events-none fill-ink">
+                    <tspan x={c + 0.5} y={r + 0.52} fontSize={0.4}>
+                      {cropIcon((p[0] ?? g!).crop)}
+                    </tspan>
+                    <tspan x={c + 0.5} y={r + 0.82} fontSize={0.2}>
+                      {(p[0]?.name ?? g!.name).slice(0, 6)}
+                    </tspan>
                   </text>
                 )}
               </g>

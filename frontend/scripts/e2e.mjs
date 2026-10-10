@@ -209,7 +209,8 @@ try {
   await nav(owner, 'Today')
   await owner.getByRole('heading', { name: 'Sow lettuce (3) in Bed 2' }).waitFor()
   await owner.getByText('You planned to sow on').first().waitFor()
-  await owner.getByText('How to do it').first().click()
+  await owner.getByText('Space plants').first().waitFor() // facts come from the lettuce entry
+  await owner.getByText('General steps').first().click()
   await owner.getByText(/Firm the soil gently/).first().waitFor()
   await owner.getByRole('listitem').filter({ has: owner.getByRole('heading', { name: 'Sow lettuce (3) in Bed 2' }) }).getByRole('button', { name: 'Mark sown' }).click()
   await owner.getByRole('heading', { name: 'Sow lettuce (3) in Bed 2' }).waitFor({ state: 'detached' })

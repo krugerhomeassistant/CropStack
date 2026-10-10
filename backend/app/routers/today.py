@@ -9,6 +9,7 @@ from pydantic import BaseModel
 from sqlmodel import Session, select
 
 from .. import catalog as cat
+from ..crop_facts import job_facts
 from .. import scheduler, weather
 from ..db import get_engine
 from ..deps import EditorDep, MemberDep, SessionDep
@@ -141,8 +142,16 @@ def _watch(c: cat.Catalog) -> list[dict]:
     return out
 
 
-def _view(t: Task, today: date, how: dict[str, list[str]], watch: list[dict] | None = None, crop: str = "") -> dict:
+def _view(
+    t: Task,
+    today: date,
+    how: dict[str, list[str]],
+    watch: list[dict] | None = None,
+    crop: str = "",
+    facts: list | None = None,
+) -> dict:
     return {
+        "facts": facts or [],
         "watch": [
             {k: v for k, v in w.items() if k != "hosts"} for w in watch or [] if not w["hosts"] or crop in w["hosts"]
         ]
@@ -178,18 +187,31 @@ def get_today(me: MemberDep, db: SessionDep, c: CatalogDep) -> dict:
     due = [t for t in open_tasks if t.earliest <= today]
     soon = [t for t in open_tasks if today < t.earliest <= today + timedelta(days=UPCOMING_DAYS)]
     how, watch = _how(c), _watch(c)
-    crops = {p.id: p.crop for p in db.exec(select(Planting).where(Planting.household_id == me.household_id))}
+    plantings = {p.id: p for p in db.exec(select(Planting).where(Planting.household_id == me.household_id))}
+    crops = {i: p.crop for i, p in plantings.items()}
+    items: dict[str, dict | None] = {}
+
+    def facts(t: Task) -> list:
+        p = plantings.get(t.planting_id)
+        if p is None:
+            return []
+        if p.crop not in items:
+            items[p.crop] = cat.effective(c, "crop", p.crop, _overrides(db, me.household_id, "crop", p.crop))
+        return job_facts(items[p.crop], t.kind, p.method)
+
     return {
         "date": today,
         "groups": [
             {
                 "group": g,
-                "tasks": [_view(t, today, how, watch, crops.get(t.planting_id, "")) for t in due if t.group == g],
+                "tasks": [
+                    _view(t, today, how, watch, crops.get(t.planting_id, ""), facts(t)) for t in due if t.group == g
+                ],
             }
             for g in GROUPS
             if any(t.group == g for t in due)
         ],
-        "upcoming": [_view(t, today, how, watch, crops.get(t.planting_id, "")) for t in soon],
+        "upcoming": [_view(t, today, how, watch, crops.get(t.planting_id, ""), facts(t)) for t in soon],
     }
 
 

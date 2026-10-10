@@ -46,3 +46,6 @@ Past-dated plantings, key-point sheets, non-destructive bed edits, any cell plan
 
 ## v0.34.0
 Year plan drafter + 31 new crops (60). Next: data depth (varieties, companions from Wikipedia CC BY-SA, pests/diseases, animals), needs model for quantities, rounding of Today/Climate/Crops/More.
+
+## v0.35.0
+Plan facelift (cells + icons per bed), crop-specific job facts (`app/crop_facts.py`). Gap: no sowing depth in the catalog yet (needs a sourced `sow_depth` param); facts are English/°C.

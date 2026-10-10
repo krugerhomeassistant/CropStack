@@ -3,6 +3,7 @@ import { CalendarRange, X } from 'lucide-react'
 import { api, type PlanItem } from '../api'
 import { t } from '../i18n'
 import { useApp } from '../state'
+import { cropIcon } from './cropIcon'
 import { Button, EmptyState, ErrorMessage, IconButton, Section } from './ui'
 
 const day = (s: string) => new Date(`${s}T00:00:00`).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })
@@ -62,7 +63,7 @@ export default function YearPlan({ hasBeds, plan, setPlan, onUsed }: { hasBeds: 
                 <li key={`${i.crop}${i.bed_id}${planted(i)}`} className="flex items-center justify-between gap-3 py-2">
                   <div className="min-w-0">
                     <p className="font-bold">
-                      {i.name} <span className="font-normal text-muted">· {i.bed}</span>
+                      {cropIcon(i.crop)} {i.name} <span className="font-normal text-muted">· {i.bed}</span>
                     </p>
                     <p className="text-sm text-muted">
                       {i.method === 'transplant' ? t('Set out') : t('Sow')} {day(planted(i))} · {t('harvest {from} to {to}', { from: day(i.harvest_from), to: day(i.harvest_to) })} · {t('{n} cells', { n: i.cells.length })}

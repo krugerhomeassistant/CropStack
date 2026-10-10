@@ -3,7 +3,8 @@ import { Circle, MousePointer2, RectangleHorizontal, Rows3, Trash2, type LucideI
 import { api, type Bed, type BedIn, type BedKind, type CropSummary, type PlanItem, type Recommendation } from '../api'
 import { t } from '../i18n'
 import { useApp } from '../state'
-import BedGrid from './BedGrid'
+import BedGrid, { cropColour } from './BedGrid'
+import { cropIcon } from './cropIcon'
 import type { PlantRequest } from './Recommendations'
 import { Button, ErrorMessage, Field, IconButton, Section, Skeleton, Switch } from './ui'
 
@@ -42,6 +43,7 @@ function frames(beds: Bed[]) {
 /** The garden plan, drawn to scale in metres: draw beds by dragging, move or resize them, and group them into layouts. */
 export default function LayoutEditor({ onChange, suggested, request, plan }: { onChange: () => void; suggested: Recommendation[]; request: PlantRequest | null; plan: PlanItem[] }) {
   const { user } = useApp()
+  const today = new Date().toLocaleDateString('sv') // YYYY-MM-DD in local time
   const canEdit = user.role !== 'viewer'
   const [beds, setBeds] = useState<Bed[] | null>(null)
   const [selected, setSelected] = useState<number | null>(null)
@@ -223,22 +225,52 @@ export default function LayoutEditor({ onChange, suggested, request, plan }: { o
             </text>
           </g>
         ))}
-        {beds.map((b) => (
-          <g key={b.id} onPointerDown={(e) => bedDown(e, b)} className={canEdit && tool === 'select' ? 'cursor-grab' : ''}>
-            <rect
-              x={b.x}
-              y={b.y}
-              width={b.width}
-              height={b.length}
-              rx={b.kind === 'container' ? Math.min(b.width, b.length) / 2 : 0.05}
-              className={`${b.crowded ? 'fill-marigold/30 stroke-marigold' : 'fill-leaf/15 stroke-leaf'}`}
-              strokeWidth={b.id === selected ? 0.1 : 0.04}
-            />
-            <text x={b.x + b.width / 2} y={b.y + b.length / 2} textAnchor="middle" fontSize={Math.min(0.35, b.width / 4)} className="fill-ink pointer-events-none select-none">
-              {b.name}
-            </text>
-          </g>
-        ))}
+        {beds.map((b) => {
+          const cell = b.cell_cm / 100
+          const live = b.placements.filter((p) => p.from <= today && today <= p.until)
+          const growing = live.filter((p) => p.status !== 'planned')
+          const waiting = b.placements.filter((p) => p.status === 'planned' || p.from > today)
+          const room = b.length >= 1.4 && b.width >= 1.4
+          return (
+            <g key={b.id} onPointerDown={(e) => bedDown(e, b)} className={canEdit && tool === 'select' ? 'cursor-grab' : ''}>
+              <clipPath id={`clip${b.id}`}>
+                <rect x={b.x} y={b.y} width={b.width} height={b.length} />
+              </clipPath>
+              <rect
+                x={b.x}
+                y={b.y}
+                width={b.width}
+                height={b.length}
+                rx={b.kind === 'container' ? Math.min(b.width, b.length) / 2 : 0.05}
+                className="fill-leaf/10 stroke-leaf"
+                strokeWidth={b.id === selected ? 0.1 : 0.04}
+              />
+              <g clipPath={`url(#clip${b.id})`} className="pointer-events-none">
+                {waiting.flatMap((p) =>
+                  p.cells.map(([c, r]) => (
+                    <rect key={`w${p.planting_id}${c},${r}`} x={b.x + c * cell + 0.03} y={b.y + r * cell + 0.03} width={cell - 0.06} height={cell - 0.06} rx={0.05} fill="none" stroke={cropColour(p.crop)} strokeDasharray="0.12 0.08" strokeWidth={0.04} />
+                  )),
+                )}
+                {growing.flatMap((p) =>
+                  p.cells.map(([c, r]) => (
+                    <rect key={`g${p.planting_id}${c},${r}`} x={b.x + c * cell + 0.03} y={b.y + r * cell + 0.03} width={cell - 0.06} height={cell - 0.06} rx={0.05} fill={cropColour(p.crop)} />
+                  )),
+                )}
+              </g>
+              {b.crowded && <rect x={b.x} y={b.y} width={b.width} height={b.length} rx={0.05} fill="none" className="stroke-marigold pointer-events-none" strokeDasharray="0.2 0.1" strokeWidth={0.06} />}
+              <text x={b.x + b.width / 2} y={b.y + (room ? 0.42 : b.length / 2)} textAnchor="middle" fontSize={Math.min(0.35, b.width / 4)} className="fill-ink pointer-events-none select-none" paintOrder="stroke" stroke="var(--color-surface)" strokeWidth={0.08}>
+                {b.name}
+              </text>
+              {room && (growing.length > 0 || waiting.length > 0) && (
+                <text x={b.x + b.width / 2} y={b.y + b.length - 0.2} textAnchor="middle" fontSize={0.3} className="fill-ink pointer-events-none select-none" paintOrder="stroke" stroke="var(--color-surface)" strokeWidth={0.08}>
+                  {[...new Set(growing.map((p) => cropIcon(p.crop)))].slice(0, 4).join('')}
+                  {growing.length > 0 && waiting.length > 0 && '  '}
+                  {waiting.length > 0 && `⏳${waiting.length}`}
+                </text>
+              )}
+            </g>
+          )
+        })}
         {draft && <rect x={draft.x} y={draft.y} width={draft.width} height={draft.length} fill="none" strokeDasharray="0.15 0.1" strokeWidth={0.05} className="stroke-leaf pointer-events-none" />}
         {canEdit && tool === 'select' && current && (
           <g
@@ -254,6 +286,7 @@ export default function LayoutEditor({ onChange, suggested, request, plan }: { o
           </g>
         )}
       </svg>
+        {beds.some((b) => b.placements.length > 0) && <p className="text-xs text-muted">{t('Filled cells are growing now; dashed cells are planned. ⏳ counts what is still to plant.')}</p>}
         {beds.length === 0 && <p className="text-sm text-muted">{canEdit ? t('No beds yet. Choose Draw bed, then drag on the plan.') : t('No beds have been drawn yet.')}</p>}
         {beds.length > 0 && (
           <div className="flex gap-2 overflow-x-auto pb-1" role="group" aria-label={t('Beds')}>
@@ -266,6 +299,12 @@ export default function LayoutEditor({ onChange, suggested, request, plan }: { o
                 className={`min-h-11 shrink-0 rounded-full border px-4 text-sm font-semibold ${b.id === selected ? 'border-leaf bg-leaf/15' : 'border-line bg-surface'} ${b.crowded ? 'text-harvest' : ''}`}
               >
                 {b.name}
+                {(() => {
+                  const live = b.placements.filter((p) => p.from <= today && today <= p.until && p.status !== 'planned')
+                  const wait = b.placements.filter((p) => p.status === 'planned' || p.from > today).length
+                  const icons = [...new Set(live.map((p) => cropIcon(p.crop)))].slice(0, 3).join('')
+                  return icons || wait ? <span className="ml-2 font-normal" aria-hidden>{icons}{wait > 0 && ` ⏳${wait}`}</span> : null
+                })()}
               </button>
             ))}
           </div>

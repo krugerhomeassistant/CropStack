@@ -209,3 +209,25 @@ def test_check_lists_only_organisms_that_affect_the_crop():
     job = Task(kind="check", title="t", reason="r", earliest=date.today(), ideal=date.today(), latest=date.today())
     names = lambda crop: [w["slug"] for w in _view(job, date.today(), {}, watch, crop)["watch"]]  # noqa: E731
     assert names("tomato") == ["any", "tomato-only"] and names("lettuce") == ["any"]
+
+
+def test_job_facts_are_read_from_the_crop():
+    from app.crop_facts import job_facts
+
+    item = {
+        "params": {
+            "plant_spread": {"value": 10, "unit": "cm"},
+            "row_spacing": {"value": 30, "unit": "cm"},
+            "days_to_emergence": [
+                {"value": 17.0, "qualifiers": {"soil_temp_c": 10.0}},
+                {"value": 5.0, "qualifiers": {"soil_temp_c": 25.0}},
+            ],
+            "cycle_days": {"value": {"min": 55.0, "max": 90.0}},
+            "sun": {"value": "full_sun"},
+        },
+        "requirements": {"soil_temperature": {"germination": {"value": {"min": 4.4, "opt": 29.4, "max": 35.0}}}},
+    }
+    got = {f["label"]: f["text"] for f in job_facts(item, "sow")}
+    assert got["Space plants"] == "10 cm apart, rows 30 cm apart" and got["Thin to"].startswith("one plant every 10 cm")
+    assert "5 days at 25 °C" in got["Comes up in"] and got["Ready"] == "55 to 90 days from sowing"
+    assert job_facts(None, "sow") == [] and job_facts(item, "check") == []

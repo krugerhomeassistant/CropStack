@@ -128,3 +128,6 @@ Tokens in `frontend/src/index.css`, components in `frontend/src/components/ui/` 
 
 ## Year plan (v0.34.0)
 Plant tab → Draft a year plan. The drafter takes every crop whose sowing window opens in the next 12 months (works in at least 6 of 10 years), places each in the bed with most free cells for its whole growing time, avoids cells that grew the same family, and gives each a block of up to 6 cells. Shortcut: every crop gets the same share; yield targets and household preferences come with the needs model (PLAN 8.2). Re-draft any time; accepted plantings are ordinary plantings.
+
+## Job details (v0.35.0)
+Every sow, set-out, harvest and water job shows facts from its crop's catalog entry (`crop_facts.job_facts`): spacing, thinning, germination soil temperature, days to emerge, light, cycle. Values missing from the catalog are simply left out; fix them in `catalog/crops/<crop>.yaml`.

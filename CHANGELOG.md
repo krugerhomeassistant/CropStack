@@ -5,6 +5,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.35.0] - 2026-10-10
+
+### Added
+- **The plan shows what is planted**: each bed on the plan is filled cell by cell in its crops' colours for what is growing now, with dashed cells for what is planned, the crop icons and a count of what is still to plant. Bed buttons show the same icons. Cells in the bed grid carry a crop icon and name.
+- **Crop-specific job details**: a sow, set-out, harvest or water job lists that crop's own spacing, thin-to distance, soil temperature, days to come up (warm versus cold soil), light, seedling age and cycle, read from the catalog. The general steps moved under "General steps".
+
 ## [0.34.1] - 2026-10-10
 
 ### Fixed

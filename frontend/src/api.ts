@@ -197,6 +197,7 @@ export type Job = {
   overdue: boolean
   planting_id: number | null
   steps: string[]
+  facts: { label: string; text: string }[]
   watch: Watch[]
 }
 export type Watch = { slug: string; name: string; type: string; identify: string; verdict: string; action: string }
