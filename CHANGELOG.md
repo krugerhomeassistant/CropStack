@@ -5,6 +5,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.26.2] - 2026-10-10
+
+### Fixed
+- The server now tells browsers to re-check the page, the app worker and the manifest on every visit, and to keep the built, versioned files for a year. Before, a phone could keep an old copy of the page and keep showing old screens after an update.
+
 ## [0.26.1] - 2026-10-10
 
 ### Fixed

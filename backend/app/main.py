@@ -78,8 +78,13 @@ def create_app() -> FastAPI:
             file = (static / path).resolve()
             # Serve real files inside the build dir; everything else is a client-side route.
             if file.is_file() and file.is_relative_to(static.resolve()):
-                return FileResponse(file)
-            return FileResponse(static / "index.html")
+                # Built assets have hashed names and never change; the page, worker and manifest must be re-checked
+                # on every visit or an installed app keeps showing the old screens.
+                hashed = path.startswith("assets/")
+                return FileResponse(
+                    file, headers={"Cache-Control": "public, max-age=31536000, immutable" if hashed else "no-cache"}
+                )
+            return FileResponse(static / "index.html", headers={"Cache-Control": "no-cache"})
 
     return app
 
