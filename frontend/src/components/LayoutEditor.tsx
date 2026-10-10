@@ -21,10 +21,11 @@ const TOOLS: { tool: Tool; label: string; name?: string; width?: number; length?
 
 type Pt = { x: number; y: number }
 type Rect = { x: number; y: number; width: number; length: number }
+// `to` is the latest result of the gesture, kept here rather than read back from state: a release can arrive before React has re-rendered.
 type Drag =
-  | { k: 'move'; start: Pt; orig: Map<number, Pt> }
-  | { k: 'resize'; id: number }
-  | { k: 'draw'; start: Pt }
+  | { k: 'move'; start: Pt; orig: Map<number, Pt>; to?: Map<number, Pt> }
+  | { k: 'resize'; id: number; to?: { width: number; length: number } }
+  | { k: 'draw'; start: Pt; to?: Rect }
 
 /** Beds of one layout, framed: the name is a handle that moves them all. */
 function frames(beds: Bed[]) {
@@ -107,14 +108,19 @@ export default function LayoutEditor({ onChange }: { onChange: () => void }) {
     if (d.k === 'draw') {
       const x = snap(p.x)
       const y = snap(p.y)
-      setDraft({ x: Math.min(x, d.start.x), y: Math.min(y, d.start.y), width: Math.abs(x - d.start.x), length: Math.abs(y - d.start.y) })
+      d.to = { x: Math.min(x, d.start.x), y: Math.min(y, d.start.y), width: Math.abs(x - d.start.x), length: Math.abs(y - d.start.y) }
+      setDraft(d.to)
     } else if (d.k === 'resize') {
-      setBeds((bs) => bs && bs.map((b) => (b.id === d.id ? { ...b, width: Math.max(SNAP, round(snap(p.x) - b.x)), length: Math.max(SNAP, round(snap(p.y) - b.y)) } : b)))
+      const b = beds?.find((x) => x.id === d.id)
+      if (!b) return
+      d.to = { width: Math.max(SNAP, round(snap(p.x) - b.x)), length: Math.max(SNAP, round(snap(p.y) - b.y)) }
+      setBeds((bs) => bs && bs.map((x) => (x.id === d.id ? { ...x, ...d.to! } : x)))
     } else {
       const least = (axis: 'x' | 'y') => Math.min(...[...d.orig.values()].map((o) => o[axis]))
       const dx = Math.max(Math.round((p.x - d.start.x) / SNAP) * SNAP, -least('x'))
       const dy = Math.max(Math.round((p.y - d.start.y) / SNAP) * SNAP, -least('y'))
-      setBeds((bs) => bs && bs.map((b) => (d.orig.has(b.id) ? { ...b, x: round(d.orig.get(b.id)!.x + dx), y: round(d.orig.get(b.id)!.y + dy) } : b)))
+      d.to = new Map([...d.orig].map(([id, o]) => [id, { x: round(o.x + dx), y: round(o.y + dy) }]))
+      setBeds((bs) => bs && bs.map((b) => (d.to!.has(b.id) ? { ...b, ...d.to!.get(b.id)! } : b)))
     }
   }
   function up() {
@@ -122,7 +128,7 @@ export default function LayoutEditor({ onChange }: { onChange: () => void }) {
     drag.current = null
     if (!d) return
     if (d.k === 'draw') {
-      const r = draft
+      const r = d.to
       setDraft(null)
       if (!r) {
         // a plain click: the default size for the tool, with its corner where it was clicked
@@ -135,11 +141,10 @@ export default function LayoutEditor({ onChange }: { onChange: () => void }) {
       create(tiny ? { x: r.x, y: r.y, width: tpl.width!, length: tpl.length! } : { ...r, width: Math.max(r.width, 0.2), length: Math.max(r.length, 0.2) }, tool as BedKind)
       setTool('select')
     } else if (d.k === 'resize') {
-      const b = beds?.find((x) => x.id === d.id)
-      if (b) api.updateBed(b.id, { width: b.width, length: b.length }).then(refresh, fail)
+      if (d.to) api.updateBed(d.id, d.to).then(refresh, fail)
     } else {
-      const moved = (beds ?? []).filter((b) => d.orig.has(b.id) && (b.x !== d.orig.get(b.id)!.x || b.y !== d.orig.get(b.id)!.y))
-      Promise.all(moved.map((b) => api.updateBed(b.id, { x: b.x, y: b.y }))).catch(fail)
+      const moved = [...(d.to ?? [])].filter(([id, to]) => to.x !== d.orig.get(id)!.x || to.y !== d.orig.get(id)!.y)
+      Promise.all(moved.map(([id, to]) => api.updateBed(id, to))).catch(fail)
     }
   }
 
