@@ -103,6 +103,9 @@ def list_beds(me: MemberDep, db: SessionDep, c: CatalogDep) -> list[dict]:
                     "from": first,
                     "until": last,
                     "quantity": p.quantity,
+                    "method": p.method,
+                    "start_date": p.start_date,
+                    "set_out_date": p.set_out_date,
                     "capacity": capacity,
                     "status": p.status,
                 }

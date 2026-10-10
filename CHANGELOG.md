@@ -5,6 +5,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.31.0] - 2026-10-10
+
+### Added
+- Tap a planting in a bed's cell grid to change its sow date, set-out date, number of plants and "holds the cells until" date in one form. Dates could not be edited before; jobs are recalculated when you save.
+
 ## [0.30.0] - 2026-10-10
 
 ### Changed

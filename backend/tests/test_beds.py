@@ -102,3 +102,15 @@ def test_a_bed_remembers_its_layout_and_can_leave_it(owner):  # noqa: F811
     bed = owner.post("/api/v1/beds", json={"name": "A", "width": 1, "length": 2, "layout": "Back garden"}).json()
     assert bed["layout"] == "Back garden"
     assert owner.patch(f"/api/v1/beds/{bed['id']}", json={"layout": ""}).json()["layout"] == ""
+
+
+def test_a_planting_can_be_moved_in_time_and_resized_from_the_bed(owner):  # noqa: F811
+    bed = owner.post("/api/v1/beds", json={"name": "A", "width": 1, "length": 1}).json()
+    made = plant(owner, bed["id"], [[0, 0]], "2026-10-01").json()
+    url = f"/api/v1/plantings/{made['id']}"
+    moved = owner.patch(url, json={"start_date": "2026-11-05", "quantity": 7}).json()
+    assert (moved["start_date"], moved["quantity"]) == ("2026-11-05", 7)
+    assert owner.patch(url, json={"start_date": None}).json()["start_date"] == "2026-11-05"  # cannot be cleared
+    assert owner.patch(url, json={"set_out_date": "2026-12-01"}).json()["set_out_date"] is None  # direct: none
+    seen = owner.get("/api/v1/beds").json()[0]["placements"][0]
+    assert seen["start_date"] == "2026-11-05" and seen["method"] == "direct"

@@ -51,6 +51,8 @@ class PlantingIn(BaseModel):
 
 class PlantingPatch(BaseModel):
     status: Status | None = None
+    start_date: date | None = None
+    set_out_date: date | None = None
     quantity: int | None = Field(None, ge=1, le=100000)
     location: str | None = Field(None, max_length=120)
     bed_id: int | None = None
@@ -148,7 +150,14 @@ def update_planting(planting_id: int, body: PlantingPatch, me: EditorDep, db: Se
             raise HTTPException(409, "Only transplants are set out")
         row.status = status
     for key, value in changes.items():
+        if key == "start_date" and value is None:
+            continue  # the sowing date cannot be cleared
         setattr(row, key, value)
+    if row.method == "transplant" and (not row.set_out_date or row.set_out_date < row.start_date):
+        db.rollback()
+        raise HTTPException(422, "A transplant needs a set-out date on or after the sowing date")
+    if row.method == "direct":
+        row.set_out_date = None
     db.add(row)
     db.commit()
     refresh_tasks(db, me.household_id, c)  # commits, which expires `row`

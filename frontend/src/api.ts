@@ -135,6 +135,9 @@ export type Placement = {
   from: string
   until: string
   quantity: number
+  method: 'direct' | 'transplant'
+  start_date: string
+  set_out_date: string | null
   capacity: number
   status: PlantingStatus
 }
@@ -317,7 +320,7 @@ export const api = {
   finishJob: (id: number, status: 'done' | 'skipped') => request<Job>('PATCH', `/tasks/${id}`, { status }),
   plantings: () => request<Planting[]>('GET', '/plantings'),
   addPlanting: (body: PlantingIn) => request<Planting>('POST', '/plantings', body),
-  updatePlanting: (id: number, body: Partial<Pick<Planting, 'status' | 'quantity' | 'location' | 'bed_id' | 'cells' | 'ends_on' | 'notes'>>) =>
+  updatePlanting: (id: number, body: Partial<Pick<Planting, 'status' | 'start_date' | 'set_out_date' | 'quantity' | 'location' | 'bed_id' | 'cells' | 'ends_on' | 'notes'>>) =>
     request<Planting>('PATCH', `/plantings/${id}`, body),
   deletePlanting: (id: number) => request<null>('DELETE', `/plantings/${id}`),
   recommendations: () => request<Recommendations>('GET', '/recommendations'),

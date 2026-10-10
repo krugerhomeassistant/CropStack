@@ -28,6 +28,9 @@ export default function BedGrid({ bed, crops, onChange }: { bed: Bed; crops: Cro
   const [painted, setPainted] = useState<string[]>([])
   const [info, setInfo] = useState<Placement | null>(null)
   const [until, setUntil] = useState('')
+  const [sow, setSow] = useState('')
+  const [setOut, setSetOut] = useState('')
+  const [qty, setQty] = useState('')
   const [error, setError] = useState('')
 
   const here = (c: number, r: number) =>
@@ -54,6 +57,9 @@ export default function BedGrid({ bed, crops, onChange }: { bed: Bed; crops: Cro
     const p = here(c, r)[0] ?? null
     setInfo(p)
     setUntil(p?.until ?? '')
+    setSow(p?.start_date ?? '')
+    setSetOut(p?.set_out_date ?? '')
+    setQty(p ? String(p.quantity) : '')
   }
   function up() {
     const cells = painted.map((k) => k.split(',').map(Number) as [number, number])
@@ -205,14 +211,44 @@ export default function BedGrid({ bed, crops, onChange }: { bed: Bed; crops: Cro
               until: show(info.until),
             })}
           </p>
-          <div className="flex flex-wrap items-end gap-2">
-            <Field label={t('Holds the cells until')}>
-              <input className="input" type="date" value={until} onChange={(e) => setUntil(e.target.value)} />
-            </Field>
-            <Button variant="secondary" onClick={() => api.updatePlanting(info.planting_id, { ends_on: until || null }).then(() => { setInfo(null); onChange() }, fail)}>
-              {t('Save')}
-            </Button>
-          </div>
+          {canEdit && (
+            <form
+              className="flex flex-wrap items-end gap-2"
+              onSubmit={(e) => {
+                e.preventDefault()
+                setError('')
+                api
+                  .updatePlanting(info.planting_id, {
+                    start_date: sow,
+                    set_out_date: info.method === 'transplant' ? setOut : null,
+                    quantity: Number(qty),
+                    ends_on: until || null,
+                  })
+                  .then(() => {
+                    setInfo(null)
+                    onChange()
+                  }, fail)
+              }}
+            >
+              <Field label={t('Sow date')}>
+                <input className="input" type="date" required value={sow} onChange={(e) => setSow(e.target.value)} />
+              </Field>
+              {info.method === 'transplant' && (
+                <Field label={t('Set-out date')}>
+                  <input className="input" type="date" required value={setOut} onChange={(e) => setSetOut(e.target.value)} />
+                </Field>
+              )}
+              <Field label={t('Plants')}>
+                <input className="input w-24" type="number" min="1" max="100000" required value={qty} onChange={(e) => setQty(e.target.value)} />
+              </Field>
+              <Field label={t('Holds the cells until')}>
+                <input className="input" type="date" value={until} onChange={(e) => setUntil(e.target.value)} />
+              </Field>
+              <Button type="submit" variant="secondary">
+                {t('Save')}
+              </Button>
+            </form>
+          )}
         </div>
       )}
       {error && <ErrorMessage>{error}</ErrorMessage>}
