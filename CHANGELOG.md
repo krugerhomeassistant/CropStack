@@ -5,6 +5,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.26.1] - 2026-10-10
+
+### Fixed
+- An installed app (home-screen icon) could keep showing the previous screens after the server was updated, so new features such as the garden plan did not appear. The app now notices when the server is newer than the screens it has loaded, clears its stored copies once and reloads. Apps older than this release need a one-off refresh (see the wiki).
+
 ## [0.26.0] - 2026-10-10
 
 ### Added
