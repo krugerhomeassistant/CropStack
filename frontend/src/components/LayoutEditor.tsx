@@ -242,7 +242,7 @@ export default function LayoutEditor({ onChange, suggested, request, plan }: { o
               <clipPath id={`clip${b.id}`}>
                 {isPot ? <ellipse cx={b.x + b.width / 2} cy={b.y + b.length / 2} rx={b.width / 2} ry={b.length / 2} /> : <rect x={b.x} y={b.y} width={b.width} height={b.length} rx={0.06} />}
               </clipPath>
-              {b.id === selected && (isPot ? <ellipse cx={b.x + b.width / 2} cy={b.y + b.length / 2} rx={b.width / 2 + 0.14} ry={b.length / 2 + 0.14} fill="none" className="stroke-leaf" strokeWidth={0.07} /> : <rect x={b.x - 0.14} y={b.y - 0.14} width={b.width + 0.28} height={b.length + 0.28} rx={0.14} fill="none" className="stroke-leaf" strokeWidth={0.07} />)}
+              {b.id === selected && (isPot ? <ellipse cx={b.x + b.width / 2} cy={b.y + b.length / 2} rx={b.width / 2 + 0.14} ry={b.length / 2 + 0.14} fill="none" className="stroke-leaf pointer-events-none" strokeWidth={0.07} /> : <rect x={b.x - 0.14} y={b.y - 0.14} width={b.width + 0.28} height={b.length + 0.28} rx={0.14} fill="none" className="stroke-leaf pointer-events-none" strokeWidth={0.07} />)}
               {isPot ? (
                 <ellipse cx={b.x + b.width / 2} cy={b.y + b.length / 2} rx={b.width / 2} ry={b.length / 2} className="fill-feed/25 stroke-feed" strokeWidth={0.09} />
               ) : (

@@ -120,7 +120,7 @@ try {
   await owner.getByRole('button', { name: 'Bed 1', exact: true }).waitFor()
   const drawn = (await (await owner.request.get(`${base}/api/v1/beds`)).json())[0]
   assert.ok(drawn.width > 1 && drawn.length > 1, 'the bed takes the size that was dragged')
-  const bedRect = owner.locator('svg[role=img] rect[stroke-width]').first()
+  const bedRect = owner.locator('svg[role=img] rect[stroke-width="0.09"]').first()
   await bedRect.scrollIntoViewIfNeeded()
   const bedBox = await stableBox(bedRect)
   await owner.mouse.move(bedBox.x + 10, bedBox.y + 10)
@@ -196,7 +196,7 @@ try {
   for (const status of ['germinated', 'harvesting'])
     await owner.request.patch(`${base}/api/v1/plantings/${first.id}`, { data: { status } })
   await owner.goto(`${base}/garden?tab=plantings`)
-  await owner.getByRole('listitem').filter({ hasText: '6 planted' }).getByRole('button', { name: 'More' }).click()
+  await owner.getByRole('listitem').filter({ hasText: '6 planted' }).first().getByRole('button', { name: 'More' }).first().click()
   await owner.getByRole('button', { name: 'Log a harvest' }).first().click()
   await owner.getByLabel('How much').fill('1.5')
   await owner.getByRole('button', { name: 'Save', exact: true }).click()
