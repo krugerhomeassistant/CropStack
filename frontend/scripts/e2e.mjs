@@ -131,7 +131,7 @@ try {
   const [bed] = await (await owner.request.get(`${base}/api/v1/beds`)).json()
   if (bed.x <= 0.5 && bed.y <= 0.5) throw new Error(`bed did not move: ${JSON.stringify(bedBox)} ${bed.x},${bed.y}`)
   // Resize by the corner handle, and group into a layout that moves as one
-  await owner.getByTestId('resize-handle').scrollIntoViewIfNeeded()
+  await owner.getByTestId('resize-handle').evaluate((el) => el.scrollIntoView({ block: 'center' })) // clear of the bottom bar
   const handle = await stableBox(owner.getByTestId('resize-handle'))
   const before = (await (await owner.request.get(`${base}/api/v1/beds`)).json())[0]
   await owner.mouse.move(handle.x + handle.width / 2, handle.y + handle.height / 2)
