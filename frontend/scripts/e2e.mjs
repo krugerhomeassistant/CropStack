@@ -117,9 +117,9 @@ try {
   await owner.mouse.down()
   await owner.mouse.move(planBox.x + 160, planBox.y + 120, { steps: 5 })
   await owner.mouse.up()
+  await owner.getByRole('button', { name: /^Plant in Bed 1/ }).first().waitFor() // the list grows once it knows the bed
   const drawn = (await (await owner.request.get(`${base}/api/v1/beds`)).json())[0]
   assert.ok(drawn.width > 1 && drawn.length > 1, 'the bed takes the size that was dragged')
-  await owner.getByRole('button', { name: /^Plant in Bed 1/ }).first().waitFor() // the list grows once it knows the bed
   const bedRect = owner.locator('svg[role=img] rect[stroke-width]').first()
   await bedRect.scrollIntoViewIfNeeded()
   const bedBox = await stableBox(bedRect)
