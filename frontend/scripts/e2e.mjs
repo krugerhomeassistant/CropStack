@@ -168,6 +168,22 @@ try {
   await owner.getByRole('heading', { name: 'Sow lettuce (3) in Bed 2' }).waitFor({ state: 'detached' })
   step('Today shows the due job and finishing it moves the planting')
 
+  // AI co-pilot: off until an owner picks a service; the key is saved but never shown again
+  await owner.goto(`${base}/ask`)
+  await owner.getByText('The AI co-pilot is off').waitFor()
+  await owner.goto(`${base}/settings`)
+  await owner.getByLabel('Service').selectOption('openai')
+  await owner.getByLabel('Model').fill('test-model')
+  await owner.getByLabel('API key').fill('sk-e2e-secret')
+  await owner.getByRole('button', { name: 'Save', exact: true }).click()
+  await owner.getByText('A key is saved').waitFor()
+  assert.equal(await owner.getByLabel('API key').inputValue(), '')
+  assert.ok(!(await owner.content()).includes('sk-e2e-secret'))
+  await owner.goto(`${base}/ask`)
+  await owner.getByLabel('Your question').waitFor()
+  await owner.request.delete(`${base}/api/v1/ai`)
+  step('AI co-pilot: set up in Settings, key never shown')
+
   // Settings: start screen and units persist after a reload
   await owner.goto(`${base}/settings`)
   await owner.getByLabel(/Imperial/).check()

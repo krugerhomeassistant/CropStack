@@ -210,6 +210,18 @@ export type DataSource = {
   enabled: boolean
 }
 
+export type AiProvider = 'ollama' | 'openai' | 'anthropic'
+export type AiConfig = {
+  configured: boolean
+  provider: AiProvider | ''
+  base_url: string
+  model: string
+  has_key: boolean
+  default_urls: Record<AiProvider, string>
+}
+export type AiIn = { provider: AiProvider; base_url: string; model: string; api_key?: string | null }
+export type Turn = { role: 'user' | 'assistant'; content: string }
+
 // ---------------------------------------------------------------- catalog (SPEC §16.1: every value is cited)
 
 export type Evidence =
@@ -319,6 +331,11 @@ export const api = {
   householdSettings: () => request<HouseholdSettings>('GET', '/household/settings'),
   saveHouseholdSettings: (settings: HouseholdSettings) =>
     request<HouseholdSettings>('PUT', '/household/settings', settings),
+  ai: () => request<AiConfig>('GET', '/ai'),
+  saveAi: (body: AiIn) => request<AiConfig>('PUT', '/ai', body),
+  clearAi: () => request<AiConfig>('DELETE', '/ai'),
+  testAi: () => request<{ reply: string }>('POST', '/ai/test'),
+  askAi: (messages: Turn[]) => request<{ reply: string }>('POST', '/ai/ask', { messages }),
   dataSources: () => request<DataSource[]>('GET', '/household/data-sources'),
   crops: () => request<CropSummary[]>('GET', '/catalog/crop'),
   crop: (slug: string) => request<CatalogItem<CropData>>('GET', `/catalog/crop/${encodeURIComponent(slug)}`),

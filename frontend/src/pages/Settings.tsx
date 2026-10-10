@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { api, type Prefs } from '../api'
+import AiSettings from '../components/AiSettings'
 import DataSources from '../components/DataSources'
 import { N_, t } from '../i18n'
 import { ErrorMessage, PageHeader, RadioCards, Section } from '../components/ui'
@@ -78,6 +79,7 @@ export default function Settings() {
         onChange={(units) => save({ units })}
       />
       <DataSources isOwner={user.role === 'owner'} />
+      {user.role === 'owner' && <AiSettings />}
     </>
   )
 }

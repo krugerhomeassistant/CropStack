@@ -13,6 +13,7 @@ import GardenPage from './pages/Garden'
 import GardenSetup from './pages/GardenSetup'
 import Household from './pages/Household'
 import More from './pages/More'
+import Ask from './pages/Ask'
 import Settings from './pages/Settings'
 import Today from './pages/Today'
 import { AppContext } from './state'
@@ -161,6 +162,7 @@ export default function App() {
               <Route path="/crops/:slug" element={<Crop />} />
               <Route path="/crop-data" element={<CropData />} />
               <Route path="/household" element={<Household />} />
+              <Route path="/ask" element={<Ask />} />
               <Route path="/settings" element={<Settings />} />
             </Route>
             {/* "/", a used invite link, or anything unknown: the person's own start screen */}

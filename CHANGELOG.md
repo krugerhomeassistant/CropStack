@@ -5,6 +5,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.28.0] - 2026-10-10
+
+### Added
+- **AI co-pilot (first slice).** Owners choose a service in Settings (Ollama on your own server, any OpenAI-compatible API, or Anthropic), a model and an API key, and can test it, remove the key or turn it off. Everyone with edit rights can then use **Ask** (More → Ask): the model sees the garden's place, soil, plantings and open jobs and can only advise. The key is stored on the server and is never sent back to the browser; the service appears under Settings → Data sources once set up.
+
 ## [0.27.0] - 2026-10-10
 
 ### Added

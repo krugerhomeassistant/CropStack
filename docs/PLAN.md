@@ -246,8 +246,8 @@ Goal: probabilistic, self-updating environment; remove v1 heuristics (§18).
 - [ ] Irrigation request events per bed/zone (litres/minutes) for HA automations.
 
 ## Phase 13 — AI co-pilot §12.4
-- [ ] Provider abstraction (port Bloomery `ai.py`), settings UI, key never returned.
-- [ ] Grounded context builder + read-only tools (catalog, environment probabilities, plantings, tasks).
+- [x] (v0.28.0: Bloomery repo not reachable from the sandbox, so written fresh; Ollama, OpenAI-compatible, Anthropic; key in plain text in SQLite) Provider abstraction, settings UI, key never returned.
+- [~] (v0.28.0: plain-text context of site, plantings, open jobs; no tools, no streaming, no stored history) Grounded context builder + read-only tools (catalog, environment probabilities, plantings, tasks).
 - [ ] Chat; photo diagnosis → organism candidates with confidence, verdict, actions, follow-up task; preservation recipes from pantry; draft custom profiles for review.
 
 ## Phase 14 — Quality & reach (v1.0.0)

@@ -90,3 +90,4 @@ CropStack-specific:
 73. **BedGrid rendered twice after selecting a bed** → two sibling React elements shared `key={bed.id}` → give siblings distinct keys (`grid${id}`, `form${id}`).
 74. **E2E "bed did not move" flaked** → the plan svg was below the fold (a long recommendations list loads above it) and the layout grew after the first measure → `scrollIntoViewIfNeeded`, then poll the bounding box until stable (`stableBox`), and wait for the API write before asserting.
 75. **E2E picked the wrong planting after cells created more** → tests that took `[0]`/`.first()` broke once painted plantings added jobs and rows → select by a unique attribute (quantity, heading filter).
+76. **Bloomery `ai.py` could not be ported** → `gh` reaches only this repo from the sandbox → the provider layer was written fresh with pure request builders and parsers (tested per provider); compare with Bloomery when convenient.

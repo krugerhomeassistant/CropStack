@@ -8,6 +8,7 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 from sqlmodel import Session, func, select
 
+from ..ai import DEFAULT_URL as DEFAULT_AI_URL
 from ..deps import MemberDep, OwnerDep, SessionDep
 from ..models import Household, Invite, Membership, User, now
 from .auth import token_hash, valid_invite
@@ -136,7 +137,24 @@ def data_sources(me: MemberDep, db: SessionDep) -> list[dict]:
     household = db.get(Household, me.household_id)
     assert household
     switches = household_settings(household).model_dump()
-    return [s | {"enabled": switches.get(s["switch"], True) if s["switch"] else True} for s in DATA_SOURCES]
+    sources = [s | {"enabled": switches.get(s["switch"], True) if s["switch"] else True} for s in DATA_SOURCES]
+    if provider := household.ai.get("provider"):
+        local = provider == "ollama"
+        sources.append(
+            {
+                "id": "ai",
+                "name": {"ollama": "Ollama (your own server)", "openai": "OpenAI-compatible API"}.get(
+                    provider, "Anthropic API"
+                ),
+                "url": household.ai.get("base_url") or DEFAULT_AI_URL[provider],
+                "sends": "Your question, plus the garden's place, soil, plantings and open jobs",
+                "when": "Only when someone asks the co-pilot" + ("" if local else " (leaves your server)"),
+                "used_for": "Answers in Ask",
+                "licence": "Provider terms",
+                "switch": None,
+            }
+        )
+    return sources
 
 
 @router.put("/household/members/{user_id}")

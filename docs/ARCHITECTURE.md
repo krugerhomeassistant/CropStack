@@ -41,6 +41,8 @@ Target architecture (engines, data model, API) is specified in `docs/SPEC.md` §
 | `tasks.py` | task engine core: pure generators `crop_schedule` (sow, set out, first harvest), `weather_alerts` (frost, heat from the forecast) and `water_alerts`, and `sync` (per set of task kinds), which updates stored tasks by `generator_key`, logs changes, leaves done/skipped/locked tasks alone |
 | `tasks.scout_checks` | weekly Check job per planting in the ground; key carries the last check date; `today._watch` attaches the organism list |
 | `engine/layout.py` | **pure** plant footprint (spread × row spacing, m²), bed fullness, cell grid, plants per cell, date-aware occupancy, free cells, clashes |
+| `ai.py` | **pure** `build_request`/`parse_reply` per provider (ollama, openai, anthropic) and `ask` (httpx) |
+| `routers/ai.py` | `GET/PUT/DELETE /api/v1/ai` (owner writes; key never returned), `POST /ai/test`, `POST /ai/ask` (grounded in site, plantings, open jobs) |
 | `routers/beds.py` | beds CRUD; `GET /beds` adds the grid (cols, rows), placements (cells, from, until), clashes and crowding |
 | `engine/recommend.py` | **pure** what-to-plant timing: `timing`, `options` (direct, transplant), `best_option` from a sowing analysis |
 | `routers/recommend.py` | `GET /api/v1/recommendations?horizon=21`: plant now / coming up, each with a bed and free cells (prefers cells without the same family) |
@@ -83,11 +85,12 @@ Target architecture (engines, data model, API) is specified in `docs/SPEC.md` §
 | `CROPSTACK_SCHEDULER` | `true` | background jobs (forecast refresh) |
 | `CROPSTACK_PORT` | `8430` | compose host port only |
 
-## DB schema (SQLite, Alembic migrations; head 0012)
+## DB schema (SQLite, Alembic migrations; head 0013)
 - **user**: id, username (unique, lowercased), password_hash (argon2id), display_name, created_at, prefs JSON (start, units)
 - **household**: id, name, created_at, settings JSON (forecast, place_search)
 - **membership**: user_id (PK → user, CASCADE), household_id (→ household, CASCADE, indexed), role (owner|member|viewer), created_at
 - **invite**: token_hash (PK, SHA-256), household_id (→ household, CASCADE), role, created_by (→ user, SET NULL), created_at, expires_at, used_at
+- **household.ai** (JSON): provider, base_url, model, api_key (plain text; see the shortcut in `routers/ai.py`)
 - **bed**: id, household_id (CASCADE), name, kind (bed, container, row), x, y, width, length (metres from the plan corner), cell_cm (grid cell, default 30), created_at. `planting.bed_id` → bed (SET NULL); `planting.location` carries the bed name
 - **harvest**: id, household_id (CASCADE), planting_id (→ planting, CASCADE), harvested_on, quantity (> 0), unit (kg, g, count, bunch), notes, created_by (SET NULL), created_at
 - **site**: id, household_id (→ household, unique, CASCADE), name, latitude, longitude, postal_code, frost_probability (10–90), soil ('', sandy, loamy, clay), created_at, updated_at
