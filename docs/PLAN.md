@@ -194,12 +194,12 @@ Goal: probabilistic, self-updating environment; remove v1 heuristics (§18).
 - [ ] Animal product targets.
 
 **8.3 Layout editor**
-- [ ] Canvas tech decision (SVG + pointer events vs a library such as Konva; criteria: touch, performance, bundle size, licence) — spike, record in TOOLING.
-- [ ] Draw/edit features: boundary, beds (rect/polygon/circle/keyhole), containers, structures, paths, trees (canopy, height), buildings/walls (height), tanks, fences; snap, rulers, labels, layers, undo/redo, zoom/pan/touch.
-- [ ] Template shapes ("4 raised beds 1.2 × 2.4 m"); optional background image tracing.
+- [x] (v0.26.0: plain SVG with pointer events; no library) Canvas tech decision (SVG + pointer events vs a library such as Konva; criteria: touch, performance, bundle size, licence) — spike, record in TOOLING.
+- [~] (v0.26.0: rectangular beds, rows and round containers; move by drag, resize by size fields; no undo, rotate, polygons, structures, paths, trees or rulers yet) Draw/edit features: boundary, beds (rect/polygon/circle/keyhole), containers, structures, paths, trees (canopy, height), buildings/walls (height), tanks, fences; snap, rulers, labels, layers, undo/redo, zoom/pan/touch.
+- [~] (v0.26.0: three single-bed templates; multi-bed templates and background tracing open) Template shapes ("4 raised beds 1.2 × 2.4 m"); optional background image tracing.
 - [ ] Sun model: sun path per site/day, obstacle shadows → direct-sun hours grid per month; heat-map overlay; manual override.
-- [ ] Planting layer with spacing footprints and date slider; drag between beds.
-- [ ] Validation hints (overcrowding, sun mismatch, rotation conflict, height shading, path width).
+- [~] (v0.26.0: a planting has a bed and beds total the plant footprints; no per-plant placement, date slider or drag between beds) Planting layer with spacing footprints and date slider; drag between beds.
+- [~] (v0.26.0: overcrowding only) Validation hints (overcrowding, sun mismatch, rotation conflict, height shading, path width).
 - [ ] Export PNG/SVG/PDF, print bed sheets.
 
 **8.4 Plan generator**

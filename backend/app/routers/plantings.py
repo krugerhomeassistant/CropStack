@@ -8,7 +8,7 @@ from pydantic import BaseModel, Field, model_validator
 from sqlmodel import select
 
 from ..deps import EditorDep, MemberDep, SessionDep
-from ..models import Harvest, Planting
+from ..models import Bed, Harvest, Planting
 from .catalog import CatalogDep
 from .today import refresh_tasks
 
@@ -34,6 +34,7 @@ class PlantingIn(BaseModel):
     set_out_date: date | None = None
     quantity: int = Field(1, ge=1, le=100000)
     location: str = Field("", max_length=120)
+    bed_id: int | None = None
     notes: str = Field("", max_length=2000)
 
     @model_validator(mode="after")
@@ -49,6 +50,7 @@ class PlantingPatch(BaseModel):
     status: Status | None = None
     quantity: int | None = Field(None, ge=1, le=100000)
     location: str | None = Field(None, max_length=120)
+    bed_id: int | None = None
     notes: str | None = Field(None, max_length=2000)
 
 
@@ -57,6 +59,13 @@ def _own(db: SessionDep, household_id: int, planting_id: int) -> Planting:
     if not row or row.household_id != household_id:
         raise HTTPException(404, "No such planting")
     return row
+
+
+def _bed(db: SessionDep, household_id: int, bed_id: int) -> Bed:
+    bed = db.get(Bed, bed_id)
+    if not bed or bed.household_id != household_id:
+        raise HTTPException(422, "No such bed")
+    return bed
 
 
 @router.get("")
@@ -68,7 +77,10 @@ def list_plantings(me: MemberDep, db: SessionDep) -> list[Planting]:
 def add_planting(body: PlantingIn, me: EditorDep, db: SessionDep, c: CatalogDep) -> Planting:
     if c.get("crop", body.crop) is None:
         raise HTTPException(422, f"No crop {body.crop!r} in the catalog")
-    row = Planting(household_id=me.household_id, created_by=me.user_id, **body.model_dump())
+    data = body.model_dump()
+    if body.bed_id is not None:
+        data["location"] = _bed(db, me.household_id, body.bed_id).name
+    row = Planting(household_id=me.household_id, created_by=me.user_id, **data)
     db.add(row)
     db.commit()
     refresh_tasks(db, me.household_id, c)  # commits, which expires `row`
@@ -81,6 +93,11 @@ def update_planting(planting_id: int, body: PlantingPatch, me: EditorDep, db: Se
     row = _own(db, me.household_id, planting_id)
     changes = body.model_dump(exclude_unset=True)
     status = changes.pop("status", None)
+    if changes.get("bed_id") is not None:
+        changes["location"] = _bed(db, me.household_id, changes["bed_id"]).name
+    elif "bed_id" in changes:
+        changes.pop("bed_id")
+        row.bed_id = None  # taken out of its bed; the free-text place stays
     if status and status != row.status:
         if status not in NEXT[row.status]:
             raise HTTPException(409, f"A planting cannot go from {row.status} to {status}")

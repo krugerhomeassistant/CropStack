@@ -5,6 +5,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.26.0] - 2026-10-10
+
+### Added
+- **Garden plan.** Draw your beds, rows and containers to scale on the Garden page: add one from a template (raised bed 1.2 × 2.4 m, row, pot), drag it into place, and rename or resize it. Give each planting a bed from its own list, or when you plant. A bed turns amber and says so when the plants in it need more room than it has (from each crop's catalogued spread and row spacing). Renaming a bed renames it in its plantings and jobs; deleting a bed keeps the plantings.
+
 ## [0.25.0] - 2026-10-10
 
 ### Changed

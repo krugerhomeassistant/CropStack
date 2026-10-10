@@ -93,9 +93,28 @@ export type Planting = {
   set_out_date: string | null
   quantity: number
   location: string
+  bed_id: number | null
   notes: string
 }
-export type PlantingIn = Pick<Planting, 'crop' | 'method' | 'start_date' | 'set_out_date' | 'quantity' | 'location' | 'notes'>
+export type PlantingIn = Pick<Planting, 'crop' | 'method' | 'start_date' | 'set_out_date' | 'quantity' | 'location' | 'notes'> & {
+  bed_id?: number | null
+}
+export type BedKind = 'bed' | 'container' | 'row'
+export type Bed = {
+  id: number
+  name: string
+  kind: BedKind
+  x: number
+  y: number
+  width: number
+  length: number
+  plantings: number[]
+  area_m2: number
+  needed_m2: number
+  unknown_footprint: number
+  crowded: boolean
+}
+export type BedIn = Pick<Bed, 'name' | 'kind' | 'x' | 'y' | 'width' | 'length'>
 export type Job = {
   id: number
   kind: 'sow' | 'set_out' | 'harvest' | 'frost' | 'heat' | 'water' | 'check'
@@ -245,9 +264,13 @@ export const api = {
   finishJob: (id: number, status: 'done' | 'skipped') => request<Job>('PATCH', `/tasks/${id}`, { status }),
   plantings: () => request<Planting[]>('GET', '/plantings'),
   addPlanting: (body: PlantingIn) => request<Planting>('POST', '/plantings', body),
-  updatePlanting: (id: number, body: Partial<Pick<Planting, 'status' | 'quantity' | 'location' | 'notes'>>) =>
+  updatePlanting: (id: number, body: Partial<Pick<Planting, 'status' | 'quantity' | 'location' | 'bed_id' | 'notes'>>) =>
     request<Planting>('PATCH', `/plantings/${id}`, body),
   deletePlanting: (id: number) => request<null>('DELETE', `/plantings/${id}`),
+  beds: () => request<Bed[]>('GET', '/beds'),
+  addBed: (body: BedIn) => request<Bed>('POST', '/beds', body),
+  updateBed: (id: number, body: Partial<BedIn>) => request<Bed>('PATCH', `/beds/${id}`, body),
+  deleteBed: (id: number) => request<null>('DELETE', `/beds/${id}`),
   harvests: () => request<Harvest[]>('GET', '/plantings/harvests'),
   addHarvest: (plantingId: number, body: Omit<Harvest, 'id' | 'planting_id'>) =>
     request<Harvest>('POST', `/plantings/${plantingId}/harvests`, body),

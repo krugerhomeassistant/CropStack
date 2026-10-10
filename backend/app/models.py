@@ -116,6 +116,20 @@ class Forecast(SQLModel, table=True):
     fetched_at: datetime = Field(default_factory=now)
 
 
+class Bed(SQLModel, table=True):
+    """A rectangle of growing space on the garden plan. Metres from the plan's top-left corner."""
+
+    id: int | None = Field(default=None, primary_key=True)
+    household_id: int = Field(foreign_key="household.id", ondelete="CASCADE", index=True)
+    name: str
+    kind: str = "bed"  # bed, container or row
+    x: float = 0
+    y: float = 0
+    width: float  # m, along x
+    length: float  # m, along y
+    created_at: datetime = Field(default_factory=now)
+
+
 class Planting(SQLModel, table=True):
     """Something the household has planted or means to: a crop, how, when, how many, and how it is getting on."""
 
@@ -127,7 +141,8 @@ class Planting(SQLModel, table=True):
     start_date: date  # when it is (or will be) sown: in the ground, or indoors for a transplant
     set_out_date: date | None = None  # transplants only
     quantity: int = 1
-    location: str = ""  # free text until beds exist (PLAN Phase 8)
+    location: str = ""  # the bed's name when it is in a bed, otherwise free text
+    bed_id: int | None = Field(default=None, foreign_key="bed.id", ondelete="SET NULL", index=True)
     notes: str = ""
     created_by: int | None = Field(default=None, foreign_key="user.id", ondelete="SET NULL")
     created_at: datetime = Field(default_factory=now)

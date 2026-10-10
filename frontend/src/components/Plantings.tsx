@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router'
 import { Sprout, Trash2 } from 'lucide-react'
-import { api, type CropSummary, type Harvest, type HarvestUnit, type Planting, type PlantingStatus } from '../api'
+import { api, type Bed, type CropSummary, type Harvest, type HarvestUnit, type Planting, type PlantingStatus } from '../api'
 import { N_, t } from '../i18n'
 import { useApp } from '../state'
 import { Badge, Button, EmptyState, ErrorState, Field, IconButton, Section, Skeleton } from './ui'
@@ -94,18 +94,20 @@ function HarvestForm({ plantingId, onSaved }: { plantingId: number; onSaved: (h:
 }
 
 /** What the household has planted or plans to plant. */
-export default function Plantings() {
+export default function Plantings({ onBedChange }: { onBedChange?: () => void }) {
   const { user } = useApp()
   const [rows, setRows] = useState<Planting[] | null>(null)
   const [harvests, setHarvests] = useState<Harvest[]>([])
+  const [beds, setBeds] = useState<Bed[]>([])
   const [names, setNames] = useState<Record<string, CropSummary>>({})
   const [error, setError] = useState<string | null>(null)
   const canEdit = user.role !== 'viewer'
 
   function load() {
     setError(null)
-    Promise.all([api.plantings(), api.crops(), api.harvests()]).then(
-      ([plantings, crops, picks]) => {
+    Promise.all([api.plantings(), api.crops(), api.harvests(), api.beds()]).then(
+      ([plantings, crops, picks, bedRows]) => {
+        setBeds(bedRows)
         setRows(plantings)
         setHarvests(picks)
         setNames(Object.fromEntries(crops.map((c) => [c.slug, c])))
@@ -184,6 +186,21 @@ export default function Plantings() {
                   )}
                   {!['planned', 'sown', 'failed'].includes(p.status) && (
                     <HarvestForm plantingId={p.id} onSaved={(h) => setHarvests((hs) => [...hs, h])} />
+                  )}
+                  {beds.length > 0 && (
+                    <select
+                      className="input w-auto"
+                      aria-label={t('Bed for {crop}', { crop: crop?.names.en?.[0] ?? p.crop })}
+                      value={p.bed_id ?? ''}
+                      onChange={(e) => change(p.id, { bed_id: e.target.value ? Number(e.target.value) : null }).then(onBedChange)}
+                    >
+                      <option value="">{t('No bed')}</option>
+                      {beds.map((b) => (
+                        <option key={b.id} value={b.id}>
+                          {b.name}
+                        </option>
+                      ))}
+                    </select>
                   )}
                   <IconButton icon={Trash2} label={t('Delete planting')} onClick={() => remove(p.id)} />
                 </div>

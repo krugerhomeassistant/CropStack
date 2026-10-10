@@ -1,14 +1,17 @@
 import { useState } from 'react'
-import { LayoutGrid, MapPin, Pencil } from 'lucide-react'
-import { EmptyState, IconButton, PageHeader, Section } from '../components/ui'
+import { MapPin, Pencil } from 'lucide-react'
+import { IconButton, PageHeader, Section } from '../components/ui'
 import { t } from '../i18n'
 import { useApp } from '../state'
+import LayoutEditor from '../components/LayoutEditor'
 import Plantings from '../components/Plantings'
 import GardenSetup from './GardenSetup'
 
 export default function GardenPage() {
   const { user, garden, setGarden } = useApp()
   const [editing, setEditing] = useState(false)
+  const [rev, setRev] = useState(0) // bumped when the plan changes so the plantings list reloads
+  const [planRev, setPlanRev] = useState(0) // and the other way round
 
   if (editing)
     return (
@@ -38,13 +41,8 @@ export default function GardenPage() {
           user.role === 'owner' && <IconButton icon={Pencil} label={t('Edit garden')} onClick={() => setEditing(true)} />
         }
       />
-      <Plantings />
-      {/* shortcut: placeholder until beds and the layout editor exist (PLAN Phase 8). */}
-      <Section title={t('Beds')}>
-        <EmptyState icon={LayoutGrid} title={t('No beds yet')}>
-          {t('Beds, containers and rows go here, drawn to scale in the layout editor. It arrives with the garden planner.')}
-        </EmptyState>
-      </Section>
+      <LayoutEditor key={planRev} onChange={() => setRev((r) => r + 1)} />
+      <Plantings key={rev} onBedChange={() => setPlanRev((r) => r + 1)} />
     </>
   )
 }

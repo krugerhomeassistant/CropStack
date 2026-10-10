@@ -46,6 +46,18 @@ if (!(await setup.request.get(`${base}/api/v1/plantings`).then((r) => r.json()))
     const made = await setup.request.post(`${base}/api/v1/plantings`, { data: body }).then((r) => r.json())
     if (body.crop === 'carrot') await setup.request.patch(`${base}/api/v1/plantings/${made.id}`, { data: { status: 'sown' } })
   }
+// Beds for the garden plan, and the plantings placed in them.
+if (!(await setup.request.get(`${base}/api/v1/beds`).then((r) => r.json())).length) {
+  const beds = {}
+  for (const b of [
+    { name: 'Bed 1', kind: 'bed', x: 0.5, y: 0.5, width: 1.2, length: 2.4 },
+    { name: 'Bed 2', kind: 'bed', x: 2.2, y: 0.5, width: 1.2, length: 2.4 },
+    { name: 'Herbs', kind: 'container', x: 4, y: 0.5, width: 0.6, length: 0.6 },
+  ])
+    beds[b.name] = (await setup.request.post(`${base}/api/v1/beds`, { data: b }).then((r) => r.json())).id
+  for (const p of await setup.request.get(`${base}/api/v1/plantings`).then((r) => r.json()))
+    if (beds[p.location]) await setup.request.patch(`${base}/api/v1/plantings/${p.id}`, { data: { bed_id: beds[p.location] } })
+}
 const state = await setup.context().storageState()
 await setup.close()
 

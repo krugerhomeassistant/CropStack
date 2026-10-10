@@ -13,7 +13,7 @@ from starlette.middleware.sessions import SessionMiddleware
 from . import VERSION, scheduler
 from .config import get_settings
 from .db import get_engine, init_db
-from .routers import auth, catalog, garden, household, plantings, today, weather
+from .routers import auth, beds, catalog, garden, household, plantings, today, weather
 
 
 @asynccontextmanager
@@ -55,6 +55,7 @@ def create_app() -> FastAPI:
         garden.router,
         household.router,
         catalog.router,
+        beds.router,
         plantings.router,
         today.router,
         weather.router,

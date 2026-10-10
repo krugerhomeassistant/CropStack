@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { api, type Planting } from '../api'
+import { useEffect, useState } from 'react'
+import { api, type Bed, type Planting } from '../api'
 import { t } from '../i18n'
 import { useApp } from '../state'
 import { Button, ErrorMessage, Field } from './ui'
@@ -32,8 +32,14 @@ export default function PlantForm({
   const [when, setWhen] = useState(() => nextOccurrence(date))
   const [quantity, setQuantity] = useState('1')
   const [location, setLocation] = useState('')
+  const [beds, setBeds] = useState<Bed[]>([])
+  const [bedId, setBedId] = useState('')
   const [error, setError] = useState('')
   const [saved, setSaved] = useState<Planting | null>(null)
+
+  useEffect(() => {
+    if (open) api.beds().then(setBeds, () => setBeds([]))
+  }, [open])
 
   if (user.role === 'viewer') return null
   if (saved) return <p className="text-sm font-semibold text-leaf">{t('Added to your plantings, in the Garden tab.')}</p>
@@ -56,7 +62,8 @@ export default function PlantForm({
         start_date: sow,
         set_out_date: transplant ? when : null,
         quantity: Math.max(1, Number(quantity) || 1),
-        location,
+        location: bedId ? '' : location,
+        bed_id: bedId ? Number(bedId) : null,
         notes: '',
       })
       .then(setSaved, (e) => setError(e instanceof Error ? e.message : t('Failed to save')))
@@ -79,9 +86,23 @@ export default function PlantForm({
       <Field label={t('How many')}>
         <input className="input" type="number" min={1} value={quantity} onChange={(e) => setQuantity(e.target.value)} />
       </Field>
-      <Field label={t('Where')} hint={t('A bed, a row or a pot. Beds with a layout come later.')}>
-        <input className="input" maxLength={120} value={location} onChange={(e) => setLocation(e.target.value)} />
-      </Field>
+      {beds.length > 0 && (
+        <Field label={t('Bed')}>
+          <select className="input" value={bedId} onChange={(e) => setBedId(e.target.value)}>
+            <option value="">{t('Somewhere else')}</option>
+            {beds.map((b) => (
+              <option key={b.id} value={b.id}>
+                {b.name}
+              </option>
+            ))}
+          </select>
+        </Field>
+      )}
+      {!bedId && (
+        <Field label={t('Where')} hint={t('A bed, a row or a pot.')}>
+          <input className="input" maxLength={120} value={location} onChange={(e) => setLocation(e.target.value)} />
+        </Field>
+      )}
       {error && <ErrorMessage>{error}</ErrorMessage>}
       <div className="flex gap-2">
         <Button type="submit">{t('Save planting')}</Button>

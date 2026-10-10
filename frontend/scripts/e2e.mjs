@@ -95,6 +95,20 @@ try {
   await owner.getByText('Sown', { exact: true }).waitFor()
   step('plant from a window, list and advance')
 
+  // Garden plan: add a bed, drag it, and give a planting a place in it
+  await owner.getByRole('button', { name: /Add Raised bed/ }).click()
+  await owner.getByRole('img', { name: 'Plan of the garden beds' }).waitFor()
+  const bedBox = await owner.locator('svg[role=img] rect[stroke-width]').first().boundingBox()
+  await owner.mouse.move(bedBox.x + 10, bedBox.y + 10)
+  await owner.mouse.down()
+  await owner.mouse.move(bedBox.x + 70, bedBox.y + 50, { steps: 5 })
+  await owner.mouse.up()
+  const [bed] = await (await owner.request.get(`${base}/api/v1/beds`)).json()
+  if (bed.x <= 0.5 && bed.y <= 0.5) throw new Error('bed did not move')
+  await owner.getByLabel(/^Bed for/).first().selectOption({ label: 'Bed 1' })
+  await owner.getByText(/1 planted here/).waitFor()
+  step('garden plan: add, drag and place a planting')
+
   // Harvests are logged once a crop is growing
   const [first] = await (await owner.request.get(`${base}/api/v1/plantings`)).json()
   for (const status of ['germinated', 'harvesting'])
