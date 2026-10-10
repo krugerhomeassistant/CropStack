@@ -289,7 +289,7 @@ try {
   // Owner: change the member's role, then remove them
   await owner.reload()
   await owner.getByLabel('Role for Marie').selectOption('viewer')
-  await owner.waitForTimeout(400)
+  for (let i = 0; i < 20 && (await owner.getByLabel('Role for Marie').inputValue()) !== 'viewer'; i++) await owner.waitForTimeout(250)
   assert.equal(await owner.getByLabel('Role for Marie').inputValue(), 'viewer')
   await owner.getByRole('button', { name: 'Remove Marie' }).click()
   await owner.getByRole('button', { name: 'Remove login?' }).click()
