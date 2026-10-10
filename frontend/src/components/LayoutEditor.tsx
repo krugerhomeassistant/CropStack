@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
-import { Trash2 } from 'lucide-react'
-import { api, type Bed, type BedIn, type BedKind, type CropSummary } from '../api'
+import { Circle, MousePointer2, RectangleHorizontal, Rows3, Trash2, type LucideIcon } from 'lucide-react'
+import { api, type Bed, type BedIn, type BedKind, type CropSummary, type Recommendation } from '../api'
 import { t } from '../i18n'
 import { useApp } from '../state'
 import BedGrid from './BedGrid'
+import type { PlantRequest } from './Recommendations'
 import { Button, ErrorMessage, Field, IconButton, Section, Skeleton, Switch } from './ui'
 
 const SNAP = 0.1 // metres
@@ -12,11 +13,11 @@ const round = (n: number) => Math.round(n * 100) / 100
 const MIN_DRAWN = 0.3 // a drag shorter than this in both directions is a click: place the default size
 
 type Tool = 'select' | BedKind
-const TOOLS: { tool: Tool; label: string; name?: string; width?: number; length?: number }[] = [
-  { tool: 'select', label: 'Select and move' },
-  { tool: 'bed', label: 'Draw bed', name: 'Bed', width: 1.2, length: 2.4 },
-  { tool: 'row', label: 'Draw row', name: 'Row', width: 0.6, length: 5 },
-  { tool: 'container', label: 'Draw pot', name: 'Pot', width: 0.5, length: 0.5 },
+const TOOLS: { tool: Tool; label: string; short: string; icon: LucideIcon; name?: string; width?: number; length?: number }[] = [
+  { tool: 'select', label: 'Select and move', short: 'Move', icon: MousePointer2 },
+  { tool: 'bed', label: 'Draw bed', short: 'Bed', icon: RectangleHorizontal, name: 'Bed', width: 1.2, length: 2.4 },
+  { tool: 'row', label: 'Draw row', short: 'Row', icon: Rows3, name: 'Row', width: 0.6, length: 5 },
+  { tool: 'container', label: 'Draw pot', short: 'Pot', icon: Circle, name: 'Pot', width: 0.5, length: 0.5 },
 ]
 
 type Pt = { x: number; y: number }
@@ -39,7 +40,7 @@ function frames(beds: Bed[]) {
 }
 
 /** The garden plan, drawn to scale in metres: draw beds by dragging, move or resize them, and group them into layouts. */
-export default function LayoutEditor({ onChange }: { onChange: () => void }) {
+export default function LayoutEditor({ onChange, suggested, request }: { onChange: () => void; suggested: Recommendation[]; request: PlantRequest | null }) {
   const { user } = useApp()
   const canEdit = user.role !== 'viewer'
   const [beds, setBeds] = useState<Bed[] | null>(null)
@@ -48,12 +49,16 @@ export default function LayoutEditor({ onChange }: { onChange: () => void }) {
   const [together, setTogether] = useState(true)
   const [draft, setDraft] = useState<Rect | null>(null)
   const [crops, setCrops] = useState<CropSummary[]>([])
+  const [editBed, setEditBed] = useState(false)
   const [error, setError] = useState('')
   const drag = useRef<Drag | null>(null)
   const svg = useRef<SVGSVGElement>(null)
 
   const load = () =>
     api.beds().then(setBeds, (e) => setError(e instanceof Error ? e.message : t('Failed to load')))
+  useEffect(() => {
+    if (request?.bedId) setSelected(request.bedId)
+  }, [request])
   useEffect(() => {
     load()
     api.crops().then(setCrops, () => setCrops([]))
@@ -149,27 +154,37 @@ export default function LayoutEditor({ onChange }: { onChange: () => void }) {
     }
   }
 
-  const title = t('Garden plan')
-  if (!beds) return error ? <Section title={title}><ErrorMessage>{error}</ErrorMessage></Section> : <Skeleton className="h-48" />
+  if (!beds) return error ? <ErrorMessage>{error}</ErrorMessage> : <Skeleton className="h-48" />
 
   const current = beds.find((b) => b.id === selected) ?? null
   const w = Math.max(10, ...beds.map((b) => b.x + b.width + 2))
   const h = Math.max(6, ...beds.map((b) => b.y + b.length + 2))
   const layouts = [...new Set(beds.map((b) => b.layout).filter(Boolean))]
 
+  const status = (b: Bed) =>
+    b.clashes.length
+      ? t('{count} cells have two plantings at once', { count: b.clashes.length })
+      : b.over_capacity.length
+        ? t('More plants than the cells hold')
+        : b.needed_m2 > b.area_m2
+          ? t('Too full: the plants need {need} m² and the bed is {area} m².', { need: b.needed_m2, area: b.area_m2 })
+          : ''
+
   return (
-    <Section title={title} description={canEdit ? t('Drawn to scale in metres. Pick a tool, then drag on the plan to draw. A click places the standard size.') : t('Drawn to scale in metres.')}>
-      {error && <ErrorMessage>{error}</ErrorMessage>}
+    <>
+      <Section>
+        {error && <ErrorMessage>{error}</ErrorMessage>}
       {canEdit && (
         <div className="flex flex-wrap items-center gap-2">
-          <div role="group" aria-label={t('Plan tools')} className="flex flex-wrap gap-2">
+          <div role="group" aria-label={t('Plan tools')} className="flex w-full gap-2">
             {TOOLS.map((x) => (
-              <Button key={x.tool} variant={tool === x.tool ? 'primary' : 'secondary'} aria-pressed={tool === x.tool} onClick={() => setTool(x.tool)}>
-                {t(x.label)}
+              <Button key={x.tool} variant={tool === x.tool ? 'primary' : 'secondary'} aria-pressed={tool === x.tool} aria-label={t(x.label)} className="flex-1" onClick={() => setTool(x.tool)}>
+                <x.icon className="mr-1.5 inline size-4" aria-hidden />
+                {t(x.short)}
               </Button>
             ))}
           </div>
-          {layouts.length > 0 && (
+          {current?.layout && (
             <label className="flex min-h-11 items-center gap-2 text-sm">
               <Switch label={t('Beds in a layout move together')} checked={together} onChange={setTogether} />
               {t('Beds in a layout move together')}
@@ -239,36 +254,45 @@ export default function LayoutEditor({ onChange }: { onChange: () => void }) {
           </g>
         )}
       </svg>
-      {beds.length === 0 && <p className="text-sm text-muted">{canEdit ? t('No beds yet. Choose Draw bed, then drag on the plan.') : t('No beds have been drawn yet.')}</p>}
-
-      {beds.length > 0 && (
-        <ul className="flex flex-col divide-y divide-line text-sm">
-          {beds.map((b) => (
-            <li key={b.id} className="py-2">
-              <button type="button" className="min-h-11 w-full text-left" onClick={() => setSelected(b.id)}>
-                <span className="font-bold">{b.name}</span>
-                <span className="text-muted">
-                  {' '}
-                  · {round(b.width)} × {round(b.length)} m · {t('{count} planted here', { count: b.plantings.length })}
-                  {b.layout && ` · ${b.layout}`}
-                </span>
-                {b.crowded && (
-                  <span className="block font-semibold text-harvest">
-                    {t('Too full: the plants need {need} m² and the bed is {area} m².', { need: b.needed_m2, area: b.area_m2 })}
-                  </span>
-                )}
+        {beds.length === 0 && <p className="text-sm text-muted">{canEdit ? t('No beds yet. Choose Draw bed, then drag on the plan.') : t('No beds have been drawn yet.')}</p>}
+        {beds.length > 0 && (
+          <div className="flex gap-2 overflow-x-auto pb-1" role="group" aria-label={t('Beds')}>
+            {beds.map((b) => (
+              <button
+                key={b.id}
+                type="button"
+                aria-pressed={b.id === selected}
+                onClick={() => setSelected(b.id)}
+                className={`min-h-11 shrink-0 rounded-full border px-4 text-sm font-semibold ${b.id === selected ? 'border-leaf bg-leaf/15' : 'border-line bg-surface'} ${b.crowded ? 'text-harvest' : ''}`}
+              >
+                {b.name}
               </button>
-            </li>
-          ))}
-        </ul>
-      )}
+            ))}
+          </div>
+        )}
+      </Section>
 
-      {current && <BedGrid key={`grid${current.id}`} bed={current} crops={crops} onChange={refresh} />}
-
-      {canEdit && current && (
-        <BedForm key={`form${current.id}:${current.width}:${current.length}`} bed={current} layouts={layouts} onSaved={refresh} onDeleted={() => { setSelected(null); refresh() }} fail={fail} />
+      {current ? (
+        <Section
+          title={current.name}
+          description={<span className={status(current) ? 'font-semibold text-harvest' : ''}>{status(current) || `${round(current.width)} × ${round(current.length)} m${current.layout ? ` · ${current.layout}` : ''}`}</span>}
+          action={
+            canEdit && (
+              <Button variant="ghost" onClick={() => setEditBed(!editBed)}>
+                {editBed ? t('Close') : t('Edit bed')}
+              </Button>
+            )
+          }
+        >
+          {canEdit && editBed && (
+            <BedForm key={`form${current.id}:${current.width}:${current.length}`} bed={current} layouts={layouts} onSaved={refresh} onDeleted={() => { setSelected(null); refresh() }} fail={fail} />
+          )}
+          <BedGrid key={`grid${current.id}`} bed={current} crops={crops} suggested={suggested} request={request && (request.bedId === null || request.bedId === current.id) ? request : null} onChange={refresh} />
+        </Section>
+      ) : (
+        beds.length > 0 && <p className="px-1 text-sm text-muted">{t('Tap a bed to plant in it.')}</p>
       )}
-    </Section>
+    </>
   )
 }
 

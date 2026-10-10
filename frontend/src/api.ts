@@ -214,6 +214,7 @@ export type DataSource = {
   enabled: boolean
 }
 
+export type CalendarEvent = { date: string; kind: 'sow' | 'set_out' | 'harvest'; title: string; done: boolean; planting_id: number | null }
 export type AiProvider = 'anthropic' | 'openai' | 'openrouter' | 'ollama' | 'custom'
 export type AiConfig = {
   configured: boolean
@@ -289,7 +290,7 @@ async function request<T>(method: string, path: string, body?: unknown): Promise
     // FastAPI sends a string for HTTPException and a list of field errors for validation failures
     const detail = data?.detail
     const message = typeof detail === 'string' ? detail : Array.isArray(detail) ? detail[0]?.msg : resp.statusText
-    throw new ApiError(resp.status, message || 'Request failed')
+    throw new ApiError(resp.status, message || `Request failed (${resp.status})`)
   }
   return data as T
 }
@@ -336,6 +337,8 @@ export const api = {
   householdSettings: () => request<HouseholdSettings>('GET', '/household/settings'),
   saveHouseholdSettings: (settings: HouseholdSettings) =>
     request<HouseholdSettings>('PUT', '/household/settings', settings),
+  calendar: (start: string, end: string) =>
+    request<CalendarEvent[]>('GET', `/calendar?start=${start}&end=${end}`),
   ai: () => request<AiConfig>('GET', '/ai'),
   saveAi: (body: AiIn) => request<AiConfig>('PUT', '/ai', body),
   clearAi: () => request<AiConfig>('DELETE', '/ai'),

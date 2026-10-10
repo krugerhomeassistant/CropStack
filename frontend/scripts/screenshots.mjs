@@ -9,7 +9,7 @@ const base = process.env.CROPSTACK_URL ?? 'http://127.0.0.1:8000'
 const user = process.env.CROPSTACK_USER ?? 'screens'
 const password = process.env.CROPSTACK_PASSWORD ?? 'screens-only-123'
 const out = new URL('../screenshots/', import.meta.url).pathname
-const pages = ['today', 'garden', 'more', 'crops', 'crops/tomato', 'crop-data', 'climate', 'household', 'settings']
+const pages = ['today', 'garden', 'garden?tab=plant', 'garden?tab=calendar', 'garden?tab=plantings', 'more', 'crops', 'crops/tomato', 'crop-data', 'climate', 'household', 'settings']
 const devices = { phone: { width: 390, height: 844 }, desktop: { width: 1440, height: 900 } }
 
 mkdirSync(out, { recursive: true })
@@ -57,6 +57,16 @@ if (!(await setup.request.get(`${base}/api/v1/beds`).then((r) => r.json())).leng
     beds[b.name] = (await setup.request.post(`${base}/api/v1/beds`, { data: b }).then((r) => r.json())).id
   for (const p of await setup.request.get(`${base}/api/v1/plantings`).then((r) => r.json()))
     if (beds[p.location]) await setup.request.patch(`${base}/api/v1/plantings/${p.id}`, { data: { bed_id: beds[p.location] } })
+  const today = new Date()
+  const later = new Date(today.getTime() + 12 * 864e5).toISOString().slice(0, 10)
+  for (const [crop, start, cells] of [
+    ['lettuce', today.toISOString().slice(0, 10), [[0, 0], [1, 0], [0, 1], [1, 1], [0, 2]]],
+    ['radish', today.toISOString().slice(0, 10), [[2, 0], [3, 0], [2, 1]]],
+    ['carrot', later, [[0, 3], [1, 3], [2, 3], [3, 3]]],
+  ])
+    await setup.request.post(`${base}/api/v1/plantings`, {
+      data: { crop, method: 'direct', start_date: start, bed_id: beds['Bed 1'], cells },
+    })
 }
 const state = await setup.context().storageState()
 await setup.close()
@@ -68,8 +78,9 @@ for (const [device, viewport] of Object.entries(devices))
     for (const name of pages) {
       await page.goto(`${base}/${name}`)
       await page.waitForLoadState('networkidle')
+      if (name === 'garden') await page.getByRole('button', { name: 'Bed 1', exact: true }).click()
       if (name === 'today' && (await page.locator('summary').count())) await page.locator('summary').first().click() // one job shows its steps
-      await page.screenshot({ path: `${out}${name.replace('/', '-')}-${colorScheme}-${device}.png`, fullPage: true })
+      await page.screenshot({ path: `${out}${name.replace(/[/?=]/g, '-')}-${colorScheme}-${device}.png`, fullPage: true })
     }
     await context.close()
   }

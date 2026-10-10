@@ -1,6 +1,6 @@
 /**
  * CropStack UI kit (docs/DESIGN.md). Small, dependency-free components over the utilities in index.css.
- * shortcut: Sheet, Toast and Tabs are added with the first screen that needs them (DESIGN.md, Components).
+ * shortcut: Sheet and Toast are added with the first screen that needs them (DESIGN.md, Components).
  */
 import {
   cloneElement,
@@ -104,6 +104,39 @@ export function Section({
       )}
       {children}
     </section>
+  )
+}
+
+/** One screen split into a few windows; the choice lives in the page, so the URL can hold it. */
+export function Tabs<V extends string>({
+  label,
+  tabs,
+  value,
+  onChange,
+}: {
+  label: string
+  tabs: { value: V; label: string }[]
+  value: V
+  onChange: (v: V) => void
+}) {
+  return (
+    <div role="tablist" aria-label={label} className="flex gap-1 rounded-[var(--radius-row)] bg-sunken p-1">
+      {tabs.map((x) => (
+        <button
+          key={x.value}
+          type="button"
+          role="tab"
+          aria-selected={x.value === value}
+          className={join(
+            'min-h-11 flex-1 rounded-[calc(var(--radius-row)-2px)] px-2 text-sm font-semibold',
+            x.value === value ? 'bg-surface text-ink shadow-sm' : 'text-muted hover:text-ink',
+          )}
+          onClick={() => onChange(x.value)}
+        >
+          {x.label}
+        </button>
+      ))}
+    </div>
   )
 }
 

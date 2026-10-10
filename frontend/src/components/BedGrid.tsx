@@ -1,11 +1,17 @@
-import { useState } from 'react'
-import { api, type Bed, type CropSummary, type Placement } from '../api'
+import { useEffect, useState } from 'react'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { api, type Bed, type CropSummary, type Placement, type Recommendation } from '../api'
 import { t } from '../i18n'
 import { useApp } from '../state'
-import { Button, ErrorMessage, Field } from './ui'
+import { toRequest, type PlantRequest } from './Recommendations'
+import { Button, ErrorMessage, Field, IconButton } from './ui'
 
 const iso = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
 const addDays = (s: string, n: number) => iso(new Date(new Date(`${s}T00:00:00`).getTime() + n * 864e5))
+const addMonths = (s: string, n: number) => {
+  const d = new Date(`${s}T00:00:00`)
+  return iso(new Date(d.getFullYear(), d.getMonth() + n, d.getDate()))
+}
 const key = (c: number, r: number) => `${c},${r}`
 const show = (s: string) => new Date(`${s}T00:00:00`).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })
 
@@ -17,21 +23,42 @@ export function cropColour(slug: string): string {
 }
 
 type Brush = { crop: string; method: 'direct' | 'transplant'; weeks: number } | 'erase' | null
+const SUGGESTED = 6
 
-/** The inside of one bed, cell by cell, on any date. Pick a crop and paint cells to plant it there from that date;
+/** The inside of one bed, cell by cell, on any date. Choose a crop and drag across cells to plant it from that date;
  *  the same cell can hold something else before or after, so a bed can be mixed and staggered. */
-export default function BedGrid({ bed, crops, onChange }: { bed: Bed; crops: CropSummary[]; onChange: () => void }) {
+export default function BedGrid({
+  bed,
+  crops,
+  suggested,
+  request,
+  onChange,
+}: {
+  bed: Bed
+  crops: CropSummary[]
+  suggested: Recommendation[]
+  request: PlantRequest | null
+  onChange: () => void
+}) {
   const canEdit = useApp().user.role !== 'viewer'
   const today = iso(new Date())
-  const [on, setOn] = useState(today)
-  const [brush, setBrush] = useState<Brush>(null)
+  const [on, setOn] = useState(request?.date ?? today)
+  const [brush, setBrush] = useState<Brush>(request ? { crop: request.crop, method: request.method, weeks: request.weeks } : null)
   const [painted, setPainted] = useState<string[]>([])
   const [info, setInfo] = useState<Placement | null>(null)
+  const [editing, setEditing] = useState(false)
   const [until, setUntil] = useState('')
   const [sow, setSow] = useState('')
   const [setOut, setSetOut] = useState('')
   const [qty, setQty] = useState('')
   const [error, setError] = useState('')
+
+  // arriving from a recommendation: the crop is chosen and the date set
+  useEffect(() => {
+    if (!request) return
+    setBrush({ crop: request.crop, method: request.method, weeks: request.weeks })
+    setOn(request.date)
+  }, [request])
 
   const here = (c: number, r: number) =>
     bed.placements.filter((p) => p.cells.some(([x, y]) => x === c && y === r) && p.from <= on && on <= p.until)
@@ -56,6 +83,7 @@ export default function BedGrid({ bed, crops, onChange }: { bed: Bed; crops: Cro
     const [c, r] = k ? k.split(',').map(Number) : [-1, -1]
     const p = here(c, r)[0] ?? null
     setInfo(p)
+    setEditing(false)
     setUntil(p?.until ?? '')
     setSow(p?.start_date ?? '')
     setSetOut(p?.set_out_date ?? '')
@@ -77,11 +105,24 @@ export default function BedGrid({ bed, crops, onChange }: { bed: Bed; crops: Cro
       return
     }
     const transplant = brush.method === 'transplant'
+    const start = transplant ? addDays(on, -7 * brush.weeks) : on
+    // Painting more of the same crop on the same day grows that planting instead of adding another row.
+    const same = bed.placements.find(
+      (p) => p.crop === brush.crop && p.method === brush.method && p.start_date === start && !['finished', 'failed'].includes(p.status),
+    )
+    if (same) {
+      const union = [...same.cells, ...cells.filter(([c, r]) => !same.cells.some(([x, y]) => x === c && y === r))]
+      if (union.length === same.cells.length) return
+      api
+        .updatePlanting(same.planting_id, { cells: union, quantity: Math.max(1, Math.round((same.quantity * union.length) / same.cells.length)) })
+        .then(onChange, fail)
+      return
+    }
     api
       .addPlanting({
         crop: brush.crop,
         method: brush.method,
-        start_date: transplant ? addDays(on, -7 * brush.weeks) : on,
+        start_date: start,
         set_out_date: transplant ? on : null,
         bed_id: bed.id,
         cells,
@@ -93,74 +134,97 @@ export default function BedGrid({ bed, crops, onChange }: { bed: Bed; crops: Cro
 
   const crop = brush && brush !== 'erase' ? brush : null
   const legend = [...new Map(bed.placements.map((p) => [p.crop, p.name])).entries()]
+  const chips = suggested.slice(0, SUGGESTED)
+  const nameOf = (slug: string) => crops.find((c) => c.slug === slug)?.names.en?.[0] ?? slug
+  const pick = (r: Recommendation) => {
+    const q = toRequest(r)
+    setBrush(crop?.crop === r.crop ? null : { crop: q.crop, method: q.method, weeks: q.weeks })
+  }
 
   return (
-    <div className="flex flex-col gap-3 rounded-[var(--radius-row)] bg-sunken p-3">
-      <div className="flex flex-wrap items-end gap-3">
-        <Field label={t('Show the bed on')}>
-          <input className="input" type="date" value={on} onChange={(e) => e.target.value && setOn(e.target.value)} />
-        </Field>
-        <Button variant="ghost" onClick={() => setOn(today)}>
-          {t('Today')}
-        </Button>
+    <div className="flex flex-col gap-4">
+      <div className="flex items-center gap-1">
+        <IconButton icon={ChevronLeft} label={t('A month earlier')} onClick={() => setOn(addMonths(on, -1))} />
+        <input className="input w-auto flex-1" type="date" aria-label={t('Show the bed on')} value={on} onChange={(e) => e.target.value && setOn(e.target.value)} />
+        <IconButton icon={ChevronRight} label={t('A month later')} onClick={() => setOn(addMonths(on, 1))} />
+        {on !== today && (
+          <Button variant="ghost" onClick={() => setOn(today)}>
+            {t('Today')}
+          </Button>
+        )}
       </div>
-      <input
-        type="range"
-        aria-label={t('Move through the year')}
-        min={-60}
-        max={365}
-        value={Math.round((new Date(`${on}T00:00:00`).getTime() - new Date(`${today}T00:00:00`).getTime()) / 864e5)}
-        onChange={(e) => setOn(addDays(today, Number(e.target.value)))}
-      />
 
       {canEdit && (
-      <div className="flex flex-wrap items-end gap-2">
-        <Field label={t('Plant')}>
-          <select
-            className="input"
-            value={crop?.crop ?? ''}
-            onChange={(e) => setBrush(e.target.value ? { crop: e.target.value, method: crop?.method ?? 'direct', weeks: crop?.weeks ?? 5 } : null)}
-          >
-            <option value="">{brush === 'erase' ? t('Choose a crop') : t('Choose a crop to paint')}</option>
-            {crops.map((c) => (
-              <option key={c.slug} value={c.slug}>
-                {c.names.en?.[0] ?? c.slug}
-              </option>
+        <div className="flex flex-col gap-2">
+          <div className="flex flex-wrap gap-2" role="group" aria-label={t('Choose what to plant')}>
+            {chips.map((r) => (
+              <button
+                key={r.crop}
+                type="button"
+                aria-pressed={crop?.crop === r.crop}
+                onClick={() => pick(r)}
+                className={`flex min-h-11 items-center gap-2 rounded-full border px-4 text-sm font-semibold ${crop?.crop === r.crop ? 'border-leaf bg-leaf/15' : 'border-line bg-surface'}`}
+              >
+                <span className="size-3 rounded-full" style={{ background: cropColour(r.crop) }} aria-hidden />
+                {r.name}
+              </button>
             ))}
-          </select>
-        </Field>
-        {crop && (
-          <>
-            <Field label={t('How')}>
-              <select className="input" value={crop.method} onChange={(e) => setBrush({ ...crop, method: e.target.value as 'direct' | 'transplant' })}>
-                <option value="direct">{t('Sow seeds')}</option>
-                <option value="transplant">{t('Set out seedlings')}</option>
+            <button
+              type="button"
+              aria-pressed={brush === 'erase'}
+              onClick={() => setBrush(brush === 'erase' ? null : 'erase')}
+              className={`min-h-11 rounded-full border px-4 text-sm font-semibold ${brush === 'erase' ? 'border-leaf bg-leaf/15' : 'border-line bg-surface'}`}
+            >
+              {t('Take out of cells')}
+            </button>
+          </div>
+          <div className="flex flex-wrap items-end gap-2">
+            <Field label={t('Plant')}>
+              <select
+                className="input"
+                value={crop && !chips.some((r) => r.crop === crop.crop) ? crop.crop : ''}
+                onChange={(e) => e.target.value && setBrush({ crop: e.target.value, method: crop?.method ?? 'direct', weeks: crop?.weeks ?? 5 })}
+              >
+                <option value="">{crop && chips.some((r) => r.crop === crop.crop) ? nameOf(crop.crop) : t('Another crop…')}</option>
+                {crops.map((c) => (
+                  <option key={c.slug} value={c.slug}>
+                    {c.names.en?.[0] ?? c.slug}
+                  </option>
+                ))}
               </select>
             </Field>
-            {crop.method === 'transplant' && (
-              <Field label={t('Weeks indoors')}>
-                <input className="input w-20" type="number" min={1} max={20} value={crop.weeks} onChange={(e) => setBrush({ ...crop, weeks: Number(e.target.value) || 1 })} />
-              </Field>
+            {crop && (
+              <>
+                <Field label={t('How')}>
+                  <select className="input" value={crop.method} onChange={(e) => setBrush({ ...crop, method: e.target.value as 'direct' | 'transplant' })}>
+                    <option value="direct">{t('Sow seeds')}</option>
+                    <option value="transplant">{t('Set out seedlings')}</option>
+                  </select>
+                </Field>
+                {crop.method === 'transplant' && (
+                  <Field label={t('Weeks indoors')}>
+                    <input className="input w-20" type="number" min={1} max={20} value={crop.weeks} onChange={(e) => setBrush({ ...crop, weeks: Number(e.target.value) || 1 })} />
+                  </Field>
+                )}
+              </>
             )}
-          </>
-        )}
-        <Button variant={brush === 'erase' ? 'primary' : 'secondary'} onClick={() => setBrush(brush === 'erase' ? null : 'erase')}>
-          {t('Take out of cells')}
-        </Button>
-      </div>
+          </div>
+        </div>
       )}
       <p className="text-sm text-muted">
         {crop
-          ? t('Drag across the cells to plant them from {date}. The same cells can hold something else before or after.', { date: show(on) })
+          ? t('Drag across the cells to plant {crop} from {date}.', { crop: nameOf(crop.crop), date: show(on) })
           : brush === 'erase'
             ? t('Drag across cells to take what is growing there on {date} out of them.', { date: show(on) })
-            : t('Tap a cell to see what is in it, or choose a crop to paint.')}
+            : canEdit
+              ? t('Choose a crop, then drag across the cells. Tap a cell to see what is in it.')
+              : t('Tap a cell to see what is in it.')}
       </p>
 
       <svg
         viewBox={`0 0 ${bed.cols} ${bed.rows}`}
         style={{ maxWidth: `${bed.cols * 3.5}rem` }}
-        className="w-full touch-none select-none rounded-[var(--radius-row)] bg-canvas"
+        className="w-full touch-none select-none rounded-[var(--radius-row)] bg-sunken"
         role="img"
         aria-label={t('Cells of {bed}', { bed: bed.name })}
         onPointerDown={down}
@@ -194,24 +258,27 @@ export default function BedGrid({ bed, crops, onChange }: { bed: Bed; crops: Cro
           }),
         )}
       </svg>
-      <p className="text-sm text-muted">
+      <p className="text-xs text-muted">
         {t('One cell is {size} cm square.', { size: bed.cell_cm })}
         {legend.length > 0 && ` ${t('In this bed: {crops}.', { crops: legend.map(([, n]) => n).join(', ') })}`}
       </p>
 
       {info && (
-        <div className="flex flex-col gap-2 rounded-[var(--radius-row)] bg-surface p-3 text-sm">
-          <p className="font-bold">{info.name}</p>
-          <p>
-            {t('{count} plants in {cells} cells (room for {room}). Holds the cells from {from} to {until}.', {
-              count: info.quantity,
-              cells: info.cells.length,
-              room: info.capacity,
-              from: show(info.from),
-              until: show(info.until),
-            })}
-          </p>
-          {canEdit && (
+        <div className="flex flex-col gap-2 rounded-[var(--radius-row)] bg-sunken p-3 text-sm">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="font-bold">{info.name}</p>
+              <p className="text-muted">
+                {t('{count} plants · {from} to {until}', { count: info.quantity, from: show(info.from), until: show(info.until) })}
+              </p>
+            </div>
+            {canEdit && (
+              <Button variant="ghost" onClick={() => setEditing(!editing)}>
+                {editing ? t('Close') : t('Edit')}
+              </Button>
+            )}
+          </div>
+          {canEdit && editing && (
             <form
               className="flex flex-wrap items-end gap-2"
               onSubmit={(e) => {

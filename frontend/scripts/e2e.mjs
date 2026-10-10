@@ -100,7 +100,7 @@ try {
   step('crop catalog: search, detail with sources, credits')
 
   // The planting is listed on the Garden page and moves along
-  await owner.goto(`${base}/garden`)
+  await owner.goto(`${base}/garden?tab=plantings`)
   await owner.getByRole('heading', { name: 'Plantings' }).waitFor()
   await owner.getByText('6 planted · Bed 1').waitFor()
   await owner.getByRole('button', { name: 'Mark sown' }).click()
@@ -108,7 +108,7 @@ try {
   step('plant from a window, list and advance')
 
   // Garden plan: add a bed, drag it, and give a planting a place in it
-  await owner.getByRole('heading', { name: 'What to plant' }).waitFor() // it loads late and moves the page
+  await owner.goto(`${base}/garden`)
   const plan = owner.getByRole('img', { name: 'Plan of the garden beds' })
   await plan.scrollIntoViewIfNeeded()
   const planBox = await stableBox(plan)
@@ -117,7 +117,7 @@ try {
   await owner.mouse.down()
   await owner.mouse.move(planBox.x + 160, planBox.y + 120, { steps: 5 })
   await owner.mouse.up()
-  await owner.getByRole('button', { name: /^Plant in Bed 1/ }).first().waitFor() // the list grows once it knows the bed
+  await owner.getByRole('button', { name: 'Bed 1', exact: true }).waitFor()
   const drawn = (await (await owner.request.get(`${base}/api/v1/beds`)).json())[0]
   assert.ok(drawn.width > 1 && drawn.length > 1, 'the bed takes the size that was dragged')
   const bedRect = owner.locator('svg[role=img] rect[stroke-width]').first()
@@ -131,11 +131,6 @@ try {
   const [bed] = await (await owner.request.get(`${base}/api/v1/beds`)).json()
   if (bed.x <= drawn.x && bed.y <= drawn.y) throw new Error(`bed did not move: ${JSON.stringify(bedBox)} ${bed.x},${bed.y}`)
   // Resize by the corner handle, and group into a layout that moves as one
-  const logs = []
-  owner.on('console', (m) => logs.push(m.text()))
-  owner.on('pageerror', (e) => logs.push(String(e)))
-  owner.on('response', (r) => r.url().includes('/beds') && logs.push(`${r.request().method()} ${r.status()}`))
-  owner.on('requestfailed', (r) => logs.push(`failed ${r.url()}`))
   await owner.getByTestId('resize-handle').evaluate((el) => el.scrollIntoView({ block: 'center' })) // clear of the bottom bar
   const handle = await stableBox(owner.getByTestId('resize-handle'))
   const before = (await (await owner.request.get(`${base}/api/v1/beds`)).json())[0]
@@ -148,12 +143,17 @@ try {
     await owner.waitForTimeout(250) // the new size is saved on release
     after = (await (await owner.request.get(`${base}/api/v1/beds`)).json())[0]
   }
-  assert.ok(after.width > before.width && after.length > before.length, `the corner handle resizes the bed: ${JSON.stringify([before.width, after.width, handle])} ${await owner.evaluate(([x, y]) => { const el = document.elementFromPoint(x, y); return el ? el.outerHTML.slice(0, 160) : 'nothing' }, [handle.x + handle.width / 2, handle.y + handle.height / 2])} ${logs.join('|')} ${JSON.stringify((await (await owner.request.get(`${base}/api/v1/beds`)).json()).map((b) => [b.id, b.x, b.y, b.width, b.length]))} ${await owner.getByRole('button', { name: 'Draw bed' }).getAttribute('aria-pressed')}`)
+  assert.ok(after.width > before.width && after.length > before.length, 'the corner handle resizes the bed')
+  await owner.getByRole('button', { name: 'Edit bed' }).click()
   await owner.getByLabel('Layout', { exact: true }).fill('Back garden')
   await owner.getByRole('button', { name: 'Save', exact: true }).first().click()
   await owner.getByText(/Back garden/).first().waitFor()
+  await owner.getByRole('tab', { name: 'Plantings' }).click()
+  await owner.getByRole('button', { name: 'More' }).first().click()
   await owner.getByLabel(/^Bed for/).first().selectOption({ label: 'Bed 1' })
-  await owner.getByText(/1 planted here/).waitFor()
+  for (let i = 0; i < 20 && !(await (await owner.request.get(`${base}/api/v1/plantings`)).json()).some((p) => p.bed_id); i++)
+    await owner.waitForTimeout(250)
+  await owner.getByRole('tab', { name: 'Plan', exact: true }).click()
   step('garden plan: add, drag and place a planting')
 
   // Cells: paint two crops into one bed, then see recommendations with a place in the plan
@@ -171,13 +171,25 @@ try {
   await owner.mouse.down()
   await owner.mouse.up()
   await owner.getByText(/In this bed: .*Radish/).waitFor()
+  await owner.getByLabel('Plant', { exact: true }).selectOption('lettuce')
+  await owner.mouse.move(cells.x + cells.width * 0.75, cells.y + 10)
+  await owner.mouse.down()
+  await owner.mouse.up()
+  await owner.waitForTimeout(800)
+  const lettuce = (await (await owner.request.get(`${base}/api/v1/plantings`)).json()).filter((p) => p.crop === 'lettuce' && p.bed_id)
+  assert.equal(lettuce.length, 1, 'painting the same crop on the same day grows one planting')
+  await owner.getByRole('tab', { name: 'Plant', exact: true }).click()
+  await owner.getByRole('heading', { name: 'Plant now' }).waitFor()
+  await owner.getByRole('button', { name: 'Plant', exact: true }).first().click()
+  await owner.getByRole('group', { name: 'Choose what to plant' }).getByRole('button', { pressed: true }).first().waitFor()
   step('garden plan: paint a mixed bed, recommendations shown')
 
   // Harvests are logged once a crop is growing
   const first = (await (await owner.request.get(`${base}/api/v1/plantings`)).json()).find((p) => p.quantity === 6) // the one sown above
   for (const status of ['germinated', 'harvesting'])
     await owner.request.patch(`${base}/api/v1/plantings/${first.id}`, { data: { status } })
-  await owner.reload()
+  await owner.goto(`${base}/garden?tab=plantings`)
+  await owner.getByRole('listitem').filter({ hasText: '6 planted' }).getByRole('button', { name: 'More' }).click()
   await owner.getByRole('button', { name: 'Log a harvest' }).first().click()
   await owner.getByLabel('How much').fill('1.5')
   await owner.getByRole('button', { name: 'Save', exact: true }).click()

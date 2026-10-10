@@ -5,6 +5,19 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.32.0] - 2026-10-10
+
+### Changed
+- **The Garden page is four windows**: Plan, Plant, Calendar and Plantings, instead of one long scroll. The plan has a short tool row and a row of bed buttons; tapping a bed opens its own panel with the cell grid, and the bed's rename, resize and layout form sits behind "Edit bed".
+- **Plant** lists what can go in the ground now and soon in one line each (crop, when, best weeks) with a single Plant button. Plant takes you to a bed with that crop already chosen and the date set; the crops suggested for now are also chips above the grid.
+- The date slider is gone: step a month at a time, or pick a date, with a Today button.
+- Painting more of the same crop on the same day adds cells to that planting instead of creating a new planting for every stroke. The Plantings list also groups identical plantings and keeps its extra actions (failed, harvest, bed, delete) behind More.
+- A full bed now says why: cells with two plantings at once, more plants than the cells hold, or too little room. It no longer says "need 0 m²".
+- An error with no message from the server now shows its status number.
+
+### Added
+- **Calendar**: a month view of sowing, setting-out and harvest days with a dot per day; tap a day for its jobs.
+
 ## [0.31.0] - 2026-10-10
 
 ### Added

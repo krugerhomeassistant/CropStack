@@ -43,6 +43,7 @@ Target architecture (engines, data model, API) is specified in `docs/SPEC.md` §
 | `engine/layout.py` | **pure** plant footprint (spread × row spacing, m²), bed fullness, cell grid, plants per cell, date-aware occupancy, free cells, clashes |
 | `ai.py` | provider defaults, `config` (env < saved < override), **pure** `build_request`/`parse_reply` (anthropic; openai, openrouter, ollama, custom share the OpenAI schema) and `ask` (httpx) |
 | `routers/ai.py` | `GET/PUT/DELETE /api/v1/ai` (owner writes; key never returned), `POST /ai/test`, `POST /ai/ask` (grounded in site, plantings, open jobs) |
+| `routers/calendar.py` | `GET /api/v1/calendar?start&end` (at most 100 days): sow, set-out and harvest jobs by ideal day |
 | `routers/beds.py` | beds CRUD; `GET /beds` adds the grid (cols, rows), placements (cells, from, until), clashes and crowding |
 | `engine/recommend.py` | **pure** what-to-plant timing: `timing`, `options` (direct, transplant), `best_option` from a sowing analysis |
 | `routers/recommend.py` | `GET /api/v1/recommendations?horizon=21`: plant now / coming up, each with a bed and free cells (prefers cells without the same family) |
