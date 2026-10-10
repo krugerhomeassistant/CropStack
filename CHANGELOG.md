@@ -5,6 +5,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.34.1] - 2026-10-10
+
+### Fixed
+- **"Request failed (500)" when planting**: two planting requests at once (quick taps, or a plan being used) both planned the same jobs and one failed on the unique key, even though its planting had been saved. Job planning is now serialised.
+- A quick tap on a bed cell sometimes planted nothing (the stroke ended before the screen updated). The stroke is now tracked directly.
+- Painting a cell on today's date or earlier records the planting as sown (or set out) straight away, instead of pending.
+- "Draft a year plan" is a full button in the section instead of a squeezed, wrapping one.
+
 ## [0.34.0] - 2026-10-10
 
 ### Added

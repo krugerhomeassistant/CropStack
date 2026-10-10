@@ -1,5 +1,6 @@
 """Today: the household's open jobs, made by the task engine from its plantings (SPEC §9.2, §11.2)."""
 
+import threading
 from datetime import UTC, date, datetime, timedelta
 from typing import Literal
 
@@ -23,7 +24,15 @@ GROUPS = ["Protect", "Plant", "Water", "Feed", "Harvest", "Animals", "Check", "M
 UPCOMING_DAYS = 14
 
 
+_REFRESH = threading.Lock()  # shortcut: one process, so a lock is enough; with several workers use a database lock
+
+
 def refresh_tasks(db: Session, household_id: int, c: cat.Catalog) -> None:
+    with _REFRESH:  # two requests at once would both insert the same job and hit the unique key
+        _refresh_tasks(db, household_id, c)
+
+
+def _refresh_tasks(db: Session, household_id: int, c: cat.Catalog) -> None:
     """Regenerate the household's tasks from its plantings. Uses the climate record already stored (no network);
     without one, harvest dates fall back to the crop's catalogued cycle length."""
     site = db.exec(select(Site).where(Site.household_id == household_id)).first()
@@ -47,10 +56,15 @@ def refresh_tasks(db: Session, household_id: int, c: cat.Catalog) -> None:
 
     sync(db, household_id, specs, {"sow", "set_out", "harvest"})
     db.commit()
-    refresh_protect(db, household_id, c)
+    _refresh_protect(db, household_id, c)
 
 
 def refresh_protect(db: Session, household_id: int, c: cat.Catalog) -> None:
+    with _REFRESH:
+        _refresh_protect(db, household_id, c)
+
+
+def _refresh_protect(db: Session, household_id: int, c: cat.Catalog) -> None:
     """Frost, heat and water jobs from the stored weather; cheap, so it also runs whenever Today is opened."""
     site = db.exec(select(Site).where(Site.household_id == household_id)).first()
     stored = db.get(Forecast, site.id) if site else None

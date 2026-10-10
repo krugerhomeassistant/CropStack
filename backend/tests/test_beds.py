@@ -133,8 +133,14 @@ def test_a_planting_dated_in_the_past_is_already_growing_and_has_an_outlook(owne
         json={"crop": "testcrop", "method": "transplant", "start_date": two_weeks, "set_out_date": week_ago},
     )
     assert out.json()["status"] == "transplanted"
-    planned = owner.post("/api/v1/plantings", json={"crop": "testcrop", "method": "direct", "start_date": str(today)})
+    planned = owner.post(
+        "/api/v1/plantings", json={"crop": "testcrop", "method": "direct", "start_date": str(today + timedelta(days=3))}
+    )
     assert planned.json()["status"] == "planned"
+    painted = {"crop": "testcrop", "method": "direct", "start_date": str(today), "in_ground": True}
+    assert (
+        owner.post("/api/v1/plantings", json=painted).json()["status"] == "sown"
+    )  # painted today: already in the ground
     rows = {r["id"]: r for r in owner.get("/api/v1/plantings").json()}
     assert rows[sown.json()["id"]]["harvest_from"] and rows[planned.json()["id"]]["next_job"]["title"].startswith("Sow")
 
@@ -199,3 +205,12 @@ def test_the_drafter_rotates_and_never_double_books_cells():
     assert tomato["bed_id"] == 2  # where tomatoes did not grow last
     cells = [(r["bed_id"], tuple(c)) for r in plan for c in r["cells"]]
     assert len(cells) == len(set(cells))
+
+
+def test_many_plantings_at_once_all_succeed(owner):  # noqa: F811
+    from concurrent.futures import ThreadPoolExecutor
+
+    bed = owner.post("/api/v1/beds", json={"name": "P", "width": 3, "length": 3}).json()
+    with ThreadPoolExecutor(8) as pool:
+        codes = list(pool.map(lambda i: plant(owner, bed["id"], [[i, 0]], "2026-10-01").status_code, range(12)))
+    assert codes == [201] * 12  # job planning is serialised, so no unique-key clash

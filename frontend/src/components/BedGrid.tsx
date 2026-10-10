@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { api, type Bed, type CropSummary, type Placement, type PlanItem, type Recommendation } from '../api'
 import { t } from '../i18n'
@@ -43,6 +43,7 @@ export default function BedGrid({
   const [on, setOn] = useState(request?.date ?? today)
   const [brush, setBrush] = useState<Brush>(request ? { crop: request.crop, method: request.method, weeks: request.weeks } : null)
   const [painted, setPainted] = useState<string[]>([])
+  const strokeRef = useRef<string[]>([]) // the cells of the stroke so far; a quick tap can end before a re-render
   const [info, setInfo] = useState<Placement | null>(null)
   const [editing, setEditing] = useState(false)
   const [until, setUntil] = useState('')
@@ -75,7 +76,10 @@ export default function BedGrid({
   }
   function add(e: React.PointerEvent<SVGSVGElement>) {
     const k = at(e)
-    if (k && !painted.includes(k)) setPainted((p) => [...p, k])
+    if (k && !strokeRef.current.includes(k)) {
+      strokeRef.current = [...strokeRef.current, k]
+      setPainted(strokeRef.current)
+    }
   }
   function down(e: React.PointerEvent<SVGSVGElement>) {
     setError('')
@@ -92,7 +96,8 @@ export default function BedGrid({
     setQty(p ? String(p.quantity) : '')
   }
   function up() {
-    const cells = painted.map((k) => k.split(',').map(Number) as [number, number])
+    const cells = strokeRef.current.map((k) => k.split(',').map(Number) as [number, number])
+    strokeRef.current = []
     setPainted([])
     if (!brush || cells.length === 0) return
     if (brush === 'erase') {
@@ -128,6 +133,7 @@ export default function BedGrid({
         set_out_date: transplant ? on : null,
         bed_id: bed.id,
         cells,
+        in_ground: on <= today, // painted on today or earlier: it is already in the ground
         location: '',
         notes: '',
       })

@@ -42,15 +42,14 @@ export default function YearPlan({ hasBeds, plan, setPlan, onUsed }: { hasBeds: 
     <Section
       title={t('Year plan')}
       description={t('A draft of what to plant where over the next 12 months, from your climate and what already grows in your beds.')}
-      action={
-        canEdit &&
-        hasBeds && (
-          <Button variant={plan.length ? 'ghost' : 'primary'} onClick={draft} disabled={busy}>
-            {plan.length ? t('Draft again') : t('Draft a year plan')}
-          </Button>
-        )
-      }
     >
+      {canEdit && hasBeds && (
+        <div>
+          <Button variant={plan.length ? 'secondary' : 'primary'} onClick={draft} disabled={busy}>
+            {busy ? t('Drafting…') : plan.length ? t('Draft again') : t('Draft a year plan')}
+          </Button>
+        </div>
+      )}
       {!hasBeds && <EmptyState icon={CalendarRange} title={t('Draw your beds first')}>{t('The plan fills the beds you draw on the Plan tab.')}</EmptyState>}
       {error && <ErrorMessage>{error}</ErrorMessage>}
       {months.map((m) => (

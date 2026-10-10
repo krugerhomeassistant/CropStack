@@ -106,6 +106,7 @@ export type PlantingIn = Pick<Planting, 'crop' | 'method' | 'start_date' | 'set_
   bed_id?: number | null
   cells?: [number, number][]
   ends_on?: string | null
+  in_ground?: boolean
 }
 export type PlanItem = {
   crop: string

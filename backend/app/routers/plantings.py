@@ -39,6 +39,7 @@ class PlantingIn(BaseModel):
     cells: list[list[int]] = Field(default_factory=list, max_length=2500)
     ends_on: date | None = None
     notes: str = Field("", max_length=2000)
+    in_ground: bool = False  # logged as done even when dated today
 
     @model_validator(mode="after")
     def dates(self) -> "PlantingIn":
@@ -114,7 +115,7 @@ def make_planting(body: PlantingIn, me: EditorDep, db: SessionDep, c: CatalogDep
     """A Planting row for `body`, added to the session but not committed."""
     if c.get("crop", body.crop) is None:
         raise HTTPException(422, f"No crop {body.crop!r} in the catalog")
-    data = body.model_dump()
+    data = body.model_dump(exclude={"in_ground"})
     if body.bed_id is not None:
         bed = _bed(db, me.household_id, body.bed_id)
         data["location"] = bed.name
@@ -129,9 +130,11 @@ def make_planting(body: PlantingIn, me: EditorDep, db: SessionDep, c: CatalogDep
     data["quantity"] = data["quantity"] or 1
     # Already in the ground: a planting dated in the past starts as sown (or set out), so no overdue sowing job appears.
     today = datetime.now(UTC).date()
-    if body.method == "transplant" and body.set_out_date and body.set_out_date < today:
+    # `in_ground` is for a planting logged today (painted into a bed); a plan made for today is still to do.
+    reached = (lambda d: d <= today) if body.in_ground else (lambda d: d < today)
+    if body.method == "transplant" and body.set_out_date and reached(body.set_out_date):
         data["status"] = "transplanted"
-    elif body.start_date < today:
+    elif reached(body.start_date):
         data["status"] = "sown"
     return Planting(household_id=me.household_id, created_by=me.user_id, **data)
 
