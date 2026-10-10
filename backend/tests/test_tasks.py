@@ -196,3 +196,16 @@ def test_check_job_reaches_today_with_what_to_look_for(owner):  # noqa: F811
     [job] = [t for t in groups["Check"] if t["kind"] == "check"]
     assert job["title"].startswith("Check ") and job["steps"]
     assert isinstance(job["watch"], list)
+
+
+def test_check_lists_only_organisms_that_affect_the_crop():
+    from app.models import Task
+    from app.routers.today import _view
+
+    watch = [
+        {"slug": "any", "hosts": []},
+        {"slug": "tomato-only", "hosts": ["tomato"]},
+    ]
+    job = Task(kind="check", title="t", reason="r", earliest=date.today(), ideal=date.today(), latest=date.today())
+    names = lambda crop: [w["slug"] for w in _view(job, date.today(), {}, watch, crop)["watch"]]  # noqa: E731
+    assert names("tomato") == ["any", "tomato-only"] and names("lettuce") == ["any"]

@@ -855,6 +855,15 @@
       "default": null,
       "title": "Description"
     },
+    "hosts": {
+      "items": {
+        "maxLength": 80,
+        "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+        "type": "string"
+      },
+      "title": "Hosts",
+      "type": "array"
+    },
     "kind": {
       "const": "organism",
       "title": "Kind",

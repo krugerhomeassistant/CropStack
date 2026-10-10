@@ -200,6 +200,7 @@ class Organism(Item):
     kind: Literal["organism"]
     organism_type: Literal["pest", "disease", "beneficial", "pollinator", "weed", "deficiency"]
     scientific_name: str | None = None
+    hosts: list[Slug] = Field(default_factory=list)  # crop slugs it affects; empty = any crop
 
 
 class TaskTemplate(Item):

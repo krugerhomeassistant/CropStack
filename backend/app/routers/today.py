@@ -118,6 +118,7 @@ def _watch(c: cat.Catalog) -> list[dict]:
                 "slug": slug,
                 "name": data["names"]["en"][0],
                 "type": data["organism_type"],
+                "hosts": data.get("hosts", []),
                 "identify": p.get("identify", {}).get("value", ""),
                 "verdict": VERDICTS.get(p.get("verdict", {}).get("value", ""), ""),
                 "action": p.get("first_action", {}).get("value", ""),
@@ -126,9 +127,13 @@ def _watch(c: cat.Catalog) -> list[dict]:
     return out
 
 
-def _view(t: Task, today: date, how: dict[str, list[str]], watch: list[dict] | None = None) -> dict:
+def _view(t: Task, today: date, how: dict[str, list[str]], watch: list[dict] | None = None, crop: str = "") -> dict:
     return {
-        "watch": watch if t.kind == "check" else [],
+        "watch": [
+            {k: v for k, v in w.items() if k != "hosts"} for w in watch or [] if not w["hosts"] or crop in w["hosts"]
+        ]
+        if t.kind == "check"
+        else [],
         "steps": how.get(t.kind, []),
         "id": t.id,
         "kind": t.kind,
@@ -159,14 +164,18 @@ def get_today(me: MemberDep, db: SessionDep, c: CatalogDep) -> dict:
     due = [t for t in open_tasks if t.earliest <= today]
     soon = [t for t in open_tasks if today < t.earliest <= today + timedelta(days=UPCOMING_DAYS)]
     how, watch = _how(c), _watch(c)
+    crops = {p.id: p.crop for p in db.exec(select(Planting).where(Planting.household_id == me.household_id))}
     return {
         "date": today,
         "groups": [
-            {"group": g, "tasks": [_view(t, today, how, watch) for t in due if t.group == g]}
+            {
+                "group": g,
+                "tasks": [_view(t, today, how, watch, crops.get(t.planting_id, "")) for t in due if t.group == g],
+            }
             for g in GROUPS
             if any(t.group == g for t in due)
         ],
-        "upcoming": [_view(t, today, how, watch) for t in soon],
+        "upcoming": [_view(t, today, how, watch, crops.get(t.planting_id, "")) for t in soon],
     }
 
 
@@ -196,4 +205,5 @@ def update_task(task_id: int, body: TaskPatch, me: EditorDep, db: SessionDep, c:
         db.add(planting)
     db.commit()
     refresh_tasks(db, me.household_id, c)
-    return _view(task, _today(db, me.household_id), _how(c), _watch(c)) | {"status": task.status}
+    crop = planting.crop if planting else ""
+    return _view(task, _today(db, me.household_id), _how(c), _watch(c), crop) | {"status": task.status}

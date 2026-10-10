@@ -5,6 +5,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.25.0] - 2026-10-10
+
+### Changed
+- A Check job now lists only the pests and diseases that affect that crop (tomato hornworm for tomatoes, powdery mildew for cucurbits, peas, onions, peppers and tomatoes), plus the general ones and the helpers. Organisms in the catalog can name the crops they affect with `hosts`; empty means any crop.
+
 ## [0.24.0] - 2026-10-10
 
 ### Added

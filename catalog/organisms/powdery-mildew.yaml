@@ -5,6 +5,16 @@ names:
   - Powdery mildew
 organism_type: disease
 scientific_name: null
+hosts:
+- cucumber
+- melon
+- pumpkin
+- watermelon
+- zucchini
+- pea
+- onion
+- sweet-pepper
+- tomato
 description: A white, dusty fungus on leaves. Unlike most leaf diseases it likes warm, dry weather and shade, and it hits
   squash, cucumbers and melons hardest.
 params:

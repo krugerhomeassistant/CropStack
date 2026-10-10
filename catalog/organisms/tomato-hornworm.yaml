@@ -5,6 +5,8 @@ names:
   - Tomato hornworm
 organism_type: pest
 scientific_name: Manduca quinquemaculata
+hosts:
+- tomato
 description: A very large green caterpillar that strips tomato leaves fast. Easy to miss until the plant is half bare, and
   easy to remove by hand.
 params:
