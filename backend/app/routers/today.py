@@ -9,8 +9,8 @@ from pydantic import BaseModel
 from sqlmodel import Session, select
 
 from .. import catalog as cat
-from ..crop_facts import job_facts
 from .. import scheduler, weather
+from ..crop_facts import job_facts
 from ..db import get_engine
 from ..deps import EditorDep, MemberDep, SessionDep
 from ..engine import phenology, water, windows
