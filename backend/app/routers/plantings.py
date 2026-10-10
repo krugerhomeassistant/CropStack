@@ -1,6 +1,6 @@
 """Plantings: what the household has sown or plans to sow (SPEC §6.2)."""
 
-from datetime import date
+from datetime import UTC, date, datetime
 from typing import Literal
 
 from fastapi import APIRouter, HTTPException
@@ -9,7 +9,7 @@ from sqlmodel import select
 
 from ..deps import EditorDep, MemberDep, SessionDep
 from ..engine import layout
-from ..models import Bed, Harvest, Planting
+from ..models import Bed, Harvest, Planting, Task
 from .catalog import CatalogDep
 from .today import refresh_tasks
 
@@ -68,15 +68,13 @@ def _own(db: SessionDep, household_id: int, planting_id: int) -> Planting:
     return row
 
 
-def _cells(bed: Bed, cells: list[list[int]]) -> list[list[int]]:
-    """The cells as a clean list of [column, row] inside the bed, without repeats."""
-    from .beds import grid_of
-
-    cols, rows = grid_of(bed)
+def _cells(cells: list[list[int]]) -> list[list[int]]:
+    """The cells as a clean list of [column, row], without repeats. Never refused for lying outside the bed's
+    grid: a bed that was resized keeps what grew there, and the grid shows those cells as outside."""
     seen: set[tuple[int, int]] = set()
     for cell in cells:
-        if len(cell) != 2 or not (0 <= cell[0] < cols and 0 <= cell[1] < rows):
-            raise HTTPException(422, f"Cell {cell} is outside {bed.name}")
+        if len(cell) != 2 or min(cell) < 0:
+            raise HTTPException(422, f"Cell {cell} is not a cell")
         seen.add((cell[0], cell[1]))
     return [list(x) for x in sorted(seen, key=lambda x: (x[1], x[0]))]
 
@@ -88,9 +86,28 @@ def _bed(db: SessionDep, household_id: int, bed_id: int) -> Bed:
     return bed
 
 
+def outlook(db: SessionDep, household_id: int) -> dict[int, dict]:
+    """Per planting: when its harvest is expected (from its harvest job) and its next open job."""
+    out: dict[int, dict] = {}
+    tasks = db.exec(
+        select(Task).where(Task.household_id == household_id, Task.planting_id.is_not(None)).order_by(Task.ideal)  # type: ignore[union-attr]
+    ).all()
+    for t in tasks:
+        o = out.setdefault(t.planting_id, {"harvest_from": None, "harvest_to": None, "next_job": None})
+        if t.kind == "harvest":
+            o["harvest_from"], o["harvest_to"] = t.earliest, t.latest
+        if t.status == "open" and o["next_job"] is None and t.kind not in ("check", "water"):
+            o["next_job"] = {"title": t.title, "date": t.ideal}
+    return out
+
+
 @router.get("")
-def list_plantings(me: MemberDep, db: SessionDep) -> list[Planting]:
-    return list(db.exec(select(Planting).where(Planting.household_id == me.household_id).order_by(Planting.start_date)))
+def list_plantings(me: MemberDep, db: SessionDep) -> list[dict]:
+    """Every planting, with its expected harvest and next job."""
+    rows = db.exec(select(Planting).where(Planting.household_id == me.household_id).order_by(Planting.start_date))
+    ahead = outlook(db, me.household_id)
+    empty = {"harvest_from": None, "harvest_to": None, "next_job": None}
+    return [p.model_dump() | ahead.get(p.id, empty) for p in rows]
 
 
 @router.post("", status_code=201)
@@ -101,7 +118,7 @@ def add_planting(body: PlantingIn, me: EditorDep, db: SessionDep, c: CatalogDep)
     if body.bed_id is not None:
         bed = _bed(db, me.household_id, body.bed_id)
         data["location"] = bed.name
-        data["cells"] = _cells(bed, body.cells)
+        data["cells"] = _cells(body.cells)
         if body.quantity is None:
             from .beds import crop_facts
 
@@ -110,6 +127,12 @@ def add_planting(body: PlantingIn, me: EditorDep, db: SessionDep, c: CatalogDep)
     elif body.cells:
         raise HTTPException(422, "Cells need a bed")
     data["quantity"] = data["quantity"] or 1
+    # Already in the ground: a planting dated in the past starts as sown (or set out), so no overdue sowing job appears.
+    today = datetime.now(UTC).date()
+    if body.method == "transplant" and body.set_out_date and body.set_out_date < today:
+        data["status"] = "transplanted"
+    elif body.start_date < today:
+        data["status"] = "sown"
     row = Planting(household_id=me.household_id, created_by=me.user_id, **data)
     db.add(row)
     db.commit()
@@ -133,14 +156,9 @@ def update_planting(planting_id: int, body: PlantingPatch, me: EditorDep, db: Se
         row.bed_id = None  # taken out of its bed; the free-text place stays
         changes["cells"] = []
     if changes.get("cells"):
-        target = (
-            _bed(db, me.household_id, changes.get("bed_id") or row.bed_id)
-            if (changes.get("bed_id") or row.bed_id)
-            else None
-        )
-        if target is None:
+        if not (changes.get("bed_id") or row.bed_id):
             raise HTTPException(422, "Cells need a bed")
-        changes["cells"] = _cells(target, changes["cells"])
+        changes["cells"] = _cells(changes["cells"])
     elif "cells" in changes and changes["cells"] is None:
         changes.pop("cells")
     if status and status != row.status:

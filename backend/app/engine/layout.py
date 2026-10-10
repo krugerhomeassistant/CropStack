@@ -66,6 +66,17 @@ def per_cell(cell_cm: int, footprint: float | None) -> int:
     return max(1, min(MAX_PER_CELL, floor((cell_cm / 100) ** 2 / footprint + 1e-9)))
 
 
+def remap(cells: list[list[int]], old_cm: int, new_cm: int) -> list[list[int]]:
+    """The same ground on a grid of a different cell size: every new cell that overlaps an old one."""
+    out = {
+        (x, y)
+        for c, r in cells
+        for x in range(c * old_cm // new_cm, -(-(c + 1) * old_cm // new_cm))
+        for y in range(r * old_cm // new_cm, -(-(r + 1) * old_cm // new_cm))
+    }
+    return [list(x) for x in sorted(out, key=lambda x: (x[1], x[0]))]
+
+
 def occupancy(
     start: date, set_out: date | None, ends_on: date | None, status: str, cycle_days: float | None, today: date
 ) -> tuple[date, date]:

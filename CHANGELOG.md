@@ -5,6 +5,17 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.33.0] - 2026-10-10
+
+### Added
+- **Already growing**: plant on a date in the past and the planting is recorded as sown (or set out), with its harvest worked out from that day and no overdue sowing job.
+- **Key points**: tap any suggested crop (Plant tab or the chips above a bed) for a short sheet: when to plant, expected harvest dates, how often it works in your climate, spacing, seedlings needed and rotation family, with a link to the full crop page. Bed cells and the Plantings list show harvest expected and the next job.
+
+### Changed
+- **Bed changes never throw away your work.** Resizing a bed keeps every planted cell (those beyond a smaller edge are kept and counted); changing the cell size redraws the same ground on the new grid. Saving a bed only writes the fields you changed.
+- **Any cell can be planted.** The server no longer refuses a cell for lying outside the grid.
+- Tool row on the plan fits on one line (Move, Bed, Row, Pot).
+
 ## [0.32.0] - 2026-10-10
 
 ### Changed

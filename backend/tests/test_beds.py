@@ -75,9 +75,10 @@ def test_cells_hold_different_crops_over_time_and_clash_only_when_dates_overlap(
     }
 
 
-def test_cells_must_be_inside_the_bed_and_follow_it_when_it_shrinks(owner):  # noqa: F811
+def test_cells_are_never_refused_for_the_grid_and_follow_a_bed_that_shrinks(owner):  # noqa: F811
     bed = owner.post("/api/v1/beds", json={"name": "B", "width": 1.2, "length": 1.2}).json()  # 4 x 4 cells
-    assert plant(owner, bed["id"], [[4, 0]], "2026-10-01").status_code == 422
+    assert plant(owner, bed["id"], [[-1, 0]], "2026-10-01").status_code == 422
+    assert plant(owner, bed["id"], [[4, 0]], "2026-10-01").status_code == 201  # outside the grid: kept, not refused
     assert (
         owner.post(
             "/api/v1/plantings",
@@ -87,11 +88,15 @@ def test_cells_must_be_inside_the_bed_and_follow_it_when_it_shrinks(owner):  # n
     )
     made = plant(owner, bed["id"], [[0, 0], [3, 3]], "2026-10-01").json()
     owner.patch(f"/api/v1/beds/{bed['id']}", json={"width": 0.6, "length": 0.6})  # now 2 x 2
-    assert owner.get("/api/v1/plantings").json()[0]["cells"] == [[0, 0]]
+
+    def mine():
+        return next(p for p in owner.get("/api/v1/plantings").json() if p["id"] == made["id"])["cells"]
+
+    assert mine() == [[0, 0], [3, 3]]  # kept, shown as outside
     owner.patch(f"/api/v1/plantings/{made['id']}", json={"cells": [[1, 1]]})
-    assert owner.get("/api/v1/plantings").json()[0]["cells"] == [[1, 1]]
+    assert mine() == [[1, 1]]
     owner.patch(f"/api/v1/plantings/{made['id']}", json={"bed_id": None})
-    assert owner.get("/api/v1/plantings").json()[0]["cells"] == []
+    assert mine() == []
 
 
 def test_recommendations_without_a_garden_are_empty(owner):  # noqa: F811
@@ -114,3 +119,44 @@ def test_a_planting_can_be_moved_in_time_and_resized_from_the_bed(owner):  # noq
     assert owner.patch(url, json={"set_out_date": "2026-12-01"}).json()["set_out_date"] is None  # direct: none
     seen = owner.get("/api/v1/beds").json()[0]["placements"][0]
     assert seen["start_date"] == "2026-11-05" and seen["method"] == "direct"
+
+
+def test_a_planting_dated_in_the_past_is_already_growing_and_has_an_outlook(owner):  # noqa: F811
+    from datetime import timedelta
+
+    today = datetime.now(UTC).date()
+    week_ago, two_weeks = str(today - timedelta(days=7)), str(today - timedelta(days=14))
+    sown = owner.post("/api/v1/plantings", json={"crop": "testcrop", "method": "direct", "start_date": week_ago})
+    assert sown.json()["status"] == "sown"
+    out = owner.post(
+        "/api/v1/plantings",
+        json={"crop": "testcrop", "method": "transplant", "start_date": two_weeks, "set_out_date": week_ago},
+    )
+    assert out.json()["status"] == "transplanted"
+    planned = owner.post("/api/v1/plantings", json={"crop": "testcrop", "method": "direct", "start_date": str(today)})
+    assert planned.json()["status"] == "planned"
+    rows = {r["id"]: r for r in owner.get("/api/v1/plantings").json()}
+    assert rows[sown.json()["id"]]["harvest_from"] and rows[planned.json()["id"]]["next_job"]["title"].startswith("Sow")
+
+
+def test_changing_a_bed_never_throws_away_where_things_grow(owner):  # noqa: F811
+    from app.engine.layout import remap
+
+    assert remap([[1, 0]], 30, 15) == [[2, 0], [3, 0], [2, 1], [3, 1]]
+    assert remap([[2, 0], [3, 0]], 15, 30) == [[1, 0]]
+    bed = owner.post("/api/v1/beds", json={"name": "Keep", "width": 1.2, "length": 1.2}).json()
+    made = plant(owner, bed["id"], [[0, 0], [3, 3]], "2026-10-01").json()
+    url = f"/api/v1/beds/{bed['id']}"
+    owner.patch(
+        url, json={"name": "Keep", "width": 1.2, "length": 1.2, "cell_cm": 30, "layout": "Front"}
+    )  # unchanged size
+    owner.patch(url, json={"width": 0.6})  # smaller: the cell at column 3 is outside but kept
+    mine = next(p for p in owner.get("/api/v1/plantings").json() if p["id"] == made["id"])
+    assert mine["cells"] == [[0, 0], [3, 3]]
+    shown = next(b for b in owner.get("/api/v1/beds").json() if b["id"] == bed["id"])
+    assert shown["outside"] == 1
+    erased = owner.patch(f"/api/v1/plantings/{made['id']}", json={"cells": [[3, 3]]})  # erase inside, keep outside
+    assert erased.status_code == 200
+    owner.patch(url, json={"cell_cm": 60})
+    mine = next(p for p in owner.get("/api/v1/plantings").json() if p["id"] == made["id"])
+    assert mine["cells"] == [[1, 1]]

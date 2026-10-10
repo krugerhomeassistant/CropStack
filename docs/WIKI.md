@@ -120,3 +120,8 @@ Tokens in `frontend/src/index.css`, components in `frontend/src/components/ui/` 
 
 ## Release process
 `python scripts/bump.py X.Y.Z` → update `CHANGELOG.md` → commit → push to `main`. CI tags the release, publishes `ghcr.io/krugerhomeassistant/cropstack:X.Y.Z` and `latest` (amd64, arm64) and creates the GitHub release from the changelog. README and this wiki are reviewed on every release.
+
+## Already growing, key points and bed edits (v0.33.0)
+- Plant on a past date to record what is already in the ground; the harvest window is worked out from that day.
+- Tap a suggested crop for its key points (when, harvest dates, success rate here, spacing, family).
+- Resizing a bed or changing its cell size keeps all plants; cells past a smaller edge are kept and counted ("beyond the edge").

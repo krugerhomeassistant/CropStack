@@ -105,6 +105,11 @@ def recommendations(me: MemberDep, db: SessionDep, c: CatalogDep, horizon: int =
                 "all_year": pick["all_year"],
                 "success": pick["success"],
                 "age_days": pick["age_days"],
+                # if it goes in on its first good day: when the harvest starts in most years
+                "harvest_from": planted + timedelta(days=round(pick["days_to_maturity"].get("p10") or days)),
+                "harvest_to": planted + timedelta(days=round(days)),
+                "family": f["family"],
+                "plants_per_cell": layout.per_cell(30, f["footprint"]),
                 "where": _where(beds, plantings, facts, f, planted, planted + timedelta(days=round(days))),
             }
         )

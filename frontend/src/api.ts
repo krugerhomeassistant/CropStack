@@ -97,6 +97,9 @@ export type Planting = {
   cells: [number, number][]
   ends_on: string | null
   notes: string
+  harvest_from?: string | null
+  harvest_to?: string | null
+  next_job?: { title: string; date: string } | null
 }
 export type PlantingIn = Pick<Planting, 'crop' | 'method' | 'start_date' | 'set_out_date' | 'location' | 'notes'> & {
   quantity?: number
@@ -116,6 +119,7 @@ export type Bed = {
   cell_cm: number
   layout: string
   cols: number
+  outside: number
   rows: number
   placements: Placement[]
   clashes: { cell: [number, number]; plantings: [number, number] }[]
@@ -140,6 +144,9 @@ export type Placement = {
   set_out_date: string | null
   capacity: number
   status: PlantingStatus
+  harvest_from: string | null
+  harvest_to: string | null
+  next_job: { title: string; date: string } | null
 }
 export type Recommendation = {
   crop: string
@@ -156,6 +163,10 @@ export type Recommendation = {
   success: number
   age_days: number
   where: { bed_id: number; bed: string; cells: [number, number][]; free_cells: number; plants: number; same_family_before: boolean } | null
+  harvest_from: string
+  harvest_to: string
+  family: string
+  plants_per_cell: number
 }
 export type Recommendations = { garden: boolean; today?: string; has_beds?: boolean; now: Recommendation[]; soon: Recommendation[] }
 export type Job = {

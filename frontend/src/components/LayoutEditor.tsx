@@ -176,10 +176,10 @@ export default function LayoutEditor({ onChange, suggested, request }: { onChang
         {error && <ErrorMessage>{error}</ErrorMessage>}
       {canEdit && (
         <div className="flex flex-wrap items-center gap-2">
-          <div role="group" aria-label={t('Plan tools')} className="flex w-full gap-2">
+          <div role="group" aria-label={t('Plan tools')} className="grid w-full grid-cols-4 gap-2">
             {TOOLS.map((x) => (
-              <Button key={x.tool} variant={tool === x.tool ? 'primary' : 'secondary'} aria-pressed={tool === x.tool} aria-label={t(x.label)} className="flex-1" onClick={() => setTool(x.tool)}>
-                <x.icon className="mr-1.5 inline size-4" aria-hidden />
+              <Button key={x.tool} variant={tool === x.tool ? 'primary' : 'secondary'} aria-pressed={tool === x.tool} aria-label={t(x.label)} className="min-w-0 px-2! text-sm" onClick={() => setTool(x.tool)}>
+                <x.icon className="size-4 shrink-0" aria-hidden />
                 {t(x.short)}
               </Button>
             ))}
@@ -327,7 +327,7 @@ function BedForm({ bed, layouts, onSaved, onDeleted, fail }: { bed: Bed; layouts
       <Field label={t('Length (m)')}>
         <input className="input w-24" type="number" min="0.1" max="100" step="0.1" required value={length} onChange={(e) => setLength(e.target.value)} />
       </Field>
-      <Field label={t('Cell size (cm)')} hint={t('Changing it clears where plants sit in this bed.')}>
+      <Field label={t('Cell size (cm)')} hint={t('Plants keep their place; the cells are redrawn to the new size.')}>
         <input className="input w-24" type="number" min="5" max="100" step="5" required value={cell} onChange={(e) => setCell(e.target.value)} />
       </Field>
       <Button type="submit">{t('Save')}</Button>

@@ -40,3 +40,6 @@
 
 ## Immediate next step
 Phase 5 catalog content (ingestion pipeline, following the handoff reading order above) → 6 crop engine → 7 Today tasks. Live weather confirmed working on the ZimaOS install. 4.3 (sensors, observations) waits for Home Assistant work.
+
+## v0.33.0 released
+Past-dated plantings, key-point sheets, non-destructive bed edits, any cell plantable. Next: rounding/finishing (windows for Today/Climate/Crops/More), move plantings between cells, undo, free plants.

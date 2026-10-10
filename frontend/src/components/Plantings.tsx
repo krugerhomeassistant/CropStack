@@ -35,6 +35,8 @@ const ACTION: Record<PlantingStatus, string> = {
 
 const date = (iso: string) => new Date(`${iso}T00:00:00`).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })
 
+const short = (iso: string) => new Date(`${iso}T00:00:00`).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })
+
 const UNITS: Record<HarvestUnit, string> = { kg: N_('kg'), g: N_('g'), count: N_('pieces'), bunch: N_('bunches') }
 const iso = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
 
@@ -184,6 +186,10 @@ export default function Plantings({ onBedChange }: { onBedChange?: () => void })
                       : t('sow {sow}', { sow: date(p.start_date) })}
                   </p>
                   {mine.length > 0 && <p className="text-sm font-semibold text-leaf">{t('Picked: {total}', { total: picked(mine) })}</p>}
+                  {p.harvest_from && p.harvest_to && !['harvesting', 'finished', 'failed'].includes(p.status) && (
+                    <p className="text-sm">{t('Harvest expected {from} to {to}', { from: short(p.harvest_from), to: short(p.harvest_to) })}</p>
+                  )}
+                  {p.next_job && <p className="text-sm text-muted">{t('Next: {job}, {date}', { job: p.next_job.title, date: short(p.next_job.date) })}</p>}
                 </div>
                 <Badge tone={p.status === 'failed' ? 'marigold' : p.status === 'planned' ? 'muted' : 'leaf'}>{t(STATUS[p.status])}</Badge>
               </div>

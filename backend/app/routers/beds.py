@@ -77,6 +77,9 @@ def list_beds(me: MemberDep, db: SessionDep, c: CatalogDep) -> list[dict]:
     cache: dict = {}
     beds = db.exec(select(Bed).where(Bed.household_id == me.household_id).order_by(Bed.id)).all()
     plantings = db.exec(select(Planting).where(Planting.household_id == me.household_id)).all()
+    from .plantings import outlook
+
+    ahead = outlook(db, me.household_id)
     out = []
     for bed in beds:
         cols, rows = grid_of(bed)
@@ -107,6 +110,9 @@ def list_beds(me: MemberDep, db: SessionDep, c: CatalogDep) -> list[dict]:
                     "start_date": p.start_date,
                     "set_out_date": p.set_out_date,
                     "capacity": capacity,
+                    "harvest_from": ahead.get(p.id, {}).get("harvest_from"),
+                    "harvest_to": ahead.get(p.id, {}).get("harvest_to"),
+                    "next_job": ahead.get(p.id, {}).get("next_job"),
                     "status": p.status,
                 }
             )
@@ -127,6 +133,7 @@ def list_beds(me: MemberDep, db: SessionDep, c: CatalogDep) -> list[dict]:
                 "needed_m2": round(use.needed_m2, 2),
                 "unknown_footprint": use.unknown,
                 "crowded": bool(clash or over or use.crowded),
+                "outside": sum(1 for p in inside for x in p.cells if x[0] >= cols or x[1] >= rows),
             }
         )
     return out
@@ -147,8 +154,9 @@ def add_bed(body: BedIn, me: EditorDep, db: SessionDep) -> Bed:
 @router.patch("/{bed_id}")
 def update_bed(bed_id: int, body: BedPatch, me: EditorDep, db: SessionDep, c: CatalogDep) -> Bed:
     row = _own(db, me.household_id, bed_id)
-    changes = body.model_dump(exclude_unset=True, exclude_none=True)
-    renamed = "name" in changes and changes["name"] != row.name
+    changes = {k: v for k, v in body.model_dump(exclude_unset=True, exclude_none=True).items() if getattr(row, k) != v}
+    renamed = "name" in changes
+    old_cm = row.cell_cm
     for key, value in changes.items():
         setattr(row, key, value)
     cols, rows = grid_of(row)
@@ -158,8 +166,10 @@ def update_bed(bed_id: int, body: BedPatch, me: EditorDep, db: SessionDep, c: Ca
     for p in db.exec(select(Planting).where(Planting.bed_id == bed_id)):
         if renamed:  # plantings and their jobs say "in <bed>", so they follow the new name
             p.location = row.name
-        if {"width", "length", "cell_cm"} & changes.keys():  # a smaller or finer grid drops the cells that fell off
-            p.cells = [x for x in p.cells if x[0] < cols and x[1] < rows] if "cell_cm" not in changes else []
+        # Never drop where things grow: a new cell size maps the same ground onto the new grid, and cells left
+        # outside a smaller bed are kept (and reported) so making it bigger again brings them back.
+        if "cell_cm" in changes:
+            p.cells = layout.remap(p.cells, old_cm, row.cell_cm)
         db.add(p)
     db.commit()
     if renamed:

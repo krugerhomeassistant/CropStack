@@ -1,10 +1,12 @@
 /**
  * CropStack UI kit (docs/DESIGN.md). Small, dependency-free components over the utilities in index.css.
- * shortcut: Sheet and Toast are added with the first screen that needs them (DESIGN.md, Components).
+ * shortcut: Toast is added with the first screen that needs them (DESIGN.md, Components).
  */
 import {
   cloneElement,
+  useEffect,
   useId,
+  useRef,
   type ButtonHTMLAttributes,
   type ReactElement,
   type ReactNode,
@@ -137,6 +139,36 @@ export function Tabs<V extends string>({
         </button>
       ))}
     </div>
+  )
+}
+
+/** A panel that slides over the page for a closer look (a bottom sheet on phones). Escape or a tap outside closes it. */
+export function Sheet({ title, open, onClose, children }: { title: string; open: boolean; onClose: () => void; children: ReactNode }) {
+  const ref = useRef<HTMLDialogElement>(null)
+  useEffect(() => {
+    const d = ref.current
+    if (!d) return
+    if (open && !d.open) d.showModal()
+    if (!open && d.open) d.close()
+  }, [open])
+  return (
+    <dialog
+      ref={ref}
+      aria-label={title}
+      onClose={onClose}
+      onClick={(e) => e.target === ref.current && onClose()}
+      className="mx-auto mt-auto mb-0 max-h-[85dvh] w-full max-w-lg rounded-t-[var(--radius-section)] border border-line bg-surface p-0 text-ink backdrop:bg-black/50 sm:mb-auto sm:rounded-[var(--radius-section)]"
+    >
+      <div className="flex flex-col gap-4 p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
+        <div className="flex items-start justify-between gap-3">
+          <h2 className="text-xl font-bold">{title}</h2>
+          <button type="button" className="btn-ghost -mt-2 -mr-2" onClick={onClose}>
+            {t('Close')}
+          </button>
+        </div>
+        {children}
+      </div>
+    </dialog>
   )
 }
 

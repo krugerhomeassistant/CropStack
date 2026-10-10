@@ -3,15 +3,11 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { api, type Bed, type CropSummary, type Placement, type Recommendation } from '../api'
 import { t } from '../i18n'
 import { useApp } from '../state'
-import { toRequest, type PlantRequest } from './Recommendations'
+import { CropSheet, toRequest, type PlantRequest } from './Recommendations'
 import { Button, ErrorMessage, Field, IconButton } from './ui'
 
 const iso = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
 const addDays = (s: string, n: number) => iso(new Date(new Date(`${s}T00:00:00`).getTime() + n * 864e5))
-const addMonths = (s: string, n: number) => {
-  const d = new Date(`${s}T00:00:00`)
-  return iso(new Date(d.getFullYear(), d.getMonth() + n, d.getDate()))
-}
 const key = (c: number, r: number) => `${c},${r}`
 const show = (s: string) => new Date(`${s}T00:00:00`).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })
 
@@ -52,6 +48,7 @@ export default function BedGrid({
   const [setOut, setSetOut] = useState('')
   const [qty, setQty] = useState('')
   const [error, setError] = useState('')
+  const [about, setAbout] = useState<Recommendation | null>(null)
 
   // arriving from a recommendation: the crop is chosen and the date set
   useEffect(() => {
@@ -143,19 +140,31 @@ export default function BedGrid({
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex items-center gap-1">
-        <IconButton icon={ChevronLeft} label={t('A month earlier')} onClick={() => setOn(addMonths(on, -1))} />
-        <input className="input w-auto flex-1" type="date" aria-label={t('Show the bed on')} value={on} onChange={(e) => e.target.value && setOn(e.target.value)} />
-        <IconButton icon={ChevronRight} label={t('A month later')} onClick={() => setOn(addMonths(on, 1))} />
-        {on !== today && (
-          <Button variant="ghost" onClick={() => setOn(today)}>
-            {t('Today')}
-          </Button>
+      <div className="flex flex-col gap-1">
+        <p className="text-sm font-semibold">{t('Date')}</p>
+        <div className="flex items-center gap-1">
+          <IconButton icon={ChevronLeft} label={t('A week earlier')} onClick={() => setOn(addDays(on, -7))} />
+          <input className="input w-auto flex-1" type="date" aria-label={t('Show the bed on')} value={on} onChange={(e) => e.target.value && setOn(e.target.value)} />
+          <IconButton icon={ChevronRight} label={t('A week later')} onClick={() => setOn(addDays(on, 7))} />
+          {on !== today && (
+            <Button variant="ghost" onClick={() => setOn(today)}>
+              {t('Today')}
+            </Button>
+          )}
+        </div>
+        {canEdit && on < today && (
+          <p className="text-sm text-muted">{t('Already growing? Plant on the day it went in and it is recorded as sown (or set out), with its harvest worked out from then.')}</p>
         )}
       </div>
 
       {canEdit && (
         <div className="flex flex-col gap-2">
+          {chips.length > 0 && (
+            <p className="text-sm">
+              <span className="font-semibold">{t('Good to plant now')}</span>{' '}
+              <span className="text-muted">{t('in your climate, best first')}</span>
+            </p>
+          )}
           <div className="flex flex-wrap gap-2" role="group" aria-label={t('Choose what to plant')}>
             {chips.map((r) => (
               <button
@@ -211,6 +220,20 @@ export default function BedGrid({
           </div>
         </div>
       )}
+      {crop && suggested.some((r) => r.crop === crop.crop) && (() => {
+        const r = suggested.find((x) => x.crop === crop.crop)!
+        return (
+          <div className="flex items-center justify-between gap-3 rounded-[var(--radius-row)] bg-sunken p-3 text-sm">
+            <span>
+              {t('Harvest from about {date}', { date: show(r.harvest_from) })} · {t('{n} per cell', { n: r.plants_per_cell })}
+            </span>
+            <Button variant="ghost" onClick={() => setAbout(r)}>
+              {t('Key points')}
+            </Button>
+          </div>
+        )
+      })()}
+      <CropSheet r={about} onClose={() => setAbout(null)} />
       <p className="text-sm text-muted">
         {crop
           ? t('Drag across the cells to plant {crop} from {date}.', { crop: nameOf(crop.crop), date: show(on) })
@@ -260,6 +283,7 @@ export default function BedGrid({
       </svg>
       <p className="text-xs text-muted">
         {t('One cell is {size} cm square.', { size: bed.cell_cm })}
+        {bed.outside > 0 && ` ${t('{n} planted cells sit beyond the edge of this bed; make the bed bigger to see them.', { n: bed.outside })}`}
         {legend.length > 0 && ` ${t('In this bed: {crops}.', { crops: legend.map(([, n]) => n).join(', ') })}`}
       </p>
 
@@ -271,6 +295,10 @@ export default function BedGrid({
               <p className="text-muted">
                 {t('{count} plants · {from} to {until}', { count: info.quantity, from: show(info.from), until: show(info.until) })}
               </p>
+              {info.harvest_from && info.harvest_to && (
+                <p>{t('Harvest expected {from} to {to}', { from: show(info.harvest_from), to: show(info.harvest_to) })}</p>
+              )}
+              {info.next_job && <p>{t('Next: {job}, {date}', { job: info.next_job.title, date: show(info.next_job.date) })}</p>}
             </div>
             {canEdit && (
               <Button variant="ghost" onClick={() => setEditing(!editing)}>
