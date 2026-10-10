@@ -44,6 +44,11 @@ def job_facts(item: dict | None, kind: str, method: str = "direct") -> list[dict
             )
         if kind == "sow" and method == "direct" and spread:
             out.append(("Thin to", f"one plant every {_cm(spread)} once the seedlings are up"))
+        depth = _num(item, "sow_depth")
+        if kind == "sow" and depth:
+            out.append(
+                ("Sow depth", f"{depth:g} cm" if depth >= 1 else "barely covered, about half a centimetre or less")
+            )
         if kind == "sow" and isinstance(germ, dict) and germ.get("min") is not None:
             best = f", best near {germ['opt']:g} °C" if germ.get("opt") is not None else ""
             out.append(("Soil temperature", f"at least {germ['min']:g} °C to germinate{best}"))

@@ -19,6 +19,15 @@ const DONE: Record<Job['kind'], string> = { sow: N_('Mark sown'), set_out: N_('M
 
 const day = (iso: string) => new Date(`${iso}T00:00:00`).toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' })
 
+/** The two or three things worth seeing without opening the card. */
+function brief(job: Job): string[] {
+  const text = (label: string) => job.facts.find((f) => f.label === label)?.text
+  const depth = text('Sow depth')
+  const space = text('Space plants')?.split(',')[0]
+  const roots = text('Roots reach')?.split(',')[0]
+  return [depth && (depth.startsWith('barely') ? t('barely covered') : t('{depth} deep', { depth })), space, roots && t('roots {roots}', { roots })].filter((x): x is string => !!x)
+}
+
 function JobCard({ job, canEdit, onFinish }: { job: Job; canEdit: boolean; onFinish: (id: number, s: 'done' | 'skipped') => void }) {
   return (
     <li className="flex flex-col gap-2 rounded-[var(--radius-row)] bg-sunken p-4">
@@ -27,24 +36,27 @@ function JobCard({ job, canEdit, onFinish }: { job: Job; canEdit: boolean; onFin
         {job.overdue && <Badge tone="marigold">{t('Overdue')}</Badge>}
       </div>
       <p className="text-sm text-muted">{job.reason}</p>
-      {job.facts.length > 0 && (
-        <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 rounded-[var(--radius-row)] border border-line p-3 text-sm">
-          {job.facts.map((f) => (
-            <div key={f.label} className="contents">
-              <dt className="font-semibold text-muted">{t(f.label)}</dt>
-              <dd>{f.text}</dd>
-            </div>
-          ))}
-        </dl>
-      )}
-      {job.steps.length > 0 && (
+      {brief(job).length > 0 && <p className="text-sm font-semibold">{brief(job).join(' · ')}</p>}
+      {(job.facts.length > 0 || job.steps.length > 0) && (
         <details className="group">
-          <summary className="min-h-11 cursor-pointer py-2 text-sm font-semibold text-leaf">{t('General steps')}</summary>
-          <ol className="list-decimal space-y-1 pl-5 text-sm">
-            {job.steps.map((step) => (
-              <li key={step}>{step}</li>
-            ))}
-          </ol>
+          <summary className="min-h-11 cursor-pointer py-2 text-sm font-semibold text-leaf">{t('Details')}</summary>
+          {job.facts.length > 0 && (
+            <dl className="mb-3 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm">
+              {job.facts.map((f) => (
+                <div key={f.label} className="contents">
+                  <dt className="font-semibold text-muted">{t(f.label)}</dt>
+                  <dd>{f.text}</dd>
+                </div>
+              ))}
+            </dl>
+          )}
+          {job.steps.length > 0 && (
+            <ol className="list-decimal space-y-1 pl-5 text-sm">
+              {job.steps.map((step) => (
+                <li key={step}>{step}</li>
+              ))}
+            </ol>
+          )}
           {job.watch.length > 0 && (
             <ul className="mt-2 space-y-2 text-sm">
               {job.watch.map((w) => (

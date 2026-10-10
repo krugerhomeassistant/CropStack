@@ -87,3 +87,11 @@ params:
     sources:
     - {ref: openfarm-rescue, locator: 'https://web.archive.org/web/20250318003438/https://openfarm.cc/en/crops/sage', retrieved: 2026-10-09,
       snapshot: 'sha256:203050c7a2be7ab1c4c165ee4edb42aaebcb13d183bd53540a2bf3482363caec'}
+  sow_depth:
+    value: 0.5
+    unit: cm
+    evidence: traditional
+    confidence: low
+    estimate: true
+    qualifiers: {basis: 'usual seed depth (garlic, potato and shallot: clove, tuber or set) from standard seed-packet and
+        extension guidance'}

@@ -5,6 +5,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.36.0] - 2026-10-10
+
+### Added
+- **Sowing depth** for 53 crops, shown on sow jobs. These are marked as estimates (usual seed-packet guidance) until a source is attached.
+
+### Changed
+- **Today is calmer**: each job card shows its title, why, and one key line (for example "1 cm deep · 8 cm apart"); the crop's full facts, general steps and what to look for are under "Details".
+
 ## [0.35.0] - 2026-10-10
 
 ### Added

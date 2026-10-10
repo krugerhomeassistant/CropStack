@@ -262,3 +262,11 @@ params:
     confidence: low
     estimate: true
     qualifiers: {basis: usual seedling age at set-out from standard extension and seed-company guides}
+  sow_depth:
+    value: 2
+    unit: cm
+    evidence: traditional
+    confidence: low
+    estimate: true
+    qualifiers: {basis: 'usual seed depth (garlic, potato and shallot: clove, tuber or set) from standard seed-packet and
+        extension guidance'}

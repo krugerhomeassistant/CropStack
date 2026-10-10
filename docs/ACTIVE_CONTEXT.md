@@ -49,3 +49,6 @@ Year plan drafter + 31 new crops (60). Next: data depth (varieties, companions f
 
 ## v0.35.0
 Plan facelift (cells + icons per bed), crop-specific job facts (`app/crop_facts.py`). Gap: no sowing depth in the catalog yet (needs a sourced `sow_depth` param); facts are English/°C.
+
+## v0.36.0
+sow_depth param (estimate) for 53 crops; Today job cards compact with Details. Next: pests/diseases per crop, needs model, Climate/Crops/More windows, move planting + undo.

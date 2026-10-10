@@ -99,3 +99,11 @@ params:
     confidence: medium
     sources:
     - {ref: fao-ecocrop, locator: 'ECOCROP code 152, GMIN, GMAX (via Recocrop)', retrieved: 2026-10-09, snapshot: 'sha256:90a21d908419e304e4e4c38c92df62d93b25cb373420fcd0a711247b1f47f358'}
+  sow_depth:
+    value: 1
+    unit: cm
+    evidence: traditional
+    confidence: low
+    estimate: true
+    qualifiers: {basis: 'usual seed depth (garlic, potato and shallot: clove, tuber or set) from standard seed-packet and
+        extension guidance'}
