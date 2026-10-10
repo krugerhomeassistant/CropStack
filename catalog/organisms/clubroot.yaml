@@ -1,0 +1,65 @@
+kind: organism
+slug: clubroot
+names:
+  en:
+  - Clubroot
+organism_type: disease
+scientific_name: Plasmodiophora brassicae
+hosts:
+- cabbage
+- broccoli
+- cauliflower
+- brussels-sprouts
+- kale
+- kohlrabi
+- pak-choi
+- mustard-greens
+- radish
+- turnip
+- swede
+- rocket
+description: A soil-borne organism that swells brassica roots into knobs. Spores survive in the soil for many years, so prevention
+  is everything.
+params:
+  identify:
+    value: Plants that wilt in the afternoon heat, then recover at night; stunted growth and yellow leaves, and swollen, distorted
+      roots when pulled.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Vegetable pest notes: Clubroot'
+      retrieved: '2026-10-10'
+  look_when:
+    value: Pull one stunted plant and look at the roots. Do it before you plant brassicas in a bed with a history of the problem.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Vegetable pest notes: Clubroot'
+      retrieved: '2026-10-10'
+  verdict:
+    value: remove
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Vegetable pest notes: Clubroot'
+      retrieved: '2026-10-10'
+  first_action:
+    value: Dig up affected plants with the soil and bin them. Lime acidic soil toward pH 7.2 or higher, and do not grow brassicas
+      in that bed for at least 7 years.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Vegetable pest notes: Clubroot'
+      retrieved: '2026-10-10'
+  safety:
+    value: Do not compost infected roots. Clean boots and tools, as spores travel in soil.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Vegetable pest notes: Clubroot'
+      retrieved: '2026-10-10'

@@ -1,0 +1,55 @@
+kind: organism
+slug: cucumber-beetles
+names:
+  en:
+  - Cucumber beetles
+organism_type: pest
+scientific_name: Diabrotica and Acalymma spp.
+hosts:
+- cucumber
+- melon
+- pumpkin
+- watermelon
+- zucchini
+description: Small yellow beetles, striped or spotted, that chew seedlings and flowers and can spread wilt disease.
+params:
+  identify:
+    value: Beetles on flowers and seedlings, chewed leaves and scarred fruit; plants that wilt suddenly can be infected.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Vegetable pest notes: Cucumber beetles'
+      retrieved: '2026-10-10'
+  look_when:
+    value: Check every few days from seedling to flowering, as seedlings are the most at risk.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Vegetable pest notes: Cucumber beetles'
+      retrieved: '2026-10-10'
+  verdict:
+    value: remove
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Vegetable pest notes: Cucumber beetles'
+      retrieved: '2026-10-10'
+  first_action:
+    value: Cover seedlings with netting until flowering, hand-pick beetles in the cool morning and remove wilted plants whole.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Vegetable pest notes: Cucumber beetles'
+      retrieved: '2026-10-10'
+  safety:
+    value: Uncover at flowering so that bees can pollinate.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Vegetable pest notes: Cucumber beetles'
+      retrieved: '2026-10-10'

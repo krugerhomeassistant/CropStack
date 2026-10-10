@@ -1,0 +1,51 @@
+kind: organism
+slug: spider-mites
+names:
+  en:
+  - Spider mites
+organism_type: pest
+scientific_name: Tetranychus urticae
+description: Tiny sap-sucking mites that explode in hot, dry weather and webs the underside of leaves.
+params:
+  identify:
+    value: Fine pale stippling on leaves, a bronzed look and fine webbing, with tiny moving dots under a leaf held over white
+      paper.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Vegetable pest notes: Spider mites'
+      retrieved: '2026-10-10'
+  look_when:
+    value: Check in hot, dry weather, especially in tunnels, greenhouses and dusty spots.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Vegetable pest notes: Spider mites'
+      retrieved: '2026-10-10'
+  verdict:
+    value: tolerate_below_threshold
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Vegetable pest notes: Spider mites'
+      retrieved: '2026-10-10'
+  first_action:
+    value: Hose the undersides of leaves, keep plants well watered and cool, and let predatory mites and lady beetles build
+      up.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Vegetable pest notes: Spider mites'
+      retrieved: '2026-10-10'
+  safety:
+    value: Broad-spectrum sprays kill the predators and let mites rebound. Use soap or oil only on plants that are not stressed.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Vegetable pest notes: Spider mites'
+      retrieved: '2026-10-10'

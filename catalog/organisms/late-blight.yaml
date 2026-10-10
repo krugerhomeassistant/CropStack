@@ -1,0 +1,56 @@
+kind: organism
+slug: late-blight
+names:
+  en:
+  - Late blight
+organism_type: disease
+scientific_name: Phytophthora infestans
+hosts:
+- tomato
+- potato
+description: A fast water mould that kills tomato and potato foliage in cool, wet, humid weather. One bad week can ruin a
+  crop.
+params:
+  identify:
+    value: Dark, greasy-looking blotches on leaves that spread quickly, white fuzz on the underside in damp mornings, brown
+      firm patches on tomato fruit, and stems that blacken.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Vegetable pest notes: Late blight'
+      retrieved: '2026-10-10'
+  look_when:
+    value: Check twice a week in cool nights with long dew or several wet days in a row. Walk the row after rain.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Vegetable pest notes: Late blight'
+      retrieved: '2026-10-10'
+  verdict:
+    value: remove
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Vegetable pest notes: Late blight'
+      retrieved: '2026-10-10'
+  first_action:
+    value: Remove infected plants whole into a sealed bag, not the compost. Water at the base in the morning and keep leaves
+      dry. Do not leave volunteer potatoes.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Vegetable pest notes: Late blight'
+      retrieved: '2026-10-10'
+  safety:
+    value: Fungicide only protects leaves that are not yet infected. Check your local label and registration before spraying
+      anything.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Vegetable pest notes: Late blight'
+      retrieved: '2026-10-10'

@@ -1,0 +1,65 @@
+kind: organism
+slug: cabbage-caterpillars
+names:
+  en:
+  - Cabbage caterpillars
+organism_type: pest
+scientific_name: Pieris rapae
+hosts:
+- cabbage
+- broccoli
+- cauliflower
+- brussels-sprouts
+- kale
+- kohlrabi
+- pak-choi
+- mustard-greens
+- radish
+- turnip
+- swede
+- rocket
+description: Green caterpillars of the cabbage white butterfly that chew holes in brassica leaves and hide in the heart of
+  the plant.
+params:
+  identify:
+    value: White butterflies fluttering over the bed, yellow eggs on leaf undersides, ragged holes, green droppings and caterpillars
+      the colour of the leaf.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Vegetable pest notes: Cabbage caterpillars'
+      retrieved: '2026-10-10'
+  look_when:
+    value: Look under leaves and in the centre of each plant twice a week in warm weather.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Vegetable pest notes: Cabbage caterpillars'
+      retrieved: '2026-10-10'
+  verdict:
+    value: remove
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Vegetable pest notes: Cabbage caterpillars'
+      retrieved: '2026-10-10'
+  first_action:
+    value: Pick off eggs and caterpillars by hand, or cover the bed with fine insect netting from planting so butterflies
+      cannot lay.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Vegetable pest notes: Cabbage caterpillars'
+      retrieved: '2026-10-10'
+  safety:
+    value: Netting must be sealed at the edges. Do not spray close to harvest.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Vegetable pest notes: Cabbage caterpillars'
+      retrieved: '2026-10-10'

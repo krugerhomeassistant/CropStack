@@ -1,0 +1,55 @@
+kind: organism
+slug: early-blight
+names:
+  en:
+  - Early blight
+organism_type: disease
+scientific_name: Alternaria solani
+hosts:
+- tomato
+- potato
+- eggplant
+description: A leaf fungus that starts on the oldest leaves and works upward in warm, humid weather. Slows the plant more
+  than it kills it.
+params:
+  identify:
+    value: Brown spots with rings like a target on lower leaves, with a yellow halo; leaves then yellow and drop.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Vegetable pest notes: Early blight'
+      retrieved: '2026-10-10'
+  look_when:
+    value: Check lower leaves weekly once fruit sets, especially after warm, humid or wet spells.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Vegetable pest notes: Early blight'
+      retrieved: '2026-10-10'
+  verdict:
+    value: tolerate_below_threshold
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Vegetable pest notes: Early blight'
+      retrieved: '2026-10-10'
+  first_action:
+    value: Pick off the lowest affected leaves, mulch to stop soil splash, give space for airflow and rotate nightshades away
+      for 2 to 3 years.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Vegetable pest notes: Early blight'
+      retrieved: '2026-10-10'
+  safety:
+    value: Remove leaves only when dry. Burn or bin them rather than composting.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Vegetable pest notes: Early blight'
+      retrieved: '2026-10-10'

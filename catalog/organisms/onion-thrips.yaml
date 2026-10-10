@@ -1,0 +1,55 @@
+kind: organism
+slug: onion-thrips
+names:
+  en:
+  - Onion thrips
+organism_type: pest
+scientific_name: Thrips tabaci
+hosts:
+- onion
+- garlic
+- leek
+- shallot
+- chives
+description: Tiny slender insects that rasp leaves of onions and relatives, worst in hot, dry weather.
+params:
+  identify:
+    value: Silvery streaks and white flecks on leaves, tips that twist and dry, and tiny pale insects in the leaf folds.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Vegetable pest notes: Onion thrips'
+      retrieved: '2026-10-10'
+  look_when:
+    value: Check in hot, dry spells, looking down between the inner leaves.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Vegetable pest notes: Onion thrips'
+      retrieved: '2026-10-10'
+  verdict:
+    value: tolerate_below_threshold
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Vegetable pest notes: Onion thrips'
+      retrieved: '2026-10-10'
+  first_action:
+    value: Water well to keep plants strong, wash insects off with a strong spray of water, and remove badly hit plants.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Vegetable pest notes: Onion thrips'
+      retrieved: '2026-10-10'
+  safety:
+    value: Healthy plants tolerate light attack. Natural enemies keep numbers down unless broad-spectrum sprays are used.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Vegetable pest notes: Onion thrips'
+      retrieved: '2026-10-10'

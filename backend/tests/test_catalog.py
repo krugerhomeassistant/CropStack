@@ -192,3 +192,11 @@ def test_overrides_belong_to_one_household_and_need_edit_rights(client, monkeypa
     assert (
         other.get("/api/v1/catalog/crop/testcrop").json()["data"]["requirements"]["temperature"]["base"]["value"] == 10
     )
+
+
+def test_every_organism_names_real_crops_and_has_a_watch_note():
+    c = cat.load(REPO / "catalog")
+    crops = {slug for slug, _ in c.list("crop")}
+    for slug, data in c.list("organism"):
+        assert set(data.get("hosts", [])) <= crops, slug
+        assert data["params"]["identify"]["value"], slug

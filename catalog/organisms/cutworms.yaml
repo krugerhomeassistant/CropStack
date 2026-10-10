@@ -1,0 +1,50 @@
+kind: organism
+slug: cutworms
+names:
+  en:
+  - Cutworms
+organism_type: pest
+scientific_name: null
+description: Fat grey-brown caterpillars that live in the soil and cut seedlings off at ground level at night.
+params:
+  identify:
+    value: Seedlings felled overnight at the base, and a curled, C-shaped caterpillar in the soil near the stump.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Vegetable pest notes: Cutworms'
+      retrieved: '2026-10-10'
+  look_when:
+    value: Check at dawn in the first weeks after planting out.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Vegetable pest notes: Cutworms'
+      retrieved: '2026-10-10'
+  verdict:
+    value: remove
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Vegetable pest notes: Cutworms'
+      retrieved: '2026-10-10'
+  first_action:
+    value: Dig around the stump and remove the caterpillar. Protect seedlings with a collar of card or a cut can pushed 2
+      cm into the soil.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Vegetable pest notes: Cutworms'
+      retrieved: '2026-10-10'
+  safety:
+    value: Clear weeds and debris from a bed several weeks before planting to leave them nothing to eat.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Vegetable pest notes: Cutworms'
+      retrieved: '2026-10-10'

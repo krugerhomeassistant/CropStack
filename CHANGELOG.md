@@ -5,6 +5,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.39.0] - 2026-10-10
+
+## [0.39.0] - 2026-10-10
+
+### Added
+- **Pests and diseases.** 13 more organisms (late and early blight, cabbage caterpillars, carrot fly, onion thrips, Colorado potato beetle, cucumber beetles, clubroot, downy mildew, blossom end rot, spider mites, cutworms, allium rust), each with how to recognise it, when to look and what to do first. The weekly Check job lists the ones that affect that crop.
+
 ## [0.38.0] - 2026-10-10
 
 ### Changed
@@ -347,7 +354,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - CI: ruff lint and format, backend tests, frontend build, image publishing to GHCR and automatic GitHub releases on a version bump.
 - Project docs: README, wiki, architecture, roadmap, contributing guide, security policy and Code of Conduct.
 
-[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.12.0...HEAD
+[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.39.0...HEAD
+[0.39.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.38.0...v0.39.0
 [0.12.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.11.0...v0.12.0
 [0.11.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.10.0...v0.11.0
 [0.8.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.7.0...v0.8.0

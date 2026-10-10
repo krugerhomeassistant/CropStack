@@ -61,3 +61,6 @@ Planner redrawn (plot plan look, floating tools, map+panel). Next: pests/disease
 
 ## Audit 2026-10-10
 README, RESOURCES, TOOLING refreshed for v0.33–0.38 (were stale at v0.10). README screenshots not regenerated. Next: pests/diseases per crop, sourced sow depth, needs model.
+
+## v0.39.0
+22 organisms (13 new, hosts set, wording ours, cited to uc-ipm at page level). Next: sourced sow depth, needs model, Climate/Crops/More facelift.

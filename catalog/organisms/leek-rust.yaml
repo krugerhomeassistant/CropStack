@@ -1,0 +1,55 @@
+kind: organism
+slug: leek-rust
+names:
+  en:
+  - Allium rust
+organism_type: disease
+scientific_name: Puccinia allii
+hosts:
+- leek
+- garlic
+- onion
+- shallot
+- chives
+description: A fungus that dusts leaves with orange pustules in cool, damp weather, mostly seen in autumn and spring.
+params:
+  identify:
+    value: Raised orange-brown spots on leaves that rub off as powder on your fingers.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Vegetable pest notes: Allium rust'
+      retrieved: '2026-10-10'
+  look_when:
+    value: Check in cool, damp spells and where plants are crowded.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Vegetable pest notes: Allium rust'
+      retrieved: '2026-10-10'
+  verdict:
+    value: tolerate_below_threshold
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Vegetable pest notes: Allium rust'
+      retrieved: '2026-10-10'
+  first_action:
+    value: Remove the worst leaves, avoid too much nitrogen, give more space and rotate alliums on a 3 to 4 year gap.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Vegetable pest notes: Allium rust'
+      retrieved: '2026-10-10'
+  safety:
+    value: Mild rust seldom harms the bulb or stem. Bin infected leaves, do not compost them.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Vegetable pest notes: Allium rust'
+      retrieved: '2026-10-10'

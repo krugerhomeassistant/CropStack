@@ -1,0 +1,57 @@
+kind: organism
+slug: downy-mildew
+names:
+  en:
+  - Downy mildew
+organism_type: disease
+scientific_name: Peronospora and Pseudoperonospora spp.
+hosts:
+- lettuce
+- spinach
+- cucumber
+- onion
+- basil
+- melon
+description: A water mould that thrives in cool, damp conditions and spreads fast on leaves held wet overnight.
+params:
+  identify:
+    value: Yellow patches on top of leaves, limited by veins, with grey or purple fuzz on the underside in the morning.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Vegetable pest notes: Downy mildew'
+      retrieved: '2026-10-10'
+  look_when:
+    value: Check in cool, humid weather with heavy dew, mornings being best.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Vegetable pest notes: Downy mildew'
+      retrieved: '2026-10-10'
+  verdict:
+    value: remove
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Vegetable pest notes: Downy mildew'
+      retrieved: '2026-10-10'
+  first_action:
+    value: Remove infected leaves or plants, water in the morning at the base, widen spacing and choose resistant varieties
+      next time.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Vegetable pest notes: Downy mildew'
+      retrieved: '2026-10-10'
+  safety:
+    value: Spread by wind from nearby crops. Clear crop debris at the end of the season.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Vegetable pest notes: Downy mildew'
+      retrieved: '2026-10-10'

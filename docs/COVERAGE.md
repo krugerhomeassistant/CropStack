@@ -68,4 +68,4 @@ see [CONTRIBUTING-CATALOG.md](CONTRIBUTING-CATALOG.md).
 | watermelon | none | temperature.lethal_min |
 | zucchini | none | temperature.lethal_min |
 
-Animals, varieties and organisms are not in the catalog yet; adding the first ones is also welcome.
+Animals and varieties are not in the catalog yet (22 pests, diseases and beneficials are); adding the first ones is also welcome.

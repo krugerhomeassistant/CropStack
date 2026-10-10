@@ -1,0 +1,50 @@
+kind: organism
+slug: blossom-end-rot
+names:
+  en:
+  - Blossom end rot
+organism_type: deficiency
+scientific_name: null
+hosts:
+- tomato
+- sweet-pepper
+- chilli
+- eggplant
+- zucchini
+- watermelon
+description: 'A watering problem more than a feeding one: fruit cannot get enough calcium when the soil swings between wet
+  and dry.'
+params:
+  identify:
+    value: A dark, sunken, leathery patch at the flower end of the fruit, usually on the first fruit of the season.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Vegetable pest notes: Blossom end rot'
+      retrieved: '2026-10-10'
+  look_when:
+    value: Check at the first fruit set and again after any hot, dry spell.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Vegetable pest notes: Blossom end rot'
+      retrieved: '2026-10-10'
+  first_action:
+    value: Water deeply and evenly, mulch to hold moisture and remove affected fruit so that the plant can put energy into
+      good ones.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Vegetable pest notes: Blossom end rot'
+      retrieved: '2026-10-10'
+  safety:
+    value: Adding more calcium rarely helps if the soil already has enough. Fix the watering first.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Vegetable pest notes: Blossom end rot'
+      retrieved: '2026-10-10'

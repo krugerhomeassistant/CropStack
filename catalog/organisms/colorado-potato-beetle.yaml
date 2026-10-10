@@ -1,0 +1,55 @@
+kind: organism
+slug: colorado-potato-beetle
+names:
+  en:
+  - Colorado potato beetle
+organism_type: pest
+scientific_name: Leptinotarsa decemlineata
+hosts:
+- potato
+- tomato
+- eggplant
+description: A striped yellow and black beetle and its dark red grubs that strip leaves of potato and its relatives.
+params:
+  identify:
+    value: Round yellow beetles with ten black stripes, orange egg clusters on leaf undersides, and fat humped red grubs eating
+      leaves.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Vegetable pest notes: Colorado potato beetle'
+      retrieved: '2026-10-10'
+  look_when:
+    value: Check twice a week from the time plants are up, undersides of leaves first.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Vegetable pest notes: Colorado potato beetle'
+      retrieved: '2026-10-10'
+  verdict:
+    value: remove
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Vegetable pest notes: Colorado potato beetle'
+      retrieved: '2026-10-10'
+  first_action:
+    value: Hand-pick beetles and grubs into soapy water and crush egg clusters. Plant potatoes in a bed well away from last
+      year's.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Vegetable pest notes: Colorado potato beetle'
+      retrieved: '2026-10-10'
+  safety:
+    value: Beetles overwinter in soil near last year's plants, so rotation and a clean bed matter most.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Vegetable pest notes: Colorado potato beetle'
+      retrieved: '2026-10-10'

@@ -1,0 +1,56 @@
+kind: organism
+slug: carrot-fly
+names:
+  en:
+  - Carrot fly
+organism_type: pest
+scientific_name: Chamaepsila rosae
+hosts:
+- carrot
+- parsnip
+- celery
+- celeriac
+- parsley
+description: Small flies whose maggots tunnel into roots of carrots and relatives, leaving them rusty and rotten.
+params:
+  identify:
+    value: Foliage that turns reddish and wilts, and rusty brown tunnels in the roots when you pull them.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Vegetable pest notes: Carrot fly'
+      retrieved: '2026-10-10'
+  look_when:
+    value: Most damage follows thinning, which releases the smell of the crop. Check at thinning and again a month later.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Vegetable pest notes: Carrot fly'
+      retrieved: '2026-10-10'
+  verdict:
+    value: remove
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Vegetable pest notes: Carrot fly'
+      retrieved: '2026-10-10'
+  first_action:
+    value: Cover the bed with fine netting at sowing, thin on dull evenings and take the thinnings away, and sow late enough
+      to miss the first flight.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Vegetable pest notes: Carrot fly'
+      retrieved: '2026-10-10'
+  safety:
+    value: Once roots are tunnelled they cannot be saved. Prevention is the only effective control.
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - ref: uc-ipm
+      locator: 'Vegetable pest notes: Carrot fly'
+      retrieved: '2026-10-10'
