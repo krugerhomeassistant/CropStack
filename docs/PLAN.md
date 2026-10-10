@@ -195,8 +195,8 @@ Goal: probabilistic, self-updating environment; remove v1 heuristics (§18).
 
 **8.3 Layout editor**
 - [x] (v0.26.0: plain SVG with pointer events; no library) Canvas tech decision (SVG + pointer events vs a library such as Konva; criteria: touch, performance, bundle size, licence) — spike, record in TOOLING.
-- [~] (v0.26.0: rectangular beds, rows and round containers; move by drag, resize by size fields; no undo, rotate, polygons, structures, paths, trees or rulers yet) Draw/edit features: boundary, beds (rect/polygon/circle/keyhole), containers, structures, paths, trees (canopy, height), buildings/walls (height), tanks, fences; snap, rulers, labels, layers, undo/redo, zoom/pan/touch.
-- [~] (v0.26.0: three single-bed templates; multi-bed templates and background tracing open) Template shapes ("4 raised beds 1.2 × 2.4 m"); optional background image tracing.
+- [~] (v0.30.0: draw rectangles, rows and pots by dragging, corner-handle resize, named layouts that move as a group; no undo, rotate, polygons, structures, paths, trees or rulers yet) Draw/edit features: boundary, beds (rect/polygon/circle/keyhole), containers, structures, paths, trees (canopy, height), buildings/walls (height), tanks, fences; snap, rulers, labels, layers, undo/redo, zoom/pan/touch.
+- [~] (v0.30.0: layouts group beds; saving a layout as a reusable template and background tracing open) Template shapes ("4 raised beds 1.2 × 2.4 m"); optional background image tracing.
 - [ ] Sun model: sun path per site/day, obstacle shadows → direct-sun hours grid per month; heat-map overlay; manual override.
 - [~] (v0.27.0: per-cell placement, painting, date slider, staggered plantings with clash flags, recommendations with a suggested bed; no drag of a planting between beds, no per-plant icons) Planting layer with spacing footprints and date slider; drag between beds.
 - [~] (v0.27.0: overcrowding and same-cell date clashes; rotation only influences suggestions) Validation hints (overcrowding, sun mismatch, rotation conflict, height shading, path width).

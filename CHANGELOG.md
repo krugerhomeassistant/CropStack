@@ -5,6 +5,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.30.0] - 2026-10-10
+
+### Changed
+- **Draw the garden plan freely.** Pick Draw bed, Draw row or Draw pot and drag on the plan to draw it at any size (a click places the standard size). Drag a bed to move it, and drag the round handle on its corner to resize it. The plan always has room to draw in, even with no beds. The three fixed-size buttons are gone.
+
+### Added
+- **Layouts.** Give beds a layout name (for example "Back garden") and they are framed together on the plan and move as one when you drag any of them or the layout's name; a switch turns the grouping off when you want to move a single bed.
+
 ## [0.29.0] - 2026-10-10
 
 ### Added

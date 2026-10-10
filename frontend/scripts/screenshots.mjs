@@ -50,8 +50,8 @@ if (!(await setup.request.get(`${base}/api/v1/plantings`).then((r) => r.json()))
 if (!(await setup.request.get(`${base}/api/v1/beds`).then((r) => r.json())).length) {
   const beds = {}
   for (const b of [
-    { name: 'Bed 1', kind: 'bed', x: 0.5, y: 0.5, width: 1.2, length: 2.4 },
-    { name: 'Bed 2', kind: 'bed', x: 2.2, y: 0.5, width: 1.2, length: 2.4 },
+    { name: 'Bed 1', kind: 'bed', x: 0.5, y: 0.7, width: 1.2, length: 2.4, layout: 'Back garden' },
+    { name: 'Bed 2', kind: 'bed', x: 2.2, y: 0.7, width: 1.2, length: 2.4, layout: 'Back garden' },
     { name: 'Herbs', kind: 'container', x: 4, y: 0.5, width: 0.6, length: 0.6 },
   ])
     beds[b.name] = (await setup.request.post(`${base}/api/v1/beds`, { data: b }).then((r) => r.json())).id

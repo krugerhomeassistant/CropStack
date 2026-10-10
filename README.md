@@ -53,7 +53,7 @@ It runs on your own hardware (a NAS, a Raspberry Pi, a home server) as one conta
 - **Watering.** CropStack tracks the water in the soil for each planting from evaporation, rain and root depth, and tells you when to water and how much, so you water when the crop needs it and not by the calendar.
 - **Weekly Check.** Each growing planting gets a weekly job listing what to look for and what to keep or remove.
 - **Garden assistant (optional).** Add a Claude, OpenAI or OpenRouter key, or an Ollama address, in Settings, then ask garden questions in Ask.
-- **Garden plan.** Draw beds, rows and containers to scale, drag them into place, then paint exactly which crop goes in which cells. Mix and stagger crops in one bed (the date slider shows it over time), and get "what to plant now and where" suggestions from your climate.
+- **Garden plan.** Draw beds, rows and pots freely to scale, group them into layouts that move as one to match your garden, then paint exactly which crop goes in which cells. Mix and stagger crops in one bed (the date slider shows it over time), and get "what to plant now and where" suggestions from your climate.
 - **Harvest log.** Record what you pick from each planting; the Garden page shows the running total.
 - **Frost and heat alerts.** If the forecast shows a night too cold or a day too hot for something you have growing, Today lists a Protect job with the figure and the crop's limit.
 - **Plantings.** Choose *Plant this* on a window, and the Garden tab keeps track: what, how many, where, and whether it is sown, up, set out, harvesting, finished or failed.

@@ -109,8 +109,16 @@ try {
 
   // Garden plan: add a bed, drag it, and give a planting a place in it
   await owner.getByRole('heading', { name: 'What to plant' }).waitFor() // it loads late and moves the page
-  await owner.getByRole('button', { name: /Add Raised bed/ }).click()
-  await owner.getByRole('img', { name: 'Plan of the garden beds' }).waitFor()
+  const plan = owner.getByRole('img', { name: 'Plan of the garden beds' })
+  await plan.scrollIntoViewIfNeeded()
+  const planBox = await stableBox(plan)
+  await owner.getByRole('button', { name: 'Draw bed' }).click()
+  await owner.mouse.move(planBox.x + 60, planBox.y + 40)
+  await owner.mouse.down()
+  await owner.mouse.move(planBox.x + 160, planBox.y + 120, { steps: 5 })
+  await owner.mouse.up()
+  const drawn = (await (await owner.request.get(`${base}/api/v1/beds`)).json())[0]
+  assert.ok(drawn.width > 1 && drawn.length > 1, 'the bed takes the size that was dragged')
   await owner.getByRole('button', { name: /^Plant in Bed 1/ }).first().waitFor() // the list grows once it knows the bed
   const bedRect = owner.locator('svg[role=img] rect[stroke-width]').first()
   await bedRect.scrollIntoViewIfNeeded()
@@ -122,6 +130,19 @@ try {
   await owner.waitForTimeout(500) // the move is saved on release
   const [bed] = await (await owner.request.get(`${base}/api/v1/beds`)).json()
   if (bed.x <= 0.5 && bed.y <= 0.5) throw new Error(`bed did not move: ${JSON.stringify(bedBox)} ${bed.x},${bed.y}`)
+  // Resize by the corner handle, and group into a layout that moves as one
+  const handle = await stableBox(owner.getByTestId('resize-handle'))
+  const before = (await (await owner.request.get(`${base}/api/v1/beds`)).json())[0]
+  await owner.mouse.move(handle.x + handle.width / 2, handle.y + handle.height / 2)
+  await owner.mouse.down()
+  await owner.mouse.move(handle.x + handle.width / 2 + 40, handle.y + handle.height / 2 + 40, { steps: 4 })
+  await owner.mouse.up()
+  await owner.waitForTimeout(500)
+  const after = (await (await owner.request.get(`${base}/api/v1/beds`)).json())[0]
+  assert.ok(after.width > before.width && after.length > before.length, 'the corner handle resizes the bed')
+  await owner.getByLabel('Layout', { exact: true }).fill('Back garden')
+  await owner.getByRole('button', { name: 'Save', exact: true }).first().click()
+  await owner.getByText(/Back garden/).first().waitFor()
   await owner.getByLabel(/^Bed for/).first().selectOption({ label: 'Bed 1' })
   await owner.getByText(/1 planted here/).waitFor()
   step('garden plan: add, drag and place a planting')

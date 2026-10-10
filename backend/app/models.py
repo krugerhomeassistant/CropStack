@@ -3,7 +3,7 @@
 from datetime import UTC, date, datetime
 from typing import Any
 
-from sqlalchemy import JSON, Column, Integer, UniqueConstraint
+from sqlalchemy import JSON, Column, Integer, String, UniqueConstraint
 from sqlmodel import Field, SQLModel
 
 # Named constraints let Alembic batch mode drop/alter them later on SQLite.
@@ -132,6 +132,8 @@ class Bed(SQLModel, table=True):
     cell_cm: int = Field(
         default=30, sa_column=Column(Integer, nullable=False, server_default="30")
     )  # size of one square cell
+    # Beds sharing a layout name move together on the plan ("Back garden"); empty = on its own.
+    layout: str = Field(default="", sa_column=Column(String, nullable=False, server_default=""))
     created_at: datetime = Field(default_factory=now)
 
 

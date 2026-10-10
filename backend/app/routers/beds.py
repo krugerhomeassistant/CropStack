@@ -27,6 +27,7 @@ class BedIn(BaseModel):
     width: float = Field(gt=0, le=100)
     length: float = Field(gt=0, le=100)
     cell_cm: int = Field(30, ge=5, le=100)
+    layout: str = Field("", max_length=60)
 
 
 class BedPatch(BaseModel):
@@ -37,6 +38,7 @@ class BedPatch(BaseModel):
     width: float | None = Field(None, gt=0, le=100)
     length: float | None = Field(None, gt=0, le=100)
     cell_cm: int | None = Field(None, ge=5, le=100)
+    layout: str | None = Field(None, max_length=60)
 
 
 def _own(db: SessionDep, household_id: int, bed_id: int) -> Bed:

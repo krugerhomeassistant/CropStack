@@ -96,3 +96,9 @@ def test_cells_must_be_inside_the_bed_and_follow_it_when_it_shrinks(owner):  # n
 
 def test_recommendations_without_a_garden_are_empty(owner):  # noqa: F811
     assert owner.get("/api/v1/recommendations").json() == {"garden": False, "now": [], "soon": []}
+
+
+def test_a_bed_remembers_its_layout_and_can_leave_it(owner):  # noqa: F811
+    bed = owner.post("/api/v1/beds", json={"name": "A", "width": 1, "length": 2, "layout": "Back garden"}).json()
+    assert bed["layout"] == "Back garden"
+    assert owner.patch(f"/api/v1/beds/{bed['id']}", json={"layout": ""}).json()["layout"] == ""

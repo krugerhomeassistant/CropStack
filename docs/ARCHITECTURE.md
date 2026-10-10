@@ -86,13 +86,13 @@ Target architecture (engines, data model, API) is specified in `docs/SPEC.md` §
 | `CROPSTACK_AI_PROVIDER` / `_BASE_URL` / `_MODEL` / `_API_KEY` / `_TIMEOUT` | empty / 120 | Garden assistant defaults; Settings win |
 | `CROPSTACK_PORT` | `8430` | compose host port only |
 
-## DB schema (SQLite, Alembic migrations; head 0013)
+## DB schema (SQLite, Alembic migrations; head 0014)
 - **user**: id, username (unique, lowercased), password_hash (argon2id), display_name, created_at, prefs JSON (start, units)
 - **household**: id, name, created_at, settings JSON (forecast, place_search)
 - **membership**: user_id (PK → user, CASCADE), household_id (→ household, CASCADE, indexed), role (owner|member|viewer), created_at
 - **invite**: token_hash (PK, SHA-256), household_id (→ household, CASCADE), role, created_by (→ user, SET NULL), created_at, expires_at, used_at
 - **household.ai** (JSON): provider, base_url, model, api_key (plain text; see the shortcut in `routers/ai.py`)
-- **bed**: id, household_id (CASCADE), name, kind (bed, container, row), x, y, width, length (metres from the plan corner), cell_cm (grid cell, default 30), created_at. `planting.bed_id` → bed (SET NULL); `planting.location` carries the bed name
+- **bed**: id, household_id (CASCADE), name, kind (bed, container, row), x, y, width, length (metres from the plan corner), cell_cm (grid cell, default 30), layout (group name, blank = alone), created_at. `planting.bed_id` → bed (SET NULL); `planting.location` carries the bed name
 - **harvest**: id, household_id (CASCADE), planting_id (→ planting, CASCADE), harvested_on, quantity (> 0), unit (kg, g, count, bunch), notes, created_by (SET NULL), created_at
 - **site**: id, household_id (→ household, unique, CASCADE), name, latitude, longitude, postal_code, frost_probability (10–90), soil ('', sandy, loamy, clay), created_at, updated_at
 - **forecast**: site_id (PK → site, CASCADE), latitude, longitude, raw JSON (Open-Meteo forecast response), fetched_at

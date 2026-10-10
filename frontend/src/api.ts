@@ -114,6 +114,7 @@ export type Bed = {
   width: number
   length: number
   cell_cm: number
+  layout: string
   cols: number
   rows: number
   placements: Placement[]
@@ -125,7 +126,7 @@ export type Bed = {
   unknown_footprint: number
   crowded: boolean
 }
-export type BedIn = Pick<Bed, 'name' | 'kind' | 'x' | 'y' | 'width' | 'length' | 'cell_cm'>
+export type BedIn = Pick<Bed, 'name' | 'kind' | 'x' | 'y' | 'width' | 'length' | 'cell_cm' | 'layout'>
 export type Placement = {
   planting_id: number
   crop: string
