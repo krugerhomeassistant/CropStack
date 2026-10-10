@@ -131,6 +131,9 @@ try {
   const [bed] = await (await owner.request.get(`${base}/api/v1/beds`)).json()
   if (bed.x <= 0.5 && bed.y <= 0.5) throw new Error(`bed did not move: ${JSON.stringify(bedBox)} ${bed.x},${bed.y}`)
   // Resize by the corner handle, and group into a layout that moves as one
+  const logs = []
+  owner.on('console', (m) => logs.push(m.text()))
+  owner.on('pageerror', (e) => logs.push(String(e)))
   await owner.getByTestId('resize-handle').evaluate((el) => el.scrollIntoView({ block: 'center' })) // clear of the bottom bar
   const handle = await stableBox(owner.getByTestId('resize-handle'))
   const before = (await (await owner.request.get(`${base}/api/v1/beds`)).json())[0]
@@ -143,7 +146,7 @@ try {
     await owner.waitForTimeout(250) // the new size is saved on release
     after = (await (await owner.request.get(`${base}/api/v1/beds`)).json())[0]
   }
-  assert.ok(after.width > before.width && after.length > before.length, `the corner handle resizes the bed: ${JSON.stringify([before, after, handle])}`)
+  assert.ok(after.width > before.width && after.length > before.length, `the corner handle resizes the bed: ${JSON.stringify([before.width, after.width, handle])} ${await owner.getByRole('alert').allTextContents()} ${logs.join('|')}`)
   await owner.getByLabel('Layout', { exact: true }).fill('Back garden')
   await owner.getByRole('button', { name: 'Save', exact: true }).first().click()
   await owner.getByText(/Back garden/).first().waitFor()
