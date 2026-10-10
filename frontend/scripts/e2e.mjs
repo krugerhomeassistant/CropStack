@@ -16,6 +16,18 @@ async function phone() {
 }
 const path = (page) => new URL(page.url()).pathname
 const nav = (page, name) => page.getByRole('navigation', { name: 'Main' }).getByRole('link', { name }).click()
+/** A bounding box once the layout has stopped moving (lists above it load late). */
+async function stableBox(locator) {
+  let last = ''
+  for (let i = 0; i < 40; i++) {
+    const box = await locator.boundingBox()
+    const now = JSON.stringify(box)
+    if (now === last) return box
+    last = now
+    await locator.page().waitForTimeout(150)
+  }
+  throw new Error('layout never settled')
+}
 const step = (name) => console.log(`✓ ${name}`)
 
 try {
@@ -96,21 +108,43 @@ try {
   step('plant from a window, list and advance')
 
   // Garden plan: add a bed, drag it, and give a planting a place in it
+  await owner.getByRole('heading', { name: 'What to plant' }).waitFor() // it loads late and moves the page
   await owner.getByRole('button', { name: /Add Raised bed/ }).click()
   await owner.getByRole('img', { name: 'Plan of the garden beds' }).waitFor()
-  const bedBox = await owner.locator('svg[role=img] rect[stroke-width]').first().boundingBox()
+  await owner.getByRole('button', { name: /^Plant in Bed 1/ }).first().waitFor() // the list grows once it knows the bed
+  const bedRect = owner.locator('svg[role=img] rect[stroke-width]').first()
+  await bedRect.scrollIntoViewIfNeeded()
+  const bedBox = await stableBox(bedRect)
   await owner.mouse.move(bedBox.x + 10, bedBox.y + 10)
   await owner.mouse.down()
   await owner.mouse.move(bedBox.x + 70, bedBox.y + 50, { steps: 5 })
   await owner.mouse.up()
+  await owner.waitForTimeout(500) // the move is saved on release
   const [bed] = await (await owner.request.get(`${base}/api/v1/beds`)).json()
-  if (bed.x <= 0.5 && bed.y <= 0.5) throw new Error('bed did not move')
+  if (bed.x <= 0.5 && bed.y <= 0.5) throw new Error(`bed did not move: ${JSON.stringify(bedBox)} ${bed.x},${bed.y}`)
   await owner.getByLabel(/^Bed for/).first().selectOption({ label: 'Bed 1' })
   await owner.getByText(/1 planted here/).waitFor()
   step('garden plan: add, drag and place a planting')
 
+  // Cells: paint two crops into one bed, then see recommendations with a place in the plan
+  await owner.getByRole('button', { name: /^Bed 1/ }).click()
+  await owner.getByLabel('Plant', { exact: true }).selectOption('lettuce')
+  await owner.getByRole('img', { name: 'Cells of Bed 1' }).scrollIntoViewIfNeeded()
+  const cells = await stableBox(owner.getByRole('img', { name: 'Cells of Bed 1' }))
+  await owner.mouse.move(cells.x + 10, cells.y + 10)
+  await owner.mouse.down()
+  await owner.mouse.move(cells.x + cells.width * 0.6, cells.y + 10, { steps: 6 })
+  await owner.mouse.up()
+  await owner.getByText(/In this bed: .*Lettuce/).waitFor()
+  await owner.getByLabel('Plant', { exact: true }).selectOption('radish')
+  await owner.mouse.move(cells.x + cells.width * 0.9, cells.y + 10)
+  await owner.mouse.down()
+  await owner.mouse.up()
+  await owner.getByText(/In this bed: .*Radish/).waitFor()
+  step('garden plan: paint a mixed bed, recommendations shown')
+
   // Harvests are logged once a crop is growing
-  const [first] = await (await owner.request.get(`${base}/api/v1/plantings`)).json()
+  const first = (await (await owner.request.get(`${base}/api/v1/plantings`)).json()).find((p) => p.quantity === 6) // the one sown above
   for (const status of ['germinated', 'harvesting'])
     await owner.request.patch(`${base}/api/v1/plantings/${first.id}`, { data: { status } })
   await owner.reload()
@@ -130,7 +164,7 @@ try {
   await owner.getByText('You planned to sow on').first().waitFor()
   await owner.getByText('How to do it').first().click()
   await owner.getByText(/Firm the soil gently/).first().waitFor()
-  await owner.getByRole('button', { name: 'Mark sown' }).first().click()
+  await owner.getByRole('listitem').filter({ has: owner.getByRole('heading', { name: 'Sow lettuce (3) in Bed 2' }) }).getByRole('button', { name: 'Mark sown' }).click()
   await owner.getByRole('heading', { name: 'Sow lettuce (3) in Bed 2' }).waitFor({ state: 'detached' })
   step('Today shows the due job and finishing it moves the planting')
 
@@ -179,7 +213,7 @@ try {
   await member.getByLabel('Username').fill('marie')
   await member.getByLabel('Password').fill('garden456')
   await member.getByRole('button', { name: 'Join Kruger homestead' }).click()
-  await member.getByText('Nothing to do today').waitFor()
+  await member.getByRole('link', { name: 'Garden' }).first().waitFor() // Today has jobs now: the painted cells are plantings
   await nav(member, 'Garden')
   await member.getByRole('heading', { name: 'Back yard' }).waitFor()
   assert.equal(await member.getByRole('button', { name: 'Edit garden' }).count(), 0)

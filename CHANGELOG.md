@@ -5,6 +5,20 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.27.0] - 2026-10-10
+
+### Added
+- **Cells.** Each bed, row or pot is a grid of cells (30 cm by default; change it per bed). Pick a crop, drag across the cells to put it exactly where you want it, and drag with "Take out of cells" to clear. One bed can hold several crops in any order.
+- **Staggering.** Every planting holds its cells from sowing to a "holds the cells until" date (or the crop's longest cycle). Move the date slider to see the bed at any time; a cell can take another crop once the first one is out, and the grid flags cells where two plantings overlap.
+- **What to plant.** The Garden page lists what can be sown or set out now and soon from your climate, with the best weeks, and names a bed with free cells for it (preferring cells that did not hold the same family). "Plant in Bed 1" does it in one tap.
+- Quantity is worked out from the crop's spacing and the cells chosen when you leave it empty.
+
+### Changed
+- Deleting a bed leaves its plantings unplaced; a smaller bed drops the cells outside it; changing the cell size clears the bed's cells.
+
+### Internal
+- Migration 0012 (`bed.cell_cm`, `planting.cells`, `planting.ends_on`), `engine/layout.py` cell helpers, `engine/recommend.py`, `GET /api/v1/recommendations`.
+
 ## [0.26.2] - 2026-10-10
 
 ### Fixed

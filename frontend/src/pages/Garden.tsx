@@ -3,6 +3,7 @@ import { MapPin, Pencil } from 'lucide-react'
 import { IconButton, PageHeader, Section } from '../components/ui'
 import { t } from '../i18n'
 import { useApp } from '../state'
+import Recommendations from '../components/Recommendations'
 import LayoutEditor from '../components/LayoutEditor'
 import Plantings from '../components/Plantings'
 import GardenSetup from './GardenSetup'
@@ -41,6 +42,7 @@ export default function GardenPage() {
           user.role === 'owner' && <IconButton icon={Pencil} label={t('Edit garden')} onClick={() => setEditing(true)} />
         }
       />
+      <Recommendations reload={rev + planRev} onChange={() => setRev((r) => r + 1)} />
       <LayoutEditor key={planRev} onChange={() => setRev((r) => r + 1)} />
       <Plantings key={rev} onBedChange={() => setPlanRev((r) => r + 1)} />
     </>

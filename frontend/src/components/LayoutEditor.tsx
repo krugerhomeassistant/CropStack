@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { LayoutGrid, Trash2 } from 'lucide-react'
-import { api, type Bed, type BedIn, type BedKind } from '../api'
+import { api, type Bed, type BedIn, type BedKind, type CropSummary } from '../api'
 import { t } from '../i18n'
 import { useApp } from '../state'
+import BedGrid from './BedGrid'
 import { Button, EmptyState, ErrorMessage, Field, IconButton, Section, Skeleton } from './ui'
 
 const SNAP = 0.1 // metres
@@ -23,6 +24,7 @@ export default function LayoutEditor({ onChange }: { onChange: () => void }) {
   const canEdit = user.role !== 'viewer'
   const [beds, setBeds] = useState<Bed[] | null>(null)
   const [selected, setSelected] = useState<number | null>(null)
+  const [crops, setCrops] = useState<CropSummary[]>([])
   const [error, setError] = useState('')
   const drag = useRef<Drag | null>(null)
   const svg = useRef<SVGSVGElement>(null)
@@ -31,6 +33,7 @@ export default function LayoutEditor({ onChange }: { onChange: () => void }) {
     api.beds().then(setBeds, (e) => setError(e instanceof Error ? e.message : t('Failed to load')))
   useEffect(() => {
     load()
+    api.crops().then(setCrops, () => setCrops([]))
   }, [])
 
   const fail = (e: unknown) => setError(e instanceof Error ? e.message : t('Failed to save'))
@@ -39,7 +42,7 @@ export default function LayoutEditor({ onChange }: { onChange: () => void }) {
   function add(tpl: (typeof TEMPLATES)[number]) {
     const right = Math.max(0, ...(beds ?? []).map((b) => b.x + b.width))
     const n = (beds ?? []).filter((b) => b.kind === tpl.kind).length + 1
-    const body: BedIn = { name: `${t(tpl.name)} ${n}`, kind: tpl.kind, x: beds?.length ? snap(right + 0.4) : 0.5, y: 0.5, width: tpl.width, length: tpl.length }
+    const body: BedIn = { name: `${t(tpl.name)} ${n}`, kind: tpl.kind, x: beds?.length ? snap(right + 0.4) : 0.5, y: 0.5, width: tpl.width, length: tpl.length, cell_cm: 30 }
     api.addBed(body).then((b) => {
       setSelected(b.id)
       return refresh()
@@ -145,7 +148,9 @@ export default function LayoutEditor({ onChange }: { onChange: () => void }) {
         </ul>
       )}
 
-      {canEdit && current && <BedForm key={current.id} bed={current} onSaved={refresh} onDeleted={() => { setSelected(null); refresh() }} fail={fail} />}
+      {current && <BedGrid key={`grid${current.id}`} bed={current} crops={crops} onChange={refresh} />}
+
+      {canEdit && current && <BedForm key={`form${current.id}`} bed={current} onSaved={refresh} onDeleted={() => { setSelected(null); refresh() }} fail={fail} />}
 
       {canEdit && (
         <div className="flex flex-wrap gap-2">
@@ -164,12 +169,13 @@ function BedForm({ bed, onSaved, onDeleted, fail }: { bed: Bed; onSaved: () => v
   const [name, setName] = useState(bed.name)
   const [width, setWidth] = useState(String(round(bed.width)))
   const [length, setLength] = useState(String(round(bed.length)))
+  const [cell, setCell] = useState(String(bed.cell_cm))
   return (
     <form
       className="flex flex-wrap items-end gap-2 rounded-[var(--radius-row)] bg-sunken p-3"
       onSubmit={(e) => {
         e.preventDefault()
-        api.updateBed(bed.id, { name, width: Number(width), length: Number(length) }).then(onSaved, fail)
+        api.updateBed(bed.id, { name, width: Number(width), length: Number(length), cell_cm: Number(cell) }).then(onSaved, fail)
       }}
     >
       <Field label={t('Name')}>
@@ -180,6 +186,9 @@ function BedForm({ bed, onSaved, onDeleted, fail }: { bed: Bed; onSaved: () => v
       </Field>
       <Field label={t('Length (m)')}>
         <input className="input w-24" type="number" min="0.1" max="100" step="0.1" required value={length} onChange={(e) => setLength(e.target.value)} />
+      </Field>
+      <Field label={t('Cell size (cm)')} hint={t('Changing it clears where plants sit in this bed.')}>
+        <input className="input w-24" type="number" min="5" max="100" step="5" required value={cell} onChange={(e) => setCell(e.target.value)} />
       </Field>
       <Button type="submit">{t('Save')}</Button>
       <IconButton icon={Trash2} label={t('Delete bed')} onClick={() => api.deleteBed(bed.id).then(onDeleted, fail)} />

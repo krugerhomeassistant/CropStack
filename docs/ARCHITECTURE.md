@@ -40,8 +40,10 @@ Target architecture (engines, data model, API) is specified in `docs/SPEC.md` §
 | `engine/water.py` | **pure** soil-water balance: `WaterProfile` from a catalog item, `depletion_path`, `first_dry_day` |
 | `tasks.py` | task engine core: pure generators `crop_schedule` (sow, set out, first harvest), `weather_alerts` (frost, heat from the forecast) and `water_alerts`, and `sync` (per set of task kinds), which updates stored tasks by `generator_key`, logs changes, leaves done/skipped/locked tasks alone |
 | `tasks.scout_checks` | weekly Check job per planting in the ground; key carries the last check date; `today._watch` attaches the organism list |
-| `engine/layout.py` | **pure** plant footprint (spread × row spacing, m²) and bed fullness |
-| `routers/beds.py` | beds CRUD; `GET /beds` adds the plantings in each bed and whether it is crowded |
+| `engine/layout.py` | **pure** plant footprint (spread × row spacing, m²), bed fullness, cell grid, plants per cell, date-aware occupancy, free cells, clashes |
+| `routers/beds.py` | beds CRUD; `GET /beds` adds the grid (cols, rows), placements (cells, from, until), clashes and crowding |
+| `engine/recommend.py` | **pure** what-to-plant timing: `timing`, `options` (direct, transplant), `best_option` from a sowing analysis |
+| `routers/recommend.py` | `GET /api/v1/recommendations?horizon=21`: plant now / coming up, each with a bed and free cells (prefers cells without the same family) |
 | `routers/plantings.py` | plantings CRUD with forward-only status rules; regenerates tasks on every change; harvest log (`GET /plantings/harvests`, `POST /plantings/{id}/harvests`, `DELETE /plantings/harvests/{id}`) |
 | `routers/today.py` | `GET /api/v1/today` (due jobs grouped Protect…Maintain, next 14 days), `PATCH /api/v1/tasks/{id}` (done/skipped; done moves the planting along), 12-hourly `tasks` job |
 | `routers/weather.py` | forecast refresh (3 h), `forecast` job, `GET /api/v1/sites/current/weather` |
@@ -81,18 +83,18 @@ Target architecture (engines, data model, API) is specified in `docs/SPEC.md` §
 | `CROPSTACK_SCHEDULER` | `true` | background jobs (forecast refresh) |
 | `CROPSTACK_PORT` | `8430` | compose host port only |
 
-## DB schema (SQLite, Alembic migrations; head 0011)
+## DB schema (SQLite, Alembic migrations; head 0012)
 - **user**: id, username (unique, lowercased), password_hash (argon2id), display_name, created_at, prefs JSON (start, units)
 - **household**: id, name, created_at, settings JSON (forecast, place_search)
 - **membership**: user_id (PK → user, CASCADE), household_id (→ household, CASCADE, indexed), role (owner|member|viewer), created_at
 - **invite**: token_hash (PK, SHA-256), household_id (→ household, CASCADE), role, created_by (→ user, SET NULL), created_at, expires_at, used_at
-- **bed**: id, household_id (CASCADE), name, kind (bed, container, row), x, y, width, length (metres from the plan corner), created_at. `planting.bed_id` → bed (SET NULL); `planting.location` carries the bed name
+- **bed**: id, household_id (CASCADE), name, kind (bed, container, row), x, y, width, length (metres from the plan corner), cell_cm (grid cell, default 30), created_at. `planting.bed_id` → bed (SET NULL); `planting.location` carries the bed name
 - **harvest**: id, household_id (CASCADE), planting_id (→ planting, CASCADE), harvested_on, quantity (> 0), unit (kg, g, count, bunch), notes, created_by (SET NULL), created_at
 - **site**: id, household_id (→ household, unique, CASCADE), name, latitude, longitude, postal_code, frost_probability (10–90), soil ('', sandy, loamy, clay), created_at, updated_at
 - **forecast**: site_id (PK → site, CASCADE), latitude, longitude, raw JSON (Open-Meteo forecast response), fetched_at
 - **catalogoverride**: (household_id → household CASCADE, kind, slug, path) PK, value JSON (a cited `Value`), updated_at
 - **climatearchive**: site_id (PK → site, CASCADE), latitude, longitude (where it was fetched), version (`ARCHIVE_VERSION`), last_year, raw JSON (Open-Meteo daily response, ~0.5 MB), fetched_at
-- **planting**: id, household_id (→ household, CASCADE, indexed), crop (catalog slug), method (direct|transplant), status (planned|sown|germinated|transplanted|harvesting|finished|failed), start_date, set_out_date, quantity, location (free text until beds exist), notes, created_by (→ user, SET NULL), created_at
+- **planting**: id, household_id (→ household, CASCADE, indexed), crop (catalog slug), method (direct|transplant), status (planned|sown|germinated|transplanted|harvesting|finished|failed), start_date, set_out_date, quantity, location (bed name), bed_id, cells (JSON [[col,row],…]), ends_on (date the cells are released; null = the crop's longest cycle), notes, created_by (→ user, SET NULL), created_at
 - **task**: id, household_id (→ household, CASCADE), generator_key (unique per household), planting_id (→ planting, CASCADE), kind (sow|set_out|harvest), group (Today group), title, reason, earliest/ideal/latest, status (open|done|skipped), locked, completed_at/by, created_at
 - **taskchange**: id, task_id (→ task, CASCADE), at, what ("Moved from 4 Oct to 9 Oct")
 

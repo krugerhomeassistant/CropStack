@@ -3,7 +3,7 @@
 from datetime import UTC, date, datetime
 from typing import Any
 
-from sqlalchemy import JSON, Column, UniqueConstraint
+from sqlalchemy import JSON, Column, Integer, UniqueConstraint
 from sqlmodel import Field, SQLModel
 
 # Named constraints let Alembic batch mode drop/alter them later on SQLite.
@@ -127,6 +127,9 @@ class Bed(SQLModel, table=True):
     y: float = 0
     width: float  # m, along x
     length: float  # m, along y
+    cell_cm: int = Field(
+        default=30, sa_column=Column(Integer, nullable=False, server_default="30")
+    )  # size of one square cell
     created_at: datetime = Field(default_factory=now)
 
 
@@ -143,6 +146,10 @@ class Planting(SQLModel, table=True):
     quantity: int = 1
     location: str = ""  # the bed's name when it is in a bed, otherwise free text
     bed_id: int | None = Field(default=None, foreign_key="bed.id", ondelete="SET NULL", index=True)
+    cells: list[list[int]] = Field(
+        default_factory=list, sa_column=Column(JSON, nullable=False, server_default="[]")
+    )  # [column, row] in the bed
+    ends_on: date | None = None  # last day it holds its cells; blank = the crop's longest cycle after planting
     notes: str = ""
     created_by: int | None = Field(default=None, foreign_key="user.id", ondelete="SET NULL")
     created_at: datetime = Field(default_factory=now)

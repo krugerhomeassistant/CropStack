@@ -8,6 +8,7 @@ from pydantic import BaseModel, Field, model_validator
 from sqlmodel import select
 
 from ..deps import EditorDep, MemberDep, SessionDep
+from ..engine import layout
 from ..models import Bed, Harvest, Planting
 from .catalog import CatalogDep
 from .today import refresh_tasks
@@ -32,9 +33,11 @@ class PlantingIn(BaseModel):
     method: Literal["direct", "transplant"]
     start_date: date
     set_out_date: date | None = None
-    quantity: int = Field(1, ge=1, le=100000)
+    quantity: int | None = Field(None, ge=1, le=100000)  # blank: what the chosen cells hold, else 1
     location: str = Field("", max_length=120)
     bed_id: int | None = None
+    cells: list[list[int]] = Field(default_factory=list, max_length=2500)
+    ends_on: date | None = None
     notes: str = Field("", max_length=2000)
 
     @model_validator(mode="after")
@@ -51,6 +54,8 @@ class PlantingPatch(BaseModel):
     quantity: int | None = Field(None, ge=1, le=100000)
     location: str | None = Field(None, max_length=120)
     bed_id: int | None = None
+    cells: list[list[int]] | None = Field(None, max_length=2500)
+    ends_on: date | None = None
     notes: str | None = Field(None, max_length=2000)
 
 
@@ -59,6 +64,19 @@ def _own(db: SessionDep, household_id: int, planting_id: int) -> Planting:
     if not row or row.household_id != household_id:
         raise HTTPException(404, "No such planting")
     return row
+
+
+def _cells(bed: Bed, cells: list[list[int]]) -> list[list[int]]:
+    """The cells as a clean list of [column, row] inside the bed, without repeats."""
+    from .beds import grid_of
+
+    cols, rows = grid_of(bed)
+    seen: set[tuple[int, int]] = set()
+    for cell in cells:
+        if len(cell) != 2 or not (0 <= cell[0] < cols and 0 <= cell[1] < rows):
+            raise HTTPException(422, f"Cell {cell} is outside {bed.name}")
+        seen.add((cell[0], cell[1]))
+    return [list(x) for x in sorted(seen, key=lambda x: (x[1], x[0]))]
 
 
 def _bed(db: SessionDep, household_id: int, bed_id: int) -> Bed:
@@ -79,7 +97,17 @@ def add_planting(body: PlantingIn, me: EditorDep, db: SessionDep, c: CatalogDep)
         raise HTTPException(422, f"No crop {body.crop!r} in the catalog")
     data = body.model_dump()
     if body.bed_id is not None:
-        data["location"] = _bed(db, me.household_id, body.bed_id).name
+        bed = _bed(db, me.household_id, body.bed_id)
+        data["location"] = bed.name
+        data["cells"] = _cells(bed, body.cells)
+        if body.quantity is None:
+            from .beds import crop_facts
+
+            f = crop_facts(db, c, me.household_id, body.crop, {})
+            data["quantity"] = layout.per_cell(bed.cell_cm, f["footprint"]) * max(1, len(data["cells"]))
+    elif body.cells:
+        raise HTTPException(422, "Cells need a bed")
+    data["quantity"] = data["quantity"] or 1
     row = Planting(household_id=me.household_id, created_by=me.user_id, **data)
     db.add(row)
     db.commit()
@@ -94,10 +122,25 @@ def update_planting(planting_id: int, body: PlantingPatch, me: EditorDep, db: Se
     changes = body.model_dump(exclude_unset=True)
     status = changes.pop("status", None)
     if changes.get("bed_id") is not None:
-        changes["location"] = _bed(db, me.household_id, changes["bed_id"]).name
+        bed = _bed(db, me.household_id, changes["bed_id"])
+        changes["location"] = bed.name
+        if "cells" not in changes and changes["bed_id"] != row.bed_id:
+            changes["cells"] = []  # a new bed: the old cells mean nothing there
     elif "bed_id" in changes:
         changes.pop("bed_id")
         row.bed_id = None  # taken out of its bed; the free-text place stays
+        changes["cells"] = []
+    if changes.get("cells"):
+        target = (
+            _bed(db, me.household_id, changes.get("bed_id") or row.bed_id)
+            if (changes.get("bed_id") or row.bed_id)
+            else None
+        )
+        if target is None:
+            raise HTTPException(422, "Cells need a bed")
+        changes["cells"] = _cells(target, changes["cells"])
+    elif "cells" in changes and changes["cells"] is None:
+        changes.pop("cells")
     if status and status != row.status:
         if status not in NEXT[row.status]:
             raise HTTPException(409, f"A planting cannot go from {row.status} to {status}")

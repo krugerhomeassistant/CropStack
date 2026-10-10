@@ -94,10 +94,15 @@ export type Planting = {
   quantity: number
   location: string
   bed_id: number | null
+  cells: [number, number][]
+  ends_on: string | null
   notes: string
 }
-export type PlantingIn = Pick<Planting, 'crop' | 'method' | 'start_date' | 'set_out_date' | 'quantity' | 'location' | 'notes'> & {
+export type PlantingIn = Pick<Planting, 'crop' | 'method' | 'start_date' | 'set_out_date' | 'location' | 'notes'> & {
+  quantity?: number
   bed_id?: number | null
+  cells?: [number, number][]
+  ends_on?: string | null
 }
 export type BedKind = 'bed' | 'container' | 'row'
 export type Bed = {
@@ -108,13 +113,47 @@ export type Bed = {
   y: number
   width: number
   length: number
+  cell_cm: number
+  cols: number
+  rows: number
+  placements: Placement[]
+  clashes: { cell: [number, number]; plantings: [number, number] }[]
+  over_capacity: number[]
   plantings: number[]
   area_m2: number
   needed_m2: number
   unknown_footprint: number
   crowded: boolean
 }
-export type BedIn = Pick<Bed, 'name' | 'kind' | 'x' | 'y' | 'width' | 'length'>
+export type BedIn = Pick<Bed, 'name' | 'kind' | 'x' | 'y' | 'width' | 'length' | 'cell_cm'>
+export type Placement = {
+  planting_id: number
+  crop: string
+  name: string
+  cells: [number, number][]
+  from: string
+  until: string
+  quantity: number
+  capacity: number
+  status: PlantingStatus
+}
+export type Recommendation = {
+  crop: string
+  name: string
+  method: 'direct' | 'transplant'
+  state: 'now' | 'soon'
+  start_date: string
+  set_out_date: string | null
+  from: string
+  until: string
+  best_from: string
+  best_to: string
+  all_year: boolean
+  success: number
+  age_days: number
+  where: { bed_id: number; bed: string; cells: [number, number][]; free_cells: number; plants: number; same_family_before: boolean } | null
+}
+export type Recommendations = { garden: boolean; today?: string; has_beds?: boolean; now: Recommendation[]; soon: Recommendation[] }
 export type Job = {
   id: number
   kind: 'sow' | 'set_out' | 'harvest' | 'frost' | 'heat' | 'water' | 'check'
@@ -264,9 +303,10 @@ export const api = {
   finishJob: (id: number, status: 'done' | 'skipped') => request<Job>('PATCH', `/tasks/${id}`, { status }),
   plantings: () => request<Planting[]>('GET', '/plantings'),
   addPlanting: (body: PlantingIn) => request<Planting>('POST', '/plantings', body),
-  updatePlanting: (id: number, body: Partial<Pick<Planting, 'status' | 'quantity' | 'location' | 'bed_id' | 'notes'>>) =>
+  updatePlanting: (id: number, body: Partial<Pick<Planting, 'status' | 'quantity' | 'location' | 'bed_id' | 'cells' | 'ends_on' | 'notes'>>) =>
     request<Planting>('PATCH', `/plantings/${id}`, body),
   deletePlanting: (id: number) => request<null>('DELETE', `/plantings/${id}`),
+  recommendations: () => request<Recommendations>('GET', '/recommendations'),
   beds: () => request<Bed[]>('GET', '/beds'),
   addBed: (body: BedIn) => request<Bed>('POST', '/beds', body),
   updateBed: (id: number, body: Partial<BedIn>) => request<Bed>('PATCH', `/beds/${id}`, body),
