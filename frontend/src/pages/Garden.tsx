@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router'
 import { MapPin, Pencil } from 'lucide-react'
-import { api, type Recommendations as Recs } from '../api'
+import { api, type PlanItem, type Recommendations as Recs } from '../api'
 import { IconButton, Section, Tabs } from '../components/ui'
 import { t } from '../i18n'
 import { useApp } from '../state'
@@ -9,6 +9,7 @@ import CalendarTab from '../components/CalendarTab'
 import LayoutEditor from '../components/LayoutEditor'
 import Plantings from '../components/Plantings'
 import Recommendations, { type PlantRequest } from '../components/Recommendations'
+import YearPlan from '../components/YearPlan'
 import GardenSetup from './GardenSetup'
 
 const TABS = ['plan', 'plant', 'calendar', 'plantings'] as const
@@ -25,6 +26,7 @@ export default function GardenPage() {
   const [planRev, setPlanRev] = useState(0) // and the other way round
   const [recs, setRecs] = useState<Recs | null>(null)
   const [recsError, setRecsError] = useState('')
+  const [plan, setPlan] = useState<PlanItem[]>([])
   const [request, setRequest] = useState<PlantRequest | null>(null)
 
   const loadRecs = () => {
@@ -73,8 +75,21 @@ export default function GardenPage() {
         ]}
       />
       <div hidden={tab !== 'plan'} className="flex flex-col gap-4">
-        <LayoutEditor key={planRev} suggested={recs?.now ?? []} request={request} onChange={() => setRev((r) => r + 1)} />
+        <LayoutEditor key={planRev} suggested={recs?.now ?? []} plan={plan} request={request} onChange={() => setRev((r) => r + 1)} />
       </div>
+      {tab === 'plant' && (
+        <YearPlan
+          hasBeds={!!recs?.has_beds}
+          plan={plan}
+          setPlan={setPlan}
+          onUsed={() => {
+            setRev((r) => r + 1)
+            setPlanRev((r) => r + 1)
+            loadRecs()
+            go('plan')
+          }}
+        />
+      )}
       {tab === 'plant' && (
         <Recommendations
           data={recs}

@@ -1,0 +1,89 @@
+kind: crop
+slug: endive
+names:
+  en:
+  - Endive
+  af:
+  - Andyvie
+scientific_name: Cichorium endivia
+family: Asteraceae
+rotation_group: lettuce family
+life_cycle: annual
+description: A slightly bitter salad green, curly or broad-leaved. Tolerates more cold than lettuce, and the heart can be
+  blanched to sweeten it.
+requirements:
+  temperature:
+    stress_min:
+      value: 5.0
+      unit: Cel
+      evidence: government
+      confidence: medium
+      sources:
+      - {ref: fao-ecocrop, locator: 'ECOCROP code 360, TMIN (via Recocrop)', retrieved: 2026-10-09, snapshot: 'sha256:90a21d908419e304e4e4c38c92df62d93b25cb373420fcd0a711247b1f47f358'}
+    optimal:
+      value: {min: 15.0, max: 23.0}
+      unit: Cel
+      evidence: government
+      confidence: medium
+      sources:
+      - {ref: fao-ecocrop, locator: 'ECOCROP code 360, TOPMN, TOPMX (via Recocrop)', retrieved: 2026-10-09, snapshot: 'sha256:90a21d908419e304e4e4c38c92df62d93b25cb373420fcd0a711247b1f47f358'}
+    stress_max:
+      value: 30.0
+      unit: Cel
+      evidence: government
+      confidence: medium
+      sources:
+      - {ref: fao-ecocrop, locator: 'ECOCROP code 360, TMAX (via Recocrop)', retrieved: 2026-10-09, snapshot: 'sha256:90a21d908419e304e4e4c38c92df62d93b25cb373420fcd0a711247b1f47f358'}
+  soil:
+    ph:
+      value: {min: 5.3, opt_min: 6.5, opt_max: 7.8, max: 8.5}
+      evidence: government
+      confidence: medium
+      sources:
+      - {ref: fao-ecocrop, locator: 'ECOCROP code 360, PHMIN to PHMAX (via Recocrop)', retrieved: 2026-10-09, snapshot: 'sha256:90a21d908419e304e4e4c38c92df62d93b25cb373420fcd0a711247b1f47f358'}
+params:
+  annual_rainfall:
+    value: {min: 300.0, opt_min: 1000.0, opt_max: 1400.0, max: 2500.0}
+    unit: mm
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-ecocrop, locator: 'ECOCROP code 360, RMIN to RMAX (via Recocrop)', retrieved: 2026-10-09, snapshot: 'sha256:90a21d908419e304e4e4c38c92df62d93b25cb373420fcd0a711247b1f47f358'}
+  cycle_days:
+    value: {min: 70.0, max: 85.0}
+    unit: d
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-ecocrop, locator: 'ECOCROP code 360, GMIN, GMAX (via Recocrop)', retrieved: 2026-10-09, snapshot: 'sha256:90a21d908419e304e4e4c38c92df62d93b25cb373420fcd0a711247b1f47f358'}
+  row_spacing:
+    value: 40
+    unit: cm
+    evidence: grower-reported
+    confidence: low
+    sources:
+    - {ref: openfarm-rescue, locator: 'https://web.archive.org/web/20241013050404/https://openfarm.cc/en/crops/endive', retrieved: 2026-10-09,
+      snapshot: 'sha256:203050c7a2be7ab1c4c165ee4edb42aaebcb13d183bd53540a2bf3482363caec'}
+  plant_spread:
+    value: 25
+    unit: cm
+    evidence: grower-reported
+    confidence: low
+    sources:
+    - {ref: openfarm-rescue, locator: 'https://web.archive.org/web/20241013050404/https://openfarm.cc/en/crops/endive', retrieved: 2026-10-09,
+      snapshot: 'sha256:203050c7a2be7ab1c4c165ee4edb42aaebcb13d183bd53540a2bf3482363caec'}
+  height:
+    value: 25
+    unit: cm
+    evidence: grower-reported
+    confidence: low
+    sources:
+    - {ref: openfarm-rescue, locator: 'https://web.archive.org/web/20241013050404/https://openfarm.cc/en/crops/endive', retrieved: 2026-10-09,
+      snapshot: 'sha256:203050c7a2be7ab1c4c165ee4edb42aaebcb13d183bd53540a2bf3482363caec'}
+  sun:
+    value: full_sun
+    evidence: grower-reported
+    confidence: low
+    sources:
+    - {ref: openfarm-rescue, locator: 'https://web.archive.org/web/20241013050404/https://openfarm.cc/en/crops/endive', retrieved: 2026-10-09,
+      snapshot: 'sha256:203050c7a2be7ab1c4c165ee4edb42aaebcb13d183bd53540a2bf3482363caec'}

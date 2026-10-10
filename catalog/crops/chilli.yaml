@@ -1,0 +1,102 @@
+kind: crop
+slug: chilli
+names:
+  en:
+  - Chilli
+  af:
+  - Brandrissie
+scientific_name: Capsicum frutescens
+family: Solanaceae
+rotation_group: nightshades
+life_cycle: perennial
+description: A small, hot pepper that bears heavily on a compact bush. Warm-season, and grown as an annual in most climates,
+  it ripens from green to red.
+requirements:
+  soil_temperature:
+    germination:
+      value: {min: 15.6, opt: 29.4, max: 35.0}
+      unit: Cel
+      evidence: extension-service
+      confidence: medium
+      sources:
+      - {ref: harrington-osu, locator: Table 1 (°F converted to °C), retrieved: 2026-10-10, snapshot: 'sha256:189b1059f040263e1a9e60894621e8c8356dea18da8091774015388a7700098f'}
+  temperature:
+    stress_min:
+      value: 7.0
+      unit: Cel
+      evidence: government
+      confidence: medium
+      sources:
+      - {ref: fao-ecocrop, locator: 'ECOCROP code 480, TMIN (via Recocrop)', retrieved: 2026-10-09, snapshot: 'sha256:90a21d908419e304e4e4c38c92df62d93b25cb373420fcd0a711247b1f47f358'}
+    optimal:
+      value: {min: 18.0, max: 30.0}
+      unit: Cel
+      evidence: government
+      confidence: medium
+      sources:
+      - {ref: fao-ecocrop, locator: 'ECOCROP code 480, TOPMN, TOPMX (via Recocrop)', retrieved: 2026-10-09, snapshot: 'sha256:90a21d908419e304e4e4c38c92df62d93b25cb373420fcd0a711247b1f47f358'}
+    stress_max:
+      value: 40.0
+      unit: Cel
+      evidence: government
+      confidence: medium
+      sources:
+      - {ref: fao-ecocrop, locator: 'ECOCROP code 480, TMAX (via Recocrop)', retrieved: 2026-10-09, snapshot: 'sha256:90a21d908419e304e4e4c38c92df62d93b25cb373420fcd0a711247b1f47f358'}
+  soil:
+    ph:
+      value: {min: 4.3, opt_min: 5.5, opt_max: 6.8, max: 8.3}
+      evidence: government
+      confidence: medium
+      sources:
+      - {ref: fao-ecocrop, locator: 'ECOCROP code 480, PHMIN to PHMAX (via Recocrop)', retrieved: 2026-10-09, snapshot: 'sha256:90a21d908419e304e4e4c38c92df62d93b25cb373420fcd0a711247b1f47f358'}
+params:
+  days_to_emergence:
+  - value: 25.0
+    unit: d
+    qualifiers: {soil_temp_c: 15.0}
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-10, snapshot: 'sha256:189b1059f040263e1a9e60894621e8c8356dea18da8091774015388a7700098f'}
+  - value: 12.0
+    unit: d
+    qualifiers: {soil_temp_c: 20.0}
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-10, snapshot: 'sha256:189b1059f040263e1a9e60894621e8c8356dea18da8091774015388a7700098f'}
+  - value: 8.0
+    unit: d
+    qualifiers: {soil_temp_c: 25.0}
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-10, snapshot: 'sha256:189b1059f040263e1a9e60894621e8c8356dea18da8091774015388a7700098f'}
+  - value: 8.0
+    unit: d
+    qualifiers: {soil_temp_c: 30.0}
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-10, snapshot: 'sha256:189b1059f040263e1a9e60894621e8c8356dea18da8091774015388a7700098f'}
+  - value: 9.0
+    unit: d
+    qualifiers: {soil_temp_c: 35.0}
+    evidence: extension-service
+    confidence: medium
+    sources:
+    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-10, snapshot: 'sha256:189b1059f040263e1a9e60894621e8c8356dea18da8091774015388a7700098f'}
+  annual_rainfall:
+    value: {min: 400.0, opt_min: 600.0, opt_max: 1500.0, max: 2000.0}
+    unit: mm
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-ecocrop, locator: 'ECOCROP code 480, RMIN to RMAX (via Recocrop)', retrieved: 2026-10-09, snapshot: 'sha256:90a21d908419e304e4e4c38c92df62d93b25cb373420fcd0a711247b1f47f358'}
+  cycle_days:
+    value: {min: 120.0, max: 180.0}
+    unit: d
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-ecocrop, locator: 'ECOCROP code 480, GMIN, GMAX (via Recocrop)', retrieved: 2026-10-09, snapshot: 'sha256:90a21d908419e304e4e4c38c92df62d93b25cb373420fcd0a711247b1f47f358'}

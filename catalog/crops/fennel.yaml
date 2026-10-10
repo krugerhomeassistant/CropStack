@@ -1,0 +1,89 @@
+kind: crop
+slug: fennel
+names:
+  en:
+  - Fennel
+  af:
+  - Vinkel
+scientific_name: Foeniculum vulgare
+family: Apiaceae
+rotation_group: carrot family
+life_cycle: perennial
+description: Feathery aniseed-flavoured leaves; the Florence type swells into an edible bulb. Bolts in heat or after a cold
+  snap, and is best kept apart from most other vegetables.
+requirements:
+  temperature:
+    stress_min:
+      value: 6.0
+      unit: Cel
+      evidence: government
+      confidence: medium
+      sources:
+      - {ref: fao-ecocrop, locator: 'ECOCROP code 486, TMIN (via Recocrop)', retrieved: 2026-10-09, snapshot: 'sha256:90a21d908419e304e4e4c38c92df62d93b25cb373420fcd0a711247b1f47f358'}
+    optimal:
+      value: {min: 15.0, max: 25.0}
+      unit: Cel
+      evidence: government
+      confidence: medium
+      sources:
+      - {ref: fao-ecocrop, locator: 'ECOCROP code 486, TOPMN, TOPMX (via Recocrop)', retrieved: 2026-10-09, snapshot: 'sha256:90a21d908419e304e4e4c38c92df62d93b25cb373420fcd0a711247b1f47f358'}
+    stress_max:
+      value: 32.0
+      unit: Cel
+      evidence: government
+      confidence: medium
+      sources:
+      - {ref: fao-ecocrop, locator: 'ECOCROP code 486, TMAX (via Recocrop)', retrieved: 2026-10-09, snapshot: 'sha256:90a21d908419e304e4e4c38c92df62d93b25cb373420fcd0a711247b1f47f358'}
+  soil:
+    ph:
+      value: {min: 4.8, opt_min: 6.5, opt_max: 7.5, max: 8.2}
+      evidence: government
+      confidence: medium
+      sources:
+      - {ref: fao-ecocrop, locator: 'ECOCROP code 486, PHMIN to PHMAX (via Recocrop)', retrieved: 2026-10-09, snapshot: 'sha256:90a21d908419e304e4e4c38c92df62d93b25cb373420fcd0a711247b1f47f358'}
+params:
+  annual_rainfall:
+    value: {min: 300.0, opt_min: 700.0, opt_max: 1500.0, max: 2600.0}
+    unit: mm
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-ecocrop, locator: 'ECOCROP code 486, RMIN to RMAX (via Recocrop)', retrieved: 2026-10-09, snapshot: 'sha256:90a21d908419e304e4e4c38c92df62d93b25cb373420fcd0a711247b1f47f358'}
+  cycle_days:
+    value: {min: 30.0, max: 110.0}
+    unit: d
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-ecocrop, locator: 'ECOCROP code 486, GMIN, GMAX (via Recocrop)', retrieved: 2026-10-09, snapshot: 'sha256:90a21d908419e304e4e4c38c92df62d93b25cb373420fcd0a711247b1f47f358'}
+  row_spacing:
+    value: 15
+    unit: cm
+    evidence: grower-reported
+    confidence: low
+    sources:
+    - {ref: openfarm-rescue, locator: 'https://web.archive.org/web/20240815055059/https://openfarm.cc/en/crops/fennel', retrieved: 2026-10-09,
+      snapshot: 'sha256:203050c7a2be7ab1c4c165ee4edb42aaebcb13d183bd53540a2bf3482363caec'}
+  plant_spread:
+    value: 60
+    unit: cm
+    evidence: grower-reported
+    confidence: low
+    sources:
+    - {ref: openfarm-rescue, locator: 'https://web.archive.org/web/20240815055059/https://openfarm.cc/en/crops/fennel', retrieved: 2026-10-09,
+      snapshot: 'sha256:203050c7a2be7ab1c4c165ee4edb42aaebcb13d183bd53540a2bf3482363caec'}
+  height:
+    value: 60
+    unit: cm
+    evidence: grower-reported
+    confidence: low
+    sources:
+    - {ref: openfarm-rescue, locator: 'https://web.archive.org/web/20240815055059/https://openfarm.cc/en/crops/fennel', retrieved: 2026-10-09,
+      snapshot: 'sha256:203050c7a2be7ab1c4c165ee4edb42aaebcb13d183bd53540a2bf3482363caec'}
+  sun:
+    value: full_sun
+    evidence: grower-reported
+    confidence: low
+    sources:
+    - {ref: openfarm-rescue, locator: 'https://web.archive.org/web/20240815055059/https://openfarm.cc/en/crops/fennel', retrieved: 2026-10-09,
+      snapshot: 'sha256:203050c7a2be7ab1c4c165ee4edb42aaebcb13d183bd53540a2bf3482363caec'}

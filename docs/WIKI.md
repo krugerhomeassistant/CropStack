@@ -125,3 +125,6 @@ Tokens in `frontend/src/index.css`, components in `frontend/src/components/ui/` 
 - Plant on a past date to record what is already in the ground; the harvest window is worked out from that day.
 - Tap a suggested crop for its key points (when, harvest dates, success rate here, spacing, family).
 - Resizing a bed or changing its cell size keeps all plants; cells past a smaller edge are kept and counted ("beyond the edge").
+
+## Year plan (v0.34.0)
+Plant tab → Draft a year plan. The drafter takes every crop whose sowing window opens in the next 12 months (works in at least 6 of 10 years), places each in the bed with most free cells for its whole growing time, avoids cells that grew the same family, and gives each a block of up to 6 cells. Shortcut: every crop gets the same share; yield targets and household preferences come with the needs model (PLAN 8.2). Re-draft any time; accepted plantings are ordinary plantings.

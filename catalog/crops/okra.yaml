@@ -1,0 +1,89 @@
+kind: crop
+slug: okra
+names:
+  en:
+  - Okra
+  af:
+  - Okra
+scientific_name: Abelmoschus esculentus
+family: Malvaceae
+rotation_group: okra and hibiscus
+life_cycle: annual
+description: A tall, heat-loving plant bearing ridged edible pods. Picked every day or two while the pods are small and tender,
+  it keeps cropping through summer.
+requirements:
+  temperature:
+    stress_min:
+      value: 12.0
+      unit: Cel
+      evidence: government
+      confidence: medium
+      sources:
+      - {ref: fao-ecocrop, locator: 'ECOCROP code 34, TMIN (via Recocrop)', retrieved: 2026-10-09, snapshot: 'sha256:90a21d908419e304e4e4c38c92df62d93b25cb373420fcd0a711247b1f47f358'}
+    optimal:
+      value: {min: 20.0, max: 30.0}
+      unit: Cel
+      evidence: government
+      confidence: medium
+      sources:
+      - {ref: fao-ecocrop, locator: 'ECOCROP code 34, TOPMN, TOPMX (via Recocrop)', retrieved: 2026-10-09, snapshot: 'sha256:90a21d908419e304e4e4c38c92df62d93b25cb373420fcd0a711247b1f47f358'}
+    stress_max:
+      value: 35.0
+      unit: Cel
+      evidence: government
+      confidence: medium
+      sources:
+      - {ref: fao-ecocrop, locator: 'ECOCROP code 34, TMAX (via Recocrop)', retrieved: 2026-10-09, snapshot: 'sha256:90a21d908419e304e4e4c38c92df62d93b25cb373420fcd0a711247b1f47f358'}
+  soil:
+    ph:
+      value: {min: 4.5, opt_min: 5.5, opt_max: 7.0, max: 8.7}
+      evidence: government
+      confidence: medium
+      sources:
+      - {ref: fao-ecocrop, locator: 'ECOCROP code 34, PHMIN to PHMAX (via Recocrop)', retrieved: 2026-10-09, snapshot: 'sha256:90a21d908419e304e4e4c38c92df62d93b25cb373420fcd0a711247b1f47f358'}
+params:
+  annual_rainfall:
+    value: {min: 300.0, opt_min: 600.0, opt_max: 1200.0, max: 2500.0}
+    unit: mm
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-ecocrop, locator: 'ECOCROP code 34, RMIN to RMAX (via Recocrop)', retrieved: 2026-10-09, snapshot: 'sha256:90a21d908419e304e4e4c38c92df62d93b25cb373420fcd0a711247b1f47f358'}
+  cycle_days:
+    value: {min: 50.0, max: 180.0}
+    unit: d
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-ecocrop, locator: 'ECOCROP code 34, GMIN, GMAX (via Recocrop)', retrieved: 2026-10-09, snapshot: 'sha256:90a21d908419e304e4e4c38c92df62d93b25cb373420fcd0a711247b1f47f358'}
+  row_spacing:
+    value: 25
+    unit: cm
+    evidence: grower-reported
+    confidence: low
+    sources:
+    - {ref: openfarm-rescue, locator: 'https://web.archive.org/web/20240519133237/https://openfarm.cc/en/crops/okra', retrieved: 2026-10-09,
+      snapshot: 'sha256:203050c7a2be7ab1c4c165ee4edb42aaebcb13d183bd53540a2bf3482363caec'}
+  plant_spread:
+    value: 25
+    unit: cm
+    evidence: grower-reported
+    confidence: low
+    sources:
+    - {ref: openfarm-rescue, locator: 'https://web.archive.org/web/20240519133237/https://openfarm.cc/en/crops/okra', retrieved: 2026-10-09,
+      snapshot: 'sha256:203050c7a2be7ab1c4c165ee4edb42aaebcb13d183bd53540a2bf3482363caec'}
+  height:
+    value: 250
+    unit: cm
+    evidence: grower-reported
+    confidence: low
+    sources:
+    - {ref: openfarm-rescue, locator: 'https://web.archive.org/web/20240519133237/https://openfarm.cc/en/crops/okra', retrieved: 2026-10-09,
+      snapshot: 'sha256:203050c7a2be7ab1c4c165ee4edb42aaebcb13d183bd53540a2bf3482363caec'}
+  sun:
+    value: full_sun
+    evidence: grower-reported
+    confidence: low
+    sources:
+    - {ref: openfarm-rescue, locator: 'https://web.archive.org/web/20240519133237/https://openfarm.cc/en/crops/okra', retrieved: 2026-10-09,
+      snapshot: 'sha256:203050c7a2be7ab1c4c165ee4edb42aaebcb13d183bd53540a2bf3482363caec'}

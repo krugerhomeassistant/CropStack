@@ -183,6 +183,8 @@ try {
   await owner.getByRole('button', { name: /harvest from/ }).first().click()
   await owner.getByRole('dialog').getByText('How it goes here').waitFor()
   await owner.getByRole('dialog').getByRole('button', { name: 'Close' }).click()
+  await owner.getByRole('button', { name: 'Draft a year plan' }).click()
+  await owner.getByRole('button', { name: /Use this plan/ }).or(owner.getByText(/Nothing fits right now/)).waitFor()
   await owner.getByRole('button', { name: 'Plant', exact: true }).first().click()
   await owner.getByRole('group', { name: 'Choose what to plant' }).getByRole('button', { pressed: true }).first().waitFor()
   step('garden plan: paint a mixed bed, recommendations shown')

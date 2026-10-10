@@ -160,3 +160,42 @@ def test_changing_a_bed_never_throws_away_where_things_grow(owner):  # noqa: F81
     owner.patch(url, json={"cell_cm": 60})
     mine = next(p for p in owner.get("/api/v1/plantings").json() if p["id"] == made["id"])
     assert mine["cells"] == [[1, 1]]
+
+
+def test_erasing_cells_keeps_the_planting_density(owner):  # noqa: F811
+    bed = owner.post("/api/v1/beds", json={"name": "D", "width": 1.2, "length": 1.2}).json()
+    made = plant(owner, bed["id"], [[0, 0], [1, 0], [2, 0], [3, 0]], "2026-10-01", quantity=4).json()
+    kept = owner.patch(f"/api/v1/plantings/{made['id']}", json={"cells": [[0, 0], [1, 0]]}).json()
+    assert kept["quantity"] == 2
+    assert not owner.get("/api/v1/beds").json()[0]["over_capacity"]
+
+
+def test_year_plan_without_beds_is_empty_and_accepting_creates_plantings(owner):  # noqa: F811
+    assert owner.get("/api/v1/plan/year").json()["items"] == []
+    bed = owner.post("/api/v1/beds", json={"name": "Y", "width": 1.2, "length": 1.2}).json()
+    body = {"crop": "testcrop", "method": "direct", "start_date": "2026-12-01", "bed_id": bed["id"], "cells": [[0, 0]]}
+    assert owner.post("/api/v1/plan/year", json=[body, body | {"cells": [[1, 0]]}]).json() == {"created": 2}
+    assert len(owner.get("/api/v1/plantings").json()) == 2
+
+
+def test_the_drafter_rotates_and_never_double_books_cells():
+    from datetime import date
+
+    from app.engine.yearplan import Bed, Want, draft
+
+    d = date(2026, 10, 10)
+
+    def want(crop, family, planted):
+        return Want(crop, crop, family, "direct", planted, None, planted, 60, 0.9, None, planted, planted)
+
+    beds = [Bed(1, "A", 4, 3, 30), Bed(2, "B", 4, 3, 30)]
+    plan = draft(
+        beds,
+        {1: [((0, 0), date(2026, 5, 1), date(2026, 10, 1), "Solanaceae")]},
+        [want("tomato", "Solanaceae", d), want("kale", "", d)],
+        d,
+    )
+    tomato = next(r for r in plan if r["crop"] == "tomato")
+    assert tomato["bed_id"] == 2  # where tomatoes did not grow last
+    cells = [(r["bed_id"], tuple(c)) for r in plan for c in r["cells"]]
+    assert len(cells) == len(set(cells))

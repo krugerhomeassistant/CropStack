@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Circle, MousePointer2, RectangleHorizontal, Rows3, Trash2, type LucideIcon } from 'lucide-react'
-import { api, type Bed, type BedIn, type BedKind, type CropSummary, type Recommendation } from '../api'
+import { api, type Bed, type BedIn, type BedKind, type CropSummary, type PlanItem, type Recommendation } from '../api'
 import { t } from '../i18n'
 import { useApp } from '../state'
 import BedGrid from './BedGrid'
@@ -40,7 +40,7 @@ function frames(beds: Bed[]) {
 }
 
 /** The garden plan, drawn to scale in metres: draw beds by dragging, move or resize them, and group them into layouts. */
-export default function LayoutEditor({ onChange, suggested, request }: { onChange: () => void; suggested: Recommendation[]; request: PlantRequest | null }) {
+export default function LayoutEditor({ onChange, suggested, request, plan }: { onChange: () => void; suggested: Recommendation[]; request: PlantRequest | null; plan: PlanItem[] }) {
   const { user } = useApp()
   const canEdit = user.role !== 'viewer'
   const [beds, setBeds] = useState<Bed[] | null>(null)
@@ -287,7 +287,7 @@ export default function LayoutEditor({ onChange, suggested, request }: { onChang
           {canEdit && editBed && (
             <BedForm key={`form${current.id}:${current.width}:${current.length}`} bed={current} layouts={layouts} onSaved={refresh} onDeleted={() => { setSelected(null); refresh() }} fail={fail} />
           )}
-          <BedGrid key={`grid${current.id}`} bed={current} crops={crops} suggested={suggested} request={request && (request.bedId === null || request.bedId === current.id) ? request : null} onChange={refresh} />
+          <BedGrid key={`grid${current.id}`} bed={current} crops={crops} suggested={suggested} plan={plan.filter((i) => i.bed_id === current.id)} request={request && (request.bedId === null || request.bedId === current.id) ? request : null} onChange={refresh} />
         </Section>
       ) : (
         beds.length > 0 && <p className="px-1 text-sm text-muted">{t('Tap a bed to plant in it.')}</p>

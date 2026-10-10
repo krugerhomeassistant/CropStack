@@ -54,7 +54,7 @@ requirements:
       evidence: extension-service
       confidence: medium
       sources:
-      - {ref: harrington-osu, locator: Table 1 (°F converted to °C), retrieved: 2026-10-09, snapshot: 'sha256:28afc523a272d97043014e9a9ed993c99cb1ff512ed2ba04f46b2013677581eb'}
+      - {ref: harrington-osu, locator: Table 1 (°F converted to °C), retrieved: 2026-10-10, snapshot: 'sha256:189b1059f040263e1a9e60894621e8c8356dea18da8091774015388a7700098f'}
   temperature:
     stress_min:
       value: 7.0
@@ -166,35 +166,35 @@ params:
     evidence: extension-service
     confidence: medium
     sources:
-    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-09, snapshot: 'sha256:28afc523a272d97043014e9a9ed993c99cb1ff512ed2ba04f46b2013677581eb'}
+    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-10, snapshot: 'sha256:189b1059f040263e1a9e60894621e8c8356dea18da8091774015388a7700098f'}
   - value: 11.0
     unit: d
     qualifiers: {soil_temp_c: 20.0}
     evidence: extension-service
     confidence: medium
     sources:
-    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-09, snapshot: 'sha256:28afc523a272d97043014e9a9ed993c99cb1ff512ed2ba04f46b2013677581eb'}
+    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-10, snapshot: 'sha256:189b1059f040263e1a9e60894621e8c8356dea18da8091774015388a7700098f'}
   - value: 8.0
     unit: d
     qualifiers: {soil_temp_c: 25.0}
     evidence: extension-service
     confidence: medium
     sources:
-    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-09, snapshot: 'sha256:28afc523a272d97043014e9a9ed993c99cb1ff512ed2ba04f46b2013677581eb'}
+    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-10, snapshot: 'sha256:189b1059f040263e1a9e60894621e8c8356dea18da8091774015388a7700098f'}
   - value: 6.0
     unit: d
     qualifiers: {soil_temp_c: 30.0}
     evidence: extension-service
     confidence: medium
     sources:
-    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-09, snapshot: 'sha256:28afc523a272d97043014e9a9ed993c99cb1ff512ed2ba04f46b2013677581eb'}
+    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-10, snapshot: 'sha256:189b1059f040263e1a9e60894621e8c8356dea18da8091774015388a7700098f'}
   - value: 6.0
     unit: d
     qualifiers: {soil_temp_c: 35.0}
     evidence: extension-service
     confidence: medium
     sources:
-    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-09, snapshot: 'sha256:28afc523a272d97043014e9a9ed993c99cb1ff512ed2ba04f46b2013677581eb'}
+    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-10, snapshot: 'sha256:189b1059f040263e1a9e60894621e8c8356dea18da8091774015388a7700098f'}
   row_spacing:
     value: 80
     unit: cm

@@ -38,3 +38,34 @@ tomato: {gbif: Solanum lycopersicum, fao56_stages: tomato, fao56_kc: tomato, fao
 turnip: {gbif: Brassica rapa, fao56_kc: turnip rutabaga, fao56_roots: turnip rutabaga, harrington: Turnip, openfarm: turnip, ecocrop: 91}
 watermelon: {gbif: Citrullus lanatus, fao56_stages: water melons, fao56_kc: watermelon, fao56_roots: watermelon, harrington: Watermelon, ecocrop: 47}
 zucchini: {gbif: Cucurbita pepo, fao56_stages: squash zucchini, fao56_kc: squash zucchini, fao56_roots: squash zucchini, harrington: Squash, openfarm: zucchini, ecocrop: 168}
+leek: {gbif: Allium ampeloprasum, openfarm: leek, ecocrop: 446}
+shallot: {gbif: Allium cepa, openfarm: shallot, ecocrop: 447}
+brussels-sprouts: {gbif: Brassica oleracea, fao56_kc: brussel sprouts, fao56_roots: brussel sprouts, ecocrop: 152}
+kohlrabi: {gbif: Brassica oleracea, openfarm: kohlrabi, ecocrop: 156}
+rocket: {gbif: Eruca vesicaria, openfarm: arugula, ecocrop: 1647}
+mustard-greens: {gbif: Brassica juncea, ecocrop: 157}
+pak-choi: {gbif: Brassica rapa, openfarm: bok-choy, ecocrop: 1600}
+endive: {gbif: Cichorium endivia, openfarm: endive, ecocrop: 360}
+fennel: {gbif: Foeniculum vulgare, openfarm: fennel, ecocrop: 486}
+rhubarb: {gbif: Rheum rhabarbarum, openfarm: rhubarb, ecocrop: 479}
+globe-artichoke: {gbif: Cynara cardunculus, fao56_stages: artichoke, fao56_kc: artichokes, fao56_roots: artichokes, openfarm: artichoke, ecocrop: 362}
+okra: {gbif: Abelmoschus esculentus, openfarm: okra, ecocrop: 34}
+sweet-potato: {gbif: Ipomoea batatas, fao56_stages: sweet potato, fao56_kc: sweet potato, fao56_roots: sweet potato, openfarm: sweet-potato, ecocrop: 22}
+broad-bean: {gbif: Vicia faba, fao56_stages: faba bean broad green, fao56_kc: faba bean broad fresh, fao56_roots: faba bean broad fresh, ecocrop: 51}
+runner-bean: {gbif: Phaseolus coccineus, openfarm: runner-bean, ecocrop: 115}
+chilli: {gbif: Capsicum frutescens, harrington: Pepper, openfarm: chili-pepper, ecocrop: 480}
+coriander: {gbif: Coriandrum sativum, openfarm: coriander, ecocrop: 485}
+basil: {gbif: Ocimum basilicum, openfarm: basil, ecocrop: 719}
+dill: {gbif: Anethum graveolens, openfarm: dill, ecocrop: 483}
+thyme: {gbif: Thymus vulgaris, openfarm: thyme, ecocrop: 736}
+sage: {gbif: Salvia officinalis, openfarm: sage, ecocrop: 731}
+rosemary: {gbif: Salvia rosmarinus, openfarm: rosemary, ecocrop: 408}
+oregano: {gbif: Origanum vulgare, ecocrop: 729}
+chives: {gbif: Allium schoenoprasum, openfarm: chives, ecocrop: 448}
+mint: {gbif: Mentha piperita, fao56_kc: mint, fao56_roots: mint, openfarm: mint, ecocrop: 356}
+strawberry: {gbif: Fragaria ananassa, fao56_kc: strawberries, fao56_roots: strawberries, openfarm: strawberry, ecocrop: 88}
+swede: {gbif: Brassica napus, fao56_kc: turnip rutabaga, fao56_roots: turnip rutabaga, ecocrop: 443}
+horseradish: {gbif: Armoracia rusticana, openfarm: horseradish, ecocrop: 369}
+jerusalem-artichoke: {gbif: Helianthus tuberosus, openfarm: jerusalem-artichoke, ecocrop: 460}
+celeriac: {gbif: Apium graveolens, openfarm: celeriac, ecocrop: 367}
+watercress: {gbif: Nasturtium officinale, openfarm: watercress, ecocrop: 461}

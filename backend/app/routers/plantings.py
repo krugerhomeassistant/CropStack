@@ -110,8 +110,8 @@ def list_plantings(me: MemberDep, db: SessionDep) -> list[dict]:
     return [p.model_dump() | ahead.get(p.id, empty) for p in rows]
 
 
-@router.post("", status_code=201)
-def add_planting(body: PlantingIn, me: EditorDep, db: SessionDep, c: CatalogDep) -> Planting:
+def make_planting(body: PlantingIn, me: EditorDep, db: SessionDep, c: CatalogDep) -> Planting:
+    """A Planting row for `body`, added to the session but not committed."""
     if c.get("crop", body.crop) is None:
         raise HTTPException(422, f"No crop {body.crop!r} in the catalog")
     data = body.model_dump()
@@ -133,7 +133,12 @@ def add_planting(body: PlantingIn, me: EditorDep, db: SessionDep, c: CatalogDep)
         data["status"] = "transplanted"
     elif body.start_date < today:
         data["status"] = "sown"
-    row = Planting(household_id=me.household_id, created_by=me.user_id, **data)
+    return Planting(household_id=me.household_id, created_by=me.user_id, **data)
+
+
+@router.post("", status_code=201)
+def add_planting(body: PlantingIn, me: EditorDep, db: SessionDep, c: CatalogDep) -> Planting:
+    row = make_planting(body, me, db, c)
     db.add(row)
     db.commit()
     refresh_tasks(db, me.household_id, c)  # commits, which expires `row`
@@ -159,6 +164,8 @@ def update_planting(planting_id: int, body: PlantingPatch, me: EditorDep, db: Se
         if not (changes.get("bed_id") or row.bed_id):
             raise HTTPException(422, "Cells need a bed")
         changes["cells"] = _cells(changes["cells"])
+        if "quantity" not in changes and row.cells and row.bed_id == (changes.get("bed_id") or row.bed_id):
+            changes["quantity"] = max(1, round(row.quantity * len(changes["cells"]) / len(row.cells)))  # same density
     elif "cells" in changes and changes["cells"] is None:
         changes.pop("cells")
     if status and status != row.status:

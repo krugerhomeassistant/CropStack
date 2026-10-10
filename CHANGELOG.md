@@ -5,6 +5,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.34.0] - 2026-10-10
+
+### Added
+- **Year plan**: on the Plant tab, "Draft a year plan" fills your beds for the next 12 months from your climate's sowing windows, one block of cells per crop, with cells that grew the same family last avoided. Review it by month, leave out what you do not want, then "Use this plan" to create all the plantings and jobs at once. While a draft is open it shows as dashed cells in each bed (step the date to see it through the year).
+- **31 more crops** (60 in all): leek, shallot, brussels sprouts, kohlrabi, rocket, mustard greens, pak choi, endive, fennel, rhubarb, globe artichoke, okra, sweet potato, broad bean, runner bean, chilli, coriander, basil, dill, thyme, sage, rosemary, oregano, chives, mint, strawberry, swede, horseradish, Jerusalem artichoke, celeriac and watercress. Temperatures, rainfall, cycle length, water use and spacing come from the cited sources (FAO ECOCROP, FAO-56, Harrington, OpenFarm rescue); descriptions are our own words.
+
+### Fixed
+- Erasing cells from a planting left its plant count unchanged, so the bed said "More plants than the cells hold". The count now follows the number of cells.
+
 ## [0.33.0] - 2026-10-10
 
 ### Added

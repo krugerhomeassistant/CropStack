@@ -3,6 +3,14 @@ ecocrop-recocrop:
   retrieved: 2026-10-09
   sha256: 90a21d908419e304e4e4c38c92df62d93b25cb373420fcd0a711247b1f47f358
   url: https://cran.r-project.org/src/contrib/Recocrop_0.4-2.tar.gz
+gbif:Abelmoschus esculentus:
+  retrieved: 2026-10-10
+  sha256: 89f63dac51fb9a07a2919041ed892297b48bff5e7067867ed7f1dd110a2b9e10
+  url: https://api.gbif.org/v1/species/match?name=Abelmoschus%20esculentus&kingdom=Plantae&strict=true
+gbif:Allium ampeloprasum:
+  retrieved: 2026-10-10
+  sha256: 671ff153aac24de3834868db0e5da50c5a3f221ab90be6d3863d533c169c6479
+  url: https://api.gbif.org/v1/species/match?name=Allium%20ampeloprasum&kingdom=Plantae&strict=true
 gbif:Allium cepa:
   retrieved: 2026-10-09
   sha256: fd55a6c85c80dd2ac7b73651de9861382931d4b9cf83c8fd84bb8c0888db5535
@@ -11,10 +19,22 @@ gbif:Allium sativum:
   retrieved: 2026-10-09
   sha256: 061d2147f93b90b47d9634efed4ac7d3111fb7a82214d006a525e8fa90921777
   url: https://api.gbif.org/v1/species/match?name=Allium%20sativum&kingdom=Plantae&strict=true
+gbif:Allium schoenoprasum:
+  retrieved: 2026-10-10
+  sha256: ded4869b9bef9cb4e79c1a9944f5d74a20ac65d71c2fbadc6c34dd6b2febce27
+  url: https://api.gbif.org/v1/species/match?name=Allium%20schoenoprasum&kingdom=Plantae&strict=true
+gbif:Anethum graveolens:
+  retrieved: 2026-10-10
+  sha256: f6945dc4a67447a0d191ad11a3aba9d3716e37bcda6ea2ab6ac3d3508cd996c0
+  url: https://api.gbif.org/v1/species/match?name=Anethum%20graveolens&kingdom=Plantae&strict=true
 gbif:Apium graveolens:
   retrieved: 2026-10-09
   sha256: af745d38a8e186cdb663e8ac7b96fa18357bdc2c3f7b6444eb583b064a439823
   url: https://api.gbif.org/v1/species/match?name=Apium%20graveolens&kingdom=Plantae&strict=true
+gbif:Armoracia rusticana:
+  retrieved: 2026-10-10
+  sha256: 1128c568704843533f0500d9a8843ccf0aa119abfabeaec3043c383ea29181bf
+  url: https://api.gbif.org/v1/species/match?name=Armoracia%20rusticana&kingdom=Plantae&strict=true
 gbif:Asparagus officinalis:
   retrieved: 2026-10-09
   sha256: cbe39764ffa1ce67b3fe5051d7253f170a9de58f28ae39c77a9d0b15c07ac54a
@@ -23,6 +43,14 @@ gbif:Beta vulgaris:
   retrieved: 2026-10-09
   sha256: 99d773c81afc5f0d14ab1e8c32c60b0d4a3321d46120ac0ea81ba66bf60212cf
   url: https://api.gbif.org/v1/species/match?name=Beta%20vulgaris&kingdom=Plantae&strict=true
+gbif:Brassica juncea:
+  retrieved: 2026-10-10
+  sha256: 7af4876ce67685bfbeeff06d7c6df5d9469bc4b912a53b8c43700c1d515abc36
+  url: https://api.gbif.org/v1/species/match?name=Brassica%20juncea&kingdom=Plantae&strict=true
+gbif:Brassica napus:
+  retrieved: 2026-10-10
+  sha256: 9701289fbe35452cffc9240fd33bd8a516b8a552cb739333b4a2e0acbc7c3eb2
+  url: https://api.gbif.org/v1/species/match?name=Brassica%20napus&kingdom=Plantae&strict=true
 gbif:Brassica oleracea:
   retrieved: 2026-10-09
   sha256: de30b0a77b52040311f4554a31cb011a0fa9ccd2e1d5212d7f9617e9d5739d28
@@ -35,10 +63,22 @@ gbif:Capsicum annuum:
   retrieved: 2026-10-09
   sha256: 7f9cbe961dd46af16b29d299e40922301c13f5e8d19d92161be02f9a2873664c
   url: https://api.gbif.org/v1/species/match?name=Capsicum%20annuum&kingdom=Plantae&strict=true
+gbif:Capsicum frutescens:
+  retrieved: 2026-10-10
+  sha256: 91f8feb340822657f0c711bb0360b985a71d04a0c022139b82680df58cf0e2d8
+  url: https://api.gbif.org/v1/species/match?name=Capsicum%20frutescens&kingdom=Plantae&strict=true
+gbif:Cichorium endivia:
+  retrieved: 2026-10-10
+  sha256: 70667c0f6fb60fd9f96a36657a98511969f7650c2380c2ee4c3545dec7438860
+  url: https://api.gbif.org/v1/species/match?name=Cichorium%20endivia&kingdom=Plantae&strict=true
 gbif:Citrullus lanatus:
   retrieved: 2026-10-09
   sha256: 3b0222f54d361766f86b17f214e9a05acf1c8452587d4ee261293ab770508a13
   url: https://api.gbif.org/v1/species/match?name=Citrullus%20lanatus&kingdom=Plantae&strict=true
+gbif:Coriandrum sativum:
+  retrieved: 2026-10-10
+  sha256: bdbaac74bb39a84e3dac354428bd88975797524615c8531055ea8258ff163bca
+  url: https://api.gbif.org/v1/species/match?name=Coriandrum%20sativum&kingdom=Plantae&strict=true
 gbif:Cucumis melo:
   retrieved: 2026-10-09
   sha256: 3193ae44f089b31904b110cfaf6b09ba8878603039e74e652b3fa75afa0cebaf
@@ -55,14 +95,62 @@ gbif:Cucurbita pepo:
   retrieved: 2026-10-09
   sha256: 9029b93f48272a2c76cfd97616ca3a07d8ed205bddf687b16b86472d5c50876d
   url: https://api.gbif.org/v1/species/match?name=Cucurbita%20pepo&kingdom=Plantae&strict=true
+gbif:Cynara cardunculus:
+  retrieved: 2026-10-10
+  sha256: a70aa1c598b1ee74e4ad2f438af189aea914c1e03dfef074bf4fc6c3d07551a4
+  url: https://api.gbif.org/v1/species/match?name=Cynara%20cardunculus&kingdom=Plantae&strict=true
 gbif:Daucus carota:
   retrieved: 2026-10-09
   sha256: d56d33ce4c45d34c5df07c7a1020b4c45a5f3bf7c93581621fdd56b45f28575e
   url: https://api.gbif.org/v1/species/match?name=Daucus%20carota&kingdom=Plantae&strict=true
+gbif:Eruca vesicaria:
+  retrieved: 2026-10-10
+  sha256: 52477d0dd625b7244514b67b64ad01726c2963025e097b05fe8df733380793b0
+  url: https://api.gbif.org/v1/species/match?name=Eruca%20vesicaria&kingdom=Plantae&strict=true
+gbif:Foeniculum vulgare:
+  retrieved: 2026-10-10
+  sha256: 06a640080843e8ed09ae19f96b7768af342cc40c41a876f2ca1c7b759fe16671
+  url: https://api.gbif.org/v1/species/match?name=Foeniculum%20vulgare&kingdom=Plantae&strict=true
+gbif:Fragaria ananassa:
+  retrieved: 2026-10-10
+  sha256: b04fcbac6b0f7cb0ed5ea1ec29cf1290486433db3972a43df9e388b9e5839fdc
+  url: https://api.gbif.org/v1/species/match?name=Fragaria%20ananassa&kingdom=Plantae&strict=true
+gbif:Fragaria × ananassa:
+  retrieved: 2026-10-10
+  sha256: b04fcbac6b0f7cb0ed5ea1ec29cf1290486433db3972a43df9e388b9e5839fdc
+  url: https://api.gbif.org/v1/species/match?name=Fragaria%20%C3%97%20ananassa&kingdom=Plantae&strict=true
+gbif:Helianthus tuberosus:
+  retrieved: 2026-10-10
+  sha256: 2f38bd42462683f4c40457db7351179ae88e162fec70294301643813844fc969
+  url: https://api.gbif.org/v1/species/match?name=Helianthus%20tuberosus&kingdom=Plantae&strict=true
+gbif:Ipomoea batatas:
+  retrieved: 2026-10-10
+  sha256: 917f2343616004222c0b81b5682e6ac3db6fdd7bf0b4cbb1d4f36d698d903345
+  url: https://api.gbif.org/v1/species/match?name=Ipomoea%20batatas&kingdom=Plantae&strict=true
 gbif:Lactuca sativa:
   retrieved: 2026-10-09
   sha256: 2f6f22a79b8188f29411408c2b2a0008b01728011cf6569489f0ae0c2ffafe1f
   url: https://api.gbif.org/v1/species/match?name=Lactuca%20sativa&kingdom=Plantae&strict=true
+gbif:Mentha piperita:
+  retrieved: 2026-10-10
+  sha256: 938cecf0009cd060245d5b38eb92324640e39cdba8ad16904812976b04351b2d
+  url: https://api.gbif.org/v1/species/match?name=Mentha%20piperita&kingdom=Plantae&strict=true
+gbif:Mentha × piperita:
+  retrieved: 2026-10-10
+  sha256: 938cecf0009cd060245d5b38eb92324640e39cdba8ad16904812976b04351b2d
+  url: https://api.gbif.org/v1/species/match?name=Mentha%20%C3%97%20piperita&kingdom=Plantae&strict=true
+gbif:Nasturtium officinale:
+  retrieved: 2026-10-10
+  sha256: 8405d890d48259d6e1662181ffe98583e7bfd142323bc4a8f323faddf9835b63
+  url: https://api.gbif.org/v1/species/match?name=Nasturtium%20officinale&kingdom=Plantae&strict=true
+gbif:Ocimum basilicum:
+  retrieved: 2026-10-10
+  sha256: 48f4e9d204cd9cce6d4862183c7158dbea4c0565b0955314bb5b2e8f0e817ffc
+  url: https://api.gbif.org/v1/species/match?name=Ocimum%20basilicum&kingdom=Plantae&strict=true
+gbif:Origanum vulgare:
+  retrieved: 2026-10-10
+  sha256: e98407fb72d0f9627e03e41c048a7b4282918261f68eb30841815a6fa6253b3e
+  url: https://api.gbif.org/v1/species/match?name=Origanum%20vulgare&kingdom=Plantae&strict=true
 gbif:Pastinaca sativa:
   retrieved: 2026-10-09
   sha256: cd0eebd521a60cff1f1b435467821aa00425e0765e34bde80b0bb064e7e45d72
@@ -71,6 +159,10 @@ gbif:Petroselinum crispum:
   retrieved: 2026-10-09
   sha256: f090d07bd79a2ad418c31eefe445647a2676c01367c091d84cc8ff9faefdc1fb
   url: https://api.gbif.org/v1/species/match?name=Petroselinum%20crispum&kingdom=Plantae&strict=true
+gbif:Phaseolus coccineus:
+  retrieved: 2026-10-10
+  sha256: 4045fb705d20a819277fbe6d570594cbd16c46d5a6e04558ad42359484895cfc
+  url: https://api.gbif.org/v1/species/match?name=Phaseolus%20coccineus&kingdom=Plantae&strict=true
 gbif:Phaseolus vulgaris:
   retrieved: 2026-10-09
   sha256: 2f5b3e47027d847f97d8b0c59bed465c6adef36a0d9fde0c5eee4276c8ff115a
@@ -83,6 +175,18 @@ gbif:Raphanus sativus:
   retrieved: 2026-10-09
   sha256: 4147c15d073f419442c09683dbbd1415f2b006aff24dd9ad029b7bf13f864efa
   url: https://api.gbif.org/v1/species/match?name=Raphanus%20sativus&kingdom=Plantae&strict=true
+gbif:Rheum rhabarbarum:
+  retrieved: 2026-10-10
+  sha256: 3fd80b7c4d2f8d4c6e92b69ac48581dc9b2116aea5e6faadfab72d5bccd42ae0
+  url: https://api.gbif.org/v1/species/match?name=Rheum%20rhabarbarum&kingdom=Plantae&strict=true
+gbif:Salvia officinalis:
+  retrieved: 2026-10-10
+  sha256: 124237dfd686e53e9ecfabc56875d3c91a35fdbc9f1c2982eabfc00c41b332e3
+  url: https://api.gbif.org/v1/species/match?name=Salvia%20officinalis&kingdom=Plantae&strict=true
+gbif:Salvia rosmarinus:
+  retrieved: 2026-10-10
+  sha256: 7e217482bd3eb4db11432e2b35e7029302554fb8cce971d7e8ac9014ed7e4f99
+  url: https://api.gbif.org/v1/species/match?name=Salvia%20rosmarinus&kingdom=Plantae&strict=true
 gbif:Solanum lycopersicum:
   retrieved: 2026-10-09
   sha256: b47a422cad33de13e799005afd57eadadd659dc2bd3da182243293fedc3f4723
@@ -99,13 +203,21 @@ gbif:Spinacia oleracea:
   retrieved: 2026-10-09
   sha256: 49c25e2123b63443432d8fe200e41e6ffe78fce9372c257649ac85469b64f85b
   url: https://api.gbif.org/v1/species/match?name=Spinacia%20oleracea&kingdom=Plantae&strict=true
+gbif:Thymus vulgaris:
+  retrieved: 2026-10-10
+  sha256: 9d34c1d2ddb3a6001fb007a2326d6e3626496f08750f7743cdc60762149be73e
+  url: https://api.gbif.org/v1/species/match?name=Thymus%20vulgaris&kingdom=Plantae&strict=true
+gbif:Vicia faba:
+  retrieved: 2026-10-10
+  sha256: f9c797126fee46444a7f64692e5a166bc15939ccb2089d5093812c863e4fcc3b
+  url: https://api.gbif.org/v1/species/match?name=Vicia%20faba&kingdom=Plantae&strict=true
 gbif:Zea mays:
   retrieved: 2026-10-09
   sha256: 5fa8981e9cbde70053ecaecf040baca60137ad15d868c46587de4b33247d989a
   url: https://api.gbif.org/v1/species/match?name=Zea%20mays&kingdom=Plantae&strict=true
 harrington-osu:
-  retrieved: 2026-10-09
-  sha256: 28afc523a272d97043014e9a9ed993c99cb1ff512ed2ba04f46b2013677581eb
+  retrieved: 2026-10-10
+  sha256: 189b1059f040263e1a9e60894621e8c8356dea18da8091774015388a7700098f
   url: https://extension.oregonstate.edu/es/catalog/soil-temperature-conditions-vegetable-seed-germination
 openfarm-rescue:
   retrieved: 2026-10-09

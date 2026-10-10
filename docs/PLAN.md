@@ -206,7 +206,7 @@ Goal: probabilistic, self-updating environment; remove v1 heuristics (§18).
 - [ ] Candidate filtering by feasibility (windows) and preferences.
 - [ ] Quantities from targets ÷ expected yield; successions to match weekly demand + preservation.
 - [ ] Constraint fit (area per sun class, monthly water, weekly labour, budget, rotation, spacing): greedy + local improvement; explain unmet demand; "single most effective change".
-- [ ] Auto-layout into beds; diff view; accept → plantings + tasks.
+- [~] (v0.34.0: greedy year draft per bed from sowing windows, rotation-aware, review/leave out, accept → plantings + tasks; no yield targets, no diff view on re-plan) Auto-layout into beds; diff view; accept → plantings + tasks.
 - [ ] Re-plan diff when profile or conditions change (AC-P8).
 
 ## Phase 9 — Animals §8

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { api, type Bed, type CropSummary, type Placement, type Recommendation } from '../api'
+import { api, type Bed, type CropSummary, type Placement, type PlanItem, type Recommendation } from '../api'
 import { t } from '../i18n'
 import { useApp } from '../state'
 import { CropSheet, toRequest, type PlantRequest } from './Recommendations'
@@ -28,12 +28,14 @@ export default function BedGrid({
   crops,
   suggested,
   request,
+  plan,
   onChange,
 }: {
   bed: Bed
   crops: CropSummary[]
   suggested: Recommendation[]
   request: PlantRequest | null
+  plan: PlanItem[]
   onChange: () => void
 }) {
   const canEdit = useApp().user.role !== 'viewer'
@@ -59,6 +61,9 @@ export default function BedGrid({
 
   const here = (c: number, r: number) =>
     bed.placements.filter((p) => p.cells.some(([x, y]) => x === c && y === r) && p.from <= on && on <= p.until)
+  // the drafted year plan, shown dashed on cells that are empty on this date
+  const ghost = (c: number, r: number) =>
+    plan.find((i) => i.cells.some(([x, y]) => x === c && y === r) && (i.set_out_date ?? i.start_date) <= on && on <= i.until)
   const clashing = new Set(bed.clashes.map((x) => key(x.cell[0], x.cell[1])))
   const fail = (e: unknown) => setError(e instanceof Error ? e.message : t('Failed to save'))
 
@@ -258,6 +263,7 @@ export default function BedGrid({
           Array.from({ length: bed.cols }, (_, c) => {
             const p = here(c, r)
             const marked = painted.includes(key(c, r))
+            const g = p[0] ? undefined : ghost(c, r)
             return (
               <g key={key(c, r)}>
                 <rect
@@ -266,14 +272,15 @@ export default function BedGrid({
                   width={0.94}
                   height={0.94}
                   rx={0.08}
-                  fill={marked ? (crop ? cropColour(crop.crop) : 'transparent') : p[0] ? cropColour(p[0].crop) : 'transparent'}
-                  className={clashing.has(key(c, r)) ? 'stroke-danger' : marked ? 'stroke-ink' : 'stroke-line'}
-                  strokeWidth={clashing.has(key(c, r)) || marked ? 0.08 : 0.03}
-                  strokeDasharray={marked ? '0.15 0.1' : undefined}
+                  fill={marked ? (crop ? cropColour(crop.crop) : 'transparent') : p[0] ? cropColour(p[0].crop) : g ? cropColour(g.crop) : 'transparent'}
+                  fillOpacity={g && !marked ? 0.45 : 1}
+                  className={clashing.has(key(c, r)) ? 'stroke-danger' : marked || g ? 'stroke-ink' : 'stroke-line'}
+                  strokeWidth={clashing.has(key(c, r)) || marked || g ? 0.08 : 0.03}
+                  strokeDasharray={marked || g ? '0.15 0.1' : undefined}
                 />
-                {p[0] && (
+                {(p[0] || g) && (
                   <text x={c + 0.5} y={r + 0.6} textAnchor="middle" fontSize={0.32} className="pointer-events-none fill-ink">
-                    {p[0].name.slice(0, 4)}
+                    {(p[0]?.name ?? g!.name).slice(0, 4)}
                   </text>
                 )}
               </g>
@@ -283,6 +290,7 @@ export default function BedGrid({
       </svg>
       <p className="text-xs text-muted">
         {t('One cell is {size} cm square.', { size: bed.cell_cm })}
+        {plan.length > 0 && ` ${t('Dashed cells are the drafted plan; step the date to see it through the year.')}`}
         {bed.outside > 0 && ` ${t('{n} planted cells sit beyond the edge of this bed; make the bed bigger to see them.', { n: bed.outside })}`}
         {legend.length > 0 && ` ${t('In this bed: {crops}.', { crops: legend.map(([, n]) => n).join(', ') })}`}
       </p>

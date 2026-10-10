@@ -43,3 +43,6 @@ Phase 5 catalog content (ingestion pipeline, following the handoff reading order
 
 ## v0.33.0 released
 Past-dated plantings, key-point sheets, non-destructive bed edits, any cell plantable. Next: rounding/finishing (windows for Today/Climate/Crops/More), move plantings between cells, undo, free plants.
+
+## v0.34.0
+Year plan drafter + 31 new crops (60). Next: data depth (varieties, companions from Wikipedia CC BY-SA, pests/diseases, animals), needs model for quantities, rounding of Today/Climate/Crops/More.

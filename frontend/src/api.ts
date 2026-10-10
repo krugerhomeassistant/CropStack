@@ -107,6 +107,21 @@ export type PlantingIn = Pick<Planting, 'crop' | 'method' | 'start_date' | 'set_
   cells?: [number, number][]
   ends_on?: string | null
 }
+export type PlanItem = {
+  crop: string
+  name: string
+  method: 'direct' | 'transplant'
+  start_date: string
+  set_out_date: string | null
+  bed_id: number
+  bed: string
+  cells: [number, number][]
+  plants: number
+  harvest_from: string
+  harvest_to: string
+  until: string
+}
+export type YearPlan = { garden: boolean; beds: boolean; items: PlanItem[] }
 export type BedKind = 'bed' | 'container' | 'row'
 export type Bed = {
   id: number
@@ -335,6 +350,8 @@ export const api = {
   updatePlanting: (id: number, body: Partial<Pick<Planting, 'status' | 'start_date' | 'set_out_date' | 'quantity' | 'location' | 'bed_id' | 'cells' | 'ends_on' | 'notes'>>) =>
     request<Planting>('PATCH', `/plantings/${id}`, body),
   deletePlanting: (id: number) => request<null>('DELETE', `/plantings/${id}`),
+  yearPlan: () => request<YearPlan>('GET', '/plan/year'),
+  acceptPlan: (items: PlantingIn[]) => request<{ created: number }>('POST', '/plan/year', items),
   recommendations: () => request<Recommendations>('GET', '/recommendations'),
   beds: () => request<Bed[]>('GET', '/beds'),
   addBed: (body: BedIn) => request<Bed>('POST', '/beds', body),

@@ -47,6 +47,7 @@ Target architecture (engines, data model, API) is specified in `docs/SPEC.md` §
 | `routers/beds.py` | beds CRUD; `GET /beds` adds the grid (cols, rows), placements (cells, from, until), clashes and crowding |
 | `engine/recommend.py` | **pure** what-to-plant timing: `timing`, `options` (direct, transplant), `best_option` from a sowing analysis |
 | `routers/recommend.py` | `GET /api/v1/recommendations?horizon=21`: plant now / coming up, each with a bed and free cells (prefers cells without the same family) |
+| `routers/plan.py` + `engine/yearplan.py` | `GET /plan/year` drafts a year of plantings (greedy: earliest window first, bed with most free cells, rotation-aware, one block of 6 cells per crop per window); `POST /plan/year` creates the accepted ones and plans jobs once |
 | `routers/plantings.py` | plantings CRUD with forward-only status rules; regenerates tasks on every change; `GET /plantings` adds `harvest_from/harvest_to/next_job` per planting (`outlook`); past-dated plantings start as sown/transplanted; cells are never refused for the grid; harvest log (`GET /plantings/harvests`, `POST /plantings/{id}/harvests`, `DELETE /plantings/harvests/{id}`) |
 | `routers/today.py` | `GET /api/v1/today` (due jobs grouped Protect…Maintain, next 14 days), `PATCH /api/v1/tasks/{id}` (done/skipped; done moves the planting along), 12-hourly `tasks` job |
 | `routers/weather.py` | forecast refresh (3 h), `forecast` job, `GET /api/v1/sites/current/weather` |
