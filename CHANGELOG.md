@@ -5,6 +5,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.38.0] - 2026-10-10
+
+### Changed
+- **The planner is redrawn as a plot plan.** The map frames your beds (no more empty canvas), beds have a timber edge and soil, each planted cell shows its crop icon (faded with a dashed outline for what is only planned), names sit on small tags with a ⏳ count of what is still to plant, and there is a 1 m scale. The tools (Move, Bed, Row, Pot) float over the map as one pill. The selected bed is ringed in green.
+- The bed panel sits beside the map on desktop (the map stays in view while you plant) and below it on a phone. Crops to plant are large icon tiles in a scrolling row; the bed's cells are drawn bigger inside a timber frame.
+
 ## [0.37.0] - 2026-10-10
 
 ### Added

@@ -55,3 +55,6 @@ sow_depth param (estimate) for 53 crops; Today job cards compact with Details. N
 
 ## v0.37.0
 Pantry shipped. Owner asked (2026-10-10) for a complete redo of the planner visuals: it looks poor next to the rest of the app. Mealie later.
+
+## v0.38.0
+Planner redrawn (plot plan look, floating tools, map+panel). Next: pests/diseases, needs model, Climate/Crops/More facelift, move planting + undo, zoom/pan on the map.

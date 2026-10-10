@@ -66,3 +66,7 @@ Plain verbs, sentence case, the user's words ("Water bed 3", not "Irrigation eve
 - Warm cream background + rounded sans (Nunito): the generic generated-app look; replaced by a cool canvas and a type pairing chosen for legibility.
 - One rounded card with the same soft shadow for everything: replaced by ruled sections and hierarchy-based radius.
 - Middle-dot meta strings ("Friday · My garden"), all-caps eyebrows, arrows in buttons: template chrome, not information.
+
+## The planner (v0.38.0)
+
+The one place the app is allowed earth tones: the garden map is a plot plan. Beds use the `feed` brown for timber and soil, plants are crop icons, the ground is dotted like survey paper, and the selected bed is ringed in `leaf`. Tools float over the map as a single pill (floating things may carry a shadow). The map frames the beds (1 m of margin, 2.6 m below for the pill) and holds still while a bed is dragged. Desktop: map (3/5) and bed panel (2/5) side by side; phone: stacked.

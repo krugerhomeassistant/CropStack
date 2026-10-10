@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Eraser } from 'lucide-react'
 import { api, type Bed, type CropSummary, type Placement, type PlanItem, type Recommendation } from '../api'
 import { t } from '../i18n'
 import { useApp } from '../state'
@@ -177,16 +177,18 @@ export default function BedGrid({
               <span className="text-muted">{t('in your climate, best first')}</span>
             </p>
           )}
-          <div className="flex flex-wrap gap-2" role="group" aria-label={t('Choose what to plant')}>
+          <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1" role="group" aria-label={t('Choose what to plant')}>
             {chips.map((r) => (
               <button
                 key={r.crop}
                 type="button"
                 aria-pressed={crop?.crop === r.crop}
                 onClick={() => pick(r)}
-                className={`flex min-h-11 items-center gap-2 rounded-full border px-4 text-sm font-semibold ${crop?.crop === r.crop ? 'border-leaf bg-leaf/15' : 'border-line bg-surface'}`}
+                className={`flex min-h-16 min-w-20 shrink-0 flex-col items-center justify-center gap-0.5 rounded-xl border-2 px-3 py-2 text-sm font-semibold ${crop?.crop === r.crop ? 'border-leaf bg-leaf/15' : 'border-line bg-surface'}`}
               >
-                <span className="size-3 rounded-full" style={{ background: cropColour(r.crop) }} aria-hidden />
+                <span className="text-2xl leading-none" aria-hidden>
+                  {cropIcon(r.crop)}
+                </span>
                 {r.name}
               </button>
             ))}
@@ -194,8 +196,9 @@ export default function BedGrid({
               type="button"
               aria-pressed={brush === 'erase'}
               onClick={() => setBrush(brush === 'erase' ? null : 'erase')}
-              className={`min-h-11 rounded-full border px-4 text-sm font-semibold ${brush === 'erase' ? 'border-leaf bg-leaf/15' : 'border-line bg-surface'}`}
+              className={`flex min-h-16 min-w-20 shrink-0 flex-col items-center justify-center gap-1 rounded-xl border-2 px-3 py-2 text-sm font-semibold ${brush === 'erase' ? 'border-leaf bg-leaf/15' : 'border-line bg-surface'}`}
             >
+              <Eraser className="size-6" aria-hidden />
               {t('Take out of cells')}
             </button>
           </div>
@@ -256,10 +259,10 @@ export default function BedGrid({
               : t('Tap a cell to see what is in it.')}
       </p>
 
+      <div className="mx-auto w-full rounded-xl border-[5px] border-feed/70 bg-feed/15 p-0.5" style={{ maxWidth: `${bed.cols * 4.5}rem` }}>
       <svg
         viewBox={`0 0 ${bed.cols} ${bed.rows}`}
-        style={{ maxWidth: `${bed.cols * 3.5}rem` }}
-        className="w-full touch-none select-none rounded-[var(--radius-row)] bg-sunken"
+        className="block w-full touch-none select-none"
         role="img"
         aria-label={t('Cells of {bed}', { bed: bed.name })}
         onPointerDown={down}
@@ -281,7 +284,7 @@ export default function BedGrid({
                   rx={0.08}
                   fill={marked ? (crop ? cropColour(crop.crop) : 'transparent') : p[0] ? cropColour(p[0].crop) : g ? cropColour(g.crop) : 'transparent'}
                   fillOpacity={g && !marked ? 0.45 : 1}
-                  className={clashing.has(key(c, r)) ? 'stroke-danger' : marked || g ? 'stroke-ink' : 'stroke-line'}
+                  className={clashing.has(key(c, r)) ? 'stroke-danger' : marked || g ? 'stroke-ink' : 'stroke-feed/30'}
                   strokeWidth={clashing.has(key(c, r)) || marked || g ? 0.08 : 0.03}
                   strokeDasharray={marked || g ? '0.15 0.1' : undefined}
                 />
@@ -300,6 +303,7 @@ export default function BedGrid({
           }),
         )}
       </svg>
+      </div>
       <p className="text-xs text-muted">
         {t('One cell is {size} cm square.', { size: bed.cell_cm })}
         {plan.length > 0 && ` ${t('Dashed cells are the drafted plan; step the date to see it through the year.')}`}

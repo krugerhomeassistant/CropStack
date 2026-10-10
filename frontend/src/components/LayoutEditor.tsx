@@ -3,7 +3,7 @@ import { Circle, MousePointer2, RectangleHorizontal, Rows3, Trash2, type LucideI
 import { api, type Bed, type BedIn, type BedKind, type CropSummary, type PlanItem, type Recommendation } from '../api'
 import { t } from '../i18n'
 import { useApp } from '../state'
-import BedGrid, { cropColour } from './BedGrid'
+import BedGrid from './BedGrid'
 import { cropIcon } from './cropIcon'
 import type { PlantRequest } from './Recommendations'
 import { Button, ErrorMessage, Field, IconButton, Section, Skeleton, Switch } from './ui'
@@ -21,6 +21,7 @@ const TOOLS: { tool: Tool; label: string; short: string; icon: LucideIcon; name?
   { tool: 'container', label: 'Draw pot', short: 'Pot', icon: Circle, name: 'Pot', width: 0.5, length: 0.5 },
 ]
 
+type Frame = { x0: number; y0: number; x1: number; y1: number }
 type Pt = { x: number; y: number }
 type Rect = { x: number; y: number; width: number; length: number }
 // `to` is the latest result of the gesture, kept here rather than read back from state: a release can arrive before React has re-rendered.
@@ -55,6 +56,7 @@ export default function LayoutEditor({ onChange, suggested, request, plan }: { o
   const [error, setError] = useState('')
   const drag = useRef<Drag | null>(null)
   const svg = useRef<SVGSVGElement>(null)
+  const frame = useRef<Frame | null>(null)
 
   const load = () =>
     api.beds().then(setBeds, (e) => setError(e instanceof Error ? e.message : t('Failed to load')))
@@ -159,8 +161,13 @@ export default function LayoutEditor({ onChange, suggested, request, plan }: { o
   if (!beds) return error ? <ErrorMessage>{error}</ErrorMessage> : <Skeleton className="h-48" />
 
   const current = beds.find((b) => b.id === selected) ?? null
-  const w = Math.max(10, ...beds.map((b) => b.x + b.width + 2))
-  const h = Math.max(6, ...beds.map((b) => b.y + b.length + 2))
+  // The map is framed on the beds (a metre or two around them), and held still while one is being dragged.
+  const framed = (): Frame => {
+    const x0 = beds.length ? Math.max(0, Math.min(...beds.map((b) => b.x)) - 1) : 0
+    const y0 = beds.length ? Math.max(0, Math.min(...beds.map((b) => b.y)) - 1) : 0
+    return { x0, y0, x1: Math.max(x0 + 5, ...beds.map((b) => b.x + b.width + 1.5)), y1: Math.max(y0 + 4.5, ...beds.map((b) => b.y + b.length + 2.6)) }
+  }
+  const f = drag.current && frame.current ? frame.current : (frame.current = framed())
   const layouts = [...new Set(beds.map((b) => b.layout).filter(Boolean))]
 
   const status = (b: Bed) =>
@@ -173,31 +180,21 @@ export default function LayoutEditor({ onChange, suggested, request, plan }: { o
           : ''
 
   return (
-    <>
+    <div className="grid grid-cols-[minmax(0,1fr)] gap-4 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:items-start">
+      <div className="lg:sticky lg:top-4">
       <Section>
         {error && <ErrorMessage>{error}</ErrorMessage>}
-      {canEdit && (
-        <div className="flex flex-wrap items-center gap-2">
-          <div role="group" aria-label={t('Plan tools')} className="grid w-full grid-cols-4 gap-2">
-            {TOOLS.map((x) => (
-              <Button key={x.tool} variant={tool === x.tool ? 'primary' : 'secondary'} aria-pressed={tool === x.tool} aria-label={t(x.label)} className="min-w-0 px-2! text-sm" onClick={() => setTool(x.tool)}>
-                <x.icon className="size-4 shrink-0" aria-hidden />
-                {t(x.short)}
-              </Button>
-            ))}
-          </div>
-          {current?.layout && (
-            <label className="flex min-h-11 items-center gap-2 text-sm">
-              <Switch label={t('Beds in a layout move together')} checked={together} onChange={setTogether} />
-              {t('Beds in a layout move together')}
-            </label>
-          )}
-        </div>
+      {canEdit && current?.layout && (
+        <label className="flex min-h-11 items-center gap-2 text-sm">
+          <Switch label={t('Beds in a layout move together')} checked={together} onChange={setTogether} />
+          {t('Beds in a layout move together')}
+        </label>
       )}
+      <div className="relative overflow-hidden rounded-[var(--radius-section)] border border-line bg-sunken">
       <svg
         ref={svg}
-        viewBox={`0 0 ${w} ${h}`}
-        className={`w-full touch-none rounded-[var(--radius-row)] bg-sunken ${tool === 'select' ? '' : 'cursor-crosshair'}`}
+        viewBox={`${f.x0} ${f.y0} ${f.x1 - f.x0} ${f.y1 - f.y0}`}
+        className={`block max-h-[70dvh] w-full touch-none ${tool === 'select' ? '' : 'cursor-crosshair'}`}
         role="img"
         aria-label={t('Plan of the garden beds')}
         onPointerDown={planDown}
@@ -206,22 +203,22 @@ export default function LayoutEditor({ onChange, suggested, request, plan }: { o
         onPointerCancel={up}
       >
         <defs>
-          <pattern id="grid" width="1" height="1" patternUnits="userSpaceOnUse">
-            <path d="M1 0H0V1" fill="none" className="stroke-line" strokeWidth="0.02" />
+          <pattern id="dots" width="1" height="1" patternUnits="userSpaceOnUse">
+            <path d="M0.5 0.42V0.58M0.42 0.5H0.58" className="stroke-feed/40" strokeWidth="0.03" fill="none" />
           </pattern>
         </defs>
-        <rect width={w} height={h} fill="url(#grid)" />
-        {frames(beds).map((f) => (
-          <g key={f.name}>
-            <rect x={f.x} y={f.y} width={f.width} height={f.length} rx={0.1} fill="none" strokeDasharray="0.2 0.12" strokeWidth={0.03} className="stroke-muted pointer-events-none" />
+        <rect x={f.x0} y={f.y0} width={f.x1 - f.x0} height={f.y1 - f.y0} fill="url(#dots)" />
+        {frames(beds).map((fr) => (
+          <g key={fr.name}>
+            <rect x={fr.x} y={fr.y} width={fr.width} height={fr.length} rx={0.15} fill="none" strokeDasharray="0.2 0.12" strokeWidth={0.03} className="stroke-muted pointer-events-none" />
             <text
-              x={f.x + 0.1}
-              y={f.y - 0.08}
-              fontSize={0.32}
+              x={fr.x + 0.12}
+              y={fr.y + fr.length + 0.34}
+              fontSize={0.26}
               className={`fill-muted select-none ${canEdit && tool === 'select' ? 'cursor-grab' : ''}`}
-              onPointerDown={(e) => canEdit && tool === 'select' && startMove(e, f.ids, point(e))}
+              onPointerDown={(e) => canEdit && tool === 'select' && startMove(e, fr.ids, point(e))}
             >
-              {f.name}
+              {fr.name}
             </text>
           </g>
         ))}
@@ -230,48 +227,53 @@ export default function LayoutEditor({ onChange, suggested, request, plan }: { o
           const live = b.placements.filter((p) => p.from <= today && today <= p.until)
           const growing = live.filter((p) => p.status !== 'planned')
           const waiting = b.placements.filter((p) => p.status === 'planned' || p.from > today)
-          const room = b.length >= 1.4 && b.width >= 1.4
+          const isPot = b.kind === 'container'
+          const size = Math.min(cell * 0.78, 0.5)
+          const label = waiting.length > 0 ? `${b.name}  ⏳${waiting.length}` : b.name
+          const tag = Math.max(0.9, label.length * 0.15 + 0.3)
+          const mark = (p: (typeof growing)[number], faded: boolean) =>
+            p.cells.map(([c, r]) => (
+              <text key={`${faded ? 'w' : 'g'}${p.planting_id}${c},${r}`} x={b.x + (c + 0.5) * cell} y={b.y + (r + 0.5) * cell + size * 0.34} fontSize={size} textAnchor="middle" opacity={faded ? 0.4 : 1}>
+                {cropIcon(p.crop)}
+              </text>
+            ))
           return (
             <g key={b.id} onPointerDown={(e) => bedDown(e, b)} className={canEdit && tool === 'select' ? 'cursor-grab' : ''}>
               <clipPath id={`clip${b.id}`}>
-                <rect x={b.x} y={b.y} width={b.width} height={b.length} />
+                {isPot ? <ellipse cx={b.x + b.width / 2} cy={b.y + b.length / 2} rx={b.width / 2} ry={b.length / 2} /> : <rect x={b.x} y={b.y} width={b.width} height={b.length} rx={0.06} />}
               </clipPath>
-              <rect
-                x={b.x}
-                y={b.y}
-                width={b.width}
-                height={b.length}
-                rx={b.kind === 'container' ? Math.min(b.width, b.length) / 2 : 0.05}
-                className="fill-leaf/10 stroke-leaf"
-                strokeWidth={b.id === selected ? 0.1 : 0.04}
-              />
-              <g clipPath={`url(#clip${b.id})`} className="pointer-events-none">
+              {b.id === selected && (isPot ? <ellipse cx={b.x + b.width / 2} cy={b.y + b.length / 2} rx={b.width / 2 + 0.14} ry={b.length / 2 + 0.14} fill="none" className="stroke-leaf" strokeWidth={0.07} /> : <rect x={b.x - 0.14} y={b.y - 0.14} width={b.width + 0.28} height={b.length + 0.28} rx={0.14} fill="none" className="stroke-leaf" strokeWidth={0.07} />)}
+              {isPot ? (
+                <ellipse cx={b.x + b.width / 2} cy={b.y + b.length / 2} rx={b.width / 2} ry={b.length / 2} className="fill-feed/25 stroke-feed" strokeWidth={0.09} />
+              ) : (
+                <rect x={b.x} y={b.y} width={b.width} height={b.length} rx={0.06} className="fill-feed/25 stroke-feed" strokeWidth={0.09} />
+              )}
+              <g clipPath={`url(#clip${b.id})`} className="pointer-events-none select-none">
                 {waiting.flatMap((p) =>
                   p.cells.map(([c, r]) => (
-                    <rect key={`w${p.planting_id}${c},${r}`} x={b.x + c * cell + 0.03} y={b.y + r * cell + 0.03} width={cell - 0.06} height={cell - 0.06} rx={0.05} fill="none" stroke={cropColour(p.crop)} strokeDasharray="0.12 0.08" strokeWidth={0.04} />
+                    <rect key={`o${p.planting_id}${c},${r}`} x={b.x + c * cell + 0.03} y={b.y + r * cell + 0.03} width={cell - 0.06} height={cell - 0.06} rx={0.04} fill="none" className="stroke-leaf" strokeDasharray="0.08 0.06" strokeWidth={0.03} />
                   )),
                 )}
-                {growing.flatMap((p) =>
-                  p.cells.map(([c, r]) => (
-                    <rect key={`g${p.planting_id}${c},${r}`} x={b.x + c * cell + 0.03} y={b.y + r * cell + 0.03} width={cell - 0.06} height={cell - 0.06} rx={0.05} fill={cropColour(p.crop)} />
-                  )),
-                )}
+                {waiting.map((p) => mark(p, true))}
+                {growing.map((p) => mark(p, false))}
               </g>
-              {b.crowded && <rect x={b.x} y={b.y} width={b.width} height={b.length} rx={0.05} fill="none" className="stroke-marigold pointer-events-none" strokeDasharray="0.2 0.1" strokeWidth={0.06} />}
-              <text x={b.x + b.width / 2} y={b.y + (room ? 0.42 : b.length / 2)} textAnchor="middle" fontSize={Math.min(0.35, b.width / 4)} className="fill-ink pointer-events-none select-none" paintOrder="stroke" stroke="var(--color-surface)" strokeWidth={0.08}>
-                {b.name}
-              </text>
-              {room && (growing.length > 0 || waiting.length > 0) && (
-                <text x={b.x + b.width / 2} y={b.y + b.length - 0.2} textAnchor="middle" fontSize={0.3} className="fill-ink pointer-events-none select-none" paintOrder="stroke" stroke="var(--color-surface)" strokeWidth={0.08}>
-                  {[...new Set(growing.map((p) => cropIcon(p.crop)))].slice(0, 4).join('')}
-                  {growing.length > 0 && waiting.length > 0 && '  '}
-                  {waiting.length > 0 && `⏳${waiting.length}`}
+              {b.crowded && <rect x={b.x} y={b.y} width={b.width} height={b.length} rx={0.06} fill="none" className="stroke-marigold pointer-events-none" strokeDasharray="0.18 0.1" strokeWidth={0.06} />}
+              <g className="pointer-events-none select-none">
+                <rect x={b.x} y={b.y - 0.46} width={tag} height={0.34} rx={0.17} className="fill-surface stroke-line" strokeWidth={0.02} />
+                <text x={b.x + tag / 2} y={b.y - 0.46 + 0.24} textAnchor="middle" fontSize={0.2} className="fill-ink font-semibold">
+                  {label}
                 </text>
-              )}
+              </g>
             </g>
           )
         })}
-        {draft && <rect x={draft.x} y={draft.y} width={draft.width} height={draft.length} fill="none" strokeDasharray="0.15 0.1" strokeWidth={0.05} className="stroke-leaf pointer-events-none" />}
+        {draft && <rect x={draft.x} y={draft.y} width={draft.width} height={draft.length} rx={0.06} fill="none" strokeDasharray="0.15 0.1" strokeWidth={0.05} className="stroke-leaf pointer-events-none" />}
+        <g className="pointer-events-none">
+          <path d={`M${f.x1 - 1.3} ${f.y1 - 0.3}H${f.x1 - 0.3}M${f.x1 - 1.3} ${f.y1 - 0.38}V${f.y1 - 0.22}M${f.x1 - 0.3} ${f.y1 - 0.38}V${f.y1 - 0.22}`} className="stroke-muted" strokeWidth={0.04} fill="none" />
+          <text x={f.x1 - 0.8} y={f.y1 - 0.42} textAnchor="middle" fontSize={0.2} className="fill-muted">
+            1 m
+          </text>
+        </g>
         {canEdit && tool === 'select' && current && (
           <g
             className="cursor-nwse-resize"
@@ -286,6 +288,26 @@ export default function LayoutEditor({ onChange, suggested, request, plan }: { o
           </g>
         )}
       </svg>
+      {canEdit && (
+        <div className="pointer-events-none absolute inset-x-0 bottom-3 flex justify-center">
+          <div role="group" aria-label={t('Plan tools')} className="pointer-events-auto flex max-w-full gap-0.5 rounded-full border border-line bg-surface p-1 shadow-lg">
+            {TOOLS.map((x) => (
+              <button
+                key={x.tool}
+                type="button"
+                aria-pressed={tool === x.tool}
+                aria-label={t(x.label)}
+                onClick={() => setTool(x.tool)}
+                className={`flex min-h-11 items-center gap-1 rounded-full px-2.5 text-sm font-semibold ${tool === x.tool ? 'bg-leaf text-on-leaf' : 'text-ink hover:bg-sunken'}`}
+              >
+                <x.icon className="size-4 shrink-0" aria-hidden />
+                {t(x.short)}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+      </div>
         {beds.some((b) => b.placements.length > 0) && <p className="text-xs text-muted">{t('Filled cells are growing now; dashed cells are planned. ⏳ counts what is still to plant.')}</p>}
         {beds.length === 0 && <p className="text-sm text-muted">{canEdit ? t('No beds yet. Choose Draw bed, then drag on the plan.') : t('No beds have been drawn yet.')}</p>}
         {beds.length > 0 && (
@@ -310,6 +332,7 @@ export default function LayoutEditor({ onChange, suggested, request, plan }: { o
           </div>
         )}
       </Section>
+      </div>
 
       {current ? (
         <Section
@@ -331,7 +354,7 @@ export default function LayoutEditor({ onChange, suggested, request, plan }: { o
       ) : (
         beds.length > 0 && <p className="px-1 text-sm text-muted">{t('Tap a bed to plant in it.')}</p>
       )}
-    </>
+    </div>
   )
 }
 
