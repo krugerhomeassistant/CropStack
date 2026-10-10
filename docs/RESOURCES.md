@@ -66,6 +66,9 @@
 - USDA zone definition (−60 °F start, 10 °F zones, 5 °F half-zones) https://planthardiness.ars.usda.gov
 - Home Assistant developer docs https://developers.home-assistant.io
 
+- Year plan: `backend/app/engine/yearplan.py`, `backend/app/routers/plan.py`, `frontend/src/components/YearPlan.tsx` · Pantry: `backend/app/routers/pantry.py`, `frontend/src/pages/Pantry.tsx` · Job facts: `backend/app/crop_facts.py` · Planner: `frontend/src/components/LayoutEditor.tsx`, `BedGrid.tsx`
+- Mealie API (future integration) https://docs.mealie.io/documentation/getting-started/api-usage/ · USDA AH-66 storage guide (planned pantry shelf life) https://www.ars.usda.gov/
+
 ## Local
 - Host folder: `E:\Projects\Personal\CropStack`
 - Default URL: http://localhost:8430

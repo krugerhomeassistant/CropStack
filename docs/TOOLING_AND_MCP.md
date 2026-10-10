@@ -53,3 +53,7 @@ Raw snapshots live outside git (may be copyrighted); `snapshots.lock` records ha
 ## Candidate integrations (not yet added)
 - Planned by SPEC/PLAN: Hypothesis (property tests, Phase 4) · numpy: not needed (analog-year engine in plain Python, ~0.3 s for a 365-day curve; revisit if window search for many crops is slow) · OR-Tools CP-SAT (only if greedy plan fitting is insufficient, Phase 8) · canvas library for the layout editor (Konva vs plain SVG spike, Phase 8) · axe-core (accessibility CI, Phase 14)
 - Open-Meteo (forecast, historical, geocoding) · MQTT client (aiomqtt) for Home Assistant · Ollama for the assistant · Playwright for README screenshots (Bloomery pattern)
+
+## Project scripts (v0.38)
+- `scripts/bump.py X.Y.Z` version everywhere · `scripts/coverage.py [--check]` catalog coverage · `scripts/ingest fetch|merge|check` catalog build · `ruff format . && ruff check .` before every push · `npm run e2e` (restart the server first; a dirty DB fails it) · `npm run screenshots`.
+- Deferred/not adopted: Mealie (not running yet), OR-Tools (greedy year plan suffices).

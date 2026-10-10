@@ -36,7 +36,7 @@ It runs on your own hardware (a NAS, a Raspberry Pi, a home server) as one conta
 </p>
 
 > [!NOTE]
-> CropStack is in active development (v0.10). The foundations work today: households, your garden's climate and weather, and a first crop catalog. The daily jobs, crop planner and animal care are next. See [what works now](#-what-works-now) and the [roadmap](#-roadmap).
+> CropStack is in active development (v0.38). Climate, a 60-crop catalog, the garden planner, a year plan, daily jobs, watering and a pantry work today. Animals, Home Assistant and the Mealie link are next. See [what works now](#-what-works-now) and the [roadmap](#-roadmap).
 
 ## ✅ What works now
 
@@ -54,11 +54,16 @@ It runs on your own hardware (a NAS, a Raspberry Pi, a home server) as one conta
 - **Weekly Check.** Each growing planting gets a weekly job listing what to look for and what to keep or remove.
 - **Garden assistant (optional).** Add a Claude, OpenAI or OpenRouter key, or an Ollama address, in Settings, then ask garden questions in Ask.
 - **Garden in four windows**: Plan, Plant, Calendar, Plantings.
+- **Year plan.** *Draft a year plan* fills your beds with crops that suit your climate: earliest good window first, rotating plant families, one block per crop. Review the ghosted cells, then accept to schedule every job at once. Nothing you have already planted is touched.
+- **Planner as a plot plan.** Beds, rows and pots on a to-scale map with floating tools; tap a bed to open its grid. Cells show crop icons and what is planted or planned; erasing never loses other work.
+- **Past sowings count.** Log a sowing on a past date and it is recorded as sown (or set out) straight away.
+- **Key points per job.** Each job lists the crop's own facts: spacing, thin-to, sowing depth, soil temperature, days to emerge, light, seedling age.
+- **Pantry.** Track preserved and stored food (canned, frozen, dried, fermented, cellar, fresh) with batch dates and "use soon" reminders.
 - **Garden plan.** Draw beds, rows and pots freely to scale, group them into layouts that move as one to match your garden, then paint exactly which crop goes in which cells. Mix and stagger crops in one bed (the date slider shows it over time), and get "what to plant now and where" suggestions from your climate.
 - **Harvest log.** Record what you pick from each planting; the Garden page shows the running total.
 - **Frost and heat alerts.** If the forecast shows a night too cold or a day too hot for something you have growing, Today lists a Protect job with the figure and the crop's limit.
 - **Plantings.** Choose *Plant this* on a window, and the Garden tab keeps track: what, how many, where, and whether it is sown, up, set out, harvesting, finished or failed.
-- **Crop catalog.** 29 common vegetables, searchable in English or Afrikaans: when they germinate and how fast at each soil temperature, how much water they use and how deep their roots go, spacing, and growth stages. Every number shows where it comes from and how strong the evidence is; a credits page lists every source and its licence.
+- **Crop catalog.** 60 vegetables, herbs and fruit, searchable in English or Afrikaans: when they germinate and how fast at each soil temperature, how much water they use and how deep their roots go, spacing, and growth stages. Every number shows where it comes from and how strong the evidence is; a credits page lists every source and its licence.
 
 ## 🗺️ Roadmap
 
@@ -71,7 +76,7 @@ The full product is specified in [docs/SPEC.md](docs/SPEC.md) and broken into st
 | **Today, fuller** | Feeding, animals and what to look out for, each with how and why (Plant, Harvest, Protect and Water jobs are already there) |
 | Setup and planning | A short interview (space, water, household, diet, time, budget), a layout editor drawn to scale with sun and shade, and a plan generator |
 | Animals | Poultry, goats, sheep, cattle, pigs, rabbits and bees: daily care, feed and water, records, breeding, heat and cold alerts |
-| Harvest and pantry | Harvest log, preserving, pantry stock, seed vault |
+| Harvest and pantry | Seed vault, preserving recipes, a Mealie link for meal plans (pantry stock and harvest log already work) |
 | Climate explorer | Charts of temperatures, rain, soil, evaporation and daylight through the year |
 | **Garden view** | A calm, real-time game of your real garden: lay it out, dig the beds, sow, and watch the plants grow with your real weather; watering or harvesting in the game logs it. Plus a practice plot that replays past years. [Design](docs/GAME_DESIGN.md) |
 | Integrations | Home Assistant (sensors in, irrigation out, tasks on your dashboard) and an optional local or cloud Garden assistant |

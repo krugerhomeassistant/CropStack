@@ -58,3 +58,6 @@ Pantry shipped. Owner asked (2026-10-10) for a complete redo of the planner visu
 
 ## v0.38.0
 Planner redrawn (plot plan look, floating tools, map+panel). Next: pests/diseases, needs model, Climate/Crops/More facelift, move planting + undo, zoom/pan on the map.
+
+## Audit 2026-10-10
+README, RESOURCES, TOOLING refreshed for v0.33–0.38 (were stale at v0.10). README screenshots not regenerated. Next: pests/diseases per crop, sourced sow depth, needs model.
