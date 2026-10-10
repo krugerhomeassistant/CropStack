@@ -146,7 +146,7 @@ try {
     await owner.waitForTimeout(250) // the new size is saved on release
     after = (await (await owner.request.get(`${base}/api/v1/beds`)).json())[0]
   }
-  assert.ok(after.width > before.width && after.length > before.length, `the corner handle resizes the bed: ${JSON.stringify([before.width, after.width, handle])} ${await owner.evaluate(([x, y]) => { const el = document.elementFromPoint(x, y); return el ? el.outerHTML.slice(0, 160) : 'nothing' }, [handle.x + handle.width / 2, handle.y + handle.height / 2])} ${logs.join('|')}`)
+  assert.ok(after.width > before.width && after.length > before.length, `the corner handle resizes the bed: ${JSON.stringify([before.width, after.width, handle])} ${await owner.evaluate(([x, y]) => { const el = document.elementFromPoint(x, y); return el ? el.outerHTML.slice(0, 160) : 'nothing' }, [handle.x + handle.width / 2, handle.y + handle.height / 2])} ${logs.join('|')} ${JSON.stringify((await (await owner.request.get(`${base}/api/v1/beds`)).json()).map((b) => [b.id, b.x, b.y, b.width, b.length]))} ${await owner.getByRole('button', { name: 'Draw bed' }).getAttribute('aria-pressed')}`)
   await owner.getByLabel('Layout', { exact: true }).fill('Back garden')
   await owner.getByRole('button', { name: 'Save', exact: true }).first().click()
   await owner.getByText(/Back garden/).first().waitFor()
