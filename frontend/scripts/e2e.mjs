@@ -134,6 +134,8 @@ try {
   const logs = []
   owner.on('console', (m) => logs.push(m.text()))
   owner.on('pageerror', (e) => logs.push(String(e)))
+  owner.on('response', (r) => r.url().includes('/beds') && logs.push(`${r.request().method()} ${r.status()}`))
+  owner.on('requestfailed', (r) => logs.push(`failed ${r.url()}`))
   await owner.getByTestId('resize-handle').evaluate((el) => el.scrollIntoView({ block: 'center' })) // clear of the bottom bar
   const handle = await stableBox(owner.getByTestId('resize-handle'))
   const before = (await (await owner.request.get(`${base}/api/v1/beds`)).json())[0]
