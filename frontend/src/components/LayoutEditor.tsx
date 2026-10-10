@@ -104,6 +104,7 @@ export default function LayoutEditor({ onChange }: { onChange: () => void }) {
   function move(e: React.PointerEvent) {
     const d = drag.current
     if (!d) return
+    if (e.buttons === 0) return up() // the release was missed (left the window, lost capture): end the gesture
     const p = point(e)
     if (d.k === 'draw') {
       const x = snap(p.x)
@@ -185,6 +186,7 @@ export default function LayoutEditor({ onChange }: { onChange: () => void }) {
         onPointerDown={planDown}
         onPointerMove={move}
         onPointerUp={up}
+        onPointerCancel={up}
       >
         <defs>
           <pattern id="grid" width="1" height="1" patternUnits="userSpaceOnUse">

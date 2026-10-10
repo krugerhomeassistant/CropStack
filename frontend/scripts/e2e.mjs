@@ -129,7 +129,7 @@ try {
   await owner.mouse.up()
   await owner.waitForTimeout(500) // the move is saved on release
   const [bed] = await (await owner.request.get(`${base}/api/v1/beds`)).json()
-  if (bed.x <= 0.5 && bed.y <= 0.5) throw new Error(`bed did not move: ${JSON.stringify(bedBox)} ${bed.x},${bed.y}`)
+  if (bed.x <= drawn.x && bed.y <= drawn.y) throw new Error(`bed did not move: ${JSON.stringify(bedBox)} ${bed.x},${bed.y}`)
   // Resize by the corner handle, and group into a layout that moves as one
   const logs = []
   owner.on('console', (m) => logs.push(m.text()))
