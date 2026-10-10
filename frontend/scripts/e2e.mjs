@@ -131,15 +131,19 @@ try {
   const [bed] = await (await owner.request.get(`${base}/api/v1/beds`)).json()
   if (bed.x <= 0.5 && bed.y <= 0.5) throw new Error(`bed did not move: ${JSON.stringify(bedBox)} ${bed.x},${bed.y}`)
   // Resize by the corner handle, and group into a layout that moves as one
+  await owner.getByTestId('resize-handle').scrollIntoViewIfNeeded()
   const handle = await stableBox(owner.getByTestId('resize-handle'))
   const before = (await (await owner.request.get(`${base}/api/v1/beds`)).json())[0]
   await owner.mouse.move(handle.x + handle.width / 2, handle.y + handle.height / 2)
   await owner.mouse.down()
   await owner.mouse.move(handle.x + handle.width / 2 + 40, handle.y + handle.height / 2 + 40, { steps: 4 })
   await owner.mouse.up()
-  await owner.waitForTimeout(500)
-  const after = (await (await owner.request.get(`${base}/api/v1/beds`)).json())[0]
-  assert.ok(after.width > before.width && after.length > before.length, 'the corner handle resizes the bed')
+  let after = before
+  for (let i = 0; i < 20 && after.width <= before.width; i++) {
+    await owner.waitForTimeout(250) // the new size is saved on release
+    after = (await (await owner.request.get(`${base}/api/v1/beds`)).json())[0]
+  }
+  assert.ok(after.width > before.width && after.length > before.length, `the corner handle resizes the bed: ${JSON.stringify([before, after, handle])}`)
   await owner.getByLabel('Layout', { exact: true }).fill('Back garden')
   await owner.getByRole('button', { name: 'Save', exact: true }).first().click()
   await owner.getByText(/Back garden/).first().waitFor()
