@@ -7,6 +7,7 @@
 | Catalog data-source research (licences, gaps, pipeline) | `docs/research/catalog-data-sources.md` |
 | Catalog (CC BY-SA 4.0) | `catalog/` (`sources.yaml`, `crops/`, `organisms/`, `species/`, `schema/`) |
 | Roadmap | `docs/PLAN.md` |
+| Garden game design (Garden view, practice plot) | `docs/GAME_DESIGN.md` (PLAN Phase 15) |
 | Version | `backend/app/__init__.py` (+ `frontend/package.json`) |
 | Settings/env | `backend/app/config.py`, `.env.example` |
 | DB engine | `backend/app/db.py` |

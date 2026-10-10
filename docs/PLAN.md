@@ -259,6 +259,79 @@ Goal: probabilistic, self-updating environment; remove v1 heuristics (§18).
 - [ ] Optional SoilGrids defaults.
 - [ ] User guide with screenshots, README refresh, demo seed script.
 
+## Phase 15 — Garden game ("Garden view") — design in [GAME_DESIGN.md](GAME_DESIGN.md)
+Owner idea 2026-10-10: a slow real-time game that is also the garden tracker. Pillars and rules: GAME_DESIGN.md §2. Depends on: 6.3 growth stages (G1 builds the part it needs), 8.3 layout features (G4 builds them, shared with the plan). Every step ships behind the `Garden → View` tab and keeps the app usable without it.
+
+**G0 Spike and decisions** (throwaway branch, nothing merged except the decision)
+- [ ] Prototype route rendering 300 code-drawn plants, ground, sky tint and rain with Canvas 2D; measure fps, frame p99 and battery drain on the owner's iPhone and a desktop browser (Playwright trace for the desktop numbers).
+- [ ] If Canvas 2D misses 60 fps at 300 plants: repeat with the current PixiJS release (check version, licence, gzipped size first) and record both.
+- [ ] Three art samples (tomato, lettuce, maize) in the soft-vector style at three zoom levels; owner picks (GAME_DESIGN §14 Q2).
+- [ ] Record renderer, view angle, art style and budget in ARCHITECTURE (decision log) and TOOLING; log surprises in LESSONS_LEARNED.
+
+**G1 Data foundations** (backend, no UI)
+- [ ] Alembic migration: `journal_entry`, `garden_feature` (GAME_DESIGN §11); model classes in `models.py`; migration test upgrading a v0.32 database.
+- [ ] `routers/journal.py`: `GET /api/v1/journal?bed=&planting=&since=`, `POST`, `DELETE` (own entries, within 24 h; owners any); editor role for writes; tests.
+- [ ] Water entries feed the water balance as `irrigation_logged` (`engine/water.py`); a logged watering completes the open Water job for that bed; tests.
+- [ ] `routers/features.py`: CRUD for garden features with geometry validation (metres, inside 500 × 500 m, polygon closed); tests.
+- [ ] `engine/sun.py` (pure): solar elevation and azimuth, sunrise, sunset, moon phase; tests against NOAA reference values for three latitudes (Cape Town, London, equator).
+- [ ] `engine/growth.py` (pure): `progress`, `stage` (§6.3 stage + BBCH principal), `size`, `flags`, `confidence`, `rough` from a planting, its crop profile and daily temperatures; days-to-maturity fallback; tests per stage boundary and per flag.
+- [ ] Season-to-date temperatures: archive days plus forecast `past_days` for the gap; unit test the stitch.
+- [ ] `routers/game.py`: `GET /api/v1/game/state?at=` (site, sun, weather now and next 24 h, beds, features, plantings with growth, cues mapped from open jobs, last 14 days of journal); cache per household 10 min, invalidated on any write; response under 300 ms with 50 plantings (test with timing assert, generous on CI).
+- [ ] ARCHITECTURE (modules, tables), WIKI (journal, features), CHANGELOG `[Unreleased]`.
+
+**G2 First look** (read only)
+- [ ] `frontend/src/game/`: lazy route chunk under Garden → View tab; camera (pan, pinch zoom, double-tap focus), three zoom levels, layered draw (ground, beds, plants, sky, weather, UI), hit testing.
+- [ ] Draw real beds, rows, pots and cells to scale from `game/state`; ground and paths from features.
+- [ ] Plant drawing: eight growth habits (§8) parameterised by size and `crops.json` colours; generic fallback by family; stage visuals (seed mark, sprout, leafy, flowering, fruiting, ripe, spent).
+- [ ] Sky: light colour and shadow direction from `sun`; night and moon phase; cloud cover; rain and frost visuals from weather now.
+- [ ] Card on tap (crop, sown on, stage estimate with badge and confidence, next job, last watered, last harvest, "Open in app").
+- [ ] Idle cap 30 fps, stop when hidden, reduced-motion mode; game chunk size checked in CI (≤ 150 KB gz).
+- [ ] Playwright: screenshots of View in light and dark × phone and desktop with a seeded garden; E2E opens View and taps a planting card.
+- [ ] Acceptance: owner recognises the real garden on the iPhone (GAME_DESIGN §13, first bullet). Feedback into ACTIVE_CONTEXT.
+
+**G3 Hands in the soil** (verbs)
+- [ ] Tool belt: Dig, Amend, Sow, Plant out, Water, Mulch, Weed, Check, Look closer, Harvest, Clear; one sheet each with defaults; 10 s undo toast.
+- [ ] Each verb writes through the existing API or `journal` (GAME_DESIGN §5 table) and completes the matching job; Today reflects it on next load.
+- [ ] Cues: thirsty bed, ripe planting, open Check job, frost or heat warning, nothing to do; each cue also listed in a "List" toggle for accessibility.
+- [ ] Bed state derived from journal and plantings (unworked → dug → amended → planted → growing → cleared → covered) shown on the soil.
+- [ ] Offline: actions queued with idempotency keys and replayed (shares the PLAN 7 offline work).
+- [ ] E2E: water a thirsty bed, harvest a ripe planting, sow into free cells; Today shows the jobs done.
+- [ ] Acceptance: a full day of the owner's real jobs done from the game only.
+
+**G4 Map builder** (shared with the Garden plan; closes PLAN 8.3 items)
+- [ ] Build mode in View and in Plan: beds (existing drawing), paths (polyline with width), ground painting, fences and walls, structures (greenhouse, tunnel, shed, tank, compost), trees and shrubs (canopy, height), decor.
+- [ ] Snap to grid and to edges, rotate, duplicate, undo/redo (command stack shared by Plan and View), templates.
+- [ ] Plan tab draws features flat; View draws them in the oblique view; one data source.
+- [ ] Tick the matching 8.3 boxes; update WIKI and screenshots.
+
+**G5 Life and atmosphere**
+- [ ] Wind sway from real wind speed and direction; passing cloud shadows; rain splashes and puddles; frost rime; heat shimmer on hot afternoons.
+- [ ] Seasons: ground and light palette by date and hemisphere.
+- [ ] Ambient life: bees on flowering plants on warm days, birds on paths; marked decorative in the code and the wiki.
+- [ ] Optional sound (off by default), respects reduced motion and mute.
+
+**G6 Truth loop**
+- [ ] "Look closer": confirm or correct the stage, optional photo (`<data>/photos/`, size limit, EXIF stripped, backed up with the database).
+- [ ] Household calibration of GDD targets from confirmed stages (SPEC §6.3), with tests showing the next estimate moves.
+- [ ] Rewind: view any past date from the journal; peek ahead: ghosted expected plants, labelled estimate.
+- [ ] Season timelapse from the journal (20 s); export as image sequence or WebM if the browser supports it.
+
+**G7 Practice plot**
+- [ ] `practice_plot` table and CRUD; analog-year picker (typical, cold spring, hot summer, named year) from the climatology.
+- [ ] `POST /api/v1/practice/simulate`: layout + plantings + year → daily states (same growth engine); test that a known year reproduces its frost dates.
+- [ ] Player: speed (1–5 s per day), pause, step, scrub; permanent "Practice plot, not your garden" frame.
+- [ ] "Use this plan": diff against the real garden, confirm, create planned beds and plantings.
+
+**G8 Almanac and milestones**
+- [ ] Season book: crops grown, first-harvest dates, kg per crop, frosts, rainfall, best and worst plantings; year-on-year view.
+- [ ] Milestones from real data only; optional decor unlocks (GAME_DESIGN §14 Q4).
+
+**G9 Polish and reach**
+- [ ] Axe check and keyboard pass on View; screen-reader bed summaries.
+- [ ] Performance pass on an older phone and a Raspberry Pi class server; record numbers in the WIKI.
+- [ ] Household presence (who did what, in their colour).
+- [ ] README section and screenshots; user guide page in the WIKI.
+
 ## Later — Homestead suite extras
 - [ ] Orchard depth (rootstocks, grafting records, thinning calculators)
 - [ ] Multi-site UI (data model already supports it)

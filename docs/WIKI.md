@@ -29,6 +29,9 @@ A self-hosted garden and homestead planner that tells a household what to do tod
 | Private pack | Extra catalog data on the owner's server only (`<data>/catalog-private/`), never committed |
 | Evidence level | How strong a catalog value is: peer-reviewed, government, extension service, model, grower-reported, traditional |
 
+## Planned: Garden view (game)
+Not built yet. A real-time, calm game view of the real garden that doubles as the tracker: plants grow with the real weather, and digging, sowing, watering and harvesting in the game are real records. Design: [`GAME_DESIGN.md`](GAME_DESIGN.md); steps: PLAN Phase 15. Terms it adds: **journal entry** (a dated record of work on a bed or planting: dig, amend, water, mulch, finding, stage, photo), **garden feature** (a path, ground type, structure, tree or decor on the plan), **growth estimate** (a planting's stage and size worked out from degree-days, always labelled as an estimate), **practice plot** (a sandbox that replays a real past year of the site).
+
 ## Screens and navigation
 - **Phone** (< 1024 px): bottom bar with Today, Garden, More. More holds Crops, Climate, Household, Settings, Log out and the version.
 - **Desktop** (≥ 1024 px): left rail with Today, Garden, Crops, Climate, Household, Settings, Log out and the version.

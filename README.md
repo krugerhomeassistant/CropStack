@@ -73,6 +73,7 @@ The full product is specified in [docs/SPEC.md](docs/SPEC.md) and broken into st
 | Animals | Poultry, goats, sheep, cattle, pigs, rabbits and bees: daily care, feed and water, records, breeding, heat and cold alerts |
 | Harvest and pantry | Harvest log, preserving, pantry stock, seed vault |
 | Climate explorer | Charts of temperatures, rain, soil, evaporation and daylight through the year |
+| **Garden view** | A calm, real-time game of your real garden: lay it out, dig the beds, sow, and watch the plants grow with your real weather; watering or harvesting in the game logs it. Plus a practice plot that replays past years. [Design](docs/GAME_DESIGN.md) |
 | Integrations | Home Assistant (sensors in, irrigation out, tasks on your dashboard) and an optional local or cloud Garden assistant |
 
 ## 🚀 Install

@@ -19,7 +19,7 @@ Keywords **MUST / SHOULD / MAY** follow RFC 2119.
 8. Animals: catalog, breeds, groups, lifecycle, care, environment, production
 9. Planning: needs-based plan generator, calendar & task engine
 10. Records: harvests, pantry & preservation, seed vault, inputs, health
-11. App experience: Today, scouting guide, climate explorer, navigation
+11. App experience: Today, scouting guide, climate explorer, navigation, Garden view (game)
 12. Integrations: Home Assistant, iCalendar, notifications, Garden assistant
 13. Data model
 14. API
@@ -334,6 +334,9 @@ Charts, not tables: day-of-year bands (q10–q90 and median) for day and night t
 - **Site climate explorer**: DOY charts (bands q10–q90) for temperature, soil temperature, rain, ET0, daylight; probability-of-threshold curves where the user picks the threshold (e.g. "chance of tmin ≤ 2 °C by date"); trend; recent anomaly overlay; sensor overlay.
 - **Crop explorer**: "Can I grow X here?" with windows, success probability and blockers; what a structure would unlock.
 - **Dashboards**: yields, production, feed, water use, task completion; season comparison.
+
+### 11.6 Garden view (game)
+A slow, real-time view of the real garden in which plants grow with the real days and weather, and every action (dig, sow, water, check, harvest) is a real record that completes the matching job. It reads the same beds, plantings, jobs and engines as the app and keeps no truth of its own; a separate practice plot replays real past years of the site at high speed. Full design: [`GAME_DESIGN.md`](GAME_DESIGN.md); steps: PLAN Phase 15.
 
 ## 12. Integrations
 
