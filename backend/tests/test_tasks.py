@@ -1,7 +1,7 @@
 from datetime import UTC, date, datetime, timedelta
 
 from app.models import Planting
-from app.tasks import crop_schedule
+from app.tasks import crop_schedule, scout_checks
 from tests.test_household import owner  # noqa: F401  (fixture)
 
 
@@ -61,7 +61,7 @@ def test_today_lists_jobs_and_completing_moves_the_planting(owner):  # noqa: F81
     assert owner.get("/api/v1/plantings").json()[0]["status"] == "sown"
     assert owner.get("/api/v1/today").json()["groups"] == []
     soon = owner.get("/api/v1/today").json()["upcoming"]
-    assert soon == []  # the harvest is more than two weeks out
+    assert [j["kind"] for j in soon] == ["check"]  # the harvest is more than two weeks out; the first look is a week on
 
     # failing the planting removes its remaining jobs; deleting it removes them for good
     pid = made.json()["id"]
@@ -173,3 +173,26 @@ def test_jobs_come_with_plain_steps_from_the_catalog(owner):  # noqa: F811
     owner.post("/api/v1/plantings", json={"crop": "testcrop", "method": "direct", "start_date": str(today)})
     job = owner.get("/api/v1/today").json()["groups"][0]["tasks"][0]
     assert job["kind"] == "sow" and len(job["steps"]) >= 3
+
+
+def test_check_job_is_weekly_for_plants_in_the_ground_and_restarts_after_a_check():
+    sown = planting(status="sown")
+    [job] = scout_checks(sown, "tomato", None)
+    assert (job.kind, job.group, job.ideal) == ("check", "Check", date(2026, 10, 8))
+    assert job.key == "planting:1:check:start"
+    [next_job] = scout_checks(sown, "tomato", date(2026, 10, 9))
+    assert next_job.ideal == date(2026, 10, 16) and next_job.key != job.key
+    assert scout_checks(planting(status="planned"), "tomato", None) == []
+    assert scout_checks(planting(status="finished"), "tomato", None) == []
+
+
+def test_check_job_reaches_today_with_what_to_look_for(owner):  # noqa: F811
+    today = datetime.now(UTC).date()
+    row = owner.post(
+        "/api/v1/plantings", json={"crop": "testcrop", "method": "direct", "start_date": str(today - timedelta(days=9))}
+    ).json()
+    owner.patch(f"/api/v1/plantings/{row['id']}", json={"status": "sown"})
+    groups = {g["group"]: g["tasks"] for g in owner.get("/api/v1/today").json()["groups"]}
+    [job] = [t for t in groups["Check"] if t["kind"] == "check"]
+    assert job["title"].startswith("Check ") and job["steps"]
+    assert isinstance(job["watch"], list)

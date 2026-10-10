@@ -157,7 +157,7 @@ Goal: probabilistic, self-updating environment; remove v1 heuristics (§18).
 - [ ] Nutrient demand per stage → feed tasks with dose per plant/m² from N-P-K; fallback suggestion when no input; cautions.
 
 **6.7 Scouting** §11.3
-- [ ] Organism risk evaluation per planting × stage × weather; weekly "what to look for" tasks with photos and keep/remove verdicts; sightings API; local timing calibration.
+- [ ] (v0.24.0: weekly Check job per planting listing every catalogued organism; crop-specific lists, risk models, photos and sightings open) Organism risk evaluation per planting × stage × weather; weekly "what to look for" tasks with photos and keep/remove verdicts; sightings API; local timing calibration.
 - [ ] "Weed or seedling?" comparison for recent sowings.
 
 **Acceptance**: for a synthetic Mediterranean and a synthetic frosty climate, the same tomato and lettuce varieties get different, sensible windows without configuration (AC-P2/P3); all tasks have reason traces (AC-P4).

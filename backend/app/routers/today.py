@@ -13,7 +13,7 @@ from ..db import get_engine
 from ..deps import EditorDep, MemberDep, SessionDep
 from ..engine import phenology, water, windows
 from ..models import ClimateArchive, Forecast, Planting, Site, Task, now
-from ..tasks import TaskSpec, crop_schedule, sync, water_alerts, weather_alerts
+from ..tasks import TaskSpec, crop_schedule, scout_checks, sync, water_alerts, weather_alerts
 from .catalog import CatalogDep, _overrides, load_catalog
 from .garden import _climatology
 from .weather import local_today
@@ -58,12 +58,16 @@ def refresh_protect(db: Session, household_id: int, c: cat.Catalog) -> None:
     all_rows = weather.daily_rows(stored.raw) if stored else []
     ahead = weather.split(all_rows, today)[1]
     awc = water.SOIL_AWC_MM_PER_M[site.soil if site else ""]
-    watered: dict[int, date] = {}  # planting -> the last day a person said they watered it
+    last_done: dict[tuple[str, int], date] = {}  # (job kind, planting) -> the last day a person said they did it
     for t in db.exec(
-        select(Task).where(Task.household_id == household_id, Task.kind == "water", Task.status == "done")
+        select(Task).where(
+            Task.household_id == household_id, Task.kind.in_(("water", "check")), Task.completed_by.is_not(None)
+        )  # type: ignore[attr-defined]
     ):
-        if t.planting_id and t.completed_at:
-            watered[t.planting_id] = max(watered.get(t.planting_id, date.min), t.completed_at.date())
+        # a skipped look still starts the next week's check; a skipped watering does not count as watered
+        if t.planting_id and t.completed_at and (t.status == "done" or t.kind == "check"):
+            k = (t.kind, t.planting_id)
+            last_done[k] = max(last_done.get(k, date.min), t.completed_at.date())
 
     def specs(p: Planting) -> list[TaskSpec]:
         item = cat.effective(c, "crop", p.crop, _overrides(db, household_id, "crop", p.crop))
@@ -73,11 +77,17 @@ def refresh_protect(db: Session, household_id: int, c: cat.Catalog) -> None:
         name = (item.get("names", {}).get("en") or [p.crop])[0].lower()
         out = weather_alerts(p, name, profile.lethal_min, profile.stress_max, ahead)
         thirst = water.profile_from_item(item, profile.cycle_days if profile.usable else None)
-        return out + (
-            water_alerts(p, name, thirst, watered.get(p.id), all_rows, today, awc) if thirst and all_rows else []
+        return (
+            out
+            + (
+                water_alerts(p, name, thirst, last_done.get(("water", p.id)), all_rows, today, awc)
+                if thirst and all_rows
+                else []
+            )
+            + scout_checks(p, name, last_done.get(("check", p.id)))
         )
 
-    sync(db, household_id, specs, {"frost", "heat", "water"})
+    sync(db, household_id, specs, {"frost", "heat", "water", "check"})
     db.commit()
 
 
@@ -95,8 +105,30 @@ def _how(c: cat.Catalog) -> dict[str, list[str]]:
     return {data["task_kind"]: data["steps"] for _, data in c.list("task_template")}
 
 
-def _view(t: Task, today: date, how: dict[str, list[str]]) -> dict:
+VERDICTS = {"keep": "Keep", "remove": "Remove", "tolerate_below_threshold": "Leave unless numbers build"}
+
+
+def _watch(c: cat.Catalog) -> list[dict]:
+    """What to look for on a Check job: each organism with how to recognise it and whether to keep or remove it."""
+    out = []
+    for slug, data in c.list("organism"):
+        p = data.get("params", {})
+        out.append(
+            {
+                "slug": slug,
+                "name": data["names"]["en"][0],
+                "type": data["organism_type"],
+                "identify": p.get("identify", {}).get("value", ""),
+                "verdict": VERDICTS.get(p.get("verdict", {}).get("value", ""), ""),
+                "action": p.get("first_action", {}).get("value", ""),
+            }
+        )
+    return out
+
+
+def _view(t: Task, today: date, how: dict[str, list[str]], watch: list[dict] | None = None) -> dict:
     return {
+        "watch": watch if t.kind == "check" else [],
         "steps": how.get(t.kind, []),
         "id": t.id,
         "kind": t.kind,
@@ -126,15 +158,15 @@ def get_today(me: MemberDep, db: SessionDep, c: CatalogDep) -> dict:
     ).all()
     due = [t for t in open_tasks if t.earliest <= today]
     soon = [t for t in open_tasks if today < t.earliest <= today + timedelta(days=UPCOMING_DAYS)]
-    how = _how(c)
+    how, watch = _how(c), _watch(c)
     return {
         "date": today,
         "groups": [
-            {"group": g, "tasks": [_view(t, today, how) for t in due if t.group == g]}
+            {"group": g, "tasks": [_view(t, today, how, watch) for t in due if t.group == g]}
             for g in GROUPS
             if any(t.group == g for t in due)
         ],
-        "upcoming": [_view(t, today, how) for t in soon],
+        "upcoming": [_view(t, today, how, watch) for t in soon],
     }
 
 
@@ -164,4 +196,4 @@ def update_task(task_id: int, body: TaskPatch, me: EditorDep, db: SessionDep, c:
         db.add(planting)
     db.commit()
     refresh_tasks(db, me.household_id, c)
-    return _view(task, _today(db, me.household_id), _how(c)) | {"status": task.status}
+    return _view(task, _today(db, me.household_id), _how(c), _watch(c)) | {"status": task.status}

@@ -98,7 +98,7 @@ export type Planting = {
 export type PlantingIn = Pick<Planting, 'crop' | 'method' | 'start_date' | 'set_out_date' | 'quantity' | 'location' | 'notes'>
 export type Job = {
   id: number
-  kind: 'sow' | 'set_out' | 'harvest' | 'frost' | 'heat' | 'water'
+  kind: 'sow' | 'set_out' | 'harvest' | 'frost' | 'heat' | 'water' | 'check'
   group: string
   title: string
   reason: string
@@ -108,7 +108,9 @@ export type Job = {
   overdue: boolean
   planting_id: number | null
   steps: string[]
+  watch: Watch[]
 }
+export type Watch = { slug: string; name: string; type: string; identify: string; verdict: string; action: string }
 export type TodayData = { date: string; groups: { group: string; tasks: Job[] }[]; upcoming: Job[] }
 export type HarvestUnit = 'kg' | 'g' | 'count' | 'bunch'
 export type Harvest = { id: number; planting_id: number; harvested_on: string; quantity: number; unit: HarvestUnit; notes: string }

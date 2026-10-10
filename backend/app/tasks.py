@@ -201,6 +201,31 @@ def water_alerts(
     ]
 
 
+CHECK_EVERY = 7  # days between looks at a growing planting
+
+
+def scout_checks(p: Planting, name: str, last_checked: date | None) -> list[TaskSpec]:
+    """A weekly Check job for a planting that is in the ground: look for pests and disease, and for helpers to keep.
+    The key includes the date of the last check, so each check starts the next week's job."""
+    if p.status not in EXPOSED:
+        return []
+    due = (last_checked or p.start_date) + timedelta(days=CHECK_EVERY)
+    where = f" in {p.location}" if p.location else ""
+    return [
+        TaskSpec(
+            f"planting:{p.id}:check:{last_checked or 'start'}",
+            "check",
+            "Check",
+            f"Check {name}{where}",
+            "A weekly look catches pests and disease while they are easy to deal with."
+            + (f" You last checked on {_day(last_checked)}." if last_checked else ""),
+            due,
+            due,
+            due + timedelta(days=3),
+        )
+    ]
+
+
 def sync(db: Session, household_id: int, make_specs: Callable[[Planting], list[TaskSpec]], kinds: set[str]) -> None:
     """Make the household's tasks of these kinds match what the generator now says. Caller commits."""
     existing = {

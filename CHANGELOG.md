@@ -5,6 +5,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.24.0] - 2026-10-10
+
+### Added
+- **Weekly Check job** for every planting that is in the ground. Open "How to do it" to see what to look for: each pest, disease and helper in the catalog with how to recognise it, whether to keep or remove it, and the gentlest first action. Marking it checked (or skipping it) schedules the next look a week later.
+
 ## [0.23.0] - 2026-10-10
 
 ### Added

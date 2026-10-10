@@ -39,6 +39,7 @@ Target architecture (engines, data model, API) is specified in `docs/SPEC.md` §
 | `scheduler.py` | background job registry + runner (thread per run), status for `/api/health` |
 | `engine/water.py` | **pure** soil-water balance: `WaterProfile` from a catalog item, `depletion_path`, `first_dry_day` |
 | `tasks.py` | task engine core: pure generators `crop_schedule` (sow, set out, first harvest), `weather_alerts` (frost, heat from the forecast) and `water_alerts`, and `sync` (per set of task kinds), which updates stored tasks by `generator_key`, logs changes, leaves done/skipped/locked tasks alone |
+| `tasks.scout_checks` | weekly Check job per planting in the ground; key carries the last check date; `today._watch` attaches the organism list |
 | `routers/plantings.py` | plantings CRUD with forward-only status rules; regenerates tasks on every change; harvest log (`GET /plantings/harvests`, `POST /plantings/{id}/harvests`, `DELETE /plantings/harvests/{id}`) |
 | `routers/today.py` | `GET /api/v1/today` (due jobs grouped Protect…Maintain, next 14 days), `PATCH /api/v1/tasks/{id}` (done/skipped; done moves the planting along), 12-hourly `tasks` job |
 | `routers/weather.py` | forecast refresh (3 h), `forecast` job, `GET /api/v1/sites/current/weather` |

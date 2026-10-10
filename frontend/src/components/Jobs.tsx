@@ -15,7 +15,7 @@ const GROUP: Record<string, string> = {
   Check: N_('Check'),
   Maintain: N_('Maintain'),
 }
-const DONE: Record<Job['kind'], string> = { sow: N_('Mark sown'), set_out: N_('Mark set out'), harvest: N_('Mark harvest started'), frost: N_('Covered'), heat: N_('Done'), water: N_('Watered') }
+const DONE: Record<Job['kind'], string> = { sow: N_('Mark sown'), set_out: N_('Mark set out'), harvest: N_('Mark harvest started'), frost: N_('Covered'), heat: N_('Done'), water: N_('Watered'), check: N_('Checked') }
 
 const day = (iso: string) => new Date(`${iso}T00:00:00`).toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' })
 
@@ -35,6 +35,18 @@ function JobCard({ job, canEdit, onFinish }: { job: Job; canEdit: boolean; onFin
               <li key={step}>{step}</li>
             ))}
           </ol>
+          {job.watch.length > 0 && (
+            <ul className="mt-2 space-y-2 text-sm">
+              {job.watch.map((w) => (
+                <li key={w.slug}>
+                  <span className="font-semibold">{w.name}</span>
+                  {w.verdict && <span className="text-leaf"> · {t(w.verdict)}</span>}
+                  <p className="text-muted">{w.identify}</p>
+                  <p>{w.action}</p>
+                </li>
+              ))}
+            </ul>
+          )}
         </details>
       )}
       {canEdit && (

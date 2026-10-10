@@ -207,7 +207,9 @@ class TaskTemplate(Item):
 
     kind: Literal["task_template"]
     applies_to: list[Kind]
-    task_kind: Literal["sow", "set_out", "harvest", "water", "frost", "heat"]  # the engine's job kind it explains
+    task_kind: Literal[
+        "sow", "set_out", "harvest", "water", "frost", "heat", "check"
+    ]  # the engine's job kind it explains
     steps: list[str] = Field(min_length=1)
 
 

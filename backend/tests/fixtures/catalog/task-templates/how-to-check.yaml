@@ -1,0 +1,13 @@
+kind: task_template
+slug: how-to-check
+names:
+  en:
+  - Check
+description: A weekly look at the plants.
+applies_to: [crop]
+task_kind: check
+steps:
+- Walk the bed slowly and turn a few leaves over. Most pests and spores sit on the undersides.
+- Look at new growth, the base of the stems and the soil surface. Note anything chewed, curled, spotted, sticky or powdery.
+- Compare what you find with the list below. Keep the helpers, remove the pests, and leave small numbers alone.
+- Tap Done when you have looked, even if you found nothing. The next check is a week later.
