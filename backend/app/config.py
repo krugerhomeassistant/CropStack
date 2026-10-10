@@ -19,6 +19,12 @@ class Settings(BaseSettings):
     # "auto" = open only until the first account exists; "true" = always open; "false" = closed
     allow_registration: str = "auto"
     session_max_age_days: int = 30
+    # Garden assistant defaults (Settings in the app win); lets a compose file preconfigure it. See ai.py.
+    ai_provider: str = ""
+    ai_base_url: str = ""
+    ai_model: str = ""
+    ai_api_key: str = ""
+    ai_timeout: float = 120.0
     scheduler: bool = True  # background jobs (forecast refresh); tests turn it off
 
     @property

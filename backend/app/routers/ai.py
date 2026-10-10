@@ -23,9 +23,9 @@ SYSTEM = (
 
 
 class AiIn(BaseModel):
-    provider: Literal["ollama", "openai", "anthropic"]
-    base_url: str = Field(default="", max_length=200, pattern=r"^(https?://\S+)?$")
-    model: str = Field(min_length=1, max_length=100)
+    provider: Literal["anthropic", "openai", "openrouter", "ollama", "custom"]
+    base_url: str = Field(default="", max_length=200, pattern=r"^(https?://\S+)?$")  # blank = the provider's own
+    model: str = Field(default="", max_length=100)  # blank = the provider's default
     api_key: str | None = Field(default=None, max_length=300)  # None keeps the saved key, "" removes it
 
 
@@ -44,22 +44,28 @@ def _household(db, member) -> Household:
     return household
 
 
+def _effective(household: Household, override: dict | None = None) -> dict:
+    return ai.config(household.ai, override or {})
+
+
 def _public(household: Household) -> dict:
-    cfg = household.ai
+    cfg = _effective(household)
     return {
-        "configured": bool(cfg.get("provider")),
-        "provider": cfg.get("provider", ""),
-        "base_url": cfg.get("base_url", ""),
-        "model": cfg.get("model", ""),
-        "has_key": bool(cfg.get("api_key")),
-        "default_urls": ai.DEFAULT_URL,
+        "configured": ai.enabled(cfg),
+        "provider": cfg["provider"],
+        "base_url": household.ai.get("base_url", ""),
+        "model": household.ai.get("model", ""),
+        "has_key": bool(cfg["api_key"]),
+        "key_hint": cfg["api_key"][-4:] if len(cfg["api_key"]) > 8 else "",
+        "providers": {p: {"base_url": u, "model": m} for p, (u, m) in ai.PROVIDERS.items()},
     }
 
 
 def _configured(household: Household) -> dict:
-    if not household.ai.get("provider"):
+    cfg = _effective(household)
+    if not ai.enabled(cfg):
         raise HTTPException(409, "The garden assistant is not set up yet. An owner can do it in Settings.")
-    return household.ai
+    return cfg
 
 
 def context(db, household_id: int) -> str:
@@ -88,7 +94,10 @@ def get_ai(me: MemberDep, db: SessionDep) -> dict:
 @router.put("")
 def save_ai(body: AiIn, me: OwnerDep, db: SessionDep) -> dict:
     household = _household(db, me)
-    key = household.ai.get("api_key", "") if body.api_key is None else body.api_key
+    saved = household.ai
+    key = body.api_key
+    if key is None:  # keep the saved key, but never carry it over to a different provider
+        key = saved.get("api_key", "") if saved.get("provider") == body.provider else ""
     # shortcut: the key is stored as plain text in the SQLite file, next to secret.key; encrypt it at rest if the
     # data folder ever leaves the owner's machine (backups to a cloud, shared hosts).
     household.ai = body.model_dump(exclude={"api_key"}) | {"api_key": key}
@@ -107,13 +116,19 @@ def clear_ai(me: OwnerDep, db: SessionDep) -> dict:
 
 
 @router.post("/test")
-def test_ai(me: OwnerDep, db: SessionDep) -> dict:
-    cfg = _configured(_household(db, me))
+def test_ai(body: AiIn, me: OwnerDep, db: SessionDep) -> dict:
+    """Tries the settings in the form without saving them; a failure is an answer, not an error."""
+    household = _household(db, me)
+    override = body.model_dump()
+    if body.api_key is None and household.ai.get("provider") == body.provider:
+        override["api_key"] = household.ai.get("api_key", "")
     try:
-        reply = ai.ask(cfg, "Reply with the single word OK.", [{"role": "user", "content": "ping"}], timeout=60)
+        reply = ai.ask(
+            _effective(household, override), "Reply with the single word OK.", [{"role": "user", "content": "ping"}]
+        )
     except external.ExternalError as e:
-        raise HTTPException(502, str(e)) from e
-    return {"reply": reply[:200]}
+        return {"ok": False, "error": str(e)}
+    return {"ok": True, "reply": reply[:200]}
 
 
 @router.post("/ask")

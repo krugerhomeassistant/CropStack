@@ -8,7 +8,7 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 from sqlmodel import Session, func, select
 
-from ..ai import DEFAULT_URL as DEFAULT_AI_URL
+from .. import ai
 from ..deps import MemberDep, OwnerDep, SessionDep
 from ..models import Household, Invite, Membership, User, now
 from .auth import token_hash, valid_invite
@@ -138,17 +138,22 @@ def data_sources(me: MemberDep, db: SessionDep) -> list[dict]:
     assert household
     switches = household_settings(household).model_dump()
     sources = [s | {"enabled": switches.get(s["switch"], True) if s["switch"] else True} for s in DATA_SOURCES]
-    if provider := household.ai.get("provider"):
-        local = provider == "ollama"
+    cfg = ai.config(household.ai)
+    if ai.enabled(cfg):
+        names = {
+            "anthropic": "Anthropic API",
+            "openai": "OpenAI API",
+            "openrouter": "OpenRouter",
+            "ollama": "Ollama (your own server)",
+        }
         sources.append(
             {
                 "id": "ai",
-                "name": {"ollama": "Ollama (your own server)", "openai": "OpenAI-compatible API"}.get(
-                    provider, "Anthropic API"
-                ),
-                "url": household.ai.get("base_url") or DEFAULT_AI_URL[provider],
+                "name": names.get(cfg["provider"], "OpenAI-compatible API"),
+                "url": cfg["base_url"],
                 "sends": "Your question, plus the garden's place, soil, plantings and open jobs",
-                "when": "Only when someone asks the assistant" + ("" if local else " (leaves your server)"),
+                "when": "Only when someone asks the garden assistant"
+                + ("" if cfg["provider"] == "ollama" else " (leaves your server)"),
                 "used_for": "Answers in Ask",
                 "licence": "Provider terms",
                 "switch": None,

@@ -210,14 +210,15 @@ export type DataSource = {
   enabled: boolean
 }
 
-export type AiProvider = 'ollama' | 'openai' | 'anthropic'
+export type AiProvider = 'anthropic' | 'openai' | 'openrouter' | 'ollama' | 'custom'
 export type AiConfig = {
   configured: boolean
   provider: AiProvider | ''
   base_url: string
   model: string
   has_key: boolean
-  default_urls: Record<AiProvider, string>
+  key_hint: string
+  providers: Record<AiProvider, { base_url: string; model: string }>
 }
 export type AiIn = { provider: AiProvider; base_url: string; model: string; api_key?: string | null }
 export type Turn = { role: 'user' | 'assistant'; content: string }
@@ -334,7 +335,7 @@ export const api = {
   ai: () => request<AiConfig>('GET', '/ai'),
   saveAi: (body: AiIn) => request<AiConfig>('PUT', '/ai', body),
   clearAi: () => request<AiConfig>('DELETE', '/ai'),
-  testAi: () => request<{ reply: string }>('POST', '/ai/test'),
+  testAi: (body: AiIn) => request<{ ok: boolean; reply?: string; error?: string }>('POST', '/ai/test', body),
   askAi: (messages: Turn[]) => request<{ reply: string }>('POST', '/ai/ask', { messages }),
   dataSources: () => request<DataSource[]>('GET', '/household/data-sources'),
   crops: () => request<CropSummary[]>('GET', '/catalog/crop'),

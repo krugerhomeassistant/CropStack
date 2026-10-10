@@ -41,7 +41,7 @@ Target architecture (engines, data model, API) is specified in `docs/SPEC.md` §
 | `tasks.py` | task engine core: pure generators `crop_schedule` (sow, set out, first harvest), `weather_alerts` (frost, heat from the forecast) and `water_alerts`, and `sync` (per set of task kinds), which updates stored tasks by `generator_key`, logs changes, leaves done/skipped/locked tasks alone |
 | `tasks.scout_checks` | weekly Check job per planting in the ground; key carries the last check date; `today._watch` attaches the organism list |
 | `engine/layout.py` | **pure** plant footprint (spread × row spacing, m²), bed fullness, cell grid, plants per cell, date-aware occupancy, free cells, clashes |
-| `ai.py` | **pure** `build_request`/`parse_reply` per provider (ollama, openai, anthropic) and `ask` (httpx) |
+| `ai.py` | provider defaults, `config` (env < saved < override), **pure** `build_request`/`parse_reply` (anthropic; openai, openrouter, ollama, custom share the OpenAI schema) and `ask` (httpx) |
 | `routers/ai.py` | `GET/PUT/DELETE /api/v1/ai` (owner writes; key never returned), `POST /ai/test`, `POST /ai/ask` (grounded in site, plantings, open jobs) |
 | `routers/beds.py` | beds CRUD; `GET /beds` adds the grid (cols, rows), placements (cells, from, until), clashes and crowding |
 | `engine/recommend.py` | **pure** what-to-plant timing: `timing`, `options` (direct, transplant), `best_option` from a sowing analysis |
@@ -83,6 +83,7 @@ Target architecture (engines, data model, API) is specified in `docs/SPEC.md` §
 | `CROPSTACK_SECURE_COOKIES` | `false` | HTTPS-only cookies |
 | `CROPSTACK_CATALOG_DIR` | repo `catalog/` (`/app/catalog` in image) | bundled catalog; private pack is `<data>/catalog-private/` |
 | `CROPSTACK_SCHEDULER` | `true` | background jobs (forecast refresh) |
+| `CROPSTACK_AI_PROVIDER` / `_BASE_URL` / `_MODEL` / `_API_KEY` / `_TIMEOUT` | empty / 120 | Garden assistant defaults; Settings win |
 | `CROPSTACK_PORT` | `8430` | compose host port only |
 
 ## DB schema (SQLite, Alembic migrations; head 0013)

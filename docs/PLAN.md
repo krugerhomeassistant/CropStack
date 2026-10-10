@@ -246,7 +246,7 @@ Goal: probabilistic, self-updating environment; remove v1 heuristics (§18).
 - [ ] Irrigation request events per bed/zone (litres/minutes) for HA automations.
 
 ## Phase 13 — Garden assistant §12.4
-- [x] (v0.28.0: Bloomery repo not reachable from the sandbox, so written fresh; Ollama, OpenAI-compatible, Anthropic; key in plain text in SQLite) Provider abstraction, settings UI, key never returned.
+- [x] (v0.28.0: Bloomery repo not reachable from the sandbox, so written fresh; Anthropic, OpenAI, OpenRouter, Ollama, custom; v0.29.0 ported the rest of the Bloomery pattern except streaming; key in plain text in SQLite) Provider abstraction, settings UI, key never returned.
 - [~] (v0.28.0: plain-text context of site, plantings, open jobs; no tools, no streaming, no stored history) Grounded context builder + read-only tools (catalog, environment probabilities, plantings, tasks).
 - [ ] Chat; photo diagnosis → organism candidates with confidence, verdict, actions, follow-up task; preservation recipes from pantry; draft custom profiles for review.
 

@@ -5,6 +5,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.29.0] - 2026-10-10
+
+### Added
+- Garden assistant settings now follow the Bloomery pattern: Claude, OpenAI, OpenRouter, Ollama or any OpenAI-compatible service, each with default address and model (leave blank), model suggestions, a link to get a key, and a **Test** that tries the form's values before you save. Switching service drops the old key; a saved key shows only its last four characters.
+- A compose file can preconfigure the assistant with `CROPSTACK_AI_PROVIDER`, `_BASE_URL`, `_MODEL`, `_API_KEY` and `_TIMEOUT`; Settings override them.
+
+### Fixed
+- OpenAI GPT-5 models are called with the token limit they accept; a reasoning model's visible thinking is removed from replies; service errors show the provider's own message.
+
 ## [0.28.1] - 2026-10-10
 
 ### Changed
