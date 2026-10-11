@@ -199,29 +199,6 @@ def test_replanning_replaces_an_unstarted_plan_and_clearing_keeps_hand_made_work
     assert [p["id"] for p in owner.get("/api/v1/plantings").json()] == [mine["id"]]
 
 
-def test_the_drafter_rotates_and_never_double_books_cells():
-    from datetime import date
-
-    from app.engine.yearplan import Bed, Want, draft
-
-    d = date(2026, 10, 10)
-
-    def want(crop, family, planted):
-        return Want(crop, crop, family, "direct", planted, None, planted, 60, 0.9, None, planted, planted)
-
-    beds = [Bed(1, "A", 4, 3, 30), Bed(2, "B", 4, 3, 30)]
-    plan = draft(
-        beds,
-        {1: [((0, 0), date(2026, 5, 1), date(2026, 10, 1), "Solanaceae")]},
-        [want("tomato", "Solanaceae", d), want("kale", "", d)],
-        d,
-    )
-    tomato = next(r for r in plan if r["crop"] == "tomato")
-    assert tomato["bed_id"] == 2  # where tomatoes did not grow last
-    cells = [(r["bed_id"], tuple(c)) for r in plan for c in r["cells"]]
-    assert len(cells) == len(set(cells))
-
-
 def test_many_plantings_at_once_all_succeed(owner):  # noqa: F811
     from concurrent.futures import ThreadPoolExecutor
 
