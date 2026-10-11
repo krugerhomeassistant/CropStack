@@ -161,5 +161,5 @@ def test_only_owners_change_household_settings(client, monkeypatch):
     member = TestClient(app)
     monkeypatch.setattr(auth, "registration_open", lambda db: False)
     member.post("/api/v1/auth/register", json={"username": "boss-member", "password": "member pass", "invite": token})
-    assert member.get("/api/v1/household/settings").json() == {"forecast": True, "place_search": True}
+    assert member.get("/api/v1/household/settings").json() == {"forecast": True, "place_search": True, "people": 2}
     assert member.put("/api/v1/household/settings", json={"forecast": False}).status_code == 403

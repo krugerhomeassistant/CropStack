@@ -114,3 +114,18 @@ def test_members_of_other_households_are_invisible(owner, monkeypatch):
     other_id = other.get("/api/v1/auth/me").json()["id"]
     assert owner.put(f"/api/v1/household/members/{other_id}", json={"role": "viewer"}).status_code == 404
     assert owner.delete(f"/api/v1/household/members/{other_id}").status_code == 404
+
+
+def test_people_default_to_two_and_a_switch_does_not_reset_them(owner):
+    assert owner.get("/api/v1/household/settings").json()["people"] == 2
+    assert owner.put("/api/v1/household/settings", json={"people": 5}).json()["people"] == 5
+    after = owner.put(
+        "/api/v1/household/settings", json={"forecast": False}
+    ).json()  # what Settings → Data sources sends
+    assert after == {"forecast": False, "place_search": True, "people": 5}
+    assert owner.get("/api/v1/household/settings").json()["people"] == 5
+
+
+@pytest.mark.parametrize("bad", [0, 21, "many", 2.5, None])
+def test_people_must_be_a_whole_number_from_one_to_twenty(owner, bad):
+    assert owner.put("/api/v1/household/settings", json={"people": bad}).status_code == 422

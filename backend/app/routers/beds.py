@@ -53,7 +53,8 @@ def grid_of(bed: Bed) -> tuple[int, int]:
 
 
 def crop_facts(db: Session, c: cat.Catalog, household_id: int, crop: str, cache: dict) -> dict:
-    """What the layout needs to know about a crop: name, family, plant footprint and longest cycle."""
+    """What the layout and the year plan need to know about a crop: name, family, plant footprint, longest cycle,
+    yield per m² and food group."""
     if crop not in cache:
         item = cat.effective(c, "crop", crop, _overrides(db, household_id, "crop", crop)) or {}
         profile = phenology.profile_from_item(item) if item else None
@@ -62,6 +63,8 @@ def crop_facts(db: Session, c: cat.Catalog, household_id: int, crop: str, cache:
             "family": item.get("family", ""),
             "footprint": layout.footprint_m2(item),
             "cycle_days": profile.cycle_days[1] if profile and profile.usable else None,
+            "yield_per_m2": layout.yield_per_m2(item),
+            "food_group": item.get("food_group"),
         }
     return cache[crop]
 

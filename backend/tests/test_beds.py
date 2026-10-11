@@ -1,6 +1,9 @@
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime
 
+from app import external
 from app.engine.layout import bed_use, footprint_m2
+from tests.test_auth_garden import GARDEN
+from tests.test_climate import synthetic
 from tests.test_household import owner  # noqa: F401  (fixture)
 
 
@@ -235,3 +238,56 @@ def test_yield_reads_a_positive_number_and_nothing_else():
     assert yield_per_m2(item(True)) is None
     assert yield_per_m2(item({"min": 1, "max": 2})) is None
     assert yield_per_m2({}) is None
+
+
+def test_the_plan_knows_how_many_people_it_feeds_and_how_much_that_is(owner):  # noqa: F811
+    assert owner.get("/api/v1/plan/year").json()["people"] == 2
+    owner.put("/api/v1/household/settings", json={"people": 6})
+    assert owner.get("/api/v1/plan/year").json()["people"] == 6
+
+
+def test_what_already_grows_is_counted_as_supply_from_its_last_third():
+    from datetime import date
+
+    from app.routers.plan import existing_supply
+
+    class P:  # the few planting fields the helper reads
+        def __init__(self, crop, bed_id, cells, status="growing"):
+            self.crop, self.bed_id, self.cells, self.status = crop, bed_id, cells, status
+
+    class B:
+        cell_cm = 30
+
+    today = date(2026, 10, 10)
+    facts = {
+        "tomato": {"yield_per_m2": 8.0, "food_group": "fruiting"},
+        "mystery": {"yield_per_m2": None, "food_group": None},
+    }
+    window = lambda p: (date(2026, 9, 10), date(2026, 12, 10))  # noqa: E731  (91 days)
+    got = existing_supply(
+        [P("tomato", 1, [[0, 0], [1, 0]]), P("tomato", 1, [], "growing"), P("mystery", 1, [[0, 0]]), P("tomato", 1, [[0, 0]], "finished")],
+        lambda crop: facts[crop], {1: B()}, window, today,
+    )  # fmt: skip
+    assert len(got) == 1  # no cells, no yield and finished plantings add nothing
+    group, kg, first, last = got[0]
+    assert (group, round(kg, 2), last) == ("fruiting", round(8.0 * 0.09 * 2, 2), date(2026, 12, 10))
+    assert first > date(2026, 11, 8)  # the last 30% of the 91 days
+
+
+def test_the_plan_reports_coverage_and_targets_scale_with_people(owner, monkeypatch):  # noqa: F811
+    monkeypatch.setattr(
+        external, "fetch_climate_archive", lambda lat, lon: synthetic(mean=14, amplitude=7, coldest=date(2001, 7, 15))
+    )
+    owner.put("/api/v1/sites/current", json=GARDEN)
+    owner.post("/api/v1/beds", json={"name": "Big", "width": 2.4, "length": 3.6})
+    two = owner.get("/api/v1/plan/year").json()
+    owner.put("/api/v1/household/settings", json={"people": 4})
+    four = owner.get("/api/v1/plan/year").json()
+    assert two["people"] == 2 and four["people"] == 4
+    for group in ("leafy", "fruiting", "root"):
+        # target_kg is rounded to 0.1 kg, so allow one rounding step
+        assert (
+            abs(four["coverage"]["groups"][group]["target_kg"] - 2 * two["coverage"]["groups"][group]["target_kg"])
+            <= 0.1
+        )
+    assert 0 <= four["coverage"]["overall"] <= 1 and "skipped_no_yield" in four
