@@ -9,6 +9,7 @@ scientific_name: Zea mays
 family: Poaceae
 rotation_group: grasses
 life_cycle: annual
+food_group: fruiting
 description: A wind-pollinated warm-season grass. Planting in a block rather than a single row gives better-filled cobs.
 requirements:
   water:
@@ -92,6 +93,13 @@ requirements:
       sources:
       - {ref: fao-ecocrop, locator: 'ECOCROP code 1204, PHMIN to PHMAX (via Recocrop)', retrieved: 2026-10-09, snapshot: 'sha256:90a21d908419e304e4e4c38c92df62d93b25cb373420fcd0a711247b1f47f358'}
 params:
+  yield_per_m2:
+    value: 1.0
+    unit: kg/m2
+    evidence: traditional
+    confidence: low
+    estimate: true
+    qualifiers: {basis: 'typical home-garden yield per crop cycle; replace with an extension-service figure'}
   height_max:
     value: 1.5
     unit: m

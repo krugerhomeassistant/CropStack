@@ -9,6 +9,7 @@ scientific_name: Brassica napus
 family: Brassicaceae
 rotation_group: brassicas
 life_cycle: biennial
+food_group: root
 description: A large, hardy root related to the turnip, grown for autumn and winter use. Sweetens after a touch of frost,
   and likes cool, moist soil.
 requirements:
@@ -78,6 +79,13 @@ requirements:
       sources:
       - {ref: fao-ecocrop, locator: 'ECOCROP code 443, PHMIN to PHMAX (via Recocrop)', retrieved: 2026-10-09, snapshot: 'sha256:90a21d908419e304e4e4c38c92df62d93b25cb373420fcd0a711247b1f47f358'}
 params:
+  yield_per_m2:
+    value: 4.0
+    unit: kg/m2
+    evidence: traditional
+    confidence: low
+    estimate: true
+    qualifiers: {basis: 'typical home-garden yield per crop cycle; replace with an extension-service figure'}
   height_max:
     value: 0.6
     unit: m

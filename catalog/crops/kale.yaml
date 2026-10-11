@@ -9,8 +9,16 @@ scientific_name: Brassica oleracea
 family: Brassicaceae
 rotation_group: brassicas
 life_cycle: biennial
+food_group: brassica
 description: A leafy brassica picked leaf by leaf over a long season. Light frost improves its flavour.
 params:
+  yield_per_m2:
+    value: 3.0
+    unit: kg/m2
+    evidence: traditional
+    confidence: low
+    estimate: true
+    qualifiers: {basis: 'typical home-garden yield per crop cycle; replace with an extension-service figure'}
   row_spacing:
     value: 45
     unit: cm

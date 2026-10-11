@@ -9,6 +9,7 @@ scientific_name: Capsicum frutescens
 family: Solanaceae
 rotation_group: nightshades
 life_cycle: perennial
+food_group: fruiting
 description: A small, hot pepper that bears heavily on a compact bush. Warm-season, and grown as an annual in most climates,
   it ripens from green to red.
 requirements:
@@ -50,6 +51,13 @@ requirements:
       sources:
       - {ref: fao-ecocrop, locator: 'ECOCROP code 480, PHMIN to PHMAX (via Recocrop)', retrieved: 2026-10-09, snapshot: 'sha256:90a21d908419e304e4e4c38c92df62d93b25cb373420fcd0a711247b1f47f358'}
 params:
+  yield_per_m2:
+    value: 1.5
+    unit: kg/m2
+    evidence: traditional
+    confidence: low
+    estimate: true
+    qualifiers: {basis: 'typical home-garden yield per crop cycle; replace with an extension-service figure'}
   days_to_emergence:
   - value: 25.0
     unit: d

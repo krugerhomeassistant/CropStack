@@ -9,6 +9,7 @@ scientific_name: Rheum rhabarbarum
 family: Polygonaceae
 rotation_group: perennial vegetables
 life_cycle: perennial
+food_group: fruiting
 description: A long-lived perennial grown for its thick, tart leaf stalks. Leave it to establish in its first year and never
   eat the leaves, which are poisonous.
 requirements:
@@ -42,6 +43,13 @@ requirements:
       sources:
       - {ref: fao-ecocrop, locator: 'ECOCROP code 479, PHMIN to PHMAX (via Recocrop)', retrieved: 2026-10-09, snapshot: 'sha256:90a21d908419e304e4e4c38c92df62d93b25cb373420fcd0a711247b1f47f358'}
 params:
+  yield_per_m2:
+    value: 3.0
+    unit: kg/m2
+    evidence: traditional
+    confidence: low
+    estimate: true
+    qualifiers: {basis: 'typical home-garden yield per crop cycle; replace with an extension-service figure'}
   annual_rainfall:
     value: {min: 400.0, opt_min: 800.0, opt_max: 1300.0, max: 2000.0}
     unit: mm

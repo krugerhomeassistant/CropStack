@@ -9,6 +9,7 @@ scientific_name: Apium graveolens
 family: Apiaceae
 rotation_group: carrot family
 life_cycle: biennial
+food_group: leafy
 description: A long, slow crop grown for its stalks. It needs steady moisture throughout; dry spells make stalks stringy.
 requirements:
   water:
@@ -84,6 +85,13 @@ requirements:
       sources:
       - {ref: fao-ecocrop, locator: 'ECOCROP code 357, PHMIN to PHMAX (via Recocrop)', retrieved: 2026-10-09, snapshot: 'sha256:90a21d908419e304e4e4c38c92df62d93b25cb373420fcd0a711247b1f47f358'}
 params:
+  yield_per_m2:
+    value: 5.0
+    unit: kg/m2
+    evidence: traditional
+    confidence: low
+    estimate: true
+    qualifiers: {basis: 'typical home-garden yield per crop cycle; replace with an extension-service figure'}
   height_max:
     value: 0.6
     unit: m

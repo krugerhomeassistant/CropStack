@@ -179,6 +179,7 @@ class Crop(Item):
     family: str  # APG IV family, e.g. Solanaceae
     rotation_group: str | None = None
     life_cycle: Literal["annual", "biennial", "perennial"]
+    food_group: Literal["leafy", "fruiting", "root", "brassica", "legume", "squash", "allium", "herb"] | None = None
 
 
 class Variety(Item):

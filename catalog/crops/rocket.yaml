@@ -9,6 +9,7 @@ scientific_name: Eruca vesicaria
 family: Brassicaceae
 rotation_group: brassicas
 life_cycle: annual
+food_group: leafy
 description: A fast, peppery salad leaf that is ready in a few weeks. It bolts quickly in heat, so sow little and often in
   cool weather.
 requirements:
@@ -42,6 +43,13 @@ requirements:
       sources:
       - {ref: fao-ecocrop, locator: 'ECOCROP code 1647, PHMIN to PHMAX (via Recocrop)', retrieved: 2026-10-09, snapshot: 'sha256:90a21d908419e304e4e4c38c92df62d93b25cb373420fcd0a711247b1f47f358'}
 params:
+  yield_per_m2:
+    value: 1.5
+    unit: kg/m2
+    evidence: traditional
+    confidence: low
+    estimate: true
+    qualifiers: {basis: 'typical home-garden yield per crop cycle; replace with an extension-service figure'}
   annual_rainfall:
     value: {min: 300.0, opt_min: 500.0, opt_max: 900.0, max: 1100.0}
     unit: mm

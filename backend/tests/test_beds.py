@@ -224,3 +224,14 @@ def test_pantry_orders_by_what_to_use_first_and_defaults_a_best_before(owner):  
     assert owner.post("/api/v1/pantry", json=jar | {"quantity": 0}).status_code == 422
     assert owner.delete(f"/api/v1/pantry/{made['id']}").status_code == 204
     assert len(owner.get("/api/v1/pantry").json()) == 1
+
+
+def test_yield_reads_a_positive_number_and_nothing_else():
+    from app.engine.layout import yield_per_m2
+
+    item = lambda v: {"params": {"yield_per_m2": {"value": v, "unit": "kg/m2"}}}  # noqa: E731
+    assert yield_per_m2(item(8.0)) == 8.0
+    assert yield_per_m2(item(0)) is None
+    assert yield_per_m2(item(True)) is None
+    assert yield_per_m2(item({"min": 1, "max": 2})) is None
+    assert yield_per_m2({}) is None

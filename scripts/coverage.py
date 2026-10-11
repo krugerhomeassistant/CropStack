@@ -25,6 +25,7 @@ CROP_FIELDS = [
     "requirements.water.root_depth",
     "requirements.soil.ph",
     "params.cycle_days",
+    "params.yield_per_m2",
 ]
 
 

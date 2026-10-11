@@ -5,6 +5,7 @@ names: {en: [Test crop], af: [Toetsgewas]}
 scientific_name: Testus cropus
 family: Solanaceae
 life_cycle: annual
+food_group: fruiting
 requirements:
   temperature:
     lethal_min: {value: 0, unit: Cel, evidence: extension-service, sources: [{ref: test-facts, locator: "Table 1"}]}
@@ -16,3 +17,4 @@ params:
     - {value: 70, unit: d, qualifiers: {region: warm}, evidence: grower-reported, sources: [{ref: test-open}]}
     - {value: 90, unit: d, qualifiers: {region: cool}, evidence: grower-reported, sources: [{ref: test-open}]}
   cycle_days: {value: {min: 70, max: 100}, unit: d, evidence: grower-reported, sources: [{ref: test-open}]}
+  yield_per_m2: {value: 5, unit: kg/m2, evidence: grower-reported, confidence: low, estimate: true}

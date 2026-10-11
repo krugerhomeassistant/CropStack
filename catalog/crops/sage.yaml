@@ -9,6 +9,7 @@ scientific_name: Salvia officinalis
 family: Lamiaceae
 rotation_group: herbs
 life_cycle: perennial
+food_group: herb
 description: A hardy, woody perennial herb with soft grey-green leaves. Easy in sun and well-drained soil; replace it every
   few years as it gets leggy.
 requirements:
@@ -42,6 +43,13 @@ requirements:
       sources:
       - {ref: fao-ecocrop, locator: 'ECOCROP code 731, PHMIN to PHMAX (via Recocrop)', retrieved: 2026-10-09, snapshot: 'sha256:90a21d908419e304e4e4c38c92df62d93b25cb373420fcd0a711247b1f47f358'}
 params:
+  yield_per_m2:
+    value: 1.0
+    unit: kg/m2
+    evidence: traditional
+    confidence: low
+    estimate: true
+    qualifiers: {basis: 'typical home-garden yield per crop cycle; replace with an extension-service figure'}
   annual_rainfall:
     value: {min: 300.0, opt_min: 500.0, opt_max: 1000.0, max: 1500.0}
     unit: mm

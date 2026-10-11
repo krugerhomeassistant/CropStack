@@ -9,6 +9,7 @@ scientific_name: Allium sativum
 family: Amaryllidaceae
 rotation_group: alliums
 life_cycle: perennial
+food_group: allium
 description: Grown from individual cloves rather than seed. Bulbs form as days lengthen after a cool period, so planting time
   matters more than anything else.
 requirements:
@@ -85,6 +86,13 @@ requirements:
       sources:
       - {ref: fao-ecocrop, locator: 'ECOCROP code 220, PHMIN to PHMAX (via Recocrop)', retrieved: 2026-10-09, snapshot: 'sha256:90a21d908419e304e4e4c38c92df62d93b25cb373420fcd0a711247b1f47f358'}
 params:
+  yield_per_m2:
+    value: 1.0
+    unit: kg/m2
+    evidence: traditional
+    confidence: low
+    estimate: true
+    qualifiers: {basis: 'typical home-garden yield per crop cycle; replace with an extension-service figure'}
   height_max:
     value: 0.3
     unit: m

@@ -9,6 +9,7 @@ scientific_name: Daucus carota
 family: Apiaceae
 rotation_group: carrot family
 life_cycle: biennial
+food_group: root
 description: A root crop sown where it will grow, because transplanting distorts the root. Small seed and slow emergence mean
   the soil surface must stay moist.
 requirements:
@@ -93,6 +94,13 @@ requirements:
       sources:
       - {ref: fao-ecocrop, locator: 'ECOCROP code 62, PHMIN to PHMAX (via Recocrop)', retrieved: 2026-10-09, snapshot: 'sha256:90a21d908419e304e4e4c38c92df62d93b25cb373420fcd0a711247b1f47f358'}
 params:
+  yield_per_m2:
+    value: 4.0
+    unit: kg/m2
+    evidence: traditional
+    confidence: low
+    estimate: true
+    qualifiers: {basis: 'typical home-garden yield per crop cycle; replace with an extension-service figure'}
   height_max:
     value: 0.3
     unit: m
