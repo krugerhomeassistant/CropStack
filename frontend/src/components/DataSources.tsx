@@ -18,7 +18,7 @@ export default function DataSources({ isOwner }: { isOwner: boolean }) {
     if (!sources || !source.switch) return
     const settings = Object.fromEntries(
       sources.filter((s) => s.switch).map((s) => [s.switch, s.id === source.id ? !s.enabled : s.enabled]),
-    ) as HouseholdSettings
+    ) as Partial<HouseholdSettings>
     setSources(sources.map((s) => (s.id === source.id ? { ...s, enabled: !s.enabled } : s))) // optimistic
     try {
       await api.saveHouseholdSettings(settings)
