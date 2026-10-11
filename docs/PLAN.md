@@ -190,7 +190,7 @@ Goal: probabilistic, self-updating environment; remove v1 heuristics (§18).
 - [ ] `household_profile` versioned storage + API.
 
 **8.2 Needs model**
-- [ ] Consumption targets from household size × diet × self-sufficiency (cited reference intakes) → editable per-crop weekly targets table.
+- [~] (v0.41.0: head count × a 400 g basket across 8 food groups; no diet or per-member model) Consumption targets from household size × diet × self-sufficiency (cited reference intakes) → editable per-crop weekly targets table.
 - [ ] Animal product targets.
 
 **8.3 Layout editor**
@@ -204,8 +204,8 @@ Goal: probabilistic, self-updating environment; remove v1 heuristics (§18).
 
 **8.4 Plan generator**
 - [ ] Candidate filtering by feasibility (windows) and preferences.
-- [ ] Quantities from targets ÷ expected yield; successions to match weekly demand + preservation.
-- [ ] Constraint fit (area per sun class, monthly water, weekly labour, budget, rotation, spacing): greedy + local improvement; explain unmet demand; "single most effective change".
+- [x] (v0.41.0) Quantities from targets ÷ expected yield; successions to match weekly demand + preservation.
+- [~] (v0.41.0: area and rotation only; coverage report and one best change) Constraint fit (area per sun class, monthly water, weekly labour, budget, rotation, spacing): greedy + local improvement; explain unmet demand; "single most effective change".
 - [~] (v0.34.0: greedy year draft per bed from sowing windows, rotation-aware, review/leave out, accept → plantings + tasks; no yield targets, no diff view on re-plan) Auto-layout into beds; diff view; accept → plantings + tasks.
 - [ ] Re-plan diff when profile or conditions change (AC-P8).
 

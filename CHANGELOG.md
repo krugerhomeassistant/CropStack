@@ -5,7 +5,19 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
-## [0.40.0] - 2026-10-11
+## [0.41.0] - 2026-10-11
+
+### Added
+- **The year plan feeds your household.** Set how many people you feed; the plan sizes each crop from a balanced basket (400 g of vegetables per person per day, split across leafy greens, fruiting vegetables, roots, brassicas, beans and peas, squash, onions and herbs), fills your beds as well as it can, and shows how much of the need they cover, the weeks that fall short, and what adding about 4 m² of bed would change.
+
+### Changed
+- Crop areas in a drafted plan now depend on yield, not a fixed six cells.
+
+### Fixed
+- Switching a data source on or off no longer touches other settings.
+
+### Notes
+- Yields per m² are labelled estimates for now (low confidence); they will be replaced with sourced figures.
 
 ## [0.40.0] - 2026-10-11
 
@@ -17,12 +29,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [0.39.1] - 2026-10-11
 
-## [0.39.1] - 2026-10-11
-
 ### Changed
 - **Sowing depths now come from published tables.** For 17 crops the depth on a sow job is taken from the University of Missouri and Mississippi State extension planting tables. Where the two differ (sweet corn, pumpkin, peas) you see the range, for example "1.3 to 5 cm". The other crops keep their labelled estimates.
-
-## [0.39.0] - 2026-10-10
 
 ## [0.39.0] - 2026-10-10
 
@@ -371,7 +379,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - CI: ruff lint and format, backend tests, frontend build, image publishing to GHCR and automatic GitHub releases on a version bump.
 - Project docs: README, wiki, architecture, roadmap, contributing guide, security policy and Code of Conduct.
 
-[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.40.0...HEAD
+[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.41.0...HEAD
+[0.41.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.40.0...v0.41.0
 [0.40.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.39.1...v0.40.0
 [0.39.1]: https://github.com/krugerhomeassistant/CropStack/compare/v0.39.0...v0.39.1
 [0.39.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.38.0...v0.39.0

@@ -292,7 +292,10 @@ def test_what_already_grows_counts_toward_the_target():
 
 
 def test_harvests_outside_the_year_are_ignored():
-    gone = [want("lettuce", "leafy", TODAY - timedelta(days=200)), want("kale", "brassica", TODAY + timedelta(days=500))]
+    gone = [
+        want("lettuce", "leafy", TODAY - timedelta(days=200)),
+        want("kale", "brassica", TODAY + timedelta(days=500)),
+    ]
     assert run(4, 1, wants=gone)[0] == []
 ```
 
@@ -557,16 +560,66 @@ GROUPS = {
     "herb": "basil coriander dill mint oregano parsley rosemary sage thyme",
 }
 YIELD = {  # kg per m2 per crop cycle, typical home garden; estimates
-    "asparagus": 0.6, "basil": 1.0, "beetroot": 3.0, "broad-bean": 1.5, "broccoli": 1.5, "brussels-sprouts": 1.5,
-    "cabbage": 4.0, "carrot": 4.0, "cauliflower": 2.0, "celeriac": 3.0, "celery": 5.0, "chilli": 1.5, "chives": 1.5,
-    "coriander": 1.0, "cucumber": 6.0, "dill": 1.0, "eggplant": 3.5, "endive": 2.5, "fennel": 3.0, "garlic": 1.0,
-    "globe-artichoke": 1.0, "green-bean": 2.0, "horseradish": 1.5, "jerusalem-artichoke": 3.0, "kale": 3.0,
-    "kohlrabi": 3.0, "leek": 3.5, "lettuce": 3.0, "melon": 3.0, "mint": 1.5, "mustard-greens": 2.5, "okra": 1.5,
-    "onion": 3.0, "oregano": 1.0, "pak-choi": 3.0, "parsley": 2.0, "parsnip": 2.5, "pea": 1.2, "potato": 4.0,
-    "pumpkin": 3.5, "radish": 2.0, "rhubarb": 3.0, "rocket": 1.5, "rosemary": 1.0, "runner-bean": 3.0, "sage": 1.0,
-    "shallot": 2.0, "spinach": 2.0, "strawberry": 1.5, "swede": 4.0, "sweet-corn": 1.0, "sweet-pepper": 3.0,
-    "sweet-potato": 2.5, "swiss-chard": 4.0, "thyme": 1.0, "tomato": 8.0, "turnip": 3.0, "watercress": 2.0,
-    "watermelon": 3.0, "zucchini": 8.0,
+    "asparagus": 0.6,
+    "basil": 1.0,
+    "beetroot": 3.0,
+    "broad-bean": 1.5,
+    "broccoli": 1.5,
+    "brussels-sprouts": 1.5,
+    "cabbage": 4.0,
+    "carrot": 4.0,
+    "cauliflower": 2.0,
+    "celeriac": 3.0,
+    "celery": 5.0,
+    "chilli": 1.5,
+    "chives": 1.5,
+    "coriander": 1.0,
+    "cucumber": 6.0,
+    "dill": 1.0,
+    "eggplant": 3.5,
+    "endive": 2.5,
+    "fennel": 3.0,
+    "garlic": 1.0,
+    "globe-artichoke": 1.0,
+    "green-bean": 2.0,
+    "horseradish": 1.5,
+    "jerusalem-artichoke": 3.0,
+    "kale": 3.0,
+    "kohlrabi": 3.0,
+    "leek": 3.5,
+    "lettuce": 3.0,
+    "melon": 3.0,
+    "mint": 1.5,
+    "mustard-greens": 2.5,
+    "okra": 1.5,
+    "onion": 3.0,
+    "oregano": 1.0,
+    "pak-choi": 3.0,
+    "parsley": 2.0,
+    "parsnip": 2.5,
+    "pea": 1.2,
+    "potato": 4.0,
+    "pumpkin": 3.5,
+    "radish": 2.0,
+    "rhubarb": 3.0,
+    "rocket": 1.5,
+    "rosemary": 1.0,
+    "runner-bean": 3.0,
+    "sage": 1.0,
+    "shallot": 2.0,
+    "spinach": 2.0,
+    "strawberry": 1.5,
+    "swede": 4.0,
+    "sweet-corn": 1.0,
+    "sweet-pepper": 3.0,
+    "sweet-potato": 2.5,
+    "swiss-chard": 4.0,
+    "thyme": 1.0,
+    "tomato": 8.0,
+    "turnip": 3.0,
+    "watercress": 2.0,
+    "watermelon": 3.0,
+    "zucchini": 8.0,
 }
 group_of = {slug: g for g, slugs in GROUPS.items() for slug in slugs.split()}
 files = sorted((ROOT / "catalog" / "crops").glob("*.yaml"))
@@ -640,7 +693,9 @@ Append to `backend/tests/test_household.py` (it has the `owner` fixture):
 def test_people_default_to_two_and_a_switch_does_not_reset_them(owner):
     assert owner.get("/api/v1/household/settings").json()["people"] == 2
     assert owner.put("/api/v1/household/settings", json={"people": 5}).json()["people"] == 5
-    after = owner.put("/api/v1/household/settings", json={"forecast": False}).json()  # what Settings → Data sources sends
+    after = owner.put(
+        "/api/v1/household/settings", json={"forecast": False}
+    ).json()  # what Settings → Data sources sends
     assert after == {"forecast": False, "place_search": True, "people": 5}
     assert owner.get("/api/v1/household/settings").json()["people"] == 5
 
@@ -674,7 +729,10 @@ def test_what_already_grows_is_counted_as_supply_from_its_last_third():
         cell_cm = 30
 
     today = date(2026, 10, 10)
-    facts = {"tomato": {"yield_per_m2": 8.0, "food_group": "fruiting"}, "mystery": {"yield_per_m2": None, "food_group": None}}
+    facts = {
+        "tomato": {"yield_per_m2": 8.0, "food_group": "fruiting"},
+        "mystery": {"yield_per_m2": None, "food_group": None},
+    }
     window = lambda p: (date(2026, 9, 10), date(2026, 12, 10))  # noqa: E731  (91 days)
     got = existing_supply(
         [P("tomato", 1, [[0, 0], [1, 0]]), P("tomato", 1, [], "growing"), P("mystery", 1, [[0, 0]]), P("tomato", 1, [[0, 0]], "finished")],
@@ -757,7 +815,13 @@ def existing_supply(plantings, facts_of, beds_by_id, window_of, today: date) -> 
     out = []
     for p in plantings:
         f, bed = facts_of(p.crop), beds_by_id.get(p.bed_id)
-        if bed is None or not p.cells or p.status in ("finished", "failed") or not f["yield_per_m2"] or not f["food_group"]:
+        if (
+            bed is None
+            or not p.cells
+            or p.status in ("finished", "failed")
+            or not f["yield_per_m2"]
+            or not f["food_group"]
+        ):
             continue
         first, last = window_of(p)
         if last < today:
@@ -811,7 +875,9 @@ def existing_supply(plantings, facts_of, beds_by_id, window_of, today: date) -> 
 
 ```python
 def test_the_plan_reports_coverage_and_targets_scale_with_people(owner, monkeypatch):  # noqa: F811
-    monkeypatch.setattr(external, "fetch_climate_archive", lambda lat, lon: synthetic(mean=14, amplitude=7, coldest=date(2001, 7, 15)))
+    monkeypatch.setattr(
+        external, "fetch_climate_archive", lambda lat, lon: synthetic(mean=14, amplitude=7, coldest=date(2001, 7, 15))
+    )
     owner.put("/api/v1/sites/current", json=GARDEN)
     owner.post("/api/v1/beds", json={"name": "Big", "width": 2.4, "length": 3.6})
     two = owner.get("/api/v1/plan/year").json()

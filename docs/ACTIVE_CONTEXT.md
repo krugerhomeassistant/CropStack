@@ -70,3 +70,6 @@ Sow depth sourced (MO G6201 + MSU guide, range when they differ) for 17 crops; r
 
 ## v0.40.0
 Migration 0016: `planting.source` ('plan' = made by year plan; backfilled for earlier batches of 5+ planned plantings saved in one second). Replan replaces unstarted plan plantings; DELETE /plan/year clears them. Open: live crops hold cells only to their cycle end, so a draft can schedule after a crop the owner still has growing.
+
+## v0.41.0
+Needs model: `people` setting, `food_group` + `yield_per_m2` on all 60 crops, demand-driven drafter, coverage card on the Plan tab. Limits: yields are estimates, harvests spread evenly, live crops hold cells only to cycle end. Next: sourced yields, setup interview 8.1, Climate/Crops/More facelift, move planting + undo.
