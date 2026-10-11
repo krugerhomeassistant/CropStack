@@ -323,6 +323,17 @@ def test_the_best_change_is_missing_once_coverage_is_enough():
     assert cov["overall"] >= ENOUGH and cov["best_change"] is None
 
 
+def test_no_change_is_suggested_just_under_full_even_when_a_bed_would_add_more(monkeypatch):
+    from app.routers import plan
+
+    today = date(2026, 10, 10)
+    supply_then = iter([0.96, 0.99])  # coverage with the beds we have, then with an extra bed
+    monkeypatch.setattr(plan.yearplan, "draft", lambda *a, **k: ([], {g: [0.0] * needs.WEEKS for g in needs.GROUPS}))
+    monkeypatch.setattr(plan.needs, "coverage", lambda target, supply, today: {"overall": next(supply_then)})
+    _, cov = plan.with_coverage([], {}, [], today, needs.weekly_target(2), [])
+    assert cov["overall"] == 0.96 and cov["best_change"] is None  # 0.96 >= ENOUGH: no change, though 0.03 gain exists
+
+
 def test_the_best_change_is_missing_when_a_bigger_bed_adds_nothing():
     from app.routers.plan import with_coverage
 
