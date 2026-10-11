@@ -17,6 +17,7 @@ GROUP_SHARE = {  # our own split of that basket, by how a crop is eaten; not nut
 }
 GROUPS = tuple(GROUP_SHARE)
 WEEKS = 52
+SHORT_FRACTION = 0.5  # a week counts as short when it has less than this share of its target
 
 
 def weekly_target(people: int) -> dict[str, float]:
@@ -32,7 +33,7 @@ def week_range(today: date, first: date, last: date) -> range:
 def spread(today: date, first: date, last: date, kg: float) -> dict[int, float]:
     """`kg` harvested evenly from `first` to `last`: kg per week number, for the weeks inside the year only.
     ponytail: even spread; a real harvest curve (slow start, peak, tail) needs crop data we do not have."""
-    weeks = max(1, (last - first).days // 7 + 1)
+    weeks = max(1, (last - today).days // 7 - (first - today).days // 7 + 1)  # today-aligned buckets, unclipped
     return {w: kg / weeks for w in week_range(today, first, last)}
 
 
@@ -48,7 +49,9 @@ def coverage(target: dict[str, float], supply: dict[str, list[float]], today: da
             "supply_kg": round(sum(supply[g]), 1),
             "covered": round(covered, 3),
             "weeks_short": [
-                (today + timedelta(weeks=i)).isoformat() for i, s in enumerate(supply[g]) if s < target[g] * 0.5
+                (today + timedelta(weeks=i)).isoformat()
+                for i, s in enumerate(supply[g])
+                if s < target[g] * SHORT_FRACTION
             ],
         }
     return {"overall": round(overall, 3), "groups": groups}
