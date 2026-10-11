@@ -49,7 +49,7 @@ params:
     evidence: traditional
     confidence: low
     estimate: true
-    qualifiers: {basis: 'typical home-garden yield per crop cycle; replace with an extension-service figure'}
+    qualifiers: {basis: typical home-garden yield per crop cycle; replace with an extension-service figure}
   annual_rainfall:
     value: {min: 300.0, opt_min: 600.0, opt_max: 1400.0, max: 2700.0}
     unit: mm
@@ -103,3 +103,48 @@ params:
     estimate: true
     qualifiers: {basis: 'usual seed depth (garlic, potato and shallot: clove, tuber or set) from standard seed-packet and
         extension guidance'}
+companions:
+- crop: cabbage
+  relation: beneficial
+  evidence: traditional
+  confidence: low
+  sources:
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Cabbage"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Rosemary"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+- crop: carrot
+  relation: beneficial
+  evidence: traditional
+  confidence: low
+  sources:
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Carrots"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Rosemary"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+- crop: green-bean
+  relation: beneficial
+  evidence: traditional
+  confidence: low
+  sources:
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Rosemary"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+- crop: runner-bean
+  relation: beneficial
+  evidence: traditional
+  confidence: low
+  sources:
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Rosemary"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+- crop: sage
+  relation: beneficial
+  evidence: traditional
+  confidence: low
+  sources:
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Sage"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+- crop: thyme
+  relation: beneficial
+  evidence: traditional
+  confidence: low
+  sources:
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Rosemary"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+- crop: tomato
+  relation: antagonistic
+  evidence: traditional
+  confidence: low
+  sources:
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Tomatoes"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}

@@ -165,3 +165,60 @@ def gbif_match(raw: bytes) -> dict:
         "status": record.get("status"),
         "match": record.get("matchType"),
     }
+
+
+# ---------------------------------------------------------------- Wikipedia "List of companion plants" (CC BY-SA 4.0)
+
+_COMPANION_COLUMNS = {2: "helps", 3: "helped_by", 6: "avoid"}  # 0 name, 1 scientific, 4 attracts, 5 repels, 7 comments
+
+
+def normalise_name(name: str) -> str:
+    """Lower-case words with plurals folded ("Tomatoes" == "tomato"), so row names, cell entries and catalog names
+    compare equal. Only used for matching; never shown."""
+    words = []
+    for word in re.sub(r"[^a-z]+", " ", name.lower()).split():
+        if word.endswith("ies"):
+            word = word[:-3] + "y"
+        elif word.endswith(("oes", "shes", "ches", "xes")):
+            word = word[:-2]
+        elif word.endswith("s") and not word.endswith(("ss", "us", "is")):
+            word = word[:-1]
+        words.append(word)
+    return " ".join(words)
+
+
+def _plain(cell: str) -> str:
+    """Wikitext cell → plain text: drops references, templates, comments and markup, keeps link labels."""
+    cell = re.sub(r"<!--.*?-->|<ref[^>]*?/>|<ref[^>]*>.*?</ref>", "", cell, flags=re.S)
+    cell = re.sub(r"\{\{[^{}]*\}\}", "", cell)
+    cell = re.sub(r"\[\[(?:[^|\]]*\|)?([^\]]*)\]\]", r"\1", cell)
+    return re.sub(r"<[^>]+>|'{2,}", "", cell).strip()
+
+
+def _entries(cell: str) -> list[str]:
+    """Plain names listed in a cell: split on commas and semicolons, brackets read as lists ("nightshades (tomatoes,
+    peppers)"), markers and filler ("-", "such as", "etc.") dropped."""
+    out = []
+    for part in re.split(r"[,;()/]|\.\s", _plain(cell)):
+        part = re.sub(r"^(?:[-+]\s*|and\s+|such as\s+|other\s+)|\s*etc\.?$", "", part.strip(), flags=re.I).strip(" .")
+        if part:
+            out.append(part)
+    return out
+
+
+def wikipedia_companions(raw: bytes) -> dict[str, dict[str, list[str]]]:
+    """Every table row by its common name (as written, e.g. "Beans, bush") → entries under Helps, Helped by and
+    Avoid. The Attracts, Repels and Comments columns hold prose and insects, which CropStack does not import."""
+    text = raw.decode("utf-8")
+    rows = {}
+    for block in re.split(r"^\|-.*$", text, flags=re.M):
+        block = block.strip()
+        if not block.startswith("|"):
+            continue
+        cells = [c for c in re.split(r"\|\|", block[1:])]
+        if len(cells) < 7:
+            continue
+        name = _plain(cells[0]).lstrip("| ")
+        if name:
+            rows[name] = {key: _entries(cells[i]) for i, key in _COMPANION_COLUMNS.items()}
+    return rows

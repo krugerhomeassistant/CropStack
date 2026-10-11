@@ -6,10 +6,12 @@ values cite nothing but the same source (so a re-run refreshes what the pipeline
 
 from __future__ import annotations
 
+import re
 from datetime import date
 from typing import Any
 
 import yaml
+from extract import normalise_name
 
 Proposals = dict[str, Any]  # field path ("requirements.water.kc_mid") -> Value dict or list of Value dicts
 
@@ -121,6 +123,56 @@ def from_openfarm(record: dict | None, source: dict) -> Proposals:
     if record.get("sun") in SUN:
         out["params.sun"] = value(SUN[record["sun"]], None, "grower-reported", src, "low")
     return out
+
+
+def companion_lookup(names: dict[str, list[str]]) -> dict[str, list[str]]:
+    """Normalised plant name → slugs of the crops it can mean. `names` maps each slug to every name a source may use."""
+    lookup: dict[str, list[str]] = {}
+    for slug, aliases in names.items():
+        for alias in aliases:
+            lookup.setdefault(normalise_name(alias), []).append(slug)
+    return lookup
+
+
+def _slugs(entry: str, lookup: dict[str, list[str]]) -> list[str]:
+    """Crops an entry names. "onions and potatoes" is tried whole first, then as two entries."""
+    if (found := lookup.get(normalise_name(entry))) is not None:
+        return found
+    return [slug for part in re.split(r"\s+(?:and|or)\s+", entry) for slug in lookup.get(normalise_name(part), [])]
+
+
+def companion_pairs(
+    rows: dict[str, dict[str, list[str]]], lookup: dict[str, list[str]]
+) -> dict[str, dict[tuple[str, str], set[str]]]:
+    """slug → {(other slug, relation): source rows}. A row naming A under Helps, Helped by or Avoid says something
+    about the pair, so it is recorded for both crops. Only pairs of catalog crops are kept."""
+    out: dict[str, dict[tuple[str, str], set[str]]] = {}
+    for row, columns in rows.items():
+        owners = {s for alt in re.split(r"\s+or\s+|\s*/\s*", row) for s in lookup.get(normalise_name(alt), [])}
+        for column, entries in columns.items():
+            relation = "antagonistic" if column == "avoid" else "beneficial"
+            for owner in owners:
+                for other in {s for entry in entries for s in _slugs(entry, lookup)} - {owner}:
+                    out.setdefault(owner, {}).setdefault((other, relation), set()).add(row)
+                    out.setdefault(other, {}).setdefault((owner, relation), set()).add(row)
+    return out
+
+
+def from_wikipedia(pairs: dict[tuple[str, str], set[str]] | None, source: dict) -> Proposals:
+    """Companion hints for one crop, all `traditional`: the page itself says few of its pairs have been tested."""
+    if not pairs:
+        return {}
+    companions = [
+        {
+            "crop": other,
+            "relation": relation,
+            "evidence": "traditional",
+            "confidence": "low",
+            "sources": [{**source, "locator": f'{source["locator"]}, row "{row}"'} for row in sorted(rows)],
+        }
+        for (other, relation), rows in sorted(pairs.items())
+    ]
+    return {"companions": companions}
 
 
 # ---------------------------------------------------------------- merge

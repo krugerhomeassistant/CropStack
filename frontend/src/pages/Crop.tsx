@@ -1,11 +1,12 @@
 import { useEffect, useState, type ReactNode } from 'react'
-import { useParams } from 'react-router'
+import { Link, useParams } from 'react-router'
 import { BookOpen } from 'lucide-react'
 import {
   api,
   ApiError,
   type CatalogItem,
   type CatalogSource,
+  type Companion,
   type CropData,
   type Evidence,
   type Fact,
@@ -35,8 +36,11 @@ const SUN: Record<string, string> = {
   shade: N_('Shade'),
 }
 
-const list = (f: FactOrList | undefined): Fact[] => (f === undefined ? [] : Array.isArray(f) ? f : [f])
-const first = (f: FactOrList | undefined): Fact | undefined => list(f)[0]
+/** Anything that carries evidence and sources: a fact, or a companion hint. */
+type Cited = Pick<Fact, 'evidence' | 'sources'>
+
+const list = <T,>(f: T | T[] | undefined): T[] => (f === undefined ? [] : Array.isArray(f) ? f : [f])
+const first = (f: FactOrList | undefined): Fact | undefined => list<Fact>(f)[0]
 const num = (f: FactOrList | undefined) => first(f)?.value as number | undefined
 const range = (f: FactOrList | undefined) => first(f)?.value as Range | undefined
 
@@ -48,9 +52,9 @@ class Notes {
   keys: string[] = []
   entries: { ref: string; locator?: string | null; retrieved?: string | null; evidence: Evidence }[] = []
 
-  cite(...facts: (FactOrList | undefined)[]): ReactNode {
+  cite(...facts: (FactOrList | Cited | undefined)[]): ReactNode {
     const numbers = new Set<number>()
-    for (const fact of facts.flatMap(list))
+    for (const fact of facts.flatMap((f) => list<Cited>(f)))
       for (const s of fact.sources) {
         const key = `${s.ref}|${s.locator ?? ''}`
         if (!this.keys.includes(key)) {
@@ -329,6 +333,65 @@ function Stages({ data, notes }: { data: CropData; notes: Notes }) {
   )
 }
 
+/**
+ * Neighbour hints from the companion-plants list. Every pair is traditional knowledge, so the section says so and
+ * cites the list once (its revision) instead of numbering one source per pair.
+ */
+function Neighbours({ companions, notes }: { companions: Companion[]; notes: Notes }) {
+  const [names, setNames] = useState<Record<string, string>>({})
+  useEffect(() => {
+    api.crops().then(
+      (all) => setNames(Object.fromEntries(all.map((c) => [c.slug, c.names.en?.[0] ?? c.slug]))),
+      () => undefined, // the slugs are readable enough without names
+    )
+  }, [])
+  if (!companions.length) return null
+  const beside = companions.filter((c) => c.relation === 'beneficial')
+  const apart = companions.filter((c) => c.relation === 'antagonistic')
+  const disputed = beside.filter((b) => apart.some((a) => a.crop === b.crop))
+  const name = (slug: string) => names[slug] ?? slug
+  const chips = (group: Companion[]) => (
+    <ul className="flex flex-wrap gap-2">
+      {group.map((c) => (
+        <li key={c.crop}>
+          <Link to={`/crops/${c.crop}`} className="inline-flex rounded-full bg-sunken px-3 py-1 text-sm hover:underline">
+            {name(c.crop)}
+          </Link>
+        </li>
+      ))}
+    </ul>
+  )
+  const source = companions[0].sources[0]
+  const cited = {
+    evidence: 'traditional' as const,
+    sources: [{ ...source, locator: source.locator?.split(', row')[0] }],
+  }
+  return (
+    <Section
+      title={t('Neighbours')}
+      description={t('Traditional pairings. Few have been tested, so treat them as hints, not rules.')}
+    >
+      {beside.length > 0 && (
+        <div className="flex flex-col gap-2">
+          <h3 className="text-sm font-semibold text-muted">{t('Said to grow well beside')}</h3>
+          {chips(beside)}
+        </div>
+      )}
+      {apart.length > 0 && (
+        <div className="flex flex-col gap-2">
+          <h3 className="text-sm font-semibold text-muted">{t('Said to do better apart')}</h3>
+          {chips(apart)}
+        </div>
+      )}
+      <p className="text-sm text-muted">
+        {disputed.length > 0 && t('Sources disagree about {names}. ', { names: disputed.map((d) => name(d.crop)).join(', ') })}
+        {t('From the companion-plants list.')}
+        {notes.cite(cited)}
+      </p>
+    </Section>
+  )
+}
+
 function Sources({ notes, sources }: { notes: Notes; sources: Record<string, CatalogSource> }) {
   if (!notes.entries.length) return null
   return (
@@ -457,6 +520,7 @@ export default function Crop() {
         <Size data={data} units={units} notes={notes} />
       </div>
       <Stages data={data} notes={notes} />
+      <Neighbours companions={data.companions ?? []} notes={notes} />
       <Sources notes={notes} sources={item.sources} />
       <p className="text-sm text-muted">
         <a

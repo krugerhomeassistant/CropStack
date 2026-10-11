@@ -43,6 +43,83 @@
       "title": "Chill",
       "type": "object"
     },
+    "Companion": {
+      "additionalProperties": false,
+      "description": "A neighbour hint: another crop that is said to grow well (or badly) beside this one.\n\nHints, never rules. Imported pairs are `traditional` until a pair-specific study is cited; `mechanism` is only\nset when a source names one.",
+      "properties": {
+        "confidence": {
+          "default": "low",
+          "enum": [
+            "high",
+            "medium",
+            "low"
+          ],
+          "title": "Confidence",
+          "type": "string"
+        },
+        "crop": {
+          "maxLength": 80,
+          "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+          "title": "Crop",
+          "type": "string"
+        },
+        "evidence": {
+          "enum": [
+            "peer-reviewed",
+            "government",
+            "extension-service",
+            "model",
+            "grower-reported",
+            "traditional"
+          ],
+          "title": "Evidence",
+          "type": "string"
+        },
+        "mechanism": {
+          "anyOf": [
+            {
+              "enum": [
+                "trap",
+                "repel",
+                "natural-enemy",
+                "complementarity",
+                "allelopathy"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Mechanism"
+        },
+        "relation": {
+          "enum": [
+            "beneficial",
+            "antagonistic"
+          ],
+          "title": "Relation",
+          "type": "string"
+        },
+        "sources": {
+          "items": {
+            "$ref": "#/$defs/SourceRef"
+          },
+          "minItems": 1,
+          "title": "Sources",
+          "type": "array"
+        }
+      },
+      "required": [
+        "crop",
+        "relation",
+        "evidence",
+        "sources"
+      ],
+      "title": "Companion",
+      "type": "object"
+    },
     "Humidity": {
       "additionalProperties": false,
       "properties": {
@@ -843,6 +920,13 @@
   },
   "additionalProperties": false,
   "properties": {
+    "companions": {
+      "items": {
+        "$ref": "#/$defs/Companion"
+      },
+      "title": "Companions",
+      "type": "array"
+    },
     "description": {
       "anyOf": [
         {

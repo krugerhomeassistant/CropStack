@@ -100,7 +100,7 @@ params:
     evidence: traditional
     confidence: low
     estimate: true
-    qualifiers: {basis: 'typical home-garden yield per crop cycle; replace with an extension-service figure'}
+    qualifiers: {basis: typical home-garden yield per crop cycle; replace with an extension-service figure}
   height_max:
     value: 0.4
     unit: m
@@ -236,3 +236,109 @@ params:
     estimate: true
     qualifiers: {basis: 'usual seed depth (garlic, potato and shallot: clove, tuber or set) from standard seed-packet and
         extension guidance'}
+companions:
+- crop: beetroot
+  relation: beneficial
+  evidence: traditional
+  confidence: low
+  sources:
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Beets"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Cabbage"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+- crop: celery
+  relation: beneficial
+  evidence: traditional
+  confidence: low
+  sources:
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Cabbage"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Celery"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+- crop: chilli
+  relation: antagonistic
+  evidence: traditional
+  confidence: low
+  sources:
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Peppers"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+- crop: chives
+  relation: beneficial
+  evidence: traditional
+  confidence: low
+  sources:
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Chives"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+- crop: coriander
+  relation: beneficial
+  evidence: traditional
+  confidence: low
+  sources:
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Cabbage"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+- crop: dill
+  relation: beneficial
+  evidence: traditional
+  confidence: low
+  sources:
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Cabbage"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Dill"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+- crop: green-bean
+  relation: beneficial
+  evidence: traditional
+  confidence: low
+  sources:
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Cabbage"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+- crop: lettuce
+  relation: antagonistic
+  evidence: traditional
+  confidence: low
+  sources:
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Lettuce"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+- crop: mint
+  relation: beneficial
+  evidence: traditional
+  confidence: low
+  sources:
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Cabbage"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Peppermint"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Spearmint"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+- crop: mustard-greens
+  relation: beneficial
+  evidence: traditional
+  confidence: low
+  sources:
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Mustard"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+- crop: onion
+  relation: beneficial
+  evidence: traditional
+  confidence: low
+  sources:
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Cabbage"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Onion"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+- crop: rosemary
+  relation: beneficial
+  evidence: traditional
+  confidence: low
+  sources:
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Cabbage"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Rosemary"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+- crop: runner-bean
+  relation: beneficial
+  evidence: traditional
+  confidence: low
+  sources:
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Cabbage"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+- crop: sage
+  relation: beneficial
+  evidence: traditional
+  confidence: low
+  sources:
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Cabbage"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Sage"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+- crop: sweet-pepper
+  relation: antagonistic
+  evidence: traditional
+  confidence: low
+  sources:
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Peppers"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+- crop: thyme
+  relation: beneficial
+  evidence: traditional
+  confidence: low
+  sources:
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Cabbage"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Thyme"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}

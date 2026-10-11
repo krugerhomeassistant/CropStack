@@ -100,7 +100,7 @@ params:
     evidence: traditional
     confidence: low
     estimate: true
-    qualifiers: {basis: 'typical home-garden yield per crop cycle; replace with an extension-service figure'}
+    qualifiers: {basis: typical home-garden yield per crop cycle; replace with an extension-service figure}
   height_max:
     value: 0.7
     unit: m
@@ -264,3 +264,92 @@ params:
     estimate: true
     qualifiers: {basis: 'usual seed depth (garlic, potato and shallot: clove, tuber or set) from standard seed-packet and
         extension guidance'}
+companions:
+- crop: basil
+  relation: beneficial
+  evidence: traditional
+  confidence: low
+  sources:
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Basil"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Peppers"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+- crop: brussels-sprouts
+  relation: antagonistic
+  evidence: traditional
+  confidence: low
+  sources:
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Peppers"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+- crop: cabbage
+  relation: antagonistic
+  evidence: traditional
+  confidence: low
+  sources:
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Peppers"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+- crop: eggplant
+  relation: beneficial
+  evidence: traditional
+  confidence: low
+  sources:
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Eggplant or Aubergine"', retrieved: 2026-10-11,
+    snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+- crop: green-bean
+  relation: antagonistic
+  evidence: traditional
+  confidence: low
+  sources:
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Peppers"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+- crop: green-bean
+  relation: beneficial
+  evidence: traditional
+  confidence: low
+  sources:
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Peppers"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+- crop: kale
+  relation: antagonistic
+  evidence: traditional
+  confidence: low
+  sources:
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Peppers"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+- crop: okra
+  relation: beneficial
+  evidence: traditional
+  confidence: low
+  sources:
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Okra"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Peppers"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+- crop: onion
+  relation: beneficial
+  evidence: traditional
+  confidence: low
+  sources:
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Onion"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+- crop: oregano
+  relation: beneficial
+  evidence: traditional
+  confidence: low
+  sources:
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Oregano"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+- crop: runner-bean
+  relation: antagonistic
+  evidence: traditional
+  confidence: low
+  sources:
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Peppers"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+- crop: runner-bean
+  relation: beneficial
+  evidence: traditional
+  confidence: low
+  sources:
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Peppers"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+- crop: strawberry
+  relation: antagonistic
+  evidence: traditional
+  confidence: low
+  sources:
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Strawberries"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+- crop: tomato
+  relation: beneficial
+  evidence: traditional
+  confidence: low
+  sources:
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Peppers"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Tomatoes"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}

@@ -100,7 +100,7 @@ params:
     evidence: traditional
     confidence: low
     estimate: true
-    qualifiers: {basis: 'typical home-garden yield per crop cycle; replace with an extension-service figure'}
+    qualifiers: {basis: typical home-garden yield per crop cycle; replace with an extension-service figure}
   height_max:
     value: 0.3
     unit: m
@@ -334,3 +334,123 @@ params:
     sources:
     - {ref: mo-ext-g6201, locator: Table 1 (inches converted to cm), retrieved: 2026-10-11}
     - {ref: msu-planting-guide, locator: Depth of Planting column (inches converted to cm), retrieved: 2026-10-11}
+companions:
+- crop: beetroot
+  relation: beneficial
+  evidence: traditional
+  confidence: low
+  sources:
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Beets"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Lettuce"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+- crop: broccoli
+  relation: beneficial
+  evidence: traditional
+  confidence: low
+  sources:
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Broccoli"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Lettuce"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+- crop: cabbage
+  relation: antagonistic
+  evidence: traditional
+  confidence: low
+  sources:
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Lettuce"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+- crop: carrot
+  relation: beneficial
+  evidence: traditional
+  confidence: low
+  sources:
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Carrots"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Lettuce"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+- crop: celery
+  relation: antagonistic
+  evidence: traditional
+  confidence: low
+  sources:
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Lettuce"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+- crop: coriander
+  relation: beneficial
+  evidence: traditional
+  confidence: low
+  sources:
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Cilantro / Coriander"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Lettuce"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+- crop: cucumber
+  relation: beneficial
+  evidence: traditional
+  confidence: low
+  sources:
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Cucumber"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Lettuce"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+- crop: dill
+  relation: beneficial
+  evidence: traditional
+  confidence: low
+  sources:
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Dill"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Lettuce"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+- crop: garlic
+  relation: beneficial
+  evidence: traditional
+  confidence: low
+  sources:
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Garlic"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+- crop: green-bean
+  relation: beneficial
+  evidence: traditional
+  confidence: low
+  sources:
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Lettuce"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+- crop: kohlrabi
+  relation: beneficial
+  evidence: traditional
+  confidence: low
+  sources:
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Lettuce"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+- crop: okra
+  relation: beneficial
+  evidence: traditional
+  confidence: low
+  sources:
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Lettuce"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Okra"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+- crop: onion
+  relation: beneficial
+  evidence: traditional
+  confidence: low
+  sources:
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Lettuce"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Onion"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+- crop: parsley
+  relation: antagonistic
+  evidence: traditional
+  confidence: low
+  sources:
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Lettuce"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Parsley"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+- crop: radish
+  relation: beneficial
+  evidence: traditional
+  confidence: low
+  sources:
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Lettuce"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Radish"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+- crop: runner-bean
+  relation: beneficial
+  evidence: traditional
+  confidence: low
+  sources:
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Lettuce"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+- crop: strawberry
+  relation: beneficial
+  evidence: traditional
+  confidence: low
+  sources:
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Lettuce"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Strawberries"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}
+- crop: thyme
+  relation: beneficial
+  evidence: traditional
+  confidence: low
+  sources:
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Lettuce"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}

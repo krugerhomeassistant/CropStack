@@ -119,9 +119,9 @@ Planned: `bed`; `planting.location` becomes a bed reference with the layout edit
 |---|---|
 | `__main__.py` | CLI `python scripts/ingest fetch|merge|check`; source URLs (pinned where possible) |
 | `fetch.py` | httpx client, robots.txt (stdlib `urllib.robotparser`, RFC 9309 5xx = disallow), per-host throttle, `.ingest-cache/<sha256>`, `snapshots.lock` |
-| `extract.py` | pure extractors: pyfao56 tables (FAO-56 11/12/22), Harrington HTML tables, OpenFarm rescue JSON, GBIF match |
-| `merge.py` | records → cited `Value` dicts; merge rule (empty or same-source fields only); YAML dump (flow style for small flat maps, no anchors) |
-| `crosswalk.yaml` | crop slug → each source's row name |
+| `extract.py` | pure extractors: pyfao56 tables (FAO-56 11/12/22), Harrington HTML tables, OpenFarm rescue JSON, GBIF match, Wikipedia companion table (wikitext) |
+| `merge.py` | records → cited `Value` dicts and companion pairs (name lookup, both directions); merge rule (empty or same-source fields only); YAML dump (flow style for small flat maps, no anchors) |
+| `crosswalk.yaml` | crop slug → each source's row name; `wikipedia:` extra names for companion matching |
 
 
 | `routers/plan.py` | `GET/POST/DELETE /plan/year` (draft, accept = replace unstarted plan, clear); `planting.source` (migration 0016) |

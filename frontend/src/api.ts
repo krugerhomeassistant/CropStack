@@ -311,6 +311,14 @@ export type CatalogSource = {
   extra_terms: string | null
   tos_reviewed: string
 }
+export type Companion = {
+  crop: string
+  relation: 'beneficial' | 'antagonistic'
+  mechanism?: string | null
+  evidence: Evidence
+  confidence: 'high' | 'medium' | 'low'
+  sources: SourceRef[]
+}
 export type CropSummary = { slug: string; names: Record<string, string[]>; scientific_name: string; family: string }
 export type CropData = CropSummary & {
   rotation_group?: string | null
@@ -318,6 +326,7 @@ export type CropData = CropSummary & {
   description?: string | null
   requirements?: Record<string, Record<string, FactOrList>>
   params?: Record<string, FactOrList>
+  companions?: Companion[]
 }
 export type CatalogItem<T> = { data: T; origin: string; sources: Record<string, CatalogSource> }
 

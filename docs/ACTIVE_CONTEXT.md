@@ -1,6 +1,6 @@
 # ACTIVE CONTEXT
 
-**Date:** 2026-10-11 · **Version:** 0.40.0 (released, CI green, deployed to the owner's copy) · **Alembic head:** 0016 · **Tests:** 155 backend, browser e2e green.
+**Date:** 2026-10-11 · **Version:** 0.42.0 (PR open; 0.41.0 is released and CI green) · **Alembic head:** 0016 · **Tests:** 192 backend, browser e2e green.
 History of earlier sessions: `ACTIVE_CONTEXT_ARCHIVE.md`.
 
 ## What CropStack is today
@@ -10,7 +10,7 @@ Households and garden climate (30 y Open-Meteo), 60-crop catalog (CC BY-SA, cite
 Personal, non-commercial. Fully dynamic (no presets). Never restrict or destroy his work: only suggest. "Information is our main focus" but key points, not floods; cleaner "windows". Must look professional. English and metric only is fine. He sends many messages in a row: note each as a to-do here or in PLAN, do not stop the current work. Do not ask questions that research can answer.
 
 ## How to work (commands)
-- Backend tests: `cd backend && .venv/bin/python -m pytest -q` (155 pass, ~25 s).
+- Backend tests: `cd backend && .venv/bin/python -m pytest -q` (192 pass, ~30 s; first run in a fresh sandbox: `cd backend && uv venv .venv && uv pip install -p .venv/bin/python -r requirements.txt pytest ruff`).
 - Lint (do before every push): `ruff format . && ruff check .` from repo root.
 - Frontend: `cd frontend && npx tsc --noEmit && npm run build`.
 - Browser e2e: `npm run build` once, then `scripts/e2e-local.sh` (wipes data, restarts the stubbed server on :8512; takes ~100 s, so run it in the background with a log: `(scripts/e2e-local.sh > /tmp/e2e.log 2>&1 &)`). First run after a cold start can fail on the setup form: run again. Never run e2e on a dirty DB.
@@ -29,7 +29,7 @@ Personal, non-commercial. Fully dynamic (no presets). Never restrict or destroy 
 1. Needs model (PLAN 8.2) so the year plan sizes each crop's block to what the household eats.
 2. Year plan polish: re-plan diff view; live crops keep their cells until harvested (known gap); lock a job's date.
 3. Look and feel: apply the plot-plan/window style to Climate, Crops, More; map pinch-zoom/pan; move a planting between cells/beds; undo/redo.
-4. Data: sow depth still an estimate for 36 crops; companions (Wikipedia CC BY-SA list); storage life per crop (USDA AH-66) for Pantry; varieties; animals catalog; more organisms.
+4. Data: sow depth still an estimate for 36 crops; companions: expand group entries, mechanism tags from the cited studies, use in the layout suggestion; storage life per crop (USDA AH-66) for Pantry; varieties; animals catalog; more organisms.
 5. Pantry link to harvest; Mealie integration (future, owner not running Mealie).
 6. Home Assistant integration (MQTT/REST), assistant photo diagnosis/tools/streaming/history, encrypt API key at rest, imperial units in job text (low priority).
 
@@ -42,3 +42,6 @@ Personal, non-commercial. Fully dynamic (no presets). Never restrict or destroy 
 
 ## v0.41.0
 Needs model: `people` setting, `food_group` + `yield_per_m2` on all 60 crops, demand-driven drafter, coverage card on the Plan tab. Limits: yields are estimates, harvests spread evenly, live crops hold cells only to cycle end. Next: sourced yields, setup interview 8.1, Climate/Crops/More facelift, move planting + undo.
+
+## v0.42.0
+Neighbours: `companions` on crops (225 pairs, 51 crops, all `traditional`/low, from Wikipedia revision 1334550406), loader checks the links, crop page "Neighbours" section, e2e step. Ingest: extractor `wikipedia_companions`, `merge.companion_pairs/from_wikipedia`, crosswalk `wikipedia:` aliases, `PINNED` sources are not refetched. Sandbox quirk: httpx gets 403 from Wikipedia (curl works), so the snapshot was stored with curl plus `fetch.write_lock` (LESSONS 89). `scripts/ingest merge` needs the other snapshots in `.ingest-cache/` (run `fetch` first, or on the maintainer machine); the companion batch alone was applied here. Limits: 7 contradictory pairs kept as-is; groups not expanded; planner ignores companions.

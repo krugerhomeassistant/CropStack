@@ -64,7 +64,7 @@ params:
     evidence: traditional
     confidence: low
     estimate: true
-    qualifiers: {basis: 'typical home-garden yield per crop cycle; replace with an extension-service figure'}
+    qualifiers: {basis: typical home-garden yield per crop cycle; replace with an extension-service figure}
   annual_rainfall:
     value: {min: 500.0, opt_min: 800.0, opt_max: 800.0, max: 1000.0}
     unit: mm
@@ -94,3 +94,10 @@ params:
     sources:
     - {ref: mo-ext-g6201, locator: Table 1 (inches converted to cm), retrieved: 2026-10-11}
     - {ref: msu-planting-guide, locator: Depth of Planting column (inches converted to cm), retrieved: 2026-10-11}
+companions:
+- crop: leek
+  relation: antagonistic
+  evidence: traditional
+  confidence: low
+  sources:
+  - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Leek"', retrieved: 2026-10-11, snapshot: 'sha256:39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572'}

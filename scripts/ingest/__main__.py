@@ -24,6 +24,8 @@ import yaml
 CATALOG = fetch.ROOT / "catalog"
 CROSSWALK = yaml.safe_load(Path(__file__).with_name("crosswalk.yaml").read_text())
 
+WIKIPEDIA_REVISION = 1334550406  # "List of companion plants", 2026-01-24; bump on purpose and review the diff
+
 # Snapshot key -> URL. Pinned to a commit or a stable page so a re-fetch is comparable.
 SOURCES = {
     "pyfao56-tables": "https://raw.githubusercontent.com/kthorp/pyfao56/main/src/pyfao56/tools/tables.py",
@@ -33,6 +35,7 @@ SOURCES = {
     "ecocrop-recocrop": "https://cran.r-project.org/src/contrib/Recocrop_0.4-2.tar.gz",
     "openfarm-rescue": "https://raw.githubusercontent.com/thefullnacho/openfarm-crops-rescue/"
     "754cfd75da007c17a628eca812632f326dc7cf10/crops.json",
+    "wikipedia-companions": f"https://en.wikipedia.org/w/index.php?title=List_of_companion_plants&oldid={WIKIPEDIA_REVISION}&action=raw",
 }
 
 
@@ -56,9 +59,18 @@ def ecocrop_rows(tarball: bytes) -> list[dict]:
             return pyreadr.read_r(rds.name)[None].to_dict("records")
 
 
+# Sources pinned to an immutable URL (a commit or a revision id): once locked there is nothing newer to fetch.
+PINNED = {"openfarm-rescue", "wikipedia-companions"}
+
+
 def cmd_fetch() -> int:
+    lock = fetch.read_lock()
     with fetch.client() as client:
         for key, url in SOURCES.items():
+            locked = lock.get(key, {})
+            if key in PINNED and locked.get("url") == url and (fetch.CACHE / locked["sha256"]).exists():
+                print(f"{key}: pinned, already locked")
+                continue
             print(f"{key}: {fetch.fetch(key, url, client)[:12]}")
     return 0
 
@@ -66,6 +78,17 @@ def cmd_fetch() -> int:
 def _source(key: str, ref: str) -> tuple[bytes, dict]:
     raw, entry = fetch.snapshot(key)
     return raw, merge.cite(ref, entry["retrieved"], entry["sha256"])
+
+
+def _crop_names() -> dict[str, list[str]]:
+    """Every name a source may use for each crop: its catalog names plus the crosswalk's `wikipedia` aliases."""
+    names = {}
+    for path in sorted((CATALOG / "crops").glob("*.yaml")):
+        item = yaml.safe_load(path.read_text())
+        names[item["slug"]] = [n for group in item["names"].values() for n in group] + CROSSWALK.get(
+            item["slug"], {}
+        ).get("wikipedia", [])
+    return names
 
 
 def cmd_merge() -> int:
@@ -77,6 +100,9 @@ def cmd_merge() -> int:
     eco = extract.ecocrop(ecocrop_rows(raw))
     raw, of_src = _source("openfarm-rescue", "openfarm-rescue")
     openfarm = extract.openfarm(raw)
+    raw, wiki_src = _source("wikipedia-companions", "wikipedia-companion-plants")
+    wiki_src["locator"] = f"revision {WIKIPEDIA_REVISION}"
+    companions = merge.companion_pairs(extract.wikipedia_companions(raw), merge.companion_lookup(_crop_names()))
 
     for slug, names in CROSSWALK.items():
         path = CATALOG / "crops" / f"{slug}.yaml"
@@ -90,6 +116,7 @@ def cmd_merge() -> int:
             ("harrington-osu", merge.from_harrington(harr["germination"].get(names.get("harrington")), harr["emergence"].get(names.get("harrington")), harr_src)),
             ("fao-ecocrop", merge.from_ecocrop(eco.get(names.get("ecocrop")), names.get("ecocrop"), eco_src)),
             ("openfarm-rescue", merge.from_openfarm(openfarm.get(names.get("openfarm")), of_src)),
+            ("wikipedia-companion-plants", merge.from_wikipedia(companions.get(slug), wiki_src)),
         ]  # fmt: skip
         changed = [p for ref, proposals in batches for p in merge.merge(item, proposals, ref)]
         text = merge.dump(item)

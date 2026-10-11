@@ -153,3 +153,86 @@ def test_ecocrop_proposals_validate_against_the_catalog_model():
     assert crop.params["annual_rainfall"].unit == "mm"
     assert crop.params["cycle_days"].sources[0].locator == "ECOCROP code 99, GMIN, GMAX (via Recocrop)"
     assert merge.from_ecocrop(None, None, src) == {}
+
+
+# Made-up rows in the shape of the Wikipedia companion table (cells: name, scientific, helps, helped by, attracts,
+# repels, avoid, comments), with the markup the real wikitext uses.
+COMPANIONS = b"""
+{|class="wikitable"
+! Common name !! Scientific name !! Helps !! Helped by !! Attracts !! Repels !! Avoid !! Comments
+|-
+|'''[[Tomato|Tomatoes]]''' || ''Solanum'' || Peppers,<ref name="a">{{cite web |title=x}}</ref> [[basil]] || Beans (bush), carrots || Bees || Aphids || Fennel; dill || Prose here
+|-
+|'''Beans, bush''' || ''Phaseolus'' || Tomatoes || Carrots, onions and potatoes. Marigolds || || || Fennel, -ghost plants, etc. || -
+|-
+|'''Too short''' || ''Row'' || only three cells
+|}
+"""
+NAMES = {
+    "tomato": ["Tomato"],
+    "sweet-pepper": ["Sweet pepper", "pepper"],
+    "basil": ["Basil"],
+    "green-bean": ["Green bean", "beans bush", "bean"],
+    "carrot": ["Carrot"],
+    "onion": ["Onion"],
+    "potato": ["Potato"],
+    "fennel": ["Fennel"],
+}
+WIKIPEDIA = merge.cite("wikipedia-companion-plants", date(2026, 10, 11), "cd" * 32, "revision 1")
+
+
+def test_wikipedia_companions_reads_the_three_pair_columns():
+    rows = extract.wikipedia_companions(COMPANIONS)
+    assert list(rows) == ["Tomatoes", "Beans, bush"]  # rows with too few cells are skipped
+    assert rows["Tomatoes"] == {
+        "helps": ["Peppers", "basil"],
+        "helped_by": ["Beans", "bush", "carrots"],
+        "avoid": ["Fennel", "dill"],
+    }
+    assert rows["Beans, bush"]["helped_by"] == ["Carrots", "onions and potatoes", "Marigolds"]
+    assert rows["Beans, bush"]["avoid"] == ["Fennel", "ghost plants"]  # markers and "etc." dropped
+
+
+def test_name_matching_ignores_case_and_plurals():
+    assert extract.normalise_name("Tomatoes") == extract.normalise_name("tomato")
+    assert extract.normalise_name("Radishes") == "radish"
+    assert extract.normalise_name("Brussels sprouts") == extract.normalise_name("Brussels sprout")
+    assert extract.normalise_name("Asparagus") == "asparagus"
+
+
+def test_companion_pairs_run_both_ways_and_keep_only_catalog_crops():
+    lookup = merge.companion_lookup(NAMES)
+    pairs = merge.companion_pairs(extract.wikipedia_companions(COMPANIONS), lookup)
+    assert pairs["tomato"][("sweet-pepper", "beneficial")] == {"Tomatoes"}
+    assert pairs["sweet-pepper"][("tomato", "beneficial")] == {"Tomatoes"}  # reciprocal
+    assert pairs["tomato"][("fennel", "antagonistic")] == {"Tomatoes"}
+    assert ("green-bean", "beneficial") in pairs["tomato"]  # "Beans" means the bush bean here
+    assert {"onion", "potato", "carrot"} <= {other for other, _ in pairs["green-bean"]}  # "onions and potatoes" split
+    assert all(other != "marigold" for other, _ in pairs["green-bean"])  # not a catalog crop
+    assert all(other != slug for slug, p in pairs.items() for other, _ in p)  # never a crop with itself
+
+
+def test_companion_proposals_are_traditional_cited_and_validate():
+    lookup = merge.companion_lookup(NAMES)
+    pairs = merge.companion_pairs(extract.wikipedia_companions(COMPANIONS), lookup)
+    proposals = merge.from_wikipedia(pairs["tomato"], WIKIPEDIA)
+    item = {"kind": "crop", "slug": "tomato", "names": {"en": ["Tomato"]}, "scientific_name": "Solanum lycopersicum"}
+    item |= {"family": "Solanaceae", "life_cycle": "annual"}
+    assert merge.merge(item, proposals, "wikipedia-companion-plants") == ["companions"]
+    crop = Crop.model_validate(yaml.safe_load(merge.dump(item)))
+    fennel = next(c for c in crop.companions if c.crop == "fennel")
+    assert (fennel.relation, fennel.evidence, fennel.confidence) == ("antagonistic", "traditional", "low")
+    assert fennel.sources[0].locator == 'revision 1, row "Tomatoes"'
+    assert merge.from_wikipedia(None, WIKIPEDIA) == {}
+
+
+def test_a_curated_companion_list_is_never_overwritten():
+    item = {"companions": [{"crop": "basil", "relation": "beneficial", "sources": [{"ref": "curated"}]}]}
+    assert (
+        merge.merge(
+            item,
+            {"companions": [{"crop": "x", "sources": [{"ref": "wikipedia-companion-plants"}]}]},
+            "wikipedia-companion-plants",
+        )
+        == []
+    )

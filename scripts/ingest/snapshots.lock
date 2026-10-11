@@ -227,3 +227,7 @@ pyfao56-tables:
   retrieved: 2026-10-09
   sha256: cfa28912db80d4b18d8e860708bd18566758e0de75bddf01b2674719d92f9633
   url: https://raw.githubusercontent.com/kthorp/pyfao56/main/src/pyfao56/tools/tables.py
+wikipedia-companions:
+  retrieved: 2026-10-11
+  sha256: 39e5cc57a31be91a2e0f24ac47f6a3715d1003b6539cff660da1d8e3efd17572
+  url: https://en.wikipedia.org/w/index.php?title=List_of_companion_plants&oldid=1334550406&action=raw

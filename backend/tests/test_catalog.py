@@ -68,6 +68,19 @@ def write_catalog(tmp_path: Path, crop_patch: dict | None = None, sources: list 
 LETHAL = ("requirements", "temperature", "lethal_min")
 
 
+def companion(crop: str) -> dict:
+    return {
+        "companions": [
+            {
+                "crop": crop,
+                "relation": "beneficial",
+                "evidence": "traditional",
+                "sources": [{"ref": "test-open"}],
+            }
+        ]
+    }
+
+
 def lethal(value: dict) -> dict:
     return {"requirements": {"temperature": {"lethal_min": value}}}
 
@@ -94,6 +107,9 @@ def lethal(value: dict) -> dict:
             "Extra inputs",
         ),
         ({"slug": "Not A Slug"}, "slug"),
+        (companion("nothing"), "companion 'nothing' is not another crop"),
+        (companion("testcrop"), "companion 'testcrop' is not another crop"),
+        ({"companions": [{**companion("x")["companions"][0], "sources": []}]}, "at least 1 item"),
     ],
 )
 def test_bundled_catalog_problems_stop_loading(tmp_path, patch, message):

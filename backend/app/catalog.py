@@ -173,6 +173,20 @@ class Item(Strict):
     params: dict[str, Fact] = Field(default_factory=dict)
 
 
+class Companion(Strict):
+    """A neighbour hint: another crop that is said to grow well (or badly) beside this one.
+
+    Hints, never rules. Imported pairs are `traditional` until a pair-specific study is cited; `mechanism` is only
+    set when a source names one."""
+
+    crop: Slug  # slug of the other crop in the catalog
+    relation: Literal["beneficial", "antagonistic"]
+    mechanism: Literal["trap", "repel", "natural-enemy", "complementarity", "allelopathy"] | None = None
+    evidence: Evidence
+    confidence: Literal["high", "medium", "low"] = "low"
+    sources: list[SourceRef] = Field(min_length=1)
+
+
 class Crop(Item):
     kind: Literal["crop"]
     scientific_name: str
@@ -180,6 +194,7 @@ class Crop(Item):
     rotation_group: str | None = None
     life_cycle: Literal["annual", "biennial", "perennial"]
     food_group: Literal["leafy", "fruiting", "root", "brassica", "legume", "squash", "allium", "herb"] | None = None
+    companions: list[Companion] = Field(default_factory=list)
 
 
 class Variety(Item):
@@ -322,7 +337,7 @@ def load(bundled_root: Path, private_root: Path | None = None) -> Catalog:
             errors.append(f"{path}: duplicate {key[0]} slug {key[1]}")
         cat.items[key] = data
         cat.origin[key] = "bundled"
-    errors += _parent_problems(cat)
+    errors += _reference_problems(cat)
     if errors:
         raise CatalogError("Bundled catalog is invalid:\n" + "\n".join(errors))
     cat.version = digest.hexdigest()[:12]
@@ -337,7 +352,7 @@ def load(bundled_root: Path, private_root: Path | None = None) -> Catalog:
                 continue
             cat.origin[key] = "bundled+private" if key in cat.items else "private"
             cat.items[key] = merged
-        cat.private_errors += _parent_problems(cat, only_private=True)
+        cat.private_errors += _reference_problems(cat, only_private=True)
     return cat
 
 
@@ -365,7 +380,8 @@ def _source_refs(node: Any):
             yield from _source_refs(v)
 
 
-def _parent_problems(cat: Catalog, only_private: bool = False) -> list[str]:
+def _reference_problems(cat: Catalog, only_private: bool = False) -> list[str]:
+    """Links between items must resolve: a variety's crop, a breed's species, a companion's other crop."""
     problems = []
     for (kind, slug), data in cat.items.items():
         if only_private and cat.origin[(kind, slug)] == "bundled":
@@ -373,6 +389,9 @@ def _parent_problems(cat: Catalog, only_private: bool = False) -> list[str]:
         parent_kind = PARENT_KIND.get(kind)
         if parent_kind and (parent_kind, data["parent"]) not in cat.items:
             problems.append(f"{kind} {slug}: parent {parent_kind} {data['parent']!r} not found")
+        for companion in data.get("companions", []):
+            if companion["crop"] == slug or ("crop", companion["crop"]) not in cat.items:
+                problems.append(f"crop {slug}: companion {companion['crop']!r} is not another crop in the catalog")
     return problems
 
 

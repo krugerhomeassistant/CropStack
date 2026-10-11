@@ -52,6 +52,7 @@ It runs on your own hardware (a NAS, a Raspberry Pi, a home server) as one conta
 - **Today's jobs.** From your plantings, Today lists what to do now (sow, set out seedlings, start harvesting), each with why now. Mark a job done and the planting moves along; the next two weeks are listed below.
 - **Watering.** CropStack tracks the water in the soil for each planting from evaporation, rain and root depth, and tells you when to water and how much, so you water when the crop needs it and not by the calendar.
 - **Weekly Check.** Each growing planting gets a weekly job listing what to look for and what to keep or remove.
+- **Neighbours.** Each crop page lists crops said to grow well beside it and crops said to do better apart, labelled as traditional knowledge because few pairings have been tested.
 - **Garden assistant (optional).** Add a Claude, OpenAI or OpenRouter key, or an Ollama address, in Settings, then ask garden questions in Ask.
 - **Garden in four windows**: Plan, Plant, Calendar, Plantings.
 - **Year plan.** *Draft a year plan* fills your beds with crops that suit your climate: earliest good window first, rotating plant families. Set how many people you feed and each crop is sized from a balanced vegetable basket; a coverage card shows how much of the need your beds meet, the weeks that fall short and the single change that helps most. Review the ghosted cells, then accept to schedule every job at once. Nothing you have already planted is touched.

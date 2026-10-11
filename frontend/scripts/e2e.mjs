@@ -89,6 +89,9 @@ try {
   await owner.getByText(/Grows between .* best between/).waitFor()
   await owner.getByRole('link', { name: 'Source 1' }).first().waitFor()
   assert.ok(await owner.getByRole('heading', { name: 'Sources' }).isVisible())
+  await owner.getByRole('heading', { name: 'Neighbours' }).waitFor()
+  await owner.getByRole('link', { name: 'Basil' }).waitFor() // a traditional pairing, linked to its crop page
+  await owner.getByText(/Sources disagree about/).waitFor() // the list contradicts itself for a few tomato pairs
   await owner.getByRole('button', { name: 'Plant this' }).first().click()
   await owner.getByLabel('How many').fill('6')
   await owner.getByLabel('Where').fill('Bed 1')

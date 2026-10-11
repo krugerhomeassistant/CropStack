@@ -35,9 +35,29 @@ requirements:
 Ranges use `value: {min: …, opt: …, max: …}`. When sources disagree by region or cultivar, give a list of
 values with `qualifiers` instead of averaging. A value with no source must say `estimate: true`.
 
+## Companions
+
+A crop lists neighbours it is said to grow well beside (`beneficial`) or do better apart from (`antagonistic`).
+They are hints, never rules, and every pair is cited:
+
+```yaml
+companions:
+  - crop: carrot                  # slug of another crop in the catalog
+    relation: beneficial          # beneficial | antagonistic
+    mechanism: null               # trap | repel | natural-enemy | complementarity | allelopathy, only if a source names one
+    evidence: traditional         # stays traditional until a study of this very pair is cited
+    confidence: low
+    sources:
+      - {ref: wikipedia-companion-plants, locator: 'revision 1334550406, row "Tomatoes"', retrieved: 2026-10-11}
+```
+
+Pairs are stored on both crops. When sources disagree about a pair, both statements stay (the app says "sources
+disagree"); nothing is averaged or dropped.
+
 ## Rules (checked in CI)
 
 - Files validate against the schema; slugs are unique per kind; varieties and breeds point to an existing parent.
+- A companion points at another crop in the catalog, never at the crop itself.
 - Every cited source exists in `sources.yaml`; `bundle` sources must have an open licence; nothing may cite a
   `link-only` source.
 - Write descriptions fresh. Never copy prose, tables, lists or images from a source.
@@ -58,6 +78,7 @@ the raw copy they came from. Values written by hand are never overwritten by an 
 | `params.height_max` | m | mean maximum plant height |
 | `params.row_spacing`, `params.plant_spread`, `params.height` | cm | grower-reported sizes |
 | `params.sun` | | `full_sun`, `partial_sun`, `partial_shade` or `shade` |
+| `companions` | | neighbour hints from Wikipedia's list of companion plants, one pinned revision (see Companions) |
 
 ## Private pack
 

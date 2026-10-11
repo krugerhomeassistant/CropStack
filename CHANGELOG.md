@@ -5,6 +5,16 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.42.0] - 2026-10-11
+
+### Added
+- **Neighbours.** Each crop page now lists crops said to grow well beside it and crops said to do better apart, each linking to its crop page. They come from Wikipedia's list of companion plants (one pinned revision) and are labelled traditional knowledge, because few pairings have been tested. Where the list contradicts itself (for example tomato and chilli) the page says "Sources disagree about …" instead of choosing.
+- Catalog: `companions` on crops (crop, relation, optional mechanism, evidence, sources), with 225 pairs across 51 crops. The loader rejects a companion that points at a missing crop or at the crop itself.
+- Ingest: `scripts/ingest` reads the Wikipedia companion table from a pinned revision; `wikipedia:` names in the crosswalk map its entries to catalog crops. Pinned sources are not fetched again once locked.
+
+### Notes
+- Group entries ("brassicas", "nightshades") are not expanded to member crops yet, and the planner does not use companions.
+
 ## [0.41.0] - 2026-10-11
 
 ### Added
@@ -379,7 +389,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - CI: ruff lint and format, backend tests, frontend build, image publishing to GHCR and automatic GitHub releases on a version bump.
 - Project docs: README, wiki, architecture, roadmap, contributing guide, security policy and Code of Conduct.
 
-[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.41.0...HEAD
+[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.42.0...HEAD
+[0.42.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.41.0...v0.42.0
 [0.41.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.40.0...v0.41.0
 [0.40.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.39.1...v0.40.0
 [0.39.1]: https://github.com/krugerhomeassistant/CropStack/compare/v0.39.0...v0.39.1
