@@ -1,72 +1,41 @@
 # ACTIVE CONTEXT
 
-**Date:** 2026-10-10 · **Version:** 0.32.0
+**Date:** 2026-10-11 · **Version:** 0.40.0 (released, CI green, deployed to the owner's copy) · **Alembic head:** 0016 · **Tests:** 155 backend, browser e2e green.
+History of earlier sessions: `ACTIVE_CONTEXT_ARCHIVE.md`.
 
-## Current subtask
-**v0.28.0: Garden assistant slice (settings, Ask). Next in PLAN 13: photo diagnosis, tools, preservation recipes; owner to test with a real key/Ollama.** **v0.27.0 shipped the four items below (cells, staggering, recommendations); follow-ups: move a planting between cells, Today jobs naming cells, rotation warnings in the grid, recommendation cache and perennials.** Owner feedback 2026-10-10 on the v0.26 garden plan: (1) specify exactly what goes where: per-cell placement inside a bed; (2) mixed and staggered beds: one bed, row or pot holds several crops in any order, in succession over time; (3) easy to customise and wired into jobs, crowding and rotation; (4) show recommendations of what to plant, when and where. Plan: cells per bed (`bed.cell_cm`), `planting.cells`, date-aware occupancy and conflicts, `GET /recommendations`, a bed editor with a crop palette, painting and a date slider. **Owner request 2026-10-10: "add the garden planner part".** v0.26.0 is the first slice (PLAN 8.3): beds as objects, SVG plan with drag, planting-to-bed, overcrowding. Still open in 8.3: undo/redo, rotate, polygon and keyhole beds, structures, paths, trees and shade (sun model), rulers, per-plant placement with a date slider, rotation conflicts, auto-layout from the plan generator, export and print. Then 8.1 setup interview, 8.2 needs, 8.4 plan generator. v0.25.0: organisms have `hosts` (crop slugs; empty = any) and Check jobs filter by the planting's crop. v0.24.0: weekly Check jobs (`kind=check`, template how-to-check) show all organisms; no host links yet so the list is not crop-specific. Next: host links per crop, more organisms, feeding, setup interview. v0.22.0 released (the Docker Hub 429 cleared on re-run). v0.23.0: first 9 organisms in `catalog/organisms/` (facts fetched from UC IPM pages 2026-10-10 after the owner accepted the permission prompt; hornworm cocoon claim dropped because the page did not support it). Next: scouting "Check" jobs from these entries, more organisms (late blight needs a registered source for the Hutton rule; AHDB), then feeding and the setup interview. v0.22.0 harvest logging shipped (table 0010, API, Garden UI, e2e). v0.21.0 CI failed on the screenshots script (fixed in 1a33d87). v0.20.0 (soil question; watering uses it) released after CI; v0.19.0 Water jobs, v0.18.0 Protect jobs, v0.17.0 the task engine and Today jobs. Owner confirmed (2026-10-09) live weather works on the ZimaOS install. Next: rest of the setup interview (space, water source, household, time, budget), crop-specific how-to text (generic per-kind steps shipped in v0.21.0), 6.6 feeding, 6.7 scouting, then hardening-off and successions; Today weather advice and the how-to text per job. Process note: `ss` is missing in the sandbox; find the stub server by scanning /proc (see /tmp/restart.sh pattern) and run e2e and screenshots against separate fresh data dirs.
+## What CropStack is today
+Households and garden climate (30 y Open-Meteo), 60-crop catalog (CC BY-SA, cited values), 22 pests/diseases/beneficials, jobs on **Today** (sow, set out, harvest, water, protect, check; crop-specific facts), garden planner (plot-plan map, beds/rows/pots, per-cell planting, date stepper, past sowings count as sown), **year plan** (greedy draft, replace-on-replan, Clear plan), harvest log, **Pantry**, optional assistant (Ask). Owner uses it as an iPhone home-screen PWA on ZimaOS; his wife uses Today.
 
-## Open to-dos (owner: "make note of missed/still to dos")
-- **Owner idea 2026-10-10: garden game** ("map builder, plow the beds, plant, grow in real time with the real garden, slow paced, doubles as tracker"). Designed in `docs/GAME_DESIGN.md`, steps in PLAN Phase 15 (G0 spike → G9). Not started. Open owner questions: GAME_DESIGN §14 (name, art style, placement, milestone decor, sound); defaults recorded there. Owner said to design it on its own merits (not modelled on Murmur).
-- v0.30.0 (owner: "freely draw/place rows/plants/beds, move layouts"): free drawing, resize handle, layouts. Open: undo/redo, rotate, polygon/curved beds, save a layout as a template, free single plants (trees) outside beds, snap to other beds, zoom/pan, background photo to trace.
-- **Owner feedback 2026-10-10 (iPhone, v0.31): "spammed with information/forms; needs to be cleaner and simpler with more windows for different types of things; recommendations cleaner, maybe while planting on the beds; dislike the date slider; the list after planting (nine identical Beetroot rows) is spam; add a calendar; the app needs rounding and finishing; currently annoying to use."** DONE in v0.32.0 for the Garden page: Garden as tabs (Plan, Plant, Calendar, Plantings); paint merges into one planting; date stepper; crop chips; clearer bed status ("Too full 0 m2" was wrong for clashes); one Plant button per recommendation; calendar. Polish backlog after that: apply the same "windows" treatment to Today, Climate, Crops and More; sheets/dialogs instead of inline forms; empty and loading states; consistent spacing and type scale; haptic-feeling touch targets; offline/error states; "Request failed" from a body-less 5xx on ZimaOS (status code now shown, cause unknown; suspect parallel heavy requests, so recommendations load lazily).
-- **Not done yet (noted 2026-10-10, owner: "make note of the recommendations and not done yet tasks"):**
-  - Garden assistant: Bloomery pattern ported in v0.29.0 except streaming (clone: /home/claude/krugerhomeassistant/bloomery); test with a real Ollama or key; photo diagnosis (vision), read-only tools (catalog, environment, plantings), streaming, saved chat history, preservation recipes, draft custom profiles; encrypt the key at rest.
-  - Garden plan: edit a planting's dates and quantity inside the bed card; move a planting between cells or beds; Today jobs naming cells; rotation warnings in the grid; recommendation cache (about 2 s) and perennials such as asparagus; suggestions use up to 4 cells; crowding counts only crops with a catalogued spread.
-  - Roadmap: setup interview (8.1), needs model (8.2), plan generator and auto-layout (8.4), undo/redo, rotate, polygon beds, structures, sun and shade model, export and print, feeding jobs, more organisms (about 31), crop-specific how-to text, imperial units in generated job text, Home Assistant integration, Docker image run verification, UI for locking a job's date and the change log.
-  - Owner action: enable "Allow GitHub Actions to create pull requests"; refresh the iPhone home-screen icon once if screens look old.
-- UI kit: Sheet/Dialog, Tabs, Toast, Select. Add with the first screen that needs them (PLAN 6.9).
-- Climate charts v2 (PLAN 11): ET0, user-picked threshold curves, trend, this-season overlay, sensor overlay, takeaway sentence, attribution line; add the chart rules to `docs/DESIGN.md`. Chart tests: unit tests for the pure helpers if they grow.
-- Catalog (PLAN 5): fetchers v2b (DSSAT, Wikidata Afrikaans, WFO, USDA PLANTS, EPPO, Wikipedia companions; ECOCROP is done); monthly CI job opening a PR with the YAML diff; prose-similarity CI check; herbs and the rest of the 60 crops; varieties (≥ 2 per crop); 20 fruit species; 5 cover crops; 40 organisms; override editor and custom crops.
-- Done: the owner confirmed weather data pulls correctly on the ZimaOS install (2026-10-09).
-- Waits for Home Assistant work: 4.3 sensors and observations.
+## Owner and rules (from many messages)
+Personal, non-commercial. Fully dynamic (no presets). Never restrict or destroy his work: only suggest. "Information is our main focus" but key points, not floods; cleaner "windows". Must look professional. English and metric only is fine. He sends many messages in a row: note each as a to-do here or in PLAN, do not stop the current work. Do not ask questions that research can answer.
 
-- **Owner request 2026-10-09 (mid-Phase 6): global contribution + perpetual data collection.** Way for anyone to add plants/animals/values (PRs to `catalog/`; issue forms for "request a species" and "report a value"; a contributor guide with the YAML schema, sources and licence rules; CI that validates schema, sources and prose similarity on every PR) and a collection loop that never stops (monthly scheduled ingest job opening a PR with the YAML diff; a coverage report listing crops/animals still missing values; a "needs data" label queue). DONE in v0.14.0 (guide, issue forms, PR template, coverage report, monthly refresh workflow, in-app link). Still open: prose-similarity CI check, fetchers v2b; first real run of the monthly workflow needs the owner to enable Actions PR creation (repo Settings → Actions → "Allow GitHub Actions to create pull requests").
+## How to work (commands)
+- Backend tests: `cd backend && .venv/bin/python -m pytest -q` (155 pass, ~25 s).
+- Lint (do before every push): `ruff format . && ruff check .` from repo root.
+- Frontend: `cd frontend && npx tsc --noEmit && npm run build`.
+- Browser e2e: `npm run build` once, then `scripts/e2e-local.sh` (wipes data, restarts the stubbed server on :8512; takes ~100 s, so run it in the background with a log: `(scripts/e2e-local.sh > /tmp/e2e.log 2>&1 &)`). First run after a cold start can fail on the setup form: run again. Never run e2e on a dirty DB.
+- Screenshots: `npm run screenshots` (see CI for the env vars).
+- Catalog: `backend/.venv/bin/python scripts/ingest check` (needs network; the real-catalog pytest covers validity offline), `python scripts/coverage.py` (regenerate `docs/COVERAGE.md`; CI fails if stale).
+- Migrations: set `CROPSTACK_DATA_DIR=/tmp/cs-mig`, `alembic upgrade head`, then `alembic revision --autogenerate` (or hand-write like 0016), name `NNNN_name.py`, revision id = number, `ruff check --fix`, bump `HEAD` in `backend/tests/test_migrations.py`.
 
-## Last execution results
-- All pages and components moved to the UI kit and tokens; desktop rail ≥ 1024 px; Today two columns on desktop; designed empty states for Today jobs and Garden beds. `npm run screenshots` reviewed (24 images, light/dark × phone/desktop). Build and type check clean.
-- README rewritten (what works now vs roadmap, screenshots in `docs/images/`), WIKI rewritten against the current code.
+## Release checklist
+1. `python scripts/bump.py X.Y.Z`; CHANGELOG section; update README/WIKI/ARCHITECTURE/PLAN/LESSONS/this file; `python scripts/coverage.py`.
+2. Tests + lint + build + e2e locally (all green) before pushing.
+3. Commit with trailers `Co-Authored-By: Claude <model> <noreply@anthropic.com>` and the `Claude-Session:` line; `git pull --rebase`; push to `main`. A new version on main = release (CI: lint, tests, e2e, Docker image to ghcr, GitHub release; ~6 min). Poll `gh run list -L1` until `completed`.
+4. Deploy to the owner: his copy is `E:\Projects\Personal\CropStack` (device bridge `$HOME/mnt/Personal/CropStack`): shallow-clone main to a temp dir, `rm -rf .git`, `cp -rT` over it (never touch his git config). He then pulls `ghcr.io/krugerhomeassistant/cropstack:latest` in ZimaOS and restarts.
+5. Real-container smoke test: `docker pull` the image, run with `--network host -v /tmp/data:/data`, hit `/api/health` (needs `dockerd &` first in the sandbox; local `docker build` fails on the proxy CA, use the CI image).
 
-## Handoff to the implementing session
-- Pull `main` first; then read, in order: this file, SPEC §6.1, §16, §16.1, PLAN 3.4 / Phase 5 / 9.1, `docs/research/catalog-data-sources.md` (decisions + source table), `docs/research/notes/*.md` (per-domain evidence: cited values, URLs, licence quotes, gaps).
-- Treat `licence_conflicts_resolved.md` as overriding the other notes where they disagree.
-- Values marked "unverified" in the notes must not be bundled until checked.
+## Next up (priority order; specs in PLAN.md "Next up")
+1. Needs model (PLAN 8.2) so the year plan sizes each crop's block to what the household eats.
+2. Year plan polish: re-plan diff view; live crops keep their cells until harvested (known gap); lock a job's date.
+3. Look and feel: apply the plot-plan/window style to Climate, Crops, More; map pinch-zoom/pan; move a planting between cells/beds; undo/redo.
+4. Data: sow depth still an estimate for 36 crops; companions (Wikipedia CC BY-SA list); storage life per crop (USDA AH-66) for Pantry; varieties; animals catalog; more organisms.
+5. Pantry link to harvest; Mealie integration (future, owner not running Mealie).
+6. Home Assistant integration (MQTT/REST), assistant photo diagnosis/tools/streaming/history, encrypt API key at rest, imperial units in job text (low priority).
 
-## Standing requirements
-- **README and WIKI current** (owner, 2026-10-09: "extremely outdated"; rewritten in v0.9.0): reread and update both on every release, and refresh `docs/images/` when screens change.
-- **Professional look and feel** (owner, 2026-10-09): "just for me" is about licensing only. Design system (PLAN 6.9) comes before the Today screen; every changed screen gets a visual check in light/dark and phone/desktop before release.
-
-## Blockers
-- None. Decided 2026-10-09 (user: personal, non-commercial use; repo stays public): public `catalog/` = CC BY-SA 4.0; no ARC request for now; personal-use values go in a private pack on the server (SPEC §16.1, §19 Q6–7).
-
-## Immediate next step
-Phase 5 catalog content (ingestion pipeline, following the handoff reading order above) → 6 crop engine → 7 Today tasks. Live weather confirmed working on the ZimaOS install. 4.3 (sensors, observations) waits for Home Assistant work.
-
-## v0.33.0 released
-Past-dated plantings, key-point sheets, non-destructive bed edits, any cell plantable. Next: rounding/finishing (windows for Today/Climate/Crops/More), move plantings between cells, undo, free plants.
-
-## v0.34.0
-Year plan drafter + 31 new crops (60). Next: data depth (varieties, companions from Wikipedia CC BY-SA, pests/diseases, animals), needs model for quantities, rounding of Today/Climate/Crops/More.
-
-## v0.35.0
-Plan facelift (cells + icons per bed), crop-specific job facts (`app/crop_facts.py`). Gap: no sowing depth in the catalog yet (needs a sourced `sow_depth` param); facts are English/°C.
-
-## v0.36.0
-sow_depth param (estimate) for 53 crops; Today job cards compact with Details. Next: pests/diseases per crop, needs model, Climate/Crops/More windows, move planting + undo.
-
-## v0.37.0
-Pantry shipped. Owner asked (2026-10-10) for a complete redo of the planner visuals: it looks poor next to the rest of the app. Mealie later.
-
-## v0.38.0
-Planner redrawn (plot plan look, floating tools, map+panel). Next: pests/diseases, needs model, Climate/Crops/More facelift, move planting + undo, zoom/pan on the map.
-
-## Audit 2026-10-10
-README, RESOURCES, TOOLING refreshed for v0.33–0.38 (were stale at v0.10). README screenshots not regenerated. Next: pests/diseases per crop, sourced sow depth, needs model.
-
-## v0.39.0
-22 organisms (13 new, hosts set, wording ours, cited to uc-ipm at page level). Next: sourced sow depth, needs model, Climate/Crops/More facelift.
-
-## v0.39.1
-Sow depth sourced (MO G6201 + MSU guide, range when they differ) for 17 crops; remaining crops are still estimates. Next: needs model (PLAN 8.2).
-
-## v0.40.0
-Migration 0016: `planting.source` ('plan' = made by year plan; backfilled for earlier batches of 5+ planned plantings saved in one second). Replan replaces unstarted plan plantings; DELETE /plan/year clears them. Open: live crops hold cells only to their cycle end, so a draft can schedule after a crop the owner still has growing.
+## Open issues / unverified
+- Owner's Bed 1 showed "6 cells have two plantings at once" (cause unknown: hand painting or an old plan). Ask him to check after updating to 0.40.0 and using Clear plan.
+- Planner look on his phone and the year plan on real climate data are unverified by me.
+- README screenshots in `docs/images/` are old (regenerate with `npm run screenshots`).
+- Owner action: enable "Allow GitHub Actions to create pull requests" so the monthly catalog-refresh workflow can open PRs.
+- Sandbox quirks: `gh` GraphQL is blocked (use `gh run list`, REST); the sandbox proxy resets some connections (retry); `sqlite3` CLI is missing (use python).
