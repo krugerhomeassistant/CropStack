@@ -10,6 +10,16 @@ Roadmap implementing [`SPEC.md`](SPEC.md). Every task is atomic and resumable in
 
 ---
 
+## Next up (priority order; each is a self-contained spec)
+1. **Needs model (8.2)**: inputs household size, diet mix, self-sufficiency target (%), preferred crops (all editable, stored on the household, versioned like the garden profile). Output: weekly kg per crop (cited reference intakes; flag as estimates) → `GET /needs`. The drafter (`engine/yearplan.py`, `BLOCK = 6` shortcut) then sizes each crop's cells = target kg ÷ (plants per cell × yield per plant), splits across successions, and reports unmet demand ("grows 60% of your tomatoes; add 2 beds"). Needs per-crop yield per plant in the catalog (currently none: add `yield_per_plant` with sources or label as estimate). Tests: pure sizing function; API; e2e step. UI: a short "What do you eat?" sheet on the Plant tab, not a long form.
+2. **Year plan polish**: show a diff when re-planning (added/removed/moved) before replacing; live crops hold cells until harvested/finished, not only to their cycle end; "lock a job date".
+3. **Window style for Climate, Crops, More** like Garden/Pantry (tabs/sheets, key points, no floods); map zoom/pan; move a planting between cells/beds; undo/redo.
+4. **Data depth**: sourced sow depth for the remaining 36 crops (estimates now); companion planting from Wikipedia CC BY-SA list; storage life per crop and method from USDA AH-66 for Pantry; varieties; animals; more organisms. Rule: wording ours, cite page-level, mark estimates.
+5. **Pantry ↔ harvest link, then Mealie** (REST API: recipes, meal plans, shopping list).
+6. Integrations and assistant (Phase 12/13).
+
+---
+
 ## Done
 
 ### Phase 0 — Foundation (v0.1.0) ✅
@@ -206,7 +216,7 @@ Goal: probabilistic, self-updating environment; remove v1 heuristics (§18).
 - [ ] Candidate filtering by feasibility (windows) and preferences.
 - [x] (v0.41.0) Quantities from targets ÷ expected yield; successions to match weekly demand + preservation.
 - [~] (v0.41.0: area and rotation only; coverage report and one best change) Constraint fit (area per sun class, monthly water, weekly labour, budget, rotation, spacing): greedy + local improvement; explain unmet demand; "single most effective change".
-- [~] (v0.34.0: greedy year draft per bed from sowing windows, rotation-aware, review/leave out, accept → plantings + tasks; no yield targets, no diff view on re-plan) Auto-layout into beds; diff view; accept → plantings + tasks.
+- [~] (v0.34.0–0.41.0: greedy year draft per bed from sowing windows, rotation-aware, review/leave out, accept → plantings + tasks, replan replaces unstarted plan, Clear plan; sized from head count and yield, no diff view on re-plan) Auto-layout into beds; diff view; accept → plantings + tasks.
 - [ ] Re-plan diff when profile or conditions change (AC-P8).
 
 ## Phase 9 — Animals §8
