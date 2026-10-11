@@ -9,6 +9,7 @@ scientific_name: Ocimum basilicum
 family: Lamiaceae
 rotation_group: herbs
 life_cycle: annual
+food_group: herb
 description: A tender, warm-season herb. Pinch out flower buds to keep the leaves coming, and bring on a few plants under
   cover before the last frost.
 requirements:
@@ -42,6 +43,13 @@ requirements:
       sources:
       - {ref: fao-ecocrop, locator: 'ECOCROP code 719, PHMIN to PHMAX (via Recocrop)', retrieved: 2026-10-09, snapshot: 'sha256:90a21d908419e304e4e4c38c92df62d93b25cb373420fcd0a711247b1f47f358'}
 params:
+  yield_per_m2:
+    value: 1.0
+    unit: kg/m2
+    evidence: traditional
+    confidence: low
+    estimate: true
+    qualifiers: {basis: 'typical home-garden yield per crop cycle; replace with an extension-service figure'}
   annual_rainfall:
     value: {min: 600.0, opt_min: 1000.0, opt_max: 1600.0, max: 4300.0}
     unit: mm

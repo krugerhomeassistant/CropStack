@@ -200,3 +200,23 @@ def test_every_organism_names_real_crops_and_has_a_watch_note():
     for slug, data in c.list("organism"):
         assert set(data.get("hosts", [])) <= crops, slug
         assert data["params"]["identify"]["value"], slug
+
+
+def test_every_crop_says_how_it_is_eaten_and_roughly_what_it_yields():
+    from app.engine import layout, needs
+
+    c = cat.load(REPO / "catalog")
+    crops = list(c.list("crop"))
+    assert crops
+    for slug, item in crops:
+        assert item.get("food_group") in needs.GROUPS, slug
+        assert layout.yield_per_m2(item), slug
+
+
+def test_crop_food_group_literal_matches_the_needs_groups():
+    from typing import get_args
+
+    from app.engine import needs
+
+    (literal,) = (a for a in get_args(cat.Crop.model_fields["food_group"].annotation) if a is not type(None))
+    assert set(get_args(literal)) == set(needs.GROUPS)

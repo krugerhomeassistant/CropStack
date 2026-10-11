@@ -121,8 +121,16 @@ export type PlanItem = {
   harvest_from: string
   harvest_to: string
   until: string
+  food_group?: string
+  kg?: number
 }
-export type YearPlan = { garden: boolean; beds: boolean; scheduled: number; items: PlanItem[] }
+export type FoodGroupCoverage = { target_kg: number; supply_kg: number; covered: number; weeks_short: string[] }
+export type Coverage = {
+  overall: number
+  groups: Record<string, FoodGroupCoverage>
+  best_change: { kind: 'add_bed_area'; m2: number; gain: number } | null
+}
+export type YearPlan = { garden: boolean; beds: boolean; scheduled: number; people: number; items: PlanItem[]; coverage?: Coverage; skipped_no_yield?: string[] }
 export type PantryMethod = 'canned' | 'frozen' | 'dried' | 'fermented' | 'cellar' | 'fresh'
 export type PantryItem = {
   id: number
@@ -244,7 +252,7 @@ export type Weather = {
   source: string
 }
 
-export type HouseholdSettings = { forecast: boolean; place_search: boolean }
+export type HouseholdSettings = { forecast: boolean; place_search: boolean; people: number }
 export type DataSource = {
   id: string
   name: string
@@ -253,7 +261,7 @@ export type DataSource = {
   when: string
   used_for: string
   licence: string
-  switch: keyof HouseholdSettings | null
+  switch: 'forecast' | 'place_search' | null
   enabled: boolean
 }
 
@@ -385,7 +393,7 @@ export const api = {
   savePrefs: (prefs: Prefs) => request<Prefs>('PUT', '/auth/prefs', prefs),
   weather: () => request<Weather>('GET', '/sites/current/weather'),
   householdSettings: () => request<HouseholdSettings>('GET', '/household/settings'),
-  saveHouseholdSettings: (settings: HouseholdSettings) =>
+  saveHouseholdSettings: (settings: Partial<HouseholdSettings>) =>
     request<HouseholdSettings>('PUT', '/household/settings', settings),
   calendar: (start: string, end: string) =>
     request<CalendarEvent[]>('GET', `/calendar?start=${start}&end=${end}`),

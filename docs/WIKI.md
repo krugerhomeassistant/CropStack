@@ -134,3 +134,6 @@ Every sow, set-out, harvest and water job shows facts from its crop's catalog en
 
 ## Pantry (v0.37.0)
 More → Pantry. Each item: what, how it is kept, amount and unit, put-by date, optional use-by date (default: canned 12 months, frozen 9, dried 12, fermented 6, cellar 3, fresh 7 days), place. Sorted by use-by; items due within 30 days or past date appear under Use first.
+
+## Needs model (v0.41.0)
+Settings → people. Demand is people × 400 g of vegetables a day, split over 8 food groups (leafy greens, fruiting vegetables, roots, brassicas, beans and peas, squash, onions, herbs; `engine/needs.py`, shares in `GROUPS`). Each catalog crop has a `food_group` and an estimated `yield_per_m2` (labelled estimates, low confidence). The drafter is a marginal-gain greedy: for each candidate planting in its sowing window it adds the crop and area that most reduces unmet weekly demand, rotation-aware, until beds are full or demand is met. `GET /plan/year` returns coverage (share of demand met), `weeks_short` (week starts where supply is under half the target), and the best change (about 4 m² more bed). Limits: harvest is spread evenly over the harvest window, no diet or per-member model, perennials not planned, crops without a yield are listed and skipped.

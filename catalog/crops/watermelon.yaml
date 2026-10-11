@@ -9,6 +9,7 @@ scientific_name: Citrullus lanatus
 family: Cucurbitaceae
 rotation_group: cucurbits
 life_cycle: annual
+food_group: squash
 description: A warm-season vine that needs a long, hot season and space to sprawl. A dry, yellowed patch where the fruit rests
   on the ground is a sign of ripeness.
 requirements:
@@ -93,6 +94,13 @@ requirements:
       sources:
       - {ref: fao-ecocrop, locator: 'ECOCROP code 47, PHMIN to PHMAX (via Recocrop)', retrieved: 2026-10-09, snapshot: 'sha256:90a21d908419e304e4e4c38c92df62d93b25cb373420fcd0a711247b1f47f358'}
 params:
+  yield_per_m2:
+    value: 3.0
+    unit: kg/m2
+    evidence: traditional
+    confidence: low
+    estimate: true
+    qualifiers: {basis: 'typical home-garden yield per crop cycle; replace with an extension-service figure'}
   height_max:
     value: 0.4
     unit: m

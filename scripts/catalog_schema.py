@@ -26,7 +26,9 @@ def schemas() -> dict[str, str]:
 def main() -> int:
     target = ROOT / "catalog" / "schema"
     stale = [
-        name for name, text in schemas().items() if not (target / name).exists() or (target / name).read_text() != text
+        name
+        for name, text in schemas().items()
+        if not (target / name).exists() or (target / name).read_text(encoding="utf-8") != text
     ]
     if "--check" in sys.argv:
         if stale:
@@ -34,7 +36,7 @@ def main() -> int:
         return 1 if stale else 0
     target.mkdir(parents=True, exist_ok=True)
     for name, text in schemas().items():
-        (target / name).write_text(text)
+        (target / name).write_text(text, encoding="utf-8", newline="\n")
     print(f"wrote {len(schemas())} schema files to {target.relative_to(ROOT)}")
     return 0
 

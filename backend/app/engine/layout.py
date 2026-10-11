@@ -24,6 +24,15 @@ def footprint_m2(item: dict) -> float | None:
     return spread * (metres("row_spacing") or spread)
 
 
+def yield_per_m2(item: dict) -> float | None:
+    """Kilograms harvested per m² over one crop cycle; None when the catalog has no single positive number."""
+    fact = _fact(item, "params", "yield_per_m2")
+    value = fact.get("value") if fact else None
+    if not isinstance(value, int | float) or isinstance(value, bool) or value <= 0:
+        return None
+    return float(value)
+
+
 @dataclass(frozen=True)
 class Use:
     area_m2: float

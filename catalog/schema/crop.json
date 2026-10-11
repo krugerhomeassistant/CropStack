@@ -859,6 +859,28 @@
       "title": "Family",
       "type": "string"
     },
+    "food_group": {
+      "anyOf": [
+        {
+          "enum": [
+            "leafy",
+            "fruiting",
+            "root",
+            "brassica",
+            "legume",
+            "squash",
+            "allium",
+            "herb"
+          ],
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Food Group"
+    },
     "kind": {
       "const": "crop",
       "title": "Kind",

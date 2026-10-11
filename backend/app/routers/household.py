@@ -32,10 +32,11 @@ class InviteIn(BaseModel):
 
 
 class HouseholdSettings(BaseModel):
-    """Household-wide switches. Turning a source off stops every call to it; features that need it say so."""
+    """Household-wide switches and the head count the year plan feeds. Turning a source off stops every call to it."""
 
     forecast: bool = True
     place_search: bool = True
+    people: int = Field(2, ge=1, le=20)  # how many the garden should feed (PLAN 8.2)
 
 
 def household_settings(household: Household) -> HouseholdSettings:
@@ -126,10 +127,13 @@ def get_settings(me: MemberDep, db: SessionDep) -> HouseholdSettings:
 def save_settings(body: HouseholdSettings, owner: OwnerDep, db: SessionDep) -> HouseholdSettings:
     household = db.get(Household, owner.household_id)
     assert household
-    household.settings = body.model_dump()
+    merged = HouseholdSettings(
+        **(household.settings | body.model_dump(exclude_unset=True))
+    )  # a partial PUT keeps the rest
+    household.settings = merged.model_dump()
     db.add(household)
     db.commit()
-    return body
+    return merged
 
 
 @router.get("/household/data-sources")

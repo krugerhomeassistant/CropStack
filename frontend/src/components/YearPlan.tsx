@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { CalendarRange, X } from 'lucide-react'
-import { api, type PlanItem } from '../api'
+import { api, type Coverage, type PlanItem } from '../api'
 import { t } from '../i18n'
 import { useApp } from '../state'
+import CoverageCard, { PeopleStepper } from './CoverageCard'
 import { cropIcon } from './cropIcon'
 import { Button, EmptyState, ErrorMessage, IconButton, Section } from './ui'
 
@@ -16,17 +17,37 @@ export default function YearPlan({ hasBeds, scheduled, plan, setPlan, onUsed, on
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
   const [sure, setSure] = useState(false)
+  const [people, setPeople] = useState<number | null>(null)
+  const [coverage, setCoverage] = useState<Coverage | null>(null)
+  const [skipped, setSkipped] = useState<string[]>([])
+  const canChange = useApp().user.role === 'owner'
   const fail = (e: unknown) => {
     setBusy(false)
     setError(e instanceof Error ? e.message : t('Failed to save'))
   }
+  useEffect(() => {
+    api.householdSettings().then((s) => setPeople(s.people), fail)
+  }, [])
   const draft = () => {
     setBusy(true)
     setError('')
     api.yearPlan().then((r) => {
       setPlan(r.items)
+      setCoverage(r.coverage ?? null)
+      setPeople(r.people)
+      setSkipped(r.skipped_no_yield ?? [])
       setBusy(false)
       if (r.items.length === 0) setError(t('Nothing fits right now. Add beds or free up cells, then draft again.'))
+    }, fail)
+  }
+  /** The plan is sized for the head count, so once a draft exists a change of people drafts again. */
+  const changePeople = (n: number) => {
+    setBusy(true)
+    setError('')
+    api.saveHouseholdSettings({ people: n }).then(() => {
+      setPeople(n)
+      setBusy(false)
+      if (coverage) draft()
     }, fail)
   }
   const use = () => {
@@ -54,6 +75,7 @@ export default function YearPlan({ hasBeds, scheduled, plan, setPlan, onUsed, on
       title={t('Year plan')}
       description={t('A draft of what to plant where over the next 12 months, from your climate and what already grows in your beds.')}
     >
+      {people !== null && (coverage ? <CoverageCard coverage={coverage} people={people} canChange={canChange} onPeople={changePeople} /> : <PeopleStepper people={people} canChange={canChange} onPeople={changePeople} />)}
       {canEdit && hasBeds && (
         <div>
           <Button variant={plan.length ? 'secondary' : 'primary'} onClick={draft} disabled={busy}>
@@ -76,6 +98,7 @@ export default function YearPlan({ hasBeds, scheduled, plan, setPlan, onUsed, on
       )}
       {!hasBeds && <EmptyState icon={CalendarRange} title={t('Draw your beds first')}>{t('The plan fills the beds you draw on the Plan tab.')}</EmptyState>}
       {error && <ErrorMessage>{error}</ErrorMessage>}
+      {skipped.length > 0 && <p className="text-sm text-muted">{t('Left out, no yield data yet: {crops}', { crops: skipped.join(', ') })}</p>}
       {months.map((m) => (
         <div key={m} className="flex flex-col gap-1">
           <p className="text-sm font-semibold">{m}</p>

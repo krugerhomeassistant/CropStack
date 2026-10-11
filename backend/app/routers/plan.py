@@ -1,28 +1,69 @@
 """A drafted year of plantings for the household's beds, accepted in one go (PLAN 8.4)."""
 
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, date, datetime, timedelta
 
 from fastapi import APIRouter, HTTPException
 from sqlmodel import select
 
 from .. import catalog as cat
 from ..deps import EditorDep, MemberDep, SessionDep
-from ..engine import layout, phenology, recommend, windows, yearplan
-from ..models import Bed, Forecast, Planting, Site
+from ..engine import layout, needs, phenology, recommend, windows, yearplan
+from ..models import Bed, Forecast, Household, Planting, Site
 from .beds import crop_facts, grid_of, holds
 from .catalog import CatalogDep, _overrides
 from .garden import _archive, _climatology
+from .household import household_settings
 from .plantings import PlantingIn, make_planting
 from .today import refresh_tasks
 from .weather import local_today
 
 router = APIRouter(prefix="/api/v1/plan", tags=["plan"])
 MIN_SUCCESS = 0.6  # a crop is drafted only where it works in at least this share of years
+EXTRA_BED = yearplan.Bed(-1, "Extra bed", 7, 7, 30)  # 7 x 7 cells of 30 cm, about 4 m²
+EXTRA_M2 = 4
+ENOUGH = 0.95  # coverage at which no further change is suggested
 
 
 def replaceable(p: Planting) -> bool:
     """Made by the year plan and still only a plan: nothing is in the ground yet, so no work is lost by replacing it."""
     return p.source == "plan" and p.status == "planned"
+
+
+def existing_supply(plantings, facts_of, beds_by_id, window_of, today: date) -> list[tuple[str, float, date, date]]:
+    """Food that plantings already in the ground will give: (group, kg, harvest from, harvest to).
+    ponytail: the harvest is taken as the last 30% of the days a planting holds its cells; a real per-planting
+    outlook (`plantings.outlook`) could replace it."""
+    out = []
+    for p in plantings:
+        f, bed = facts_of(p.crop), beds_by_id.get(p.bed_id)
+        if (
+            bed is None
+            or not p.cells
+            or p.status in ("finished", "failed")
+            or not f["yield_per_m2"]
+            or not f["food_group"]
+        ):
+            continue
+        first, last = window_of(p)
+        if last < today:
+            continue
+        kg = f["yield_per_m2"] * (bed.cell_cm / 100) ** 2 * len(p.cells)
+        out.append((f["food_group"], kg, max(first, first + (last - first) * 0.7), last))
+    return out
+
+
+def with_coverage(grid, taken, wants, today: date, target, existing) -> tuple[list[dict], dict]:
+    """The draft, its coverage of the weekly target, and the one change that would lift coverage most: a 4 m² bed
+    when it adds at least 1 point (none once coverage reaches ENOUGH)."""
+    items, supply = yearplan.draft(grid, taken, wants, today, target, existing)
+    cov = needs.coverage(target, supply, today)
+    cov["best_change"] = None
+    if cov["overall"] < ENOUGH:
+        _, more = yearplan.draft([*grid, EXTRA_BED], taken, wants, today, target, existing)
+        gain = needs.coverage(target, more, today)["overall"] - cov["overall"]
+        if gain >= 0.01:
+            cov["best_change"] = {"kind": "add_bed_area", "m2": EXTRA_M2, "gain": round(gain, 3)}
+    return items, cov
 
 
 def _scheduled(db: SessionDep, household_id: int) -> int:
@@ -41,10 +82,12 @@ def year_plan(me: MemberDep, db: SessionDep, c: CatalogDep) -> dict:
     """Plantings for the next 12 months that fit the beds, climate and what already grows there."""
     site = db.exec(select(Site).where(Site.household_id == me.household_id)).first()
     beds = db.exec(select(Bed).where(Bed.household_id == me.household_id).order_by(Bed.id)).all()
+    people = household_settings(db.get(Household, me.household_id)).people
     if site is None or not beds:
         return {
             "garden": site is not None,
             "beds": bool(beds),
+            "people": people,
             "items": [],
             "scheduled": _scheduled(db, me.household_id),
         }
@@ -90,15 +133,31 @@ def year_plan(me: MemberDep, db: SessionDep, c: CatalogDep) -> dict:
                     o["success"], f["footprint"],
                     planted + timedelta(days=round(o["days_to_maturity"].get("p10") or days)),
                     planted + timedelta(days=days),
+                    f["yield_per_m2"],
+                    f["food_group"],
                 )
             )  # fmt: skip
+    skipped = sorted({w.crop for w in wants if not (w.kg_per_m2 and w.food_group in needs.GROUPS)})
+    target = needs.weekly_target(people)
+    beds_by_id = {b.id: b for b in beds}
+    existing = existing_supply(
+        [p for p in plantings if not replaceable(p)],
+        lambda crop: crop_facts(db, c, me.household_id, crop, cache),
+        beds_by_id,
+        lambda p: holds(p, crop_facts(db, c, me.household_id, p.crop, cache), today),
+        today,
+    )
     grid = [yearplan.Bed(b.id, b.name, *grid_of(b), b.cell_cm) for b in beds]
+    items, cov = with_coverage(grid, taken, wants, today, target, existing)
     return {
         "garden": True,
         "beds": True,
         "today": today,
         "scheduled": sum(replaceable(p) for p in plantings),
-        "items": yearplan.draft(grid, taken, wants, today),
+        "people": people,
+        "items": items,
+        "coverage": cov,
+        "skipped_no_yield": skipped,
     }
 
 

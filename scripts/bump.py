@@ -32,7 +32,7 @@ def main(version: str) -> None:
         path.write_text(json.dumps(data, indent=2) + "\n")
 
     changelog = ROOT / "CHANGELOG.md"
-    text = changelog.read_text()
+    text = changelog.read_text(encoding="utf-8")
     if f"## [{version}]" not in text:
         prev = re.search(r"## \[(\d+\.\d+\.\d+)\]", text)
         text = text.replace("## [Unreleased]\n", f"## [Unreleased]\n\n## [{version}] - {date.today()}\n", 1)
@@ -42,7 +42,7 @@ def main(version: str) -> None:
             f"[Unreleased]: {REPO}/compare/v{version}...HEAD\n[{version}]: {compare}\n",
             text,
         )
-        changelog.write_text(text)
+        changelog.write_text(text, encoding="utf-8", newline="\n")
     print(f"Bumped to {version}. Review CHANGELOG.md, then commit and push to main to release v{version}.")
 
 

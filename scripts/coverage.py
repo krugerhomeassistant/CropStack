@@ -25,6 +25,7 @@ CROP_FIELDS = [
     "requirements.water.root_depth",
     "requirements.soil.ph",
     "params.cycle_days",
+    "params.yield_per_m2",
 ]
 
 
@@ -38,7 +39,7 @@ def fact(item: dict, path: str) -> dict | None:
 def rows() -> list[tuple[str, list[str], list[str]]]:
     out = []
     for path in sorted((ROOT / "catalog" / "crops").glob("*.yaml")):
-        item = yaml.safe_load(path.read_text())
+        item = yaml.safe_load(path.read_text(encoding="utf-8"))
         missing = [f for f in CROP_FIELDS if fact(item, f) is None]
         estimated = [f for f in CROP_FIELDS if (v := fact(item, f)) and v.get("estimate")]
         out.append((item["slug"], missing, estimated))
@@ -73,8 +74,8 @@ def render() -> str:
 if __name__ == "__main__":
     text = render()
     if "--check" in sys.argv:
-        if not OUT.exists() or OUT.read_text() != text:
+        if not OUT.exists() or OUT.read_text(encoding="utf-8") != text:
             sys.exit("docs/COVERAGE.md is out of date: run scripts/coverage.py")
     else:
-        OUT.write_text(text)
+        OUT.write_text(text, encoding="utf-8", newline="\n")
         print(f"wrote {OUT.relative_to(ROOT)}")

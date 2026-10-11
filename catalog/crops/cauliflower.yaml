@@ -9,6 +9,7 @@ scientific_name: Brassica oleracea
 family: Brassicaceae
 rotation_group: brassicas
 life_cycle: biennial
+food_group: brassica
 description: 'A brassica grown for its white curd. It is the least forgiving of the family: stress from heat, drought or a
   check in growth gives small or loose heads.'
 requirements:
@@ -93,6 +94,13 @@ requirements:
       sources:
       - {ref: fao-ecocrop, locator: 'ECOCROP code 153, PHMIN to PHMAX (via Recocrop)', retrieved: 2026-10-09, snapshot: 'sha256:90a21d908419e304e4e4c38c92df62d93b25cb373420fcd0a711247b1f47f358'}
 params:
+  yield_per_m2:
+    value: 2.0
+    unit: kg/m2
+    evidence: traditional
+    confidence: low
+    estimate: true
+    qualifiers: {basis: 'typical home-garden yield per crop cycle; replace with an extension-service figure'}
   height_max:
     value: 0.4
     unit: m

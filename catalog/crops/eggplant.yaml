@@ -9,6 +9,7 @@ scientific_name: Solanum melongena
 family: Solanaceae
 rotation_group: nightshades
 life_cycle: annual
+food_group: fruiting
 description: A warm-season fruiting crop that needs more heat than tomato to set fruit well. Fruit is picked while the skin
   is still glossy.
 requirements:
@@ -93,6 +94,13 @@ requirements:
       sources:
       - {ref: fao-ecocrop, locator: 'ECOCROP code 70, PHMIN to PHMAX (via Recocrop)', retrieved: 2026-10-09, snapshot: 'sha256:90a21d908419e304e4e4c38c92df62d93b25cb373420fcd0a711247b1f47f358'}
 params:
+  yield_per_m2:
+    value: 3.5
+    unit: kg/m2
+    evidence: traditional
+    confidence: low
+    estimate: true
+    qualifiers: {basis: 'typical home-garden yield per crop cycle; replace with an extension-service figure'}
   height_max:
     value: 0.8
     unit: m

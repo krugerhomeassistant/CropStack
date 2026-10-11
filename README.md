@@ -36,7 +36,7 @@ It runs on your own hardware (a NAS, a Raspberry Pi, a home server) as one conta
 </p>
 
 > [!NOTE]
-> CropStack is in active development (v0.38). Climate, a 60-crop catalog, the garden planner, a year plan, daily jobs, watering and a pantry work today. Animals, Home Assistant and the Mealie link are next. See [what works now](#-what-works-now) and the [roadmap](#-roadmap).
+> CropStack is in active development (v0.41). Climate, a 60-crop catalog, the garden planner, a year plan, daily jobs, watering and a pantry work today. Animals, Home Assistant and the Mealie link are next. See [what works now](#-what-works-now) and the [roadmap](#-roadmap).
 
 ## ✅ What works now
 
@@ -54,7 +54,7 @@ It runs on your own hardware (a NAS, a Raspberry Pi, a home server) as one conta
 - **Weekly Check.** Each growing planting gets a weekly job listing what to look for and what to keep or remove.
 - **Garden assistant (optional).** Add a Claude, OpenAI or OpenRouter key, or an Ollama address, in Settings, then ask garden questions in Ask.
 - **Garden in four windows**: Plan, Plant, Calendar, Plantings.
-- **Year plan.** *Draft a year plan* fills your beds with crops that suit your climate: earliest good window first, rotating plant families, one block per crop. Review the ghosted cells, then accept to schedule every job at once. Nothing you have already planted is touched.
+- **Year plan.** *Draft a year plan* fills your beds with crops that suit your climate: earliest good window first, rotating plant families. Set how many people you feed and each crop is sized from a balanced vegetable basket; a coverage card shows how much of the need your beds meet, the weeks that fall short and the single change that helps most. Review the ghosted cells, then accept to schedule every job at once. Nothing you have already planted is touched.
 - **Planner as a plot plan.** Beds, rows and pots on a to-scale map with floating tools; tap a bed to open its grid. Cells show crop icons and what is planted or planned; erasing never loses other work.
 - **Past sowings count.** Log a sowing on a past date and it is recorded as sown (or set out) straight away.
 - **Key points per job.** Each job lists the crop's own facts: spacing, thin-to, sowing depth, soil temperature, days to emerge, light, seedling age.

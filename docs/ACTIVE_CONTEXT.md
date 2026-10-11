@@ -39,3 +39,6 @@ Personal, non-commercial. Fully dynamic (no presets). Never restrict or destroy 
 - README screenshots in `docs/images/` are old (regenerate with `npm run screenshots`).
 - Owner action: enable "Allow GitHub Actions to create pull requests" so the monthly catalog-refresh workflow can open PRs.
 - Sandbox quirks: `gh` GraphQL is blocked (use `gh run list`, REST); the sandbox proxy resets some connections (retry); `sqlite3` CLI is missing (use python).
+
+## v0.41.0
+Needs model: `people` setting, `food_group` + `yield_per_m2` on all 60 crops, demand-driven drafter, coverage card on the Plan tab. Limits: yields are estimates, harvests spread evenly, live crops hold cells only to cycle end. Next: sourced yields, setup interview 8.1, Climate/Crops/More facelift, move planting + undo.
