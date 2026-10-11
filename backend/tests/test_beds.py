@@ -1,6 +1,7 @@
-from datetime import UTC, date, datetime
+from datetime import UTC, date, datetime, timedelta
 
 from app import external
+from app.engine import needs, yearplan
 from app.engine.layout import bed_use, footprint_m2
 from tests.test_auth_garden import GARDEN
 from tests.test_climate import synthetic
@@ -247,8 +248,6 @@ def test_the_plan_knows_how_many_people_it_feeds_and_how_much_that_is(owner):  #
 
 
 def test_what_already_grows_is_counted_as_supply_from_its_last_third():
-    from datetime import date
-
     from app.routers.plan import existing_supply
 
     class P:  # the few planting fields the helper reads
@@ -264,14 +263,99 @@ def test_what_already_grows_is_counted_as_supply_from_its_last_third():
         "mystery": {"yield_per_m2": None, "food_group": None},
     }
     window = lambda p: (date(2026, 9, 10), date(2026, 12, 10))  # noqa: E731  (91 days)
-    got = existing_supply(
-        [P("tomato", 1, [[0, 0], [1, 0]]), P("tomato", 1, [], "growing"), P("mystery", 1, [[0, 0]]), P("tomato", 1, [[0, 0]], "finished")],
-        lambda crop: facts[crop], {1: B()}, window, today,
-    )  # fmt: skip
+    plantings = [
+        P("tomato", 1, [[0, 0], [1, 0]]),
+        P("tomato", 1, [], "growing"),
+        P("mystery", 1, [[0, 0]]),
+        P("tomato", 1, [[0, 0]], "finished"),
+    ]
+    got = existing_supply(plantings, lambda crop: facts[crop], {1: B()}, window, today)
     assert len(got) == 1  # no cells, no yield and finished plantings add nothing
     group, kg, first, last = got[0]
     assert (group, round(kg, 2), last) == ("fruiting", round(8.0 * 0.09 * 2, 2), date(2026, 12, 10))
     assert first > date(2026, 11, 8)  # the last 30% of the 91 days
+
+
+class _P:  # a planting with the fields existing_supply reads, for the supply edge cases
+    crop, bed_id, cells, status = "tomato", 1, [[0, 0]], "growing"
+
+
+class _B:
+    cell_cm = 30
+
+
+def test_a_planting_whose_window_is_over_adds_no_supply():
+    from app.routers.plan import existing_supply
+
+    facts = {"tomato": {"yield_per_m2": 8.0, "food_group": "fruiting"}}
+    past = lambda p: (date(2026, 1, 1), date(2026, 2, 1))  # noqa: E731
+    assert existing_supply([_P()], lambda crop: facts[crop], {1: _B()}, past, date(2026, 10, 10)) == []
+
+
+def test_a_window_beyond_the_year_is_kept_but_adds_nothing_in_year():
+    from app.routers.plan import existing_supply
+
+    today = date(2026, 10, 10)
+    facts = {"tomato": {"yield_per_m2": 8.0, "food_group": "fruiting"}}
+    far = lambda p: (today + timedelta(days=400), today + timedelta(days=500))  # noqa: E731
+    existing = existing_supply([_P()], lambda crop: facts[crop], {1: _B()}, far, today)
+    assert len(existing) == 1  # it still counts as a planting that grows
+    items, supply = yearplan.draft([], {}, [], today, needs.weekly_target(2), existing)
+    assert items == [] and all(sum(weeks) == 0 for weeks in supply.values())
+
+
+def _want(group="leafy", kg=5.0):
+    today = date(2026, 10, 10)
+    return yearplan.Want(
+        "x", "X", "fam", "direct", today, None, today, 60, 1.0, 0.09,
+        today + timedelta(days=60), today + timedelta(days=120), kg, group,
+    )  # fmt: skip
+
+
+def test_the_best_change_is_missing_once_coverage_is_enough():
+    from app.routers.plan import ENOUGH, with_coverage
+
+    today = date(2026, 10, 10)
+    target = needs.weekly_target(2)
+    plenty = [(g, 1000.0, today, today + timedelta(days=364)) for g in needs.GROUPS]  # all year
+    grid = [yearplan.Bed(1, "Bed", 8, 12, 30)]
+    _, cov = with_coverage(grid, {}, [_want()], today, target, plenty)
+    assert cov["overall"] >= ENOUGH and cov["best_change"] is None
+
+
+def test_the_best_change_is_missing_when_a_bigger_bed_adds_nothing():
+    from app.routers.plan import with_coverage
+
+    today = date(2026, 10, 10)
+    _, cov = with_coverage([], {}, [], today, needs.weekly_target(2), [])
+    assert cov["overall"] == 0 and cov["best_change"] is None
+
+
+def test_the_best_change_names_a_four_square_metre_bed_when_it_would_help():
+    from app.routers.plan import EXTRA_M2, with_coverage
+
+    today = date(2026, 10, 10)
+    items, cov = with_coverage([], {}, [_want()], today, needs.weekly_target(2), [])
+    assert items == [] and cov["overall"] == 0  # no bed to plant in yet
+    change = cov["best_change"]
+    assert change["kind"] == "add_bed_area" and change["m2"] == EXTRA_M2 == 4
+    assert change["gain"] >= 0.01
+
+
+def test_a_crop_without_a_yield_is_listed_as_skipped(owner, monkeypatch):  # noqa: F811
+    from app.engine import layout
+
+    monkeypatch.setattr(
+        external, "fetch_climate_archive", lambda lat, lon: synthetic(mean=12, amplitude=10, coldest=date(2001, 7, 15))
+    )
+    owner.put("/api/v1/sites/current", json=GARDEN)
+    owner.post("/api/v1/beds", json={"name": "Big", "width": 2.4, "length": 3.6})
+    with_yield = owner.get("/api/v1/plan/year").json()
+    assert with_yield["skipped_no_yield"] == []
+    assert [i["crop"] for i in with_yield["items"]] == ["testcrop"]
+    monkeypatch.setattr(layout, "yield_per_m2", lambda item: None)
+    without = owner.get("/api/v1/plan/year").json()
+    assert without["skipped_no_yield"] == ["testcrop"] and without["items"] == []
 
 
 def test_the_plan_reports_coverage_and_targets_scale_with_people(owner, monkeypatch):  # noqa: F811
@@ -284,10 +368,7 @@ def test_the_plan_reports_coverage_and_targets_scale_with_people(owner, monkeypa
     owner.put("/api/v1/household/settings", json={"people": 4})
     four = owner.get("/api/v1/plan/year").json()
     assert two["people"] == 2 and four["people"] == 4
-    for group in ("leafy", "fruiting", "root"):
-        # target_kg is rounded to 0.1 kg, so allow one rounding step
-        assert (
-            abs(four["coverage"]["groups"][group]["target_kg"] - 2 * two["coverage"]["groups"][group]["target_kg"])
-            <= 0.1
-        )
-    assert 0 <= four["coverage"]["overall"] <= 1 and "skipped_no_yield" in four
+    for group in needs.GROUPS:
+        assert two["coverage"]["groups"][group]["target_kg"] == round(needs.weekly_target(2)[group] * needs.WEEKS, 1)
+        assert four["coverage"]["groups"][group]["target_kg"] == round(needs.weekly_target(4)[group] * needs.WEEKS, 1)
+    assert 0 <= four["coverage"]["overall"] <= 1 and four["skipped_no_yield"] == []

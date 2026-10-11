@@ -52,6 +52,20 @@ def existing_supply(plantings, facts_of, beds_by_id, window_of, today: date) -> 
     return out
 
 
+def with_coverage(grid, taken, wants, today: date, target, existing) -> tuple[list[dict], dict]:
+    """The draft, its coverage of the weekly target, and the one change that would lift coverage most: a 4 m² bed
+    when it adds at least 1 point (none once coverage reaches ENOUGH)."""
+    items, supply = yearplan.draft(grid, taken, wants, today, target, existing)
+    cov = needs.coverage(target, supply, today)
+    cov["best_change"] = None
+    if cov["overall"] < ENOUGH:
+        _, more = yearplan.draft([*grid, EXTRA_BED], taken, wants, today, target, existing)
+        gain = needs.coverage(target, more, today)["overall"] - cov["overall"]
+        if gain >= 0.01:
+            cov["best_change"] = {"kind": "add_bed_area", "m2": EXTRA_M2, "gain": round(gain, 3)}
+    return items, cov
+
+
 def _scheduled(db: SessionDep, household_id: int) -> int:
     return sum(replaceable(p) for p in db.exec(select(Planting).where(Planting.household_id == household_id)))
 
@@ -134,14 +148,7 @@ def year_plan(me: MemberDep, db: SessionDep, c: CatalogDep) -> dict:
         today,
     )
     grid = [yearplan.Bed(b.id, b.name, *grid_of(b), b.cell_cm) for b in beds]
-    items, supply = yearplan.draft(grid, taken, wants, today, target, existing)
-    cov = needs.coverage(target, supply, today)
-    cov["best_change"] = None
-    if cov["overall"] < ENOUGH:
-        _, more = yearplan.draft([*grid, EXTRA_BED], taken, wants, today, target, existing)
-        gain = needs.coverage(target, more, today)["overall"] - cov["overall"]
-        if gain >= 0.01:
-            cov["best_change"] = {"kind": "add_bed_area", "m2": EXTRA_M2, "gain": round(gain, 3)}
+    items, cov = with_coverage(grid, taken, wants, today, target, existing)
     return {
         "garden": True,
         "beds": True,
