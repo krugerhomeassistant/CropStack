@@ -155,6 +155,7 @@ class Planting(SQLModel, table=True):
     )  # [column, row] in the bed
     ends_on: date | None = None  # last day it holds its cells; blank = the crop's longest cycle after planting
     notes: str = ""
+    source: str = Field(default="", sa_column_kwargs={"server_default": ""})  # "plan" when the year plan made it
     created_by: int | None = Field(default=None, foreign_key="user.id", ondelete="SET NULL")
     created_at: datetime = Field(default_factory=now)
 

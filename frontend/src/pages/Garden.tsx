@@ -80,6 +80,12 @@ export default function GardenPage() {
       {tab === 'plant' && (
         <YearPlan
           hasBeds={!!recs?.has_beds}
+          scheduled={recs?.scheduled ?? 0}
+          onCleared={() => {
+            setRev((r) => r + 1)
+            setPlanRev((r) => r + 1)
+            loadRecs()
+          }}
           plan={plan}
           setPlan={setPlan}
           onUsed={() => {

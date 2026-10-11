@@ -11,10 +11,11 @@ const month = (s: string) => new Date(`${s}T00:00:00`).toLocaleDateString(undefi
 const planted = (i: PlanItem) => i.set_out_date ?? i.start_date
 
 /** A year of plantings drafted for the beds. Review it by month, leave out what you do not want, then use it. */
-export default function YearPlan({ hasBeds, plan, setPlan, onUsed }: { hasBeds: boolean; plan: PlanItem[]; setPlan: (p: PlanItem[]) => void; onUsed: () => void }) {
+export default function YearPlan({ hasBeds, scheduled, plan, setPlan, onUsed, onCleared }: { hasBeds: boolean; scheduled: number; plan: PlanItem[]; setPlan: (p: PlanItem[]) => void; onUsed: () => void; onCleared: () => void }) {
   const canEdit = useApp().user.role !== 'viewer'
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
+  const [sure, setSure] = useState(false)
   const fail = (e: unknown) => {
     setBusy(false)
     setError(e instanceof Error ? e.message : t('Failed to save'))
@@ -38,6 +39,15 @@ export default function YearPlan({ hasBeds, plan, setPlan, onUsed }: { hasBeds: 
         onUsed()
       }, fail)
   }
+  const clear = () => {
+    setBusy(true)
+    api.clearPlan().then(() => {
+      setBusy(false)
+      setSure(false)
+      setPlan([])
+      onCleared()
+    }, fail)
+  }
   const months = [...new Set(plan.map((i) => month(planted(i))))]
   return (
     <Section
@@ -49,6 +59,19 @@ export default function YearPlan({ hasBeds, plan, setPlan, onUsed }: { hasBeds: 
           <Button variant={plan.length ? 'secondary' : 'primary'} onClick={draft} disabled={busy}>
             {busy ? t('Drafting…') : plan.length ? t('Draft again') : t('Draft a year plan')}
           </Button>
+        </div>
+      )}
+      {canEdit && scheduled > 0 && (
+        <div className="flex flex-wrap items-center gap-2 text-sm">
+          <span className="text-muted">{t('{n} plantings from an earlier plan are still to do. Drafting again replaces them; what you have sown or planted stays.', { n: scheduled })}</span>
+          {sure ? (
+            <>
+              <Button variant="secondary" onClick={clear} disabled={busy}>{t('Yes, clear {n}', { n: scheduled })}</Button>
+              <Button variant="ghost" onClick={() => setSure(false)}>{t('Keep')}</Button>
+            </>
+          ) : (
+            <Button variant="ghost" onClick={() => setSure(true)} disabled={busy}>{t('Clear plan')}</Button>
+          )}
         </div>
       )}
       {!hasBeds && <EmptyState icon={CalendarRange} title={t('Draw your beds first')}>{t('The plan fills the beds you draw on the Plan tab.')}</EmptyState>}

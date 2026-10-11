@@ -122,7 +122,7 @@ export type PlanItem = {
   harvest_to: string
   until: string
 }
-export type YearPlan = { garden: boolean; beds: boolean; items: PlanItem[] }
+export type YearPlan = { garden: boolean; beds: boolean; scheduled: number; items: PlanItem[] }
 export type PantryMethod = 'canned' | 'frozen' | 'dried' | 'fermented' | 'cellar' | 'fresh'
 export type PantryItem = {
   id: number
@@ -199,7 +199,7 @@ export type Recommendation = {
   family: string
   plants_per_cell: number
 }
-export type Recommendations = { garden: boolean; today?: string; has_beds?: boolean; now: Recommendation[]; soon: Recommendation[] }
+export type Recommendations = { garden: boolean; today?: string; has_beds?: boolean; scheduled?: number; now: Recommendation[]; soon: Recommendation[] }
 export type Job = {
   id: number
   kind: 'sow' | 'set_out' | 'harvest' | 'frost' | 'heat' | 'water' | 'check'
@@ -372,7 +372,8 @@ export const api = {
   updatePantry: (id: number, body: Partial<Pick<PantryItem, 'name' | 'quantity' | 'best_before' | 'location' | 'notes'>>) => request<PantryItem>('PATCH', `/pantry/${id}`, body),
   deletePantry: (id: number) => request<null>('DELETE', `/pantry/${id}`),
   yearPlan: () => request<YearPlan>('GET', '/plan/year'),
-  acceptPlan: (items: PlantingIn[]) => request<{ created: number }>('POST', '/plan/year', items),
+  acceptPlan: (items: PlantingIn[]) => request<{ created: number; replaced: number }>('POST', '/plan/year', items),
+  clearPlan: () => request<{ removed: number }>('DELETE', '/plan/year'),
   recommendations: () => request<Recommendations>('GET', '/recommendations'),
   beds: () => request<Bed[]>('GET', '/beds'),
   addBed: (body: BedIn) => request<Bed>('POST', '/beds', body),

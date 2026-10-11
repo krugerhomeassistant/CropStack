@@ -124,4 +124,5 @@ Planned: `bed`; `planting.location` becomes a bed reference with the layout edit
 | `crosswalk.yaml` | crop slug → each source's row name |
 
 
+| `routers/plan.py` | `GET/POST/DELETE /plan/year` (draft, accept = replace unstarted plan, clear); `planting.source` (migration 0016) |
 | `routers/pantry.py` | `GET/POST /pantry`, `PATCH/DELETE /pantry/{id}`; table `pantryitem` (migration 0015) |

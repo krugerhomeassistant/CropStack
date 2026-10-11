@@ -15,6 +15,17 @@ def _cm(x: float) -> str:
     return f"{x:g} cm"
 
 
+def _depth(item: dict) -> str | None:
+    """Sowing depth as text; the value is one number or a {min, max} range."""
+    v = item.get("params", {}).get("sow_depth", {}).get("value")
+    lo, hi = (v.get("min"), v.get("max")) if isinstance(v, dict) else (v, v)
+    if not isinstance(lo, int | float) or not isinstance(hi, int | float) or isinstance(lo, bool) or hi <= 0:
+        return None
+    if hi < 1:
+        return "barely covered, about half a centimetre or less"
+    return f"{lo:g} cm" if lo == hi else f"{lo:g} to {hi:g} cm"
+
+
 def _emergence(item: dict) -> str | None:
     rows = item.get("params", {}).get("days_to_emergence")
     pts = sorted(
@@ -44,11 +55,9 @@ def job_facts(item: dict | None, kind: str, method: str = "direct") -> list[dict
             )
         if kind == "sow" and method == "direct" and spread:
             out.append(("Thin to", f"one plant every {_cm(spread)} once the seedlings are up"))
-        depth = _num(item, "sow_depth")
+        depth = _depth(item)
         if kind == "sow" and depth:
-            out.append(
-                ("Sow depth", f"{depth:g} cm" if depth >= 1 else "barely covered, about half a centimetre or less")
-            )
+            out.append(("Sow depth", depth))
         if kind == "sow" and isinstance(germ, dict) and germ.get("min") is not None:
             best = f", best near {germ['opt']:g} °C" if germ.get("opt") is not None else ""
             out.append(("Soil temperature", f"at least {germ['min']:g} °C to germinate{best}"))

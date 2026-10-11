@@ -231,3 +231,13 @@ def test_job_facts_are_read_from_the_crop():
     assert got["Space plants"] == "10 cm apart, rows 30 cm apart" and got["Thin to"].startswith("one plant every 10 cm")
     assert "5 days at 25 °C" in got["Comes up in"] and got["Ready"] == "55 to 90 days from sowing"
     assert job_facts(None, "sow") == [] and job_facts(item, "check") == []
+
+
+def test_sow_depth_reads_a_number_or_a_range():
+    from app.crop_facts import _depth
+
+    item = lambda v: {"params": {"sow_depth": {"value": v}}}  # noqa: E731
+    assert _depth(item(2.5)) == "2.5 cm"
+    assert _depth(item({"min": 1.3, "max": 5})) == "1.3 to 5 cm"
+    assert _depth(item(0.6)) == "barely covered, about half a centimetre or less"
+    assert _depth({}) is None

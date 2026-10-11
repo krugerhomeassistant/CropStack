@@ -126,6 +126,7 @@ def recommendations(me: MemberDep, db: SessionDep, c: CatalogDep, horizon: int =
         "garden": True,
         "today": today,
         "has_beds": bool(beds),
+        "scheduled": sum(1 for p in plantings if p.source == "plan" and p.status == "planned"),
         "now": [r for r in out if r["state"] == "now"],
         "soon": [r for r in out if r["state"] == "soon"],
     }

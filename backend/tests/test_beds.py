@@ -180,8 +180,23 @@ def test_year_plan_without_beds_is_empty_and_accepting_creates_plantings(owner):
     assert owner.get("/api/v1/plan/year").json()["items"] == []
     bed = owner.post("/api/v1/beds", json={"name": "Y", "width": 1.2, "length": 1.2}).json()
     body = {"crop": "testcrop", "method": "direct", "start_date": "2026-12-01", "bed_id": bed["id"], "cells": [[0, 0]]}
-    assert owner.post("/api/v1/plan/year", json=[body, body | {"cells": [[1, 0]]}]).json() == {"created": 2}
+    assert owner.post("/api/v1/plan/year", json=[body, body | {"cells": [[1, 0]]}]).json() == {
+        "created": 2,
+        "replaced": 0,
+    }
     assert len(owner.get("/api/v1/plantings").json()) == 2
+
+
+def test_replanning_replaces_an_unstarted_plan_and_clearing_keeps_hand_made_work(owner):  # noqa: F811
+    bed = owner.post("/api/v1/beds", json={"name": "R", "width": 1.2, "length": 1.2}).json()
+    body = {"crop": "testcrop", "method": "direct", "start_date": "2026-12-01", "bed_id": bed["id"], "cells": [[0, 0]]}
+    mine = owner.post("/api/v1/plantings", json=body | {"cells": [[1, 1]]}).json()
+    assert owner.post("/api/v1/plan/year", json=[body]).json() == {"created": 1, "replaced": 0}
+    assert owner.get("/api/v1/plan/year").json()["scheduled"] == 1
+    assert owner.post("/api/v1/plan/year", json=[body]).json() == {"created": 1, "replaced": 1}
+    assert len(owner.get("/api/v1/plantings").json()) == 2  # replaced, not doubled
+    assert owner.delete("/api/v1/plan/year").json() == {"removed": 1}
+    assert [p["id"] for p in owner.get("/api/v1/plantings").json()] == [mine["id"]]
 
 
 def test_the_drafter_rotates_and_never_double_books_cells():

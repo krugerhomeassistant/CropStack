@@ -20,13 +20,34 @@ router = APIRouter(prefix="/api/v1/plan", tags=["plan"])
 MIN_SUCCESS = 0.6  # a crop is drafted only where it works in at least this share of years
 
 
+def replaceable(p: Planting) -> bool:
+    """Made by the year plan and still only a plan: nothing is in the ground yet, so no work is lost by replacing it."""
+    return p.source == "plan" and p.status == "planned"
+
+
+def _scheduled(db: SessionDep, household_id: int) -> int:
+    return sum(replaceable(p) for p in db.exec(select(Planting).where(Planting.household_id == household_id)))
+
+
+def _clear(db: SessionDep, household_id: int) -> int:
+    rows = [p for p in db.exec(select(Planting).where(Planting.household_id == household_id)) if replaceable(p)]
+    for p in rows:
+        db.delete(p)  # its jobs go with it
+    return len(rows)
+
+
 @router.get("/year")
 def year_plan(me: MemberDep, db: SessionDep, c: CatalogDep) -> dict:
     """Plantings for the next 12 months that fit the beds, climate and what already grows there."""
     site = db.exec(select(Site).where(Site.household_id == me.household_id)).first()
     beds = db.exec(select(Bed).where(Bed.household_id == me.household_id).order_by(Bed.id)).all()
     if site is None or not beds:
-        return {"garden": site is not None, "beds": bool(beds), "items": []}
+        return {
+            "garden": site is not None,
+            "beds": bool(beds),
+            "items": [],
+            "scheduled": _scheduled(db, me.household_id),
+        }
     forecast = db.get(Forecast, site.id)
     today = local_today(forecast.raw) if forecast else datetime.now(UTC).date()
     climate = _climatology(_archive(site, db))
@@ -35,6 +56,8 @@ def year_plan(me: MemberDep, db: SessionDep, c: CatalogDep) -> dict:
     plantings = db.exec(select(Planting).where(Planting.household_id == me.household_id)).all()
     taken: dict[int, list] = {b.id: [] for b in beds}
     for p in plantings:
+        if replaceable(p):  # an earlier plan not yet started is replaced by this one, not added to
+            continue
         if p.bed_id in taken and p.cells:  # finished ones too: they decide rotation
             f = crop_facts(db, c, me.household_id, p.crop, cache)
             a, z = holds(p, f, today)
@@ -70,16 +93,35 @@ def year_plan(me: MemberDep, db: SessionDep, c: CatalogDep) -> dict:
                 )
             )  # fmt: skip
     grid = [yearplan.Bed(b.id, b.name, *grid_of(b), b.cell_cm) for b in beds]
-    return {"garden": True, "beds": True, "today": today, "items": yearplan.draft(grid, taken, wants, today)}
+    return {
+        "garden": True,
+        "beds": True,
+        "today": today,
+        "scheduled": sum(replaceable(p) for p in plantings),
+        "items": yearplan.draft(grid, taken, wants, today),
+    }
 
 
 @router.post("/year", status_code=201)
 def accept_plan(items: list[PlantingIn], me: EditorDep, db: SessionDep, c: CatalogDep) -> dict:
-    """Make plantings of the accepted items (the same bodies as POST /plantings), then plan their jobs once."""
+    """Make plantings of the accepted items (the same bodies as POST /plantings), then plan their jobs once.
+    An earlier plan that has not started is replaced; anything sown or planted by hand stays."""
     if not 0 < len(items) <= 300:
         raise HTTPException(422, "Send between 1 and 300 plantings")
+    replaced = _clear(db, me.household_id)
     for body in items:
-        db.add(make_planting(body, me, db, c))
+        row = make_planting(body, me, db, c)
+        row.source = "plan"
+        db.add(row)
     db.commit()
     refresh_tasks(db, me.household_id, c)
-    return {"created": len(items)}
+    return {"created": len(items), "replaced": replaced}
+
+
+@router.delete("/year")
+def clear_plan(me: EditorDep, db: SessionDep, c: CatalogDep) -> dict:
+    """Remove what the year plan scheduled and nothing has started. Sown, planted and hand-made plantings stay."""
+    removed = _clear(db, me.household_id)
+    db.commit()
+    refresh_tasks(db, me.household_id, c)
+    return {"removed": removed}

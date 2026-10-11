@@ -5,6 +5,23 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.40.0] - 2026-10-11
+
+## [0.40.0] - 2026-10-11
+
+### Added
+- **Clear plan.** The Year plan section says how many plantings from an earlier plan are still to do and has a Clear plan button (with a confirmation). It removes only what the plan scheduled and nothing has started.
+
+### Fixed
+- **Drafting a year plan again no longer doubles everything.** Using a new plan replaces the earlier plan's unstarted plantings, and the new draft is made as if they were not there. Anything you sowed, planted or painted by hand stays and still blocks its cells. Plans saved before this version are recognised automatically.
+
+## [0.39.1] - 2026-10-11
+
+## [0.39.1] - 2026-10-11
+
+### Changed
+- **Sowing depths now come from published tables.** For 17 crops the depth on a sow job is taken from the University of Missouri and Mississippi State extension planting tables. Where the two differ (sweet corn, pumpkin, peas) you see the range, for example "1.3 to 5 cm". The other crops keep their labelled estimates.
+
 ## [0.39.0] - 2026-10-10
 
 ## [0.39.0] - 2026-10-10
@@ -354,7 +371,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - CI: ruff lint and format, backend tests, frontend build, image publishing to GHCR and automatic GitHub releases on a version bump.
 - Project docs: README, wiki, architecture, roadmap, contributing guide, security policy and Code of Conduct.
 
-[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.39.0...HEAD
+[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.40.0...HEAD
+[0.40.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.39.1...v0.40.0
+[0.39.1]: https://github.com/krugerhomeassistant/CropStack/compare/v0.39.0...v0.39.1
 [0.39.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.38.0...v0.39.0
 [0.12.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.11.0...v0.12.0
 [0.11.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.10.0...v0.11.0

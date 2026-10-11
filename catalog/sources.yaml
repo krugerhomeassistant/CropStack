@@ -238,3 +238,21 @@
   license: "Non-commercial extracts only"
   use: link-only
   tos_reviewed: 2026-10-09
+
+- id: mo-ext-g6201
+  title: Planning and planting guides (G6201), Table 1
+  author: University of Missouri Extension
+  url: https://extension.missouri.edu/publications/g6201
+  license: "© Curators of the University of Missouri"
+  use: facts-only
+  tos_reviewed: 2026-10-11
+  access: manual
+
+- id: msu-planting-guide
+  title: Vegetable gardens planting guide
+  author: Mississippi State University Extension
+  url: https://extension.msstate.edu/lawn-and-garden/vegetable-gardens/planting-guide
+  license: "© Mississippi State University"
+  use: facts-only
+  tos_reviewed: 2026-10-11
+  access: manual

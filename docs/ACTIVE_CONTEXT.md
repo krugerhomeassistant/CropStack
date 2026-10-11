@@ -64,3 +64,9 @@ README, RESOURCES, TOOLING refreshed for v0.33–0.38 (were stale at v0.10). REA
 
 ## v0.39.0
 22 organisms (13 new, hosts set, wording ours, cited to uc-ipm at page level). Next: sourced sow depth, needs model, Climate/Crops/More facelift.
+
+## v0.39.1
+Sow depth sourced (MO G6201 + MSU guide, range when they differ) for 17 crops; remaining crops are still estimates. Next: needs model (PLAN 8.2).
+
+## v0.40.0
+Migration 0016: `planting.source` ('plan' = made by year plan; backfilled for earlier batches of 5+ planned plantings saved in one second). Replan replaces unstarted plan plantings; DELETE /plan/year clears them. Open: live crops hold cells only to their cycle end, so a draft can schedule after a crop the owner still has growing.
