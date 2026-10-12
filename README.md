@@ -129,7 +129,7 @@ All settings are optional environment variables (copy [`.env.example`](.env.exam
 | `CROPSTACK_PORT` | `8430` | Host port |
 | `CROPSTACK_SECRET_KEY` | generated in `data/secret.key` | Session signing key |
 | `CROPSTACK_SECURE_COOKIES` | `false` | Set `true` when served over HTTPS |
-| `CROPSTACK_ALLOW_REGISTRATION` | `auto` | `auto`: only the first account can sign up; `true`: open; `false`: closed (invite links still work) |
+| `CROPSTACK_ALLOW_REGISTRATION` | `true` | `true` (or `auto`): anyone can create an account, with their own household or an invite to join one; `false`: closed (invite links still work) |
 
 `/api/health` reports the status, version and background jobs; the API reference is at `/api/docs`.
 

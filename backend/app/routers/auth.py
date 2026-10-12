@@ -7,7 +7,7 @@ from typing import Literal
 
 from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel, Field
-from sqlmodel import Session, func, select
+from sqlmodel import Session, select
 
 from ..config import get_settings
 from ..deps import SessionDep, UserDep, hash_pw, verify_pw
@@ -39,10 +39,7 @@ class PasswordChange(BaseModel):
 
 
 def registration_open(db: Session) -> bool:
-    mode = get_settings().allow_registration.lower()
-    if mode in ("true", "false"):
-        return mode == "true"
-    return db.exec(select(func.count()).select_from(User)).one() == 0  # "auto": only the first account
+    return get_settings().allow_registration.lower() != "false"  # "auto" is kept as an alias of "true"
 
 
 def token_hash(token: str) -> str:

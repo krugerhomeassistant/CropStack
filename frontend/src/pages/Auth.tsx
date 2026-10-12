@@ -8,6 +8,9 @@ export type Invite = InviteInfo & { token: string }
 
 type Props = { registrationOpen: boolean; invite?: Invite; notice?: string; onDone: () => void }
 
+/** An invite arrives as a link (.../invite/<token>) or the bare token: either way, the token is the last piece. */
+const tokenOf = (pasted: string) => pasted.trim().split(/[/?#]/).filter(Boolean).pop() ?? ''
+
 const ROLE_TEXT = { owner: N_('an owner'), member: N_('a member'), viewer: N_('a viewer') }
 
 export default function Auth({ registrationOpen, invite, notice, onDone }: Props) {
@@ -16,6 +19,8 @@ export default function Auth({ registrationOpen, invite, notice, onDone }: Props
   const [username, setUsername] = useState('')
   const [displayName, setDisplayName] = useState('')
   const [password, setPassword] = useState('')
+  const [join, setJoin] = useState(false) // sign up to join a household that sent an invite, instead of starting one
+  const [code, setCode] = useState('')
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
 
@@ -25,7 +30,7 @@ export default function Auth({ registrationOpen, invite, notice, onDone }: Props
     setError('')
     try {
       if (mode === 'login') await api.login(username, password)
-      else await api.register(username, password, displayName.trim(), invite?.token)
+      else await api.register(username, password, displayName.trim(), invite?.token ?? (join ? tokenOf(code) : undefined))
       onDone()
     } catch (err) {
       setError(err instanceof Error ? err.message : t('Something went wrong'))
@@ -56,6 +61,29 @@ export default function Auth({ registrationOpen, invite, notice, onDone }: Props
       )}
 
       <form className="card flex flex-col gap-4" onSubmit={submit}>
+        {mode === 'register' && !invite && (
+          <div role="radiogroup" aria-label={t('Household')} className="grid grid-cols-2 gap-2">
+            {[false, true].map((j) => (
+              <button
+                key={String(j)}
+                type="button"
+                role="radio"
+                aria-checked={join === j}
+                onClick={() => setJoin(j)}
+                className={`min-h-11 rounded-[var(--radius-row)] border px-3 text-sm font-semibold ${join === j ? 'border-leaf bg-leaf/15' : 'border-line bg-surface'}`}
+              >
+                {j ? t('Join a household') : t('Start my own')}
+              </button>
+            ))}
+          </div>
+        )}
+        {mode === 'register' && join && !invite && (
+          <label className="field">
+            <span>{t('Invite link or code')}</span>
+            <input className="input" required autoCapitalize="none" autoComplete="off" value={code} onChange={(e) => setCode(e.target.value)} />
+            <span className="text-xs text-muted">{t('Ask a household owner for one: Household, then Create invite link.')}</span>
+          </label>
+        )}
         {mode === 'register' && (
           <label className="field">
             <span>{t('Your name')}</span>
@@ -95,7 +123,7 @@ export default function Auth({ registrationOpen, invite, notice, onDone }: Props
         </label>
         {error && <ErrorMessage>{error}</ErrorMessage>}
         <Button type="submit" disabled={busy}>
-          {mode === 'login' ? t('Log in') : invite ? t('Join {household}', { household: invite.household }) : t('Create account')}
+          {mode === 'login' ? t('Log in') : invite ? t('Join {household}', { household: invite.household }) : join ? t('Join household') : t('Create account')}
         </Button>
       </form>
 

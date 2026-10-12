@@ -65,11 +65,15 @@ def test_password_change(client):
     assert client.post("/api/v1/auth/login", json={"username": "carol", "password": "brand new pw"}).status_code == 200
 
 
-def test_registration_auto_closes_after_first_account():
+def test_registration_stays_open_unless_switched_off(monkeypatch):
     with TestClient(app) as c:
-        c.post("/api/v1/auth/register", json={"username": "first", "password": "first pass"})
-        assert c.get("/api/v1/auth/status").json()["registration_open"] is False
-        assert c.post("/api/v1/auth/register", json={"username": "late", "password": "late pass"}).status_code == 403
+        monkeypatch.undo()  # the fixture forces it open; test the real setting
+        for mode, code in (("auto", 200), ("true", 200), ("false", 403)):
+            monkeypatch.setattr(auth, "get_settings", lambda mode=mode: type("S", (), {"allow_registration": mode})())
+            r = c.post("/api/v1/auth/register", json={"username": f"user-{mode}", "password": "some pass 1"})
+            assert r.status_code == code
+            assert c.get("/api/v1/auth/status").json()["registration_open"] is (mode != "false")
+            c.post("/api/v1/auth/logout")
 
 
 def test_garden_requires_login(client):

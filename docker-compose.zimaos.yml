@@ -9,7 +9,7 @@ services:
     ports:
       - "8430:8000"
     environment:
-      CROPSTACK_ALLOW_REGISTRATION: "auto"   # only the first account can sign up
+      CROPSTACK_ALLOW_REGISTRATION: "true"   # anyone can create an account; "false" closes sign-up
     volumes:
       - /DATA/AppData/cropstack:/data
     mem_limit: 256m

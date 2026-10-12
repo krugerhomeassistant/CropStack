@@ -16,8 +16,8 @@ class Settings(BaseSettings):
     catalog_dir: Path = Path(__file__).resolve().parents[2] / "catalog"
     secret_key: str = ""
     secure_cookies: bool = False  # set true behind HTTPS
-    # "auto" = open only until the first account exists; "true" = always open; "false" = closed
-    allow_registration: str = "auto"
+    # "true" (or the old "auto") = anyone can sign up; "false" = closed, invite links still work
+    allow_registration: str = "true"
     session_max_age_days: int = 30
     # Garden assistant defaults (Settings in the app win); lets a compose file preconfigure it. See ai.py.
     ai_provider: str = ""

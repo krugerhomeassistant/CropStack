@@ -81,7 +81,7 @@ Target architecture (engines, data model, API) is specified in `docs/SPEC.md` §
 | `CROPSTACK_DATA_DIR` | `./data` (`/data` in image) | SQLite + secret key |
 | `CROPSTACK_STATIC_DIR` | `./static` (`/app/static` in image) | built SPA; SPA route disabled if missing |
 | `CROPSTACK_SECRET_KEY` | auto | session signing |
-| `CROPSTACK_ALLOW_REGISTRATION` | `auto` | `auto` / `true` / `false` |
+| `CROPSTACK_ALLOW_REGISTRATION` | `true` | `true` (alias `auto`) / `false` |
 | `CROPSTACK_SECURE_COOKIES` | `false` | HTTPS-only cookies |
 | `CROPSTACK_CATALOG_DIR` | repo `catalog/` (`/app/catalog` in image) | bundled catalog; private pack is `<data>/catalog-private/` |
 | `CROPSTACK_SCHEDULER` | `true` | background jobs (forecast refresh) |
