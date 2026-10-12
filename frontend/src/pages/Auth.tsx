@@ -11,11 +11,21 @@ type Props = { registrationOpen: boolean; invite?: Invite; notice?: string; onDo
 /** An invite arrives as a link (.../invite/<token>) or the bare token: either way, the token is the last piece. */
 const tokenOf = (pasted: string) => pasted.trim().split(/[/?#]/).filter(Boolean).pop() ?? ''
 
+// A browser that has signed in before opens on "Log in"; a new one on "Create account" (when sign-up is open).
+const KNOWN = 'cropstack-known'
+const seenBefore = () => {
+  try {
+    return !!localStorage.getItem(KNOWN)
+  } catch {
+    return false
+  }
+}
+
 const ROLE_TEXT = { owner: N_('an owner'), member: N_('a member'), viewer: N_('a viewer') }
 
 export default function Auth({ registrationOpen, invite, notice, onDone }: Props) {
   const canRegister = registrationOpen || !!invite
-  const [mode, setMode] = useState<'login' | 'register'>(canRegister ? 'register' : 'login')
+  const [mode, setMode] = useState<'login' | 'register'>(canRegister && (invite || !seenBefore()) ? 'register' : 'login')
   const [username, setUsername] = useState('')
   const [displayName, setDisplayName] = useState('')
   const [password, setPassword] = useState('')
@@ -31,6 +41,11 @@ export default function Auth({ registrationOpen, invite, notice, onDone }: Props
     try {
       if (mode === 'login') await api.login(username, password)
       else await api.register(username, password, displayName.trim(), invite?.token ?? (join ? tokenOf(code) : undefined))
+      try {
+        localStorage.setItem(KNOWN, '1')
+      } catch {
+        /* private window: the form just opens on sign-up next time */
+      }
       onDone()
     } catch (err) {
       setError(err instanceof Error ? err.message : t('Something went wrong'))

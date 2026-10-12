@@ -120,7 +120,7 @@ try {
   await owner.getByRole('button', { name: 'Bed 1', exact: true }).waitFor()
   const drawn = (await (await owner.request.get(`${base}/api/v1/beds`)).json())[0]
   assert.ok(drawn.width > 1 && drawn.length > 1, 'the bed takes the size that was dragged')
-  const bedRect = owner.locator('svg[role=img] rect[stroke-width="0.09"]').first()
+  const bedRect = owner.getByTestId('bed-body').first()
   await bedRect.scrollIntoViewIfNeeded()
   const bedBox = await stableBox(bedRect)
   await owner.mouse.move(bedBox.x + 10, bedBox.y + 10)
@@ -330,6 +330,7 @@ try {
   // Desktop: the side rail replaces the bottom bar
   const desk = await (await browser.newContext({ viewport: { width: 1440, height: 900 } })).newPage()
   await desk.goto(base)
+  await desk.getByRole('button', { name: 'I already have an account' }).click() // a new browser opens on sign-up
   await desk.getByLabel('Username').fill('jan')
   await desk.getByLabel('Password').fill('garden123')
   await desk.getByRole('button', { name: 'Log in' }).click()

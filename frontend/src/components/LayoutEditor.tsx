@@ -250,7 +250,7 @@ export default function LayoutEditor({ onChange, suggested, request, plan }: { o
               {isPot ? (
                 <ellipse cx={b.x + b.width / 2} cy={b.y + b.length / 2} rx={b.width / 2} ry={b.length / 2} className="fill-feed/15 stroke-feed/60" strokeWidth={0.04} />
               ) : (
-                <rect x={b.x} y={b.y} width={b.width} height={b.length} rx={0.12} className="fill-feed/15 stroke-feed/60" strokeWidth={0.04} />
+                <rect data-testid="bed-body" x={b.x} y={b.y} width={b.width} height={b.length} rx={0.12} className="fill-feed/15 stroke-feed/60" strokeWidth={0.04} />
               )}
               <g clipPath={`url(#clip${b.id})`} className="pointer-events-none select-none">
                 {waiting.flatMap((p) =>

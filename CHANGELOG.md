@@ -11,6 +11,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - **Sign-up is always open.** Anyone can create an account, choosing "Start my own" household or "Join a household" with an invite link or code from an owner. `CROPSTACK_ALLOW_REGISTRATION` now defaults to `true`; `auto` is kept as an alias of it and `false` closes sign-up (invite links still work).
 
 ### Changed
+- A browser that has signed in before opens on Log in (new browsers open on Create account), so signing out does not drop you onto a sign-up form.
 - **A more modern plot plan.** A fine metre grid replaces the plus marks, beds have a soft soil tint and thin edge, planted cells are coloured tiles that match the bed editor, the selected bed has a soft halo, and the bed editor's frame is thin and rounded.
 
 ## [0.41.0] - 2026-10-11

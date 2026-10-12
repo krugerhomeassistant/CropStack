@@ -18,13 +18,16 @@ const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PAT
 // Sign in once and reuse the cookie for every context.
 const setup = await browser.newPage()
 await setup.goto(base)
-const create = setup.getByRole('button', { name: 'Create account' })
+// A new browser opens on sign-up: try logging in first, and create the account if that fails.
+await setup.getByRole('button', { name: 'I already have an account' }).click()
 await setup.getByLabel('Username').fill(user)
 await setup.getByLabel('Password').fill(password)
-if (await create.isVisible()) {
+await setup.getByRole('button', { name: 'Log in' }).click()
+if (await setup.getByRole('alert').waitFor({ timeout: 3000 }).then(() => true, () => false)) {
+  await setup.getByRole('button', { name: 'Create an account instead' }).click()
   await setup.getByLabel('Your name').fill(process.env.CROPSTACK_NAME ?? 'Sam')
-  await create.click()
-} else await setup.getByRole('button', { name: 'Log in' }).click()
+  await setup.getByRole('button', { name: 'Create account' }).click()
+}
 const latitude = setup.getByLabel('Latitude')
 await Promise.race([latitude.waitFor(), setup.getByRole('navigation').first().waitFor()])
 if (await latitude.isVisible()) {
