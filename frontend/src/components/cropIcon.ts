@@ -8,5 +8,6 @@ const ICONS: Record<string, string> = {
   'runner-bean': '🫛', beetroot: '🟣', radish: '🔴', turnip: '⚪', swede: '⚪', parsnip: '🥕', celery: '🌿', celeriac: '🌿',
   parsley: '🌿', basil: '🌿', coriander: '🌿', dill: '🌿', thyme: '🌿', sage: '🌿', rosemary: '🌿', oregano: '🌿', mint: '🌿',
   fennel: '🌿', asparagus: '🌱', rhubarb: '🌱', okra: '🌱', kohlrabi: '🟢', 'globe-artichoke': '🌱', horseradish: '🌱', watercress: '🌿',
+  marigold: '🌼', chamomile: '🌼', alyssum: '🌼', nasturtium: '🏵️', borage: '🌸', sunflower: '🌻',
 }
 export const cropIcon = (slug: string): string => ICONS[slug] ?? '🌱'

@@ -112,13 +112,19 @@ export default function YearPlan({ hasBeds, scheduled, plan, setPlan, onUsed, on
                       {cropIcon(i.crop)} {i.name} <span className="font-normal text-muted">· {i.bed}</span>
                     </p>
                     <p className="text-sm text-muted">
-                      {i.method === 'transplant' ? t('Set out') : t('Sow')} {day(planted(i))} · {t('harvest {from} to {to}', { from: day(i.harvest_from), to: day(i.harvest_to) })} · {t('{n} plants on {cells} cells', { n: i.plants, cells: i.cells.length })}
+                      {i.method === 'transplant' ? t('Set out') : t('Sow')} {day(planted(i))} · {i.companion_for?.length ? t('in flower {from} to {to}', { from: day(i.harvest_from), to: day(i.harvest_to) }) : t('harvest {from} to {to}', { from: day(i.harvest_from), to: day(i.harvest_to) })} · {i.companion_for?.length ? t('{n} cells', { n: i.cells.length }) : t('{n} plants on {cells} cells', { n: i.plants, cells: i.cells.length })}
                     </p>
-                    {(i.pairs_with?.length || i.flowers?.length) ? (
+                    {i.companion_for?.length ? (
+                      <p className="text-sm text-muted">{t('Companion flower for {crops}', { crops: i.companion_for.join(', ') })}</p>
+                    ) : i.pairs_with?.length || i.flowers?.length || i.flower_hints?.length ? (
                       <p className="text-sm text-muted">
-                        {i.pairs_with?.length ? t('Grows beside {crops}', { crops: i.pairs_with.join(', ') }) : ''}
-                        {i.pairs_with?.length && i.flowers?.length ? ' · ' : ''}
-                        {i.flowers?.length ? t('Traditionally grown with {flowers}', { flowers: i.flowers.join(', ') }) : ''}
+                        {[
+                          i.pairs_with?.length ? t('Grows beside {crops}', { crops: i.pairs_with.join(', ') }) : '',
+                          i.flowers?.length ? t('With {flowers} beside it', { flowers: i.flowers.join(', ') }) : '',
+                          !i.flowers?.length && i.flower_hints?.length ? t('Traditionally grown with {flowers}', { flowers: i.flower_hints.join(', ') }) : '',
+                        ]
+                          .filter(Boolean)
+                          .join(' · ')}
                       </p>
                     ) : null}
                   </div>

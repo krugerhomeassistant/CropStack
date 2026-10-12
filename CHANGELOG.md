@@ -5,6 +5,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.44.0] - 2026-10-12
+
+### Added
+- **Companion flowers you can plant.** Marigold, nasturtium, borage, chamomile, sweet alyssum and sunflower are now catalog entries (a new `purpose: companion` on a crop marks a plant grown for the garden, not the table: no food group or yield). Borage, chamomile and sunflower take their temperatures, pH and rainfall from FAO ECOCROP; marigold, nasturtium and alyssum have no ECOCROP row, so their temperature and spacing values are flagged estimates. All six appear in "Plant now" and can be painted into a bed like any crop.
+- **The year plan places them.** Beside a crop that has traditional flowers, the drafter puts a small block (two cells) of a flower that can be sown at that time, in the same bed, timed to bloom while the crop grows. One block serves every crop in the bed that goes with that flower. Each item says "Companion flower for Tomato" or "With Sweet alyssum beside it"; crops whose flowers cannot be sown in their season (a marigold in winter) keep the "traditionally grown with" hint instead.
+
 ## [0.43.0] - 2026-10-12
 
 ### Added
@@ -406,7 +412,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - CI: ruff lint and format, backend tests, frontend build, image publishing to GHCR and automatic GitHub releases on a version bump.
 - Project docs: README, wiki, architecture, roadmap, contributing guide, security policy and Code of Conduct.
 
-[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.43.0...HEAD
+[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.44.0...HEAD
+[0.44.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.43.0...v0.44.0
 [0.43.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.42.2...v0.43.0
 [0.42.2]: https://github.com/krugerhomeassistant/CropStack/compare/v0.42.1...v0.42.2
 [0.42.1]: https://github.com/krugerhomeassistant/CropStack/compare/v0.42.0...v0.42.1

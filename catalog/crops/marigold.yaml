@@ -1,0 +1,95 @@
+kind: crop
+slug: marigold
+names:
+  en:
+  - Marigold
+  - African marigold
+  af:
+  - Afrikaantjie
+scientific_name: Tagetes erecta
+family: Asteraceae
+rotation_group: flowers
+life_cycle: annual
+purpose: companion
+description: A bright, easy annual that tomatoes, cucumbers and brassicas are traditionally grown beside. Sow it after the
+  last frost, and deadhead it to keep it flowering.
+requirements:
+  temperature:
+    lethal_min:
+      value: 0.0
+      unit: Cel
+      evidence: traditional
+      confidence: low
+      estimate: true
+      qualifiers: {basis: 'frost-tolerance class (tender, half-hardy or hardy) from standard extension charts'}
+    stress_min:
+      value: 10.0
+      unit: Cel
+      evidence: traditional
+      confidence: low
+      estimate: true
+      qualifiers: {basis: typical growing range for the species from seed-packet and extension guidance; FAO ECOCROP has no
+          row for it}
+    optimal:
+      value: {min: 18.0, max: 27.0}
+      unit: Cel
+      evidence: traditional
+      confidence: low
+      estimate: true
+      qualifiers: {basis: typical growing range for the species from seed-packet and extension guidance; FAO ECOCROP has no
+          row for it}
+    stress_max:
+      value: 35.0
+      unit: Cel
+      evidence: traditional
+      confidence: low
+      estimate: true
+      qualifiers: {basis: typical growing range for the species from seed-packet and extension guidance; FAO ECOCROP has no
+          row for it}
+params:
+  cycle_days:
+    value: {min: 55.0, max: 90.0}
+    unit: d
+    evidence: traditional
+    confidence: low
+    estimate: true
+    qualifiers: {basis: usual sowing-to-first-flowers time of a companion flower from seed-packet and extension guidance;
+        not the seed-ripening cycle}
+  sow_depth:
+    value: 0.5
+    unit: cm
+    evidence: traditional
+    confidence: low
+    estimate: true
+    qualifiers: {basis: usual seed depth from standard seed-packet and extension guidance}
+  row_spacing:
+    value: 45
+    unit: cm
+    evidence: grower-reported
+    confidence: low
+    sources:
+    - {ref: openfarm-rescue, locator: 'https://web.archive.org/web/20210511001121/https://openfarm.cc/en/crops/african-marigold',
+      retrieved: 2026-10-09, snapshot: 'sha256:203050c7a2be7ab1c4c165ee4edb42aaebcb13d183bd53540a2bf3482363caec'}
+  plant_spread:
+    value: 60
+    unit: cm
+    evidence: grower-reported
+    confidence: low
+    sources:
+    - {ref: openfarm-rescue, locator: 'https://web.archive.org/web/20210511001121/https://openfarm.cc/en/crops/african-marigold',
+      retrieved: 2026-10-09, snapshot: 'sha256:203050c7a2be7ab1c4c165ee4edb42aaebcb13d183bd53540a2bf3482363caec'}
+  height:
+    value: 120
+    unit: cm
+    evidence: grower-reported
+    confidence: low
+    sources:
+    - {ref: openfarm-rescue, locator: 'https://web.archive.org/web/20210511001121/https://openfarm.cc/en/crops/african-marigold',
+      retrieved: 2026-10-09, snapshot: 'sha256:203050c7a2be7ab1c4c165ee4edb42aaebcb13d183bd53540a2bf3482363caec'}
+  sun:
+    value: full_sun
+    evidence: grower-reported
+    confidence: low
+    sources:
+    - {ref: openfarm-rescue, locator: 'https://web.archive.org/web/20210511001121/https://openfarm.cc/en/crops/african-marigold',
+      retrieved: 2026-10-09, snapshot: 'sha256:203050c7a2be7ab1c4c165ee4edb42aaebcb13d183bd53540a2bf3482363caec'}

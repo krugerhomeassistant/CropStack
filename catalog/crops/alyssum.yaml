@@ -1,0 +1,75 @@
+kind: crop
+slug: alyssum
+names:
+  en:
+  - Sweet alyssum
+scientific_name: Lobularia maritima
+family: Brassicaceae
+rotation_group: flowers
+life_cycle: annual
+purpose: companion
+description: A low, honey-scented carpet of tiny flowers that draws hoverflies, traditionally grown along lettuce and brassica
+  beds. Sow it on the surface and shear it back after its first flush.
+requirements:
+  temperature:
+    lethal_min:
+      value: -3.0
+      unit: Cel
+      evidence: traditional
+      confidence: low
+      estimate: true
+      qualifiers: {basis: 'frost-tolerance class (tender, half-hardy or hardy) from standard extension charts'}
+    stress_min:
+      value: 5.0
+      unit: Cel
+      evidence: traditional
+      confidence: low
+      estimate: true
+      qualifiers: {basis: typical growing range for the species from seed-packet and extension guidance; FAO ECOCROP has no
+          row for it}
+    optimal:
+      value: {min: 12.0, max: 22.0}
+      unit: Cel
+      evidence: traditional
+      confidence: low
+      estimate: true
+      qualifiers: {basis: typical growing range for the species from seed-packet and extension guidance; FAO ECOCROP has no
+          row for it}
+    stress_max:
+      value: 30.0
+      unit: Cel
+      evidence: traditional
+      confidence: low
+      estimate: true
+      qualifiers: {basis: typical growing range for the species from seed-packet and extension guidance; FAO ECOCROP has no
+          row for it}
+params:
+  cycle_days:
+    value: {min: 50.0, max: 80.0}
+    unit: d
+    evidence: traditional
+    confidence: low
+    estimate: true
+    qualifiers: {basis: usual sowing-to-first-flowers time of a companion flower from seed-packet and extension guidance;
+        not the seed-ripening cycle}
+  sow_depth:
+    value: 0.2
+    unit: cm
+    evidence: traditional
+    confidence: low
+    estimate: true
+    qualifiers: {basis: usual seed depth from standard seed-packet and extension guidance}
+  row_spacing:
+    value: 15
+    unit: cm
+    evidence: traditional
+    confidence: low
+    estimate: true
+    qualifiers: {basis: usual spacing from standard seed-packet and extension guidance}
+  plant_spread:
+    value: 15
+    unit: cm
+    evidence: traditional
+    confidence: low
+    estimate: true
+    qualifiers: {basis: usual spacing from standard seed-packet and extension guidance}

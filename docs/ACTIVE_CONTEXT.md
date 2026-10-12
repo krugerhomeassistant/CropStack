@@ -1,6 +1,6 @@
 # ACTIVE CONTEXT
 
-**Date:** 2026-10-12 · **Version:** 0.43.0 · **Alembic head:** 0016 · **Tests:** 189 backend, browser e2e green.
+**Date:** 2026-10-12 · **Version:** 0.44.0 · **Alembic head:** 0016 · **Tests:** 192 backend, browser e2e green.
 History of earlier sessions: `ACTIVE_CONTEXT_ARCHIVE.md`.
 
 ## What CropStack is today
@@ -39,6 +39,9 @@ Personal, non-commercial. Fully dynamic (no presets). Never restrict or destroy 
 - README screenshots in `docs/images/` are old (regenerate with `npm run screenshots`).
 - Owner action: enable "Allow GitHub Actions to create pull requests" so the monthly catalog-refresh workflow can open PRs.
 - Sandbox quirks: `gh` GraphQL is blocked (use `gh run list`, REST); the sandbox proxy resets some connections (retry); `sqlite3` CLI is missing (use python).
+
+## v0.44.0
+Six companion flowers in the catalog (`purpose: companion`, `catalog/crops/{marigold,nasturtium,borage,chamomile,alyssum,sunflower}.yaml`, added to `scripts/ingest/crosswalk.yaml`; temperatures/pH/rainfall from ECOCROP for borage, chamomile, sunflower; marigold, nasturtium, alyssum temperatures and spacing are flagged estimates; cycle_days is a hand-set sow-to-bloom estimate, not ECOCROP's seed-ripening cycle). `engine/yearplan._flower_blocks` places a 2-cell block beside crops that list the flower. Dev note: running `scripts/ingest fetch` rewrites the Harrington hash in `snapshots.lock` (the OSU page changed upstream); revert the lock unless you mean to re-ingest, and merge new files with a small script rather than `ingest merge` (it would rewrite existing crops). Next: flowers' own harvest/Today wording ("pick" not "harvest"), more flowers/herbs (calendula, cosmos, zinnia), adjacency-aware placement, the re-plan diff.
 
 ## v0.43.0
 Year plan: proper spacing (plants needing more than a cell take several, kept together; `layout.cells_per_plant/plants_in`) and companion planting (`catalog/companions.yaml`, 143 good / 31 avoid pairs + flowers from Wikipedia rev 1334550406; `engine/yearplan.py` prefers beds with a good companion, refuses a bed with an avoid crop; items carry `pairs_with`, `flowers`, `cells_per_plant`). Limits: companions are a bed-level hint (no adjacency, no interplanting rows), flowers are text only (not in the catalog as plantable crops), pairs come from one list and are all `traditional`; the same crop can appear in several beds so "pairs with" can name a crop planted in another window of the season. Next: flowers/herbs as plantable catalog entries so the plan can place them, an adjacency-aware placement, the re-plan diff.

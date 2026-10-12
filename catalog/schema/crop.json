@@ -922,6 +922,15 @@
       "title": "Params",
       "type": "object"
     },
+    "purpose": {
+      "default": "food",
+      "enum": [
+        "food",
+        "companion"
+      ],
+      "title": "Purpose",
+      "type": "string"
+    },
     "requirements": {
       "$ref": "#/$defs/Requirements"
     },

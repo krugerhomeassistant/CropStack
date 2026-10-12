@@ -69,3 +69,9 @@ horseradish: {gbif: Armoracia rusticana, openfarm: horseradish, ecocrop: 369}
 jerusalem-artichoke: {gbif: Helianthus tuberosus, openfarm: jerusalem-artichoke, ecocrop: 460}
 celeriac: {gbif: Apium graveolens, openfarm: celeriac, ecocrop: 367}
 watercress: {gbif: Nasturtium officinale, openfarm: watercress, ecocrop: 461}
+marigold: {gbif: Tagetes erecta, openfarm: african-marigold}
+nasturtium: {gbif: Tropaeolum majus}
+borage: {gbif: Borago officinalis, openfarm: borage, ecocrop: 722}
+chamomile: {gbif: Matricaria chamomilla, openfarm: german-chamomile, ecocrop: 1250}
+alyssum: {gbif: Lobularia maritima}
+sunflower: {gbif: Helianthus annuus, openfarm: sunflower, ecocrop: 46}

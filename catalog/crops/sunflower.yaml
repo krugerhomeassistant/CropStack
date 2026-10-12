@@ -1,0 +1,105 @@
+kind: crop
+slug: sunflower
+names:
+  en:
+  - Sunflower
+  af:
+  - Sonneblom
+scientific_name: Helianthus annuus
+family: Asteraceae
+rotation_group: flowers
+life_cycle: annual
+purpose: companion
+description: A tall annual that gives shade, a windbreak and seeds, traditionally grown beside sweet corn, cucumbers and peppers.
+  Put it on the edge of a bed where its shade does no harm.
+requirements:
+  temperature:
+    lethal_min:
+      value: -1.0
+      unit: Cel
+      evidence: traditional
+      confidence: low
+      estimate: true
+      qualifiers: {basis: 'frost-tolerance class (tender, half-hardy or hardy) from standard extension charts'}
+    stress_min:
+      value: 5.0
+      unit: Cel
+      evidence: government
+      confidence: medium
+      sources:
+      - {ref: fao-ecocrop, locator: 'ECOCROP code 46, TMIN (via Recocrop)', retrieved: 2026-10-09, snapshot: 'sha256:90a21d908419e304e4e4c38c92df62d93b25cb373420fcd0a711247b1f47f358'}
+    optimal:
+      value: {min: 17.0, max: 34.0}
+      unit: Cel
+      evidence: government
+      confidence: medium
+      sources:
+      - {ref: fao-ecocrop, locator: 'ECOCROP code 46, TOPMN, TOPMX (via Recocrop)', retrieved: 2026-10-09, snapshot: 'sha256:90a21d908419e304e4e4c38c92df62d93b25cb373420fcd0a711247b1f47f358'}
+    stress_max:
+      value: 45.0
+      unit: Cel
+      evidence: government
+      confidence: medium
+      sources:
+      - {ref: fao-ecocrop, locator: 'ECOCROP code 46, TMAX (via Recocrop)', retrieved: 2026-10-09, snapshot: 'sha256:90a21d908419e304e4e4c38c92df62d93b25cb373420fcd0a711247b1f47f358'}
+  soil:
+    ph:
+      value: {min: 5.5, opt_min: 6.0, opt_max: 7.5, max: 8.0}
+      evidence: government
+      confidence: medium
+      sources:
+      - {ref: fao-ecocrop, locator: 'ECOCROP code 46, PHMIN to PHMAX (via Recocrop)', retrieved: 2026-10-09, snapshot: 'sha256:90a21d908419e304e4e4c38c92df62d93b25cb373420fcd0a711247b1f47f358'}
+params:
+  cycle_days:
+    value: {min: 70.0, max: 110.0}
+    unit: d
+    evidence: traditional
+    confidence: low
+    estimate: true
+    qualifiers: {basis: usual sowing-to-first-flowers time of a companion flower from seed-packet and extension guidance;
+        not the seed-ripening cycle}
+  sow_depth:
+    value: 2.5
+    unit: cm
+    evidence: traditional
+    confidence: low
+    estimate: true
+    qualifiers: {basis: usual seed depth from standard seed-packet and extension guidance}
+  annual_rainfall:
+    value: {min: 300.0, opt_min: 600.0, opt_max: 1000.0, max: 1600.0}
+    unit: mm
+    evidence: government
+    confidence: medium
+    sources:
+    - {ref: fao-ecocrop, locator: 'ECOCROP code 46, RMIN to RMAX (via Recocrop)', retrieved: 2026-10-09, snapshot: 'sha256:90a21d908419e304e4e4c38c92df62d93b25cb373420fcd0a711247b1f47f358'}
+  row_spacing:
+    value: 30
+    unit: cm
+    evidence: grower-reported
+    confidence: low
+    sources:
+    - {ref: openfarm-rescue, locator: 'https://web.archive.org/web/20211127081609/https://openfarm.cc/en/crops/sunflower',
+      retrieved: 2026-10-09, snapshot: 'sha256:203050c7a2be7ab1c4c165ee4edb42aaebcb13d183bd53540a2bf3482363caec'}
+  plant_spread:
+    value: 60
+    unit: cm
+    evidence: grower-reported
+    confidence: low
+    sources:
+    - {ref: openfarm-rescue, locator: 'https://web.archive.org/web/20211127081609/https://openfarm.cc/en/crops/sunflower',
+      retrieved: 2026-10-09, snapshot: 'sha256:203050c7a2be7ab1c4c165ee4edb42aaebcb13d183bd53540a2bf3482363caec'}
+  height:
+    value: 240
+    unit: cm
+    evidence: grower-reported
+    confidence: low
+    sources:
+    - {ref: openfarm-rescue, locator: 'https://web.archive.org/web/20211127081609/https://openfarm.cc/en/crops/sunflower',
+      retrieved: 2026-10-09, snapshot: 'sha256:203050c7a2be7ab1c4c165ee4edb42aaebcb13d183bd53540a2bf3482363caec'}
+  sun:
+    value: full_sun
+    evidence: grower-reported
+    confidence: low
+    sources:
+    - {ref: openfarm-rescue, locator: 'https://web.archive.org/web/20211127081609/https://openfarm.cc/en/crops/sunflower',
+      retrieved: 2026-10-09, snapshot: 'sha256:203050c7a2be7ab1c4c165ee4edb42aaebcb13d183bd53540a2bf3482363caec'}

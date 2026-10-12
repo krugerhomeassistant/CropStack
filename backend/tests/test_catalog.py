@@ -209,6 +209,9 @@ def test_every_crop_says_how_it_is_eaten_and_roughly_what_it_yields():
     crops = list(c.list("crop"))
     assert crops
     for slug, item in crops:
+        if item.get("purpose") == "companion":
+            assert not item.get("food_group"), slug  # grown for the garden, not for food
+            continue
         assert item.get("food_group") in needs.GROUPS, slug
         assert layout.yield_per_m2(item), slug
 
@@ -239,3 +242,12 @@ def test_companions_must_name_catalog_crops_and_a_registered_source(tmp_path):
     )
     with pytest.raises(cat.CatalogError, match="moonflower"):
         cat.load(tmp_path / "catalog")
+
+
+def test_companion_flowers_are_catalog_crops_that_are_not_food():
+    loaded = cat.load(REPO / "catalog")
+    flowers = {f for fl in loaded.companions["flowers"].values() for f in fl}
+    assert flowers, "the companion list names flowers"
+    for slug in flowers:
+        item = loaded.get("crop", slug)
+        assert item and item["purpose"] == "companion" and not item.get("food_group"), slug

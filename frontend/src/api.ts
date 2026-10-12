@@ -121,6 +121,8 @@ export type PlanItem = {
   cells_per_plant?: number
   pairs_with?: string[]
   flowers?: string[]
+  flower_hints?: string[]
+  companion_for?: string[]
   harvest_from: string
   harvest_to: string
   until: string

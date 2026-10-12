@@ -5,7 +5,7 @@ from __future__ import annotations
 import heapq
 from collections.abc import Sequence
 from dataclasses import dataclass
-from datetime import date
+from datetime import date, timedelta
 from math import ceil
 
 from . import layout, needs
@@ -13,6 +13,9 @@ from . import layout, needs
 CAP = 12  # most cells one crop takes in one go, so no crop swallows a bed
 COMPANION_BONUS = 0.25  # per good companion already in the bed that season (at most two count): prefer that bed
 FLOWERS_SHOWN = 2
+FLOWER_CELLS = 2  # cells of a companion flower beside a crop: a small patch, not a bed
+FLOWER_LEAD_DAYS = 28  # a flower may go in this long before the crop it accompanies
+FLOWER_BLOOM_AFTER = 30  # ...and must be sown at least this long before that crop is done
 MIN_GAIN = 1.0  # kg a placement must add toward a shortfall; below this it is not worth a planting
 
 
@@ -57,6 +60,71 @@ def block(free: list, n: int, k: int) -> list:
     return near[:n]
 
 
+def _flower_blocks(out, kept, beds, held, fwants, flowers, today) -> list[dict]:
+    """A small block of each crop's traditional companion flower, in the same bed and timed to bloom while the crop
+    grows. One block serves every crop in the bed that goes with that flower while it lasts. Needs the flower in the
+    catalog with a sowing window; a crop whose flowers are missing or have no room simply gets none."""
+    by_id = {b.id: b for b in beds}
+    hosts = [(r["bed_id"], r["crop"], r["set_out_date"] or r["start_date"], r["until"], r["name"]) for r in out]
+    hosts += [
+        (bed_id, crop, a, z, crop.replace("-", " ").title()) for bed_id, rows in kept.items() for crop, a, z in rows
+    ]
+    placed: list[dict] = []
+    for bed_id, crop, a, z, host in sorted(hosts, key=lambda h: (h[2], h[1])):
+        b = by_id.get(bed_id)
+        for slug in flowers.get(crop, []) if b else []:
+            have = [
+                f
+                for f in placed
+                if f["bed_id"] == bed_id and f["crop"] == slug and f["start_date"] <= z and a <= f["until"]
+            ]
+            if have:  # a block of this flower already stands in the bed while this crop grows
+                have[0]["companion_for"] = sorted({*have[0]["companion_for"], host})
+                break
+            options = [
+                w
+                for w in fwants
+                if w.crop == slug
+                and a - timedelta(days=FLOWER_LEAD_DAYS) <= w.planted <= z - timedelta(days=FLOWER_BLOOM_AFTER)
+            ]
+            for w in sorted(options, key=lambda w: abs((w.planted - a).days)):
+                last = layout.occupancy(w.start, w.set_out, None, "planned", w.cycle_days, today)[1]
+                n = max(FLOWER_CELLS, layout.cells_per_plant(b.cell_cm, w.footprint))
+                free = layout.free_cells(b.cols, b.rows, [(c, x, y) for c, x, y, _ in held[bed_id]], w.planted, last)
+                if len(free) < n:
+                    continue
+                cells = free[-n:]  # the far edge of the bed, out of the way of the crops
+                held[bed_id] += [(c, w.planted, last, "") for c in cells]
+                placed.append(
+                    {
+                        "crop": w.crop,
+                        "name": w.name,
+                        "method": w.method,
+                        "start_date": w.start,
+                        "set_out_date": w.set_out,
+                        "bed_id": bed_id,
+                        "bed": b.name,
+                        "cells": [list(c) for c in sorted(cells, key=lambda c: (c[1], c[0]))],
+                        "plants": layout.plants_in(b.cell_cm, w.footprint, len(cells)),
+                        "cells_per_plant": layout.cells_per_plant(b.cell_cm, w.footprint),
+                        "harvest_from": w.harvest_from,
+                        "harvest_to": w.harvest_to,
+                        "until": last,
+                        "food_group": None,
+                        "kg": 0,
+                        "companion_for": [host],
+                        "pairs_with": [],
+                        "flowers": [],
+                        "flower_hints": [],
+                    }
+                )
+                break
+            else:
+                continue  # no window or no room for this flower: try the crop's next one
+            break
+    return placed
+
+
 def draft(
     beds: list[Bed],
     taken: dict[int, list],
@@ -83,7 +151,7 @@ def draft(
     for g, kg, a, z in existing:
         for week, k in needs.spread(today, a, z, kg).items():
             supply[g][week] += k
-    wants = [w for w in wants if w.kg_per_m2 and w.food_group in supply]
+    all_wants, wants = wants, [w for w in wants if w.kg_per_m2 and w.food_group in supply]
 
     def evaluate(i: int, b: Bed):
         """The best block of cells for want `i` in bed `b` right now, with its sort key; None when it adds too little."""
@@ -155,8 +223,11 @@ def draft(
                 "kg": round(kg, 1),
             }
         )
-    names = {w.crop: w.name for w in wants}
+    names = {w.crop: w.name for w in all_wants}
+    out += _flower_blocks(out, kept or {}, beds, held, [w for w in all_wants if w.cycle_days], flowers, today)
     for r in out:  # who it shares the bed with that season, and flowers that are traditionally grown beside it
+        if "companion_for" in r:
+            continue
         start = r["set_out_date"] or r["start_date"]
         with_ = {
             c
@@ -164,5 +235,19 @@ def draft(
             if c in good.get(r["crop"], set()) and a <= r["until"] and start <= z
         }
         r["pairs_with"] = sorted(names.get(c, c.replace("-", " ").title()) for c in with_)
-        r["flowers"] = [f for f in flowers.get(r["crop"], [])[:FLOWERS_SHOWN]]
+        beside = sorted(
+            {
+                f["name"]
+                for f in out
+                if "companion_for" in f
+                and f["bed_id"] == r["bed_id"]
+                and f["start_date"] <= r["until"]
+                and start <= f["until"]
+                and r["name"] in f["companion_for"]
+            }
+        )
+        r["flowers"] = beside  # planned beside it
+        r["flower_hints"] = (
+            [] if beside else [names.get(f, f.title()) for f in flowers.get(r["crop"], [])[:FLOWERS_SHOWN]]
+        )
     return sorted(out, key=lambda r: (r["set_out_date"] or r["start_date"], r["name"])), supply

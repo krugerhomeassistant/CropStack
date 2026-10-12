@@ -179,6 +179,9 @@ class Crop(Item):
     family: str  # APG IV family, e.g. Solanaceae
     rotation_group: str | None = None
     life_cycle: Literal["annual", "biennial", "perennial"]
+    # "companion" = grown for the garden, not the table (flowers): no food group or yield, and the year plan places it
+    # beside the crops it is traditionally grown with
+    purpose: Literal["food", "companion"] = "food"
     food_group: Literal["leafy", "fruiting", "root", "brassica", "legume", "squash", "allium", "herb"] | None = None
 
 
@@ -364,10 +367,11 @@ def _load_companions(root: Path, cat: Catalog, digest) -> list[str]:
             cat.companions[kind].setdefault(a, set()).add(b)
             cat.companions[kind].setdefault(b, set()).add(a)
     for crop, flowers in (data.get("flowers") or {}).items():
-        if crop in crops:
-            cat.companions["flowers"][crop] = list(flowers)
+        unknown = [f for f in flowers if f not in crops]
+        if crop not in crops or unknown:
+            errors.append(f"{path}: flowers for {crop!r} must be catalog crops (unknown: {unknown or crop})")
         else:
-            errors.append(f"{path}: flowers listed for unknown crop {crop!r}")
+            cat.companions["flowers"][crop] = list(flowers)
     return errors
 
 

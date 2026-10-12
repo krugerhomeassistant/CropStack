@@ -141,7 +141,10 @@ def year_plan(me: MemberDep, db: SessionDep, c: CatalogDep) -> dict:
                     f["food_group"],
                 )
             )  # fmt: skip
-    skipped = sorted({w.crop for w in wants if not (w.kg_per_m2 and w.food_group in needs.GROUPS)})
+    flower_slugs = {f for fl in c.companions["flowers"].values() for f in fl}  # grown for the garden, not for food
+    skipped = sorted(
+        {w.crop for w in wants if w.crop not in flower_slugs and not (w.kg_per_m2 and w.food_group in needs.GROUPS)}
+    )
     target = needs.weekly_target(people)
     beds_by_id = {b.id: b for b in beds}
     existing = existing_supply(

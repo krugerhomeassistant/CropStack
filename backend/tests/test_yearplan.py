@@ -126,3 +126,31 @@ def test_a_crop_stays_out_of_a_bed_with_a_bad_neighbour():
     gone = {1: [("fennel", TODAY - timedelta(days=200), TODAY - timedelta(days=100))]}
     items, _ = draft(grid, {}, ONE_TOMATO, TODAY, needs.weekly_target(2), [], {"avoid": AVOID}, gone)
     assert {i["bed_id"] for i in items} == {1}
+
+
+def test_a_companion_flower_gets_a_small_block_beside_the_crop_it_goes_with():
+    flowers = {"tomato": ["marigold"]}
+    marigold = want("marigold", None, TODAY + timedelta(days=10), kg=None, days=60)
+    items, _ = draft(
+        [Bed(1, "B1", 12, 8, 30)], {}, [*ONE_TOMATO, marigold], TODAY, needs.weekly_target(2), [], {"flowers": flowers}
+    )
+    tomato = next(i for i in items if i["crop"] == "tomato")
+    flower = next(i for i in items if i["crop"] == "marigold")
+    assert flower["bed_id"] == tomato["bed_id"] and flower["companion_for"] == ["tomato"]
+    assert 2 <= len(flower["cells"]) <= 4 and not set(map(tuple, flower["cells"])) & set(map(tuple, tomato["cells"]))
+    assert flower["food_group"] is None and flower["kg"] == 0
+    assert tomato["flowers"] == ["marigold"] and tomato["flower_hints"] == []
+    # without the flower in the catalog's wants the crop only gets the traditional hint
+    items, _ = draft([Bed(1, "B1", 12, 8, 30)], {}, ONE_TOMATO, TODAY, needs.weekly_target(2), [], {"flowers": flowers})
+    assert [i["crop"] for i in items] == ["tomato"] and items[0]["flower_hints"] == ["Marigold"]
+
+
+def test_one_flower_block_serves_every_crop_in_the_bed_that_wants_it():
+    flowers = {"tomato": ["marigold"], "carrot": ["marigold"]}
+    both = [want("tomato", "fruiting", TODAY, kg=8.0), want("carrot", "root", TODAY, kg=4.0, days=90)]
+    marigold = want("marigold", None, TODAY + timedelta(days=5), kg=None, days=60)
+    items, _ = draft(
+        [Bed(1, "B1", 12, 8, 30)], {}, [*both, marigold], TODAY, needs.weekly_target(4), [], {"flowers": flowers}
+    )
+    blocks = [i for i in items if i["crop"] == "marigold"]
+    assert len(blocks) == 1 and blocks[0]["companion_for"] == ["carrot", "tomato"]
