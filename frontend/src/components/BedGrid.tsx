@@ -259,7 +259,7 @@ export default function BedGrid({
               : t('Tap a cell to see what is in it.')}
       </p>
 
-      <div className="mx-auto w-full rounded-xl border-[5px] border-feed/70 bg-feed/15 p-0.5" style={{ maxWidth: `${bed.cols * 4.5}rem` }}>
+      <div className="mx-auto w-full rounded-2xl border border-line bg-sunken p-1.5" style={{ maxWidth: `${bed.cols * 4.5}rem` }}>
       <svg
         viewBox={`0 0 ${bed.cols} ${bed.rows}`}
         className="block w-full touch-none select-none"
@@ -281,11 +281,11 @@ export default function BedGrid({
                   y={r + 0.03}
                   width={0.94}
                   height={0.94}
-                  rx={0.08}
+                  rx={0.14}
                   fill={marked ? (crop ? cropColour(crop.crop) : 'transparent') : p[0] ? cropColour(p[0].crop) : g ? cropColour(g.crop) : 'transparent'}
                   fillOpacity={g && !marked ? 0.45 : 1}
-                  className={clashing.has(key(c, r)) ? 'stroke-danger' : marked || g ? 'stroke-ink' : 'stroke-feed/30'}
-                  strokeWidth={clashing.has(key(c, r)) || marked || g ? 0.08 : 0.03}
+                  className={clashing.has(key(c, r)) ? 'stroke-danger' : marked || g ? 'stroke-ink' : 'stroke-line'}
+                  strokeWidth={clashing.has(key(c, r)) || marked || g ? 0.06 : 0.025}
                   strokeDasharray={marked || g ? '0.15 0.1' : undefined}
                 />
                 {(p[0] || g) && (

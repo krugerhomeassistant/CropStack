@@ -3,7 +3,7 @@ import { Circle, MousePointer2, RectangleHorizontal, Rows3, Trash2, type LucideI
 import { api, type Bed, type BedIn, type BedKind, type CropSummary, type PlanItem, type Recommendation } from '../api'
 import { t } from '../i18n'
 import { useApp } from '../state'
-import BedGrid from './BedGrid'
+import BedGrid, { cropColour } from './BedGrid'
 import { cropIcon } from './cropIcon'
 import type { PlantRequest } from './Recommendations'
 import { Button, ErrorMessage, Field, IconButton, Section, Skeleton, Switch } from './ui'
@@ -203,11 +203,11 @@ export default function LayoutEditor({ onChange, suggested, request, plan }: { o
         onPointerCancel={up}
       >
         <defs>
-          <pattern id="dots" width="1" height="1" patternUnits="userSpaceOnUse">
-            <path d="M0.5 0.42V0.58M0.42 0.5H0.58" className="stroke-feed/40" strokeWidth="0.03" fill="none" />
+          <pattern id="grid" width="1" height="1" patternUnits="userSpaceOnUse">
+            <path d="M1 0V1H0" className="stroke-line" strokeWidth="0.02" fill="none" />
           </pattern>
         </defs>
-        <rect x={f.x0} y={f.y0} width={f.x1 - f.x0} height={f.y1 - f.y0} fill="url(#dots)" />
+        <rect x={f.x0} y={f.y0} width={f.x1 - f.x0} height={f.y1 - f.y0} fill="url(#grid)" />
         {frames(beds).map((fr) => (
           <g key={fr.name}>
             <rect x={fr.x} y={fr.y} width={fr.width} height={fr.length} rx={0.15} fill="none" strokeDasharray="0.2 0.12" strokeWidth={0.03} className="stroke-muted pointer-events-none" />
@@ -233,20 +233,24 @@ export default function LayoutEditor({ onChange, suggested, request, plan }: { o
           const tag = Math.max(0.9, label.length * 0.15 + 0.3)
           const mark = (p: (typeof growing)[number], faded: boolean) =>
             p.cells.map(([c, r]) => (
-              <text key={`${faded ? 'w' : 'g'}${p.planting_id}${c},${r}`} x={b.x + (c + 0.5) * cell} y={b.y + (r + 0.5) * cell + size * 0.34} fontSize={size} textAnchor="middle" opacity={faded ? 0.4 : 1}>
-                {cropIcon(p.crop)}
-              </text>
+              <g key={`${faded ? 'w' : 'g'}${p.planting_id}${c},${r}`}>
+                {!faded && <rect x={b.x + c * cell + 0.025} y={b.y + r * cell + 0.025} width={cell - 0.05} height={cell - 0.05} rx={0.05} fill={cropColour(p.crop)} />}
+                <text x={b.x + (c + 0.5) * cell} y={b.y + (r + 0.5) * cell + size * 0.34} fontSize={size} textAnchor="middle" opacity={faded ? 0.4 : 1}>
+                  {cropIcon(p.crop)}
+                </text>
+              </g>
             ))
           return (
             <g key={b.id} onPointerDown={(e) => bedDown(e, b)} className={canEdit && tool === 'select' ? 'cursor-grab' : ''}>
               <clipPath id={`clip${b.id}`}>
-                {isPot ? <ellipse cx={b.x + b.width / 2} cy={b.y + b.length / 2} rx={b.width / 2} ry={b.length / 2} /> : <rect x={b.x} y={b.y} width={b.width} height={b.length} rx={0.06} />}
+                {isPot ? <ellipse cx={b.x + b.width / 2} cy={b.y + b.length / 2} rx={b.width / 2} ry={b.length / 2} /> : <rect x={b.x} y={b.y} width={b.width} height={b.length} rx={0.12} />}
               </clipPath>
-              {b.id === selected && (isPot ? <ellipse cx={b.x + b.width / 2} cy={b.y + b.length / 2} rx={b.width / 2 + 0.14} ry={b.length / 2 + 0.14} fill="none" className="stroke-leaf pointer-events-none" strokeWidth={0.07} /> : <rect x={b.x - 0.14} y={b.y - 0.14} width={b.width + 0.28} height={b.length + 0.28} rx={0.14} fill="none" className="stroke-leaf pointer-events-none" strokeWidth={0.07} />)}
+              {b.id === selected && (isPot ? <ellipse cx={b.x + b.width / 2} cy={b.y + b.length / 2} rx={b.width / 2 + 0.12} ry={b.length / 2 + 0.12} fill="none" className="stroke-leaf/25 pointer-events-none" strokeWidth={0.16} /> : <rect x={b.x - 0.12} y={b.y - 0.12} width={b.width + 0.24} height={b.length + 0.24} rx={0.18} fill="none" className="stroke-leaf/25 pointer-events-none" strokeWidth={0.16} />)}
+              {b.id === selected && (isPot ? <ellipse cx={b.x + b.width / 2} cy={b.y + b.length / 2} rx={b.width / 2 + 0.05} ry={b.length / 2 + 0.05} fill="none" className="stroke-leaf pointer-events-none" strokeWidth={0.04} /> : <rect x={b.x - 0.05} y={b.y - 0.05} width={b.width + 0.1} height={b.length + 0.1} rx={0.14} fill="none" className="stroke-leaf pointer-events-none" strokeWidth={0.04} />)}
               {isPot ? (
-                <ellipse cx={b.x + b.width / 2} cy={b.y + b.length / 2} rx={b.width / 2} ry={b.length / 2} className="fill-feed/25 stroke-feed" strokeWidth={0.09} />
+                <ellipse cx={b.x + b.width / 2} cy={b.y + b.length / 2} rx={b.width / 2} ry={b.length / 2} className="fill-feed/15 stroke-feed/60" strokeWidth={0.04} />
               ) : (
-                <rect x={b.x} y={b.y} width={b.width} height={b.length} rx={0.06} className="fill-feed/25 stroke-feed" strokeWidth={0.09} />
+                <rect x={b.x} y={b.y} width={b.width} height={b.length} rx={0.12} className="fill-feed/15 stroke-feed/60" strokeWidth={0.04} />
               )}
               <g clipPath={`url(#clip${b.id})`} className="pointer-events-none select-none">
                 {waiting.flatMap((p) =>
@@ -259,7 +263,7 @@ export default function LayoutEditor({ onChange, suggested, request, plan }: { o
               </g>
               {b.crowded && <rect x={b.x} y={b.y} width={b.width} height={b.length} rx={0.06} fill="none" className="stroke-marigold pointer-events-none" strokeDasharray="0.18 0.1" strokeWidth={0.06} />}
               <g className="pointer-events-none select-none">
-                <rect x={b.x} y={b.y - 0.46} width={tag} height={0.34} rx={0.17} className="fill-surface stroke-line" strokeWidth={0.02} />
+                <rect x={b.x} y={b.y - 0.46} width={tag} height={0.34} rx={0.17} className="fill-surface stroke-line" strokeWidth={0.015} />
                 <text x={b.x + tag / 2} y={b.y - 0.46 + 0.24} textAnchor="middle" fontSize={0.2} className="fill-ink font-semibold">
                   {label}
                 </text>
@@ -290,7 +294,7 @@ export default function LayoutEditor({ onChange, suggested, request, plan }: { o
       </svg>
       {canEdit && (
         <div className="pointer-events-none absolute inset-x-0 bottom-3 flex justify-center">
-          <div role="group" aria-label={t('Plan tools')} className="pointer-events-auto flex max-w-full gap-0.5 rounded-full border border-line bg-surface p-1 shadow-lg">
+          <div role="group" aria-label={t('Plan tools')} className="pointer-events-auto flex max-w-full gap-0.5 rounded-full border border-line bg-surface/85 p-1 shadow-lg backdrop-blur">
             {TOOLS.map((x) => (
               <button
                 key={x.tool}
