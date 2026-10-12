@@ -93,7 +93,7 @@ def list_beds(me: MemberDep, db: SessionDep, c: CatalogDep) -> list[dict]:
             first, last = holds(p, f, today)
             live = p.status not in ("finished", "failed")
             cells = [tuple(x) for x in p.cells]
-            capacity = layout.per_cell(bed.cell_cm, f["footprint"]) * len(cells)
+            capacity = layout.plants_in(bed.cell_cm, f["footprint"], len(cells))
             if cells:
                 held += [(p.id, cell, first, last) for cell in cells]
                 if live and p.quantity > capacity:

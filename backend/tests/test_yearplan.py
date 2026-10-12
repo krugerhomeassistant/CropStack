@@ -80,3 +80,49 @@ def test_harvests_outside_the_year_are_ignored():
         want("kale", "brassica", TODAY + timedelta(days=500)),
     ]
     assert run(4, 1, wants=gone)[0] == []
+
+
+def sized(crop, group, planted, footprint, kg=8.0):
+    w = want(crop, group, planted, kg=kg)
+    return Want(*[*w.__dict__.values()][:9], footprint, *[*w.__dict__.values()][10:])
+
+
+def test_a_plant_that_needs_more_than_a_cell_takes_the_cells_it_needs_together():
+    # 60 cm plants on 30 cm cells: four cells each, and the block is one compact patch, not a long strip
+    items, _ = run(4, 1, wants=[sized("zucchini", "squash", TODAY, 0.36)])
+    assert items
+    for i in items:
+        assert i["cells_per_plant"] == 4 and len(i["cells"]) % 4 == 0
+        assert i["plants"] == len(i["cells"]) // 4
+        cols, rows = {c for c, _ in i["cells"]}, {r for _, r in i["cells"]}
+        assert len(cols) * len(rows) <= 2 * len(i["cells"])
+    # small plants still go several to a cell
+    small, _ = run(4, 1, wants=[sized("lettuce", "leafy", TODAY, 0.01, kg=3.0)])
+    assert small and small[0]["cells_per_plant"] == 1 and small[0]["plants"] == 9 * len(small[0]["cells"])
+
+
+GOOD = {"tomato": {"basil"}, "basil": {"tomato"}}
+AVOID = {"tomato": {"fennel"}, "fennel": {"tomato"}}
+ONE_TOMATO = [want("tomato", "fruiting", TODAY, kg=8.0)]
+SEASON = (TODAY - timedelta(days=30), TODAY + timedelta(days=200))
+
+
+def test_a_crop_goes_where_a_good_companion_already_grows():
+    alone, _ = run(2, 2, wants=ONE_TOMATO)
+    assert {i["bed_id"] for i in alone} == {1}
+    grid = [Bed(i, f"B{i}", 12, 8, 30) for i in (1, 2)]
+    kept = {2: [("basil", *SEASON)]}
+    items, _ = draft(grid, {}, ONE_TOMATO, TODAY, needs.weekly_target(2), [], {"good": GOOD}, kept)
+    assert {i["bed_id"] for i in items} == {2}
+    assert items[0]["pairs_with"] == ["Basil"]
+
+
+def test_a_crop_stays_out_of_a_bed_with_a_bad_neighbour():
+    grid = [Bed(i, f"B{i}", 12, 8, 30) for i in (1, 2)]
+    kept = {1: [("fennel", *SEASON)]}
+    items, _ = draft(grid, {}, ONE_TOMATO, TODAY, needs.weekly_target(2), [], {"avoid": AVOID}, kept)
+    assert items and {i["bed_id"] for i in items} == {2}
+    # a bad neighbour that is gone by sowing time is no obstacle
+    gone = {1: [("fennel", TODAY - timedelta(days=200), TODAY - timedelta(days=100))]}
+    items, _ = draft(grid, {}, ONE_TOMATO, TODAY, needs.weekly_target(2), [], {"avoid": AVOID}, gone)
+    assert {i["bed_id"] for i in items} == {1}

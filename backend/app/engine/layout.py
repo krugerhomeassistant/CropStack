@@ -75,6 +75,19 @@ def per_cell(cell_cm: int, footprint: float | None) -> int:
     return max(1, min(MAX_PER_CELL, floor((cell_cm / 100) ** 2 / footprint + 1e-9)))
 
 
+def cells_per_plant(cell_cm: int, footprint: float | None) -> int:
+    """How many cells one plant needs: 1, unless it needs more ground than a cell has (a tomato on 30 cm cells)."""
+    if not footprint:
+        return 1
+    return max(1, ceil(footprint / (cell_cm / 100) ** 2 - 1e-9))
+
+
+def plants_in(cell_cm: int, footprint: float | None, n_cells: int) -> int:
+    """How many plants of a crop `n_cells` cells hold at its proper spacing (at least 1)."""
+    k = cells_per_plant(cell_cm, footprint)
+    return per_cell(cell_cm, footprint) * n_cells if k == 1 else max(1, n_cells // k)
+
+
 def remap(cells: list[list[int]], old_cm: int, new_cm: int) -> list[list[int]]:
     """The same ground on a grid of a different cell size: every new cell that overlaps an old one."""
     out = {

@@ -11,6 +11,8 @@ from math import ceil
 from . import layout, needs
 
 CAP = 12  # most cells one crop takes in one go, so no crop swallows a bed
+COMPANION_BONUS = 0.25  # per good companion already in the bed that season (at most two count): prefer that bed
+FLOWERS_SHOWN = 2
 MIN_GAIN = 1.0  # kg a placement must add toward a shortfall; below this it is not worth a planting
 
 
@@ -43,6 +45,18 @@ class Want:
     food_group: str | None = None
 
 
+def block(free: list, n: int, k: int) -> list:
+    """`n` free cells for plants that each need `k` cells: reading order for single-cell plants, otherwise a compact
+    patch around the first free cell, so one plant's cells sit together."""
+    if k == 1:
+        return free[:n]
+    c0, r0 = free[0]
+    near = sorted(
+        free, key=lambda c: (max(abs(c[0] - c0), c[1] - r0), abs(c[0] - c0) + c[1] - r0, c[0] < c0, c[1], c[0])
+    )
+    return near[:n]
+
+
 def draft(
     beds: list[Bed],
     taken: dict[int, list],
@@ -50,12 +64,19 @@ def draft(
     today: date,
     target: dict[str, float],
     existing: Sequence[tuple[str, float, date, date]] = (),
+    companions: dict | None = None,
+    kept: dict[int, list[tuple[str, date, date]]] | None = None,
 ) -> tuple[list[dict], dict[str, list[float]]]:
     """Place the crop that adds the most food per cell, again and again, until the weekly target is met or the beds
     are full. Returns the plantings and the weekly supply per food group (existing plantings included).
     `taken[bed_id]` = (cell, from, to, family) already held; `existing` = (group, kg, harvest from, harvest to) of
     plantings that stay. Rotation: cells that held the same family come last. Nothing is placed twice on overlapping
-    days and a crop is not repeated in a month."""
+    days and a crop is not repeated in a month. `companions` = {"good": {crop: {crops}}, "avoid": ..., "flowers": ...}:
+    a bed that already holds a good companion that season is preferred, and a crop never goes into a bed that holds
+    one of its "avoid" crops at the same time. `kept[bed_id]` = (crop, from, to) of plantings that stay."""
+    good, avoid = (companions or {}).get("good", {}), (companions or {}).get("avoid", {})
+    flowers = (companions or {}).get("flowers", {})
+    neighbours = {b.id: list((kept or {}).get(b.id, [])) for b in beds}  # who grows in each bed, and when
     held = {b.id: list(taken.get(b.id, [])) for b in beds}
     by_id = {b.id: b for b in beds}
     supply = {g: [0.0] * needs.WEEKS for g in needs.GROUPS}
@@ -73,16 +94,26 @@ def draft(
         if not free or not weeks:
             return None
         same = {c for c, _, _, fam in held[b.id] if w.family and fam == w.family}
+        near = {c for c, a, z in neighbours[b.id] if a <= last and w.planted <= z and c != w.crop}
+        if near & avoid.get(w.crop, set()):
+            return None  # a bad neighbour is in this bed at the same time
         free.sort(key=lambda c: c in same)
         harvest_weeks = max(1, (w.harvest_to - w.harvest_from).days // 7 + 1)
         per_week = w.kg_per_m2 * (b.cell_cm / 100) ** 2 / harvest_weeks  # kg a week from one cell
         short = [max(0.0, target[w.food_group] - supply[w.food_group][k]) for k in weeks]
-        n = max(1, min(CAP, len(free), ceil(sum(short) / len(short) / per_week - 1e-9)))
+        k = layout.cells_per_plant(b.cell_cm, w.footprint)  # cells one plant needs at its proper spacing
+        n = max(k, min(max(CAP, k), len(free), ceil(sum(short) / len(short) / per_week - 1e-9)))
+        n = min(ceil(n / k) * k, len(free) // k * k)  # whole plants only
+        if n < k:
+            return None
+        chosen = block(free, n, k)
         gain = sum(min(n * per_week, s) for s in short)
         if gain < MIN_GAIN:
             return None
-        key = (-gain / n, sum(c in same for c in free[:n]), -len(free), w.name, b.id, i)
-        return key, free[:n], last
+        pals = len(near & good.get(w.crop, set()))
+        score = -gain / n * (1 + COMPANION_BONUS * min(2, pals))
+        key = (score, sum(c in same for c in chosen), -len(free), w.name, b.id, i)
+        return key, chosen, last
 
     # ponytail: lazy greedy. A stale key is only a hint; every pick is re-evaluated against the live state first.
     # A bed that has filled up since can score slightly better per cell (fewer cells, same shortfall); accepted.
@@ -101,6 +132,7 @@ def draft(
         done.add(i)
         used.add((w.crop, w.planted.year, w.planted.month))
         held[b.id] += [(c, w.planted, last, w.family) for c in cells]
+        neighbours[b.id].append((w.crop, w.planted, last))
         kg = w.kg_per_m2 * (b.cell_cm / 100) ** 2 * len(cells)
         for week, k in needs.spread(today, w.harvest_from, w.harvest_to, kg).items():
             supply[w.food_group][week] += k
@@ -114,7 +146,8 @@ def draft(
                 "bed_id": b.id,
                 "bed": b.name,
                 "cells": [list(c) for c in sorted(cells, key=lambda c: (c[1], c[0]))],
-                "plants": layout.per_cell(b.cell_cm, w.footprint) * len(cells),
+                "plants": layout.plants_in(b.cell_cm, w.footprint, len(cells)),
+                "cells_per_plant": layout.cells_per_plant(b.cell_cm, w.footprint),
                 "harvest_from": w.harvest_from,
                 "harvest_to": w.harvest_to,
                 "until": last,
@@ -122,4 +155,14 @@ def draft(
                 "kg": round(kg, 1),
             }
         )
+    names = {w.crop: w.name for w in wants}
+    for r in out:  # who it shares the bed with that season, and flowers that are traditionally grown beside it
+        start = r["set_out_date"] or r["start_date"]
+        with_ = {
+            c
+            for c, a, z in neighbours[r["bed_id"]]
+            if c in good.get(r["crop"], set()) and a <= r["until"] and start <= z
+        }
+        r["pairs_with"] = sorted(names.get(c, c.replace("-", " ").title()) for c in with_)
+        r["flowers"] = [f for f in flowers.get(r["crop"], [])[:FLOWERS_SHOWN]]
     return sorted(out, key=lambda r: (r["set_out_date"] or r["start_date"], r["name"])), supply

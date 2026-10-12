@@ -112,8 +112,15 @@ export default function YearPlan({ hasBeds, scheduled, plan, setPlan, onUsed, on
                       {cropIcon(i.crop)} {i.name} <span className="font-normal text-muted">· {i.bed}</span>
                     </p>
                     <p className="text-sm text-muted">
-                      {i.method === 'transplant' ? t('Set out') : t('Sow')} {day(planted(i))} · {t('harvest {from} to {to}', { from: day(i.harvest_from), to: day(i.harvest_to) })} · {t('{n} cells', { n: i.cells.length })}
+                      {i.method === 'transplant' ? t('Set out') : t('Sow')} {day(planted(i))} · {t('harvest {from} to {to}', { from: day(i.harvest_from), to: day(i.harvest_to) })} · {t('{n} plants on {cells} cells', { n: i.plants, cells: i.cells.length })}
                     </p>
+                    {(i.pairs_with?.length || i.flowers?.length) ? (
+                      <p className="text-sm text-muted">
+                        {i.pairs_with?.length ? t('Grows beside {crops}', { crops: i.pairs_with.join(', ') }) : ''}
+                        {i.pairs_with?.length && i.flowers?.length ? ' · ' : ''}
+                        {i.flowers?.length ? t('Traditionally grown with {flowers}', { flowers: i.flowers.join(', ') }) : ''}
+                      </p>
+                    ) : null}
                   </div>
                   <IconButton icon={X} label={t('Leave out {crop}', { crop: i.name })} onClick={() => setPlan(plan.filter((x) => x !== i))} />
                 </li>

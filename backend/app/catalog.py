@@ -257,6 +257,8 @@ class Catalog:
         self.items: dict[tuple[str, str], dict[str, Any]] = {}  # merged bundled + private data
         self.origin: dict[tuple[str, str], str] = {}  # bundled | private | bundled+private
         self.sources: dict[str, Source] = {}
+        # crop -> crops that go well beside it / that are kept apart; crop -> flowers grown beside it (hints only)
+        self.companions: dict[str, dict[str, Any]] = {"good": {}, "avoid": {}, "flowers": {}}
         self.version = ""  # hash of the bundled files
         self.private_errors: list[str] = []
 
@@ -270,7 +272,7 @@ class Catalog:
 def _read_items(root: Path) -> tuple[list[tuple[Path, dict]], list[str]]:
     docs, errors = [], []
     for path in sorted(root.glob("**/*.yaml")):
-        if path.name == "sources.yaml":
+        if path.name in ("sources.yaml", "companions.yaml"):
             continue
         try:
             data = yaml.safe_load(path.read_text())
@@ -323,6 +325,7 @@ def load(bundled_root: Path, private_root: Path | None = None) -> Catalog:
         cat.items[key] = data
         cat.origin[key] = "bundled"
     errors += _parent_problems(cat)
+    errors += _load_companions(bundled_root, cat, digest)
     if errors:
         raise CatalogError("Bundled catalog is invalid:\n" + "\n".join(errors))
     cat.version = digest.hexdigest()[:12]
@@ -339,6 +342,33 @@ def load(bundled_root: Path, private_root: Path | None = None) -> Catalog:
             cat.items[key] = merged
         cat.private_errors += _parent_problems(cat, only_private=True)
     return cat
+
+
+def _load_companions(root: Path, cat: Catalog, digest) -> list[str]:
+    """Read companions.yaml into `cat.companions`: pairs both ways round, between crops that exist."""
+    path = root / "companions.yaml"
+    if not path.exists():
+        return []
+    digest.update(path.read_bytes())
+    data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    if data.get("source") not in cat.sources:
+        return [f"{path}: cites unknown source {data.get('source')!r} (add it to sources.yaml)"]
+    crops = {slug for kind, slug in cat.items if kind == "crop"}
+    errors = []
+    for kind in ("good", "avoid"):
+        for pair in data.get(kind) or []:
+            if len(pair) != 2 or pair[0] == pair[1] or not set(pair) <= crops:
+                errors.append(f"{path}: {kind} pair {pair} must name two different crops from the catalog")
+                continue
+            a, b = pair
+            cat.companions[kind].setdefault(a, set()).add(b)
+            cat.companions[kind].setdefault(b, set()).add(a)
+    for crop, flowers in (data.get("flowers") or {}).items():
+        if crop in crops:
+            cat.companions["flowers"][crop] = list(flowers)
+        else:
+            errors.append(f"{path}: flowers listed for unknown crop {crop!r}")
+    return errors
 
 
 def _licence_problem(path: Path, data: dict, sources: dict[str, Source]) -> str | None:

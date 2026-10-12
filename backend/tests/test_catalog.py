@@ -220,3 +220,22 @@ def test_crop_food_group_literal_matches_the_needs_groups():
 
     (literal,) = (a for a in get_args(cat.Crop.model_fields["food_group"].annotation) if a is not type(None))
     assert set(get_args(literal)) == set(needs.GROUPS)
+
+
+def test_companions_are_read_both_ways_round_between_real_crops():
+    loaded = cat.load(REPO / "catalog")
+    good, avoid = loaded.companions["good"], loaded.companions["avoid"]
+    assert "basil" in good["tomato"] and "tomato" in good["basil"]
+    assert "potato" in avoid["tomato"] and "tomato" in avoid["potato"]
+    assert not any(good.get(a, set()) & avoid.get(a, set()) for a in good)  # nothing is both
+    assert all(flowers for flowers in loaded.companions["flowers"].values())
+
+
+def test_companions_must_name_catalog_crops_and_a_registered_source(tmp_path):
+    shutil.copytree(REPO / "catalog", tmp_path / "catalog")
+    path = tmp_path / "catalog" / "companions.yaml"
+    path.write_text(
+        path.read_text(encoding="utf-8").replace("- [asparagus, basil]", "- [asparagus, moonflower]"), encoding="utf-8"
+    )
+    with pytest.raises(cat.CatalogError, match="moonflower"):
+        cat.load(tmp_path / "catalog")

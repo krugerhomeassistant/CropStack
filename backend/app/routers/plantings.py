@@ -124,7 +124,7 @@ def make_planting(body: PlantingIn, me: EditorDep, db: SessionDep, c: CatalogDep
             from .beds import crop_facts
 
             f = crop_facts(db, c, me.household_id, body.crop, {})
-            data["quantity"] = layout.per_cell(bed.cell_cm, f["footprint"]) * max(1, len(data["cells"]))
+            data["quantity"] = layout.plants_in(bed.cell_cm, f["footprint"], max(1, len(data["cells"])))
     elif body.cells:
         raise HTTPException(422, "Cells need a bed")
     data["quantity"] = data["quantity"] or 1

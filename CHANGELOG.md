@@ -5,6 +5,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.43.0] - 2026-10-12
+
+### Added
+- **Companion planting in the year plan.** A new `catalog/companions.yaml` holds 143 traditional good pairs and 31 pairs to keep apart between the catalog's crops, plus flowers grown beside 15 of them (facts from Wikipedia's "List of companion plants", revision 1334550406, CC BY-SA, evidence `traditional`). The drafter now prefers a bed that already holds a good companion that season, never puts a crop in a bed with one of its "avoid" crops at the same time, and each planned planting says what it grows beside and which flowers are traditionally grown with it. They are hints, never rules: you can still plant anything anywhere by hand.
+
+### Changed
+- **Proper spacing for big plants.** A plant that needs more ground than one cell (a tomato or a squash on 30 cm cells) now takes as many cells as it needs, kept together as one patch, and the plant count follows (a potato block that held 12 plants now shows 4 on 12 cells). This applies to the year plan, painting a bed, the "over capacity" warning and the plant suggestions, which now say "1 plant per 3 cells" where that is so.
+
 ## [0.42.2] - 2026-10-12
 
 ### Changed
@@ -398,7 +406,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - CI: ruff lint and format, backend tests, frontend build, image publishing to GHCR and automatic GitHub releases on a version bump.
 - Project docs: README, wiki, architecture, roadmap, contributing guide, security policy and Code of Conduct.
 
-[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.42.2...HEAD
+[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.43.0...HEAD
+[0.43.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.42.2...v0.43.0
 [0.42.2]: https://github.com/krugerhomeassistant/CropStack/compare/v0.42.1...v0.42.2
 [0.42.1]: https://github.com/krugerhomeassistant/CropStack/compare/v0.42.0...v0.42.1
 [0.42.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.41.0...v0.42.0

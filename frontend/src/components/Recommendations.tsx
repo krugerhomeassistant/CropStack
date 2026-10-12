@@ -35,7 +35,7 @@ export function KeyPoints({ r }: { r: Recommendation }) {
     [t('When'), when(r)],
     [t('Harvest'), t('About {from} to {to}, if it goes in on {date}', { from: show(r.harvest_from), to: show(r.harvest_to), date: show(planted) })],
     [t('How it goes here'), t('Works in about {n} of 10 years in your climate', { n: Math.max(1, Math.round(r.success * 10)) })],
-    [t('Spacing'), t('{n} per 30 cm cell', { n: r.plants_per_cell })],
+    [t('Spacing'), r.cells_per_plant > 1 ? t('1 plant per {n} cells of 30 cm', { n: r.cells_per_plant }) : t('{n} per 30 cm cell', { n: r.plants_per_cell })],
   ]
   if (r.method === 'transplant') rows.push([t('Seedlings'), t('Sow indoors on {date}, about {weeks} weeks before setting out', { date: long(r.start_date), weeks: Math.round(r.age_days / 7) })])
   if (r.family) rows.push([t('Family'), r.where?.same_family_before ? t('{family}: grew in that spot before, so move it if you can', { family: r.family }) : r.family])

@@ -118,6 +118,9 @@ export type PlanItem = {
   bed: string
   cells: [number, number][]
   plants: number
+  cells_per_plant?: number
+  pairs_with?: string[]
+  flowers?: string[]
   harvest_from: string
   harvest_to: string
   until: string
@@ -206,6 +209,7 @@ export type Recommendation = {
   harvest_to: string
   family: string
   plants_per_cell: number
+  cells_per_plant: number
 }
 export type Recommendations = { garden: boolean; today?: string; has_beds?: boolean; scheduled?: number; now: Recommendation[]; soon: Recommendation[] }
 export type Job = {

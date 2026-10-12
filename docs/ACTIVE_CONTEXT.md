@@ -1,6 +1,6 @@
 # ACTIVE CONTEXT
 
-**Date:** 2026-10-12 · **Version:** 0.42.2 · **Alembic head:** 0016 · **Tests:** 184 backend, browser e2e green.
+**Date:** 2026-10-12 · **Version:** 0.43.0 · **Alembic head:** 0016 · **Tests:** 189 backend, browser e2e green.
 History of earlier sessions: `ACTIVE_CONTEXT_ARCHIVE.md`.
 
 ## What CropStack is today
@@ -39,6 +39,9 @@ Personal, non-commercial. Fully dynamic (no presets). Never restrict or destroy 
 - README screenshots in `docs/images/` are old (regenerate with `npm run screenshots`).
 - Owner action: enable "Allow GitHub Actions to create pull requests" so the monthly catalog-refresh workflow can open PRs.
 - Sandbox quirks: `gh` GraphQL is blocked (use `gh run list`, REST); the sandbox proxy resets some connections (retry); `sqlite3` CLI is missing (use python).
+
+## v0.43.0
+Year plan: proper spacing (plants needing more than a cell take several, kept together; `layout.cells_per_plant/plants_in`) and companion planting (`catalog/companions.yaml`, 143 good / 31 avoid pairs + flowers from Wikipedia rev 1334550406; `engine/yearplan.py` prefers beds with a good companion, refuses a bed with an avoid crop; items carry `pairs_with`, `flowers`, `cells_per_plant`). Limits: companions are a bed-level hint (no adjacency, no interplanting rows), flowers are text only (not in the catalog as plantable crops), pairs come from one list and are all `traditional`; the same crop can appear in several beds so "pairs with" can name a crop planted in another window of the season. Next: flowers/herbs as plantable catalog entries so the plan can place them, an adjacency-aware placement, the re-plan diff.
 
 ## v0.42.0
 Plot plan restyle (metre grid, soil-tinted beds, crop-colour tiles, halo on selection; styling only) and always-open sign-up with "Start my own" / "Join a household" (invite still required to join; `CROPSTACK_ALLOW_REGISTRATION` default `true`, `auto` alias, `false` closes). Next on the plot plan: flat crop marks instead of emoji, per-bed fill bar, pinch-zoom/pan, tidier bed toolbar. Laptop dev (Windows): Python 3.12 venv in `backend/.venv`, set `PYTHONUTF8=1` for pytest, Node LTS via winget; the bash/Chromium e2e script is Linux-only, CI runs it.
