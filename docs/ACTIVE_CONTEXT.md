@@ -1,6 +1,6 @@
 # ACTIVE CONTEXT
 
-**Date:** 2026-10-11 · **Version:** 0.40.0 (released, CI green, deployed to the owner's copy) · **Alembic head:** 0016 · **Tests:** 155 backend, browser e2e green.
+**Date:** 2026-10-12 · **Version:** 0.42.0 (releasing) · **Alembic head:** 0016 · **Tests:** 184 backend, browser e2e green.
 History of earlier sessions: `ACTIVE_CONTEXT_ARCHIVE.md`.
 
 ## What CropStack is today
@@ -39,6 +39,9 @@ Personal, non-commercial. Fully dynamic (no presets). Never restrict or destroy 
 - README screenshots in `docs/images/` are old (regenerate with `npm run screenshots`).
 - Owner action: enable "Allow GitHub Actions to create pull requests" so the monthly catalog-refresh workflow can open PRs.
 - Sandbox quirks: `gh` GraphQL is blocked (use `gh run list`, REST); the sandbox proxy resets some connections (retry); `sqlite3` CLI is missing (use python).
+
+## v0.42.0
+Plot plan restyle (metre grid, soil-tinted beds, crop-colour tiles, halo on selection; styling only) and always-open sign-up with "Start my own" / "Join a household" (invite still required to join; `CROPSTACK_ALLOW_REGISTRATION` default `true`, `auto` alias, `false` closes). Next on the plot plan: flat crop marks instead of emoji, per-bed fill bar, pinch-zoom/pan, tidier bed toolbar. Laptop dev (Windows): Python 3.12 venv in `backend/.venv`, set `PYTHONUTF8=1` for pytest, Node LTS via winget; the bash/Chromium e2e script is Linux-only, CI runs it.
 
 ## v0.41.0
 Needs model: `people` setting, `food_group` + `yield_per_m2` on all 60 crops, demand-driven drafter, coverage card on the Plan tab. Limits: yields are estimates, harvests spread evenly, live crops hold cells only to cycle end. Next: sourced yields, setup interview 8.1, Climate/Crops/More facelift, move planting + undo.

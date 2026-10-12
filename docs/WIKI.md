@@ -46,7 +46,7 @@ Not built yet. A real-time, calm game view of the real garden that doubles as th
 - **Stale app after an update**: if a request fails, the app checks `/api/health`; when the server version differs from the build it reloads once per version. Any change that breaks old clients (API paths, response shapes) needs a version bump.
 
 ## Accounts and households
-- **Sign up**: without an invite, a new household ("<name>'s homestead") is created with you as owner. `CROPSTACK_ALLOW_REGISTRATION`: `auto` (default, open until the first account exists), `true`, `false`. Invite links work even when sign-up is closed.
+- **Sign up**: without an invite, a new household ("<name>'s homestead") is created with you as owner. The form offers "Start my own" or "Join a household" (paste an invite link or code; joining always needs an owner's invite). `CROPSTACK_ALLOW_REGISTRATION`: `true` (default; `auto` is an alias) or `false` (closed). Invite links work even when sign-up is closed.
 - **Invites**: owner → Household → Invite someone → role → link `/invite/<token>`; single use, 7 days, only a SHA-256 hash is stored. Removing a person deletes their login. A household always keeps at least one owner.
 - **Log in**: usernames lowercased; argon2id passwords (min 8); 10 failures per 15 min per IP; signed session cookie `cropstack_session`, 30 days.
 - **Personal settings**: `PUT /api/v1/auth/prefs` `{start: today|garden|climate, units: metric|imperial}`. Values are stored in SI units and converted for display (`frontend/src/units.ts`).

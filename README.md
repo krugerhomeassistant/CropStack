@@ -91,7 +91,7 @@ curl -O https://raw.githubusercontent.com/krugerhomeassistant/CropStack/main/doc
 docker compose up -d
 ```
 
-Open **http://localhost:8430** and create your account (by default only the first account can sign up; invite everyone else from the Household page). Data lives in `./data` next to the compose file; back up that folder.
+Open **http://localhost:8430** and create your account (anyone can sign up; to share a household, create an invite link on its Household page, and the new person chooses Join a household). Data lives in `./data` next to the compose file; back up that folder.
 
 Update with `docker compose pull && docker compose up -d`. Database upgrades run automatically on start.
 
