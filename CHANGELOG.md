@@ -5,6 +5,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.42.2] - 2026-10-12
+
+### Changed
+- **A calmer plot plan.** A planting is now one solid block of its crop's colour with no lines between cells, planned plantings are a faint tint instead of dashed cell outlines, a crowded bed has a thin solid line instead of a thick dashed border, and layout frames are a quiet hairline.
+
 ## [0.42.1] - 2026-10-12
 
 ### Fixed
@@ -393,7 +398,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - CI: ruff lint and format, backend tests, frontend build, image publishing to GHCR and automatic GitHub releases on a version bump.
 - Project docs: README, wiki, architecture, roadmap, contributing guide, security policy and Code of Conduct.
 
-[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.42.1...HEAD
+[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.42.2...HEAD
+[0.42.2]: https://github.com/krugerhomeassistant/CropStack/compare/v0.42.1...v0.42.2
 [0.42.1]: https://github.com/krugerhomeassistant/CropStack/compare/v0.42.0...v0.42.1
 [0.42.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.41.0...v0.42.0
 [0.41.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.40.0...v0.41.0

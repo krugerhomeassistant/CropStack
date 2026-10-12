@@ -210,7 +210,7 @@ export default function LayoutEditor({ onChange, suggested, request, plan }: { o
         <rect x={f.x0} y={f.y0} width={f.x1 - f.x0} height={f.y1 - f.y0} fill="url(#grid)" />
         {frames(beds).map((fr) => (
           <g key={fr.name}>
-            <rect x={fr.x} y={fr.y} width={fr.width} height={fr.length} rx={0.15} fill="none" strokeDasharray="0.2 0.12" strokeWidth={0.03} className="stroke-muted pointer-events-none" />
+            <rect x={fr.x} y={fr.y} width={fr.width} height={fr.length} rx={0.2} fill="none" strokeWidth={0.02} className="stroke-line pointer-events-none" />
             <text
               x={fr.x + 0.12}
               y={fr.y + fr.length + 0.34}
@@ -234,8 +234,8 @@ export default function LayoutEditor({ onChange, suggested, request, plan }: { o
           const mark = (p: (typeof growing)[number], faded: boolean) =>
             p.cells.map(([c, r]) => (
               <g key={`${faded ? 'w' : 'g'}${p.planting_id}${c},${r}`}>
-                {!faded && <rect x={b.x + c * cell + 0.025} y={b.y + r * cell + 0.025} width={cell - 0.05} height={cell - 0.05} rx={0.05} fill={cropColour(p.crop)} />}
-                <text x={b.x + (c + 0.5) * cell} y={b.y + (r + 0.5) * cell + size * 0.34} fontSize={size} textAnchor="middle" opacity={faded ? 0.4 : 1}>
+                <rect x={b.x + c * cell} y={b.y + r * cell} width={cell + 0.004} height={cell + 0.004} fill={cropColour(p.crop)} fillOpacity={faded ? 0.28 : 1} shapeRendering="crispEdges" />
+                <text x={b.x + (c + 0.5) * cell} y={b.y + (r + 0.5) * cell + size * 0.34} fontSize={size} textAnchor="middle" opacity={faded ? 0.5 : 0.95}>
                   {cropIcon(p.crop)}
                 </text>
               </g>
@@ -253,15 +253,10 @@ export default function LayoutEditor({ onChange, suggested, request, plan }: { o
                 <rect data-testid="bed-body" x={b.x} y={b.y} width={b.width} height={b.length} rx={0.12} className="fill-feed/15 stroke-feed/60" strokeWidth={0.04} />
               )}
               <g clipPath={`url(#clip${b.id})`} className="pointer-events-none select-none">
-                {waiting.flatMap((p) =>
-                  p.cells.map(([c, r]) => (
-                    <rect key={`o${p.planting_id}${c},${r}`} x={b.x + c * cell + 0.03} y={b.y + r * cell + 0.03} width={cell - 0.06} height={cell - 0.06} rx={0.04} fill="none" className="stroke-leaf" strokeDasharray="0.08 0.06" strokeWidth={0.03} />
-                  )),
-                )}
                 {waiting.map((p) => mark(p, true))}
                 {growing.map((p) => mark(p, false))}
               </g>
-              {b.crowded && <rect x={b.x} y={b.y} width={b.width} height={b.length} rx={0.06} fill="none" className="stroke-marigold pointer-events-none" strokeDasharray="0.18 0.1" strokeWidth={0.06} />}
+              {b.crowded && <rect x={b.x} y={b.y} width={b.width} height={b.length} rx={0.12} fill="none" className="stroke-marigold pointer-events-none" strokeWidth={0.05} />}
               <g className="pointer-events-none select-none">
                 <rect x={b.x} y={b.y - 0.46} width={tag} height={0.34} rx={0.17} className="fill-surface stroke-line" strokeWidth={0.015} />
                 <text x={b.x + tag / 2} y={b.y - 0.46 + 0.24} textAnchor="middle" fontSize={0.2} className="fill-ink font-semibold">
@@ -312,7 +307,7 @@ export default function LayoutEditor({ onChange, suggested, request, plan }: { o
         </div>
       )}
       </div>
-        {beds.some((b) => b.placements.length > 0) && <p className="text-xs text-muted">{t('Filled cells are growing now; dashed cells are planned. ⏳ counts what is still to plant.')}</p>}
+        {beds.some((b) => b.placements.length > 0) && <p className="text-xs text-muted">{t('Solid colour is growing now; faint colour is planned. ⏳ counts what is still to plant.')}</p>}
         {beds.length === 0 && <p className="text-sm text-muted">{canEdit ? t('No beds yet. Choose Draw bed, then drag on the plan.') : t('No beds have been drawn yet.')}</p>}
         {beds.length > 0 && (
           <div className="flex gap-2 overflow-x-auto pb-1" role="group" aria-label={t('Beds')}>
