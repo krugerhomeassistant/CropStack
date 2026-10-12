@@ -5,6 +5,17 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.45.0] - 2026-10-12
+
+### Added
+- **Exact placement in the year plan.** A plant's patch is now worked out from its spacing in both directions, never tighter than the catalog says: a 45 × 45 cm tomato takes a 2 × 2 patch of 30 cm cells (before: three cells in a row, which is 90 × 30 cm), a 30 × 90 cm potato a 3 × 1 patch, and small plants share a cell as many as fit in both directions (10 × 20 cm: three). A crop's block is a solid rectangle of whole patches, so every plant has its own ground, and the plan, painting a bed, the over-capacity warning and the suggestions all count plants the same way.
+- **Companions are placed by what touches.** The drafter puts a block against a good companion that grows then and keeps it out of a bed that holds one of its bad companions at the same time; "Grows beside" now means the blocks really touch. A companion flower goes against the crop's block, on the edge of the bed where there is room.
+- **Two more flowers (zinnia, petunia) and many more pairs.** Companion pairs are read in both directions from the Wikipedia table (the row for a crop and the row for a flower) and family-level entries ("brassicas", "cucurbits", "alliums", "beans") now apply to each such crop: 363 good and 56 bad pairs, up from 143 and 31. A crop's flowers are its good partners that are companion flowers, so they are no longer a separate list.
+- **Spacing for every crop.** Twelve crops had none (broad bean, Brussels sprouts, chilli, cucumber, Jerusalem artichoke, mustard greens, oregano, pumpkin, swede, sweet corn, Swiss chard, watermelon); they now carry usual in-row and between-row spacings, flagged as estimates.
+
+### Changed
+- A companion flower's job reads "Start picking marigold flowers", and the plant suggestions and key points say "flowers from" and "In flower" instead of "harvest".
+
 ## [0.44.0] - 2026-10-12
 
 ### Added
@@ -412,7 +423,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - CI: ruff lint and format, backend tests, frontend build, image publishing to GHCR and automatic GitHub releases on a version bump.
 - Project docs: README, wiki, architecture, roadmap, contributing guide, security policy and Code of Conduct.
 
-[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.44.0...HEAD
+[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.45.0...HEAD
+[0.45.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.44.0...v0.45.0
 [0.44.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.43.0...v0.44.0
 [0.43.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.42.2...v0.43.0
 [0.42.2]: https://github.com/krugerhomeassistant/CropStack/compare/v0.42.1...v0.42.2

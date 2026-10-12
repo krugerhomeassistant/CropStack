@@ -241,3 +241,13 @@ def test_sow_depth_reads_a_number_or_a_range():
     assert _depth(item({"min": 1.3, "max": 5})) == "1.3 to 5 cm"
     assert _depth(item(0.6)) == "barely covered, about half a centimetre or less"
     assert _depth({}) is None
+
+
+def test_a_companion_flower_is_picked_not_harvested():
+    maturity = {"p10": 50, "p50": 60, "p90": 75}
+    flower = next(s for s in crop_schedule(planting(), "marigold", maturity, None, True) if s.kind == "harvest")
+    assert flower.title.startswith("Start picking marigold flowers") and "comes into flower" in flower.reason
+    plain = next(s for s in crop_schedule(planting(), "tomato", maturity, None) if s.kind == "harvest")
+    assert plain.title.startswith("Start harvesting tomato")
+    by_cycle = next(s for s in crop_schedule(planting(), "marigold", None, (50, 80), True) if s.kind == "harvest")
+    assert "sowing to flowers" in by_cycle.reason

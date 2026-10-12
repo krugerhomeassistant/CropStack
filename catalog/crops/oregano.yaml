@@ -49,7 +49,7 @@ params:
     evidence: traditional
     confidence: low
     estimate: true
-    qualifiers: {basis: 'typical home-garden yield per crop cycle; replace with an extension-service figure'}
+    qualifiers: {basis: typical home-garden yield per crop cycle; replace with an extension-service figure}
   annual_rainfall:
     value: {min: 400.0, opt_min: 700.0, opt_max: 1300.0, max: 2700.0}
     unit: mm
@@ -72,3 +72,17 @@ params:
     estimate: true
     qualifiers: {basis: 'usual seed depth (garlic, potato and shallot: clove, tuber or set) from standard seed-packet and
         extension guidance'}
+  plant_spread:
+    value: 30
+    unit: cm
+    evidence: traditional
+    confidence: low
+    estimate: true
+    qualifiers: {basis: usual spacing in the row and between rows from standard seed-packet and extension guidance}
+  row_spacing:
+    value: 30
+    unit: cm
+    evidence: traditional
+    confidence: low
+    estimate: true
+    qualifiers: {basis: usual spacing in the row and between rows from standard seed-packet and extension guidance}

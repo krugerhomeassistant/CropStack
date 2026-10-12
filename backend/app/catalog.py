@@ -366,12 +366,10 @@ def _load_companions(root: Path, cat: Catalog, digest) -> list[str]:
             a, b = pair
             cat.companions[kind].setdefault(a, set()).add(b)
             cat.companions[kind].setdefault(b, set()).add(a)
-    for crop, flowers in (data.get("flowers") or {}).items():
-        unknown = [f for f in flowers if f not in crops]
-        if crop not in crops or unknown:
-            errors.append(f"{path}: flowers for {crop!r} must be catalog crops (unknown: {unknown or crop})")
-        else:
-            cat.companions["flowers"][crop] = list(flowers)
+    is_flower = {s for s in crops if cat.items[("crop", s)].get("purpose") == "companion"}
+    for crop, partners in cat.companions["good"].items():  # a crop's flowers: its good partners grown for the garden
+        if crop not in is_flower and (found := sorted(partners & is_flower)):
+            cat.companions["flowers"][crop] = found
     return errors
 
 

@@ -51,7 +51,7 @@ def _where(beds, plantings, facts, f, first, last):
         "bed": bed.name,
         "cells": [list(x) for x in chosen],
         "free_cells": n,
-        "plants": layout.plants_in(bed.cell_cm, f["footprint"], len(chosen)),
+        "plants": layout.plants_in(bed.cell_cm, f["dims"], len(chosen)),
         "same_family_before": any(x in used for x in chosen),
     }
 
@@ -109,8 +109,9 @@ def recommendations(me: MemberDep, db: SessionDep, c: CatalogDep, horizon: int =
                 "harvest_from": planted + timedelta(days=round(pick["days_to_maturity"].get("p10") or days)),
                 "harvest_to": planted + timedelta(days=round(days)),
                 "family": f["family"],
-                "plants_per_cell": layout.per_cell(30, f["footprint"]),
-                "cells_per_plant": layout.cells_per_plant(30, f["footprint"]),
+                "purpose": item.get("purpose", "food"),
+                "plants_per_cell": layout.patch(30, f["dims"]).per,
+                "cells_per_plant": (lambda p: p.cells if p.per == 1 else 1)(layout.patch(30, f["dims"])),
                 "where": _where(beds, plantings, facts, f, planted, planted + timedelta(days=round(days))),
             }
         )

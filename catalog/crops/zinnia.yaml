@@ -1,0 +1,75 @@
+kind: crop
+slug: zinnia
+names:
+  en:
+  - Zinnia
+scientific_name: Zinnia elegans
+family: Asteraceae
+rotation_group: flowers
+life_cycle: annual
+purpose: companion
+description: A sun-loving annual with bright, long-lasting flowers that pollinators love, traditionally grown beside beans,
+  tomatoes and peppers. Sow it after the last frost and keep cutting the flowers to keep it blooming.
+requirements:
+  temperature:
+    lethal_min:
+      value: 0.0
+      unit: Cel
+      evidence: traditional
+      confidence: low
+      estimate: true
+      qualifiers: {basis: 'frost-tolerance class (tender, half-hardy or hardy) from standard extension charts'}
+    stress_min:
+      value: 10.0
+      unit: Cel
+      evidence: traditional
+      confidence: low
+      estimate: true
+      qualifiers: {basis: typical growing range for the species from seed-packet and extension guidance; FAO ECOCROP has no
+          row for it}
+    optimal:
+      value: {min: 18.0, max: 30.0}
+      unit: Cel
+      evidence: traditional
+      confidence: low
+      estimate: true
+      qualifiers: {basis: typical growing range for the species from seed-packet and extension guidance; FAO ECOCROP has no
+          row for it}
+    stress_max:
+      value: 36.0
+      unit: Cel
+      evidence: traditional
+      confidence: low
+      estimate: true
+      qualifiers: {basis: typical growing range for the species from seed-packet and extension guidance; FAO ECOCROP has no
+          row for it}
+params:
+  cycle_days:
+    value: {min: 55.0, max: 90.0}
+    unit: d
+    evidence: traditional
+    confidence: low
+    estimate: true
+    qualifiers: {basis: usual sowing-to-first-flowers time of a companion flower from seed-packet and extension guidance;
+        not the seed-ripening cycle}
+  sow_depth:
+    value: 0.5
+    unit: cm
+    evidence: traditional
+    confidence: low
+    estimate: true
+    qualifiers: {basis: usual seed depth from standard seed-packet and extension guidance}
+  row_spacing:
+    value: 30
+    unit: cm
+    evidence: traditional
+    confidence: low
+    estimate: true
+    qualifiers: {basis: usual spacing from standard seed-packet and extension guidance}
+  plant_spread:
+    value: 30
+    unit: cm
+    evidence: traditional
+    confidence: low
+    estimate: true
+    qualifiers: {basis: usual spacing from standard seed-packet and extension guidance}

@@ -240,7 +240,7 @@ export default function BedGrid({
         return (
           <div className="flex items-center justify-between gap-3 rounded-[var(--radius-row)] bg-sunken p-3 text-sm">
             <span>
-              {t('Harvest from about {date}', { date: show(r.harvest_from) })} · {r.cells_per_plant > 1 ? t('1 plant per {n} cells', { n: r.cells_per_plant }) : t('{n} per cell', { n: r.plants_per_cell })}
+              {r.purpose === 'companion' ? t('Flowers from about {date}', { date: show(r.harvest_from) }) : t('Harvest from about {date}', { date: show(r.harvest_from) })} · {r.cells_per_plant > 1 ? t('1 plant per {n} cells', { n: r.cells_per_plant }) : t('{n} per cell', { n: r.plants_per_cell })}
             </span>
             <Button variant="ghost" onClick={() => setAbout(r)}>
               {t('Key points')}

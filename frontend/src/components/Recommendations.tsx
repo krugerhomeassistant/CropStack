@@ -33,7 +33,7 @@ export function KeyPoints({ r }: { r: Recommendation }) {
   const planted = r.method === 'transplant' && r.set_out_date ? r.set_out_date : r.start_date
   const rows: [string, string][] = [
     [t('When'), when(r)],
-    [t('Harvest'), t('About {from} to {to}, if it goes in on {date}', { from: show(r.harvest_from), to: show(r.harvest_to), date: show(planted) })],
+    [r.purpose === 'companion' ? t('In flower') : t('Harvest'), t('About {from} to {to}, if it goes in on {date}', { from: show(r.harvest_from), to: show(r.harvest_to), date: show(planted) })],
     [t('How it goes here'), t('Works in about {n} of 10 years in your climate', { n: Math.max(1, Math.round(r.success * 10)) })],
     [t('Spacing'), r.cells_per_plant > 1 ? t('1 plant per {n} cells of 30 cm', { n: r.cells_per_plant }) : t('{n} per 30 cm cell', { n: r.plants_per_cell })],
   ]
@@ -87,7 +87,7 @@ function List({ items, onPlant, canEdit, onOpen }: { items: Recommendation[]; on
           <button type="button" className="min-w-0 flex-1 text-left" onClick={() => onOpen(r)}>
             <span className="block font-bold">{r.name}</span>
             <span className="block text-sm text-muted">
-              {when(r)} · {t('harvest from {date}', { date: show(r.harvest_from) })}
+              {when(r)} · {r.purpose === 'companion' ? t('flowers from {date}', { date: show(r.harvest_from) }) : t('harvest from {date}', { date: show(r.harvest_from) })}
             </span>
           </button>
           {canEdit && (

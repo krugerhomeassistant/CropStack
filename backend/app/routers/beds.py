@@ -62,6 +62,7 @@ def crop_facts(db: Session, c: cat.Catalog, household_id: int, crop: str, cache:
             "name": (item.get("names", {}).get("en") or [crop])[0],
             "family": item.get("family", ""),
             "footprint": layout.footprint_m2(item),
+            "dims": layout.dims_cm(item),
             "cycle_days": profile.cycle_days[1] if profile and profile.usable else None,
             "yield_per_m2": layout.yield_per_m2(item),
             "food_group": item.get("food_group"),
@@ -93,7 +94,7 @@ def list_beds(me: MemberDep, db: SessionDep, c: CatalogDep) -> list[dict]:
             first, last = holds(p, f, today)
             live = p.status not in ("finished", "failed")
             cells = [tuple(x) for x in p.cells]
-            capacity = layout.plants_in(bed.cell_cm, f["footprint"], len(cells))
+            capacity = layout.plants_in(bed.cell_cm, f["dims"], len(cells))
             if cells:
                 held += [(p.id, cell, first, last) for cell in cells]
                 if live and p.quantity > capacity:

@@ -42,9 +42,9 @@ def _day(d: date) -> str:
 
 
 def crop_schedule(
-    p: Planting, name: str, maturity: Maturity | None, cycle_days: tuple[int, int] | None
+    p: Planting, name: str, maturity: Maturity | None, cycle_days: tuple[int, int] | None, flower: bool = False
 ) -> list[TaskSpec]:
-    """Sow, set out (transplants) and first harvest for one planting."""
+    """Sow, set out (transplants) and first harvest for one planting; a companion flower is picked, not harvested."""
     if p.status == "failed":
         return []
     where = f" in {p.location}" if p.location else ""
@@ -75,15 +75,16 @@ def crop_schedule(
         )
     if maturity:
         low, mid, high = (p.start_date + timedelta(days=maturity[q]) for q in ("p10", "p50", "p90"))
+        verb = "comes into flower" if flower else "ripens"
         reason = (
-            f"Sown on {_day(p.start_date)}, {name} usually ripens after about {maturity['p50']} days "
+            f"Sown on {_day(p.start_date)}, {name} usually {verb} after about {maturity['p50']} days "
             f"(most years {maturity['p10']} to {maturity['p90']}), worked out from its heat needs and your climate."
         )
     elif cycle_days:
         low, mid, high = (
             p.start_date + timedelta(days=d) for d in (cycle_days[0], sum(cycle_days) // 2, cycle_days[1])
         )
-        reason = f"{name} usually takes {cycle_days[0]} to {cycle_days[1]} days from sowing to harvest."
+        reason = f"{name} usually takes {cycle_days[0]} to {cycle_days[1]} days from sowing to {'flowers' if flower else 'harvest'}."
     else:
         return specs
     specs.append(
@@ -91,7 +92,7 @@ def crop_schedule(
             f"planting:{p.id}:harvest",
             "harvest",
             "Harvest",
-            f"Start harvesting {name}{where}",
+            f"Start picking {name} flowers{where}" if flower else f"Start harvesting {name}{where}",
             reason,
             low,
             mid,

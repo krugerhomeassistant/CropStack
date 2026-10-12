@@ -52,16 +52,14 @@ def existing_supply(plantings, facts_of, beds_by_id, window_of, today: date) -> 
     return out
 
 
-def with_coverage(
-    grid, taken, wants, today: date, target, existing, companions=None, kept=None
-) -> tuple[list[dict], dict]:
+def with_coverage(grid, taken, wants, today: date, target, existing, companions=None) -> tuple[list[dict], dict]:
     """The draft, its coverage of the weekly target, and the one change that would lift coverage most: a 4 m² bed
     when it adds at least 1 point (none once coverage reaches ENOUGH)."""
-    items, supply = yearplan.draft(grid, taken, wants, today, target, existing, companions, kept)
+    items, supply = yearplan.draft(grid, taken, wants, today, target, existing, companions)
     cov = needs.coverage(target, supply, today)
     cov["best_change"] = None
     if cov["overall"] < ENOUGH:
-        _, more = yearplan.draft([*grid, EXTRA_BED], taken, wants, today, target, existing, companions, kept)
+        _, more = yearplan.draft([*grid, EXTRA_BED], taken, wants, today, target, existing, companions)
         gain = needs.coverage(target, more, today)["overall"] - cov["overall"]
         if gain >= 0.01:
             cov["best_change"] = {"kind": "add_bed_area", "m2": EXTRA_M2, "gain": round(gain, 3)}
@@ -100,15 +98,13 @@ def year_plan(me: MemberDep, db: SessionDep, c: CatalogDep) -> dict:
     cache: dict = {}
     plantings = db.exec(select(Planting).where(Planting.household_id == me.household_id)).all()
     taken: dict[int, list] = {b.id: [] for b in beds}
-    kept: dict[int, list] = {b.id: [] for b in beds}  # (crop, from, to) of what stays, for companion pairing
     for p in plantings:
         if replaceable(p):  # an earlier plan not yet started is replaced by this one, not added to
             continue
         if p.bed_id in taken and p.cells:  # finished ones too: they decide rotation
             f = crop_facts(db, c, me.household_id, p.crop, cache)
             a, z = holds(p, f, today)
-            taken[p.bed_id] += [((x[0], x[1]), a, z, f["family"]) for x in p.cells]
-            kept[p.bed_id].append((p.crop, a, z))
+            taken[p.bed_id] += [((x[0], x[1]), a, z, f["family"], p.crop) for x in p.cells]
     wants = []
     for slug, _ in c.list("crop"):
         item = cat.effective(c, "crop", slug, _overrides(db, me.household_id, "crop", slug))
@@ -134,7 +130,7 @@ def year_plan(me: MemberDep, db: SessionDep, c: CatalogDep) -> dict:
             wants.append(
                 yearplan.Want(
                     slug, f["name"], f["family"], o["method"], start, planted if transplant else None, planted, days,
-                    o["success"], f["footprint"],
+                    o["success"], f["dims"],
                     planted + timedelta(days=round(o["days_to_maturity"].get("p10") or days)),
                     planted + timedelta(days=days),
                     f["yield_per_m2"],
@@ -155,7 +151,7 @@ def year_plan(me: MemberDep, db: SessionDep, c: CatalogDep) -> dict:
         today,
     )
     grid = [yearplan.Bed(b.id, b.name, *grid_of(b), b.cell_cm) for b in beds]
-    items, cov = with_coverage(grid, taken, wants, today, target, existing, c.companions, kept)
+    items, cov = with_coverage(grid, taken, wants, today, target, existing, c.companions)
     return {
         "garden": True,
         "beds": True,

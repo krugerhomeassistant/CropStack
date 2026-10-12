@@ -1,0 +1,75 @@
+kind: crop
+slug: petunia
+names:
+  en:
+  - Petunia
+scientific_name: Petunia x atkinsiana
+family: Solanaceae
+rotation_group: flowers
+life_cycle: annual
+purpose: companion
+description: A trailing, scented annual traditionally grown beside squash, pumpkins, cucumbers and asparagus. It is slow from
+  seed, so most gardeners buy seedlings; give it full sun and pinch the tips to keep it bushy.
+requirements:
+  temperature:
+    lethal_min:
+      value: 0.0
+      unit: Cel
+      evidence: traditional
+      confidence: low
+      estimate: true
+      qualifiers: {basis: 'frost-tolerance class (tender, half-hardy or hardy) from standard extension charts'}
+    stress_min:
+      value: 10.0
+      unit: Cel
+      evidence: traditional
+      confidence: low
+      estimate: true
+      qualifiers: {basis: typical growing range for the species from seed-packet and extension guidance; FAO ECOCROP has no
+          row for it}
+    optimal:
+      value: {min: 15.0, max: 27.0}
+      unit: Cel
+      evidence: traditional
+      confidence: low
+      estimate: true
+      qualifiers: {basis: typical growing range for the species from seed-packet and extension guidance; FAO ECOCROP has no
+          row for it}
+    stress_max:
+      value: 34.0
+      unit: Cel
+      evidence: traditional
+      confidence: low
+      estimate: true
+      qualifiers: {basis: typical growing range for the species from seed-packet and extension guidance; FAO ECOCROP has no
+          row for it}
+params:
+  cycle_days:
+    value: {min: 70.0, max: 100.0}
+    unit: d
+    evidence: traditional
+    confidence: low
+    estimate: true
+    qualifiers: {basis: usual sowing-to-first-flowers time of a companion flower from seed-packet and extension guidance;
+        not the seed-ripening cycle}
+  sow_depth:
+    value: 0.2
+    unit: cm
+    evidence: traditional
+    confidence: low
+    estimate: true
+    qualifiers: {basis: usual seed depth from standard seed-packet and extension guidance}
+  row_spacing:
+    value: 25
+    unit: cm
+    evidence: traditional
+    confidence: low
+    estimate: true
+    qualifiers: {basis: usual spacing from standard seed-packet and extension guidance}
+  plant_spread:
+    value: 25
+    unit: cm
+    evidence: traditional
+    confidence: low
+    estimate: true
+    qualifiers: {basis: usual spacing from standard seed-packet and extension guidance}

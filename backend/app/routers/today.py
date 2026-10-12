@@ -53,7 +53,7 @@ def _refresh_tasks(db: Session, household_id: int, c: cat.Catalog) -> None:
                 climate, profile, p.set_out_date if age and p.set_out_date else p.start_date, age
             )
         cycle = (round(profile.cycle_days[0]), round(profile.cycle_days[1])) if profile.usable else None
-        return crop_schedule(p, name.lower(), maturity, cycle)
+        return crop_schedule(p, name.lower(), maturity, cycle, item.get("purpose") == "companion")
 
     sync(db, household_id, specs, {"sow", "set_out", "harvest"})
     db.commit()

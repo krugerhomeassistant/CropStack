@@ -307,7 +307,7 @@ def test_a_window_beyond_the_year_is_kept_but_adds_nothing_in_year():
 def _want(group="leafy", kg=5.0):
     today = date(2026, 10, 10)
     return yearplan.Want(
-        "x", "X", "fam", "direct", today, None, today, 60, 1.0, 0.09,
+        "x", "X", "fam", "direct", today, None, today, 60, 1.0, (30, 30),
         today + timedelta(days=60), today + timedelta(days=120), kg, group,
     )  # fmt: skip
 

@@ -75,3 +75,5 @@ borage: {gbif: Borago officinalis, openfarm: borage, ecocrop: 722}
 chamomile: {gbif: Matricaria chamomilla, openfarm: german-chamomile, ecocrop: 1250}
 alyssum: {gbif: Lobularia maritima}
 sunflower: {gbif: Helianthus annuus, openfarm: sunflower, ecocrop: 46}
+zinnia: {gbif: Zinnia elegans}
+petunia: {gbif: Petunia x atkinsiana}

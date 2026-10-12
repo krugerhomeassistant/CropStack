@@ -49,7 +49,7 @@ params:
     evidence: traditional
     confidence: low
     estimate: true
-    qualifiers: {basis: 'typical home-garden yield per crop cycle; replace with an extension-service figure'}
+    qualifiers: {basis: typical home-garden yield per crop cycle; replace with an extension-service figure}
   annual_rainfall:
     value: {min: 300.0, opt_min: 700.0, opt_max: 1500.0, max: 2000.0}
     unit: mm
@@ -87,3 +87,10 @@ params:
     sources:
     - {ref: openfarm-rescue, locator: 'https://web.archive.org/web/20250318011516/https://openfarm.cc/en/crops/jerusalem-artichoke',
       retrieved: 2026-10-09, snapshot: 'sha256:203050c7a2be7ab1c4c165ee4edb42aaebcb13d183bd53540a2bf3482363caec'}
+  plant_spread:
+    value: 40
+    unit: cm
+    evidence: traditional
+    confidence: low
+    estimate: true
+    qualifiers: {basis: usual spacing in the row and between rows from standard seed-packet and extension guidance}

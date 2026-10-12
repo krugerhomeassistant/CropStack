@@ -82,73 +82,91 @@ def test_harvests_outside_the_year_are_ignored():
     assert run(4, 1, wants=gone)[0] == []
 
 
-def sized(crop, group, planted, footprint, kg=8.0):
+def sized(crop, group, planted, dims, kg=8.0):
     w = want(crop, group, planted, kg=kg)
-    return Want(*[*w.__dict__.values()][:9], footprint, *[*w.__dict__.values()][10:])
+    return Want(*[*w.__dict__.values()][:9], dims, *[*w.__dict__.values()][10:])
 
 
-def test_a_plant_that_needs_more_than_a_cell_takes_the_cells_it_needs_together():
-    # 60 cm plants on 30 cm cells: four cells each, and the block is one compact patch, not a long strip
-    items, _ = run(4, 1, wants=[sized("zucchini", "squash", TODAY, 0.36)])
+def grows(crop, cells, a=TODAY - timedelta(days=30), z=TODAY + timedelta(days=200)):
+    """Cells already held by a planting that stays, as `taken` wants them."""
+    return [(tuple(c), a, z, "", crop) for c in cells]
+
+
+def solid(cells):
+    cols, rows = {c for c, _ in cells}, {r for _, r in cells}
+    return len(cols) * len(rows) == len(cells)
+
+
+def test_a_big_plant_takes_a_solid_block_of_the_patches_its_spacing_needs():
+    # 60 cm plants on 30 cm cells: a 2 x 2 patch each, and the block is one solid rectangle of whole patches
+    items, _ = run(4, 1, wants=[sized("zucchini", "squash", TODAY, (60, 60))])
     assert items
     for i in items:
-        assert i["cells_per_plant"] == 4 and len(i["cells"]) % 4 == 0
-        assert i["plants"] == len(i["cells"]) // 4
-        cols, rows = {c for c, _ in i["cells"]}, {r for _, r in i["cells"]}
-        assert len(cols) * len(rows) <= 2 * len(i["cells"])
-    # small plants still go several to a cell
-    small, _ = run(4, 1, wants=[sized("lettuce", "leafy", TODAY, 0.01, kg=3.0)])
+        assert i["patch"] == [2, 2] and i["cells_per_plant"] == 4 and len(i["cells"]) % 4 == 0
+        assert i["plants"] == len(i["cells"]) // 4 and solid(i["cells"])
+    # a plant wider one way than the other needs a patch that long: 20 x 45 cm is 1 x 2 or 2 x 1 cells
+    odd, _ = run(4, 1, wants=[sized("bean", "legume", TODAY, (20, 45))])
+    assert odd and all(i["patch"] in ([1, 2], [2, 1]) and solid(i["cells"]) for i in odd)
+    # small plants still go several to a cell, as many as fit at their spacing in both directions
+    small, _ = run(4, 1, wants=[sized("lettuce", "leafy", TODAY, (10, 10), kg=3.0)])
     assert small and small[0]["cells_per_plant"] == 1 and small[0]["plants"] == 9 * len(small[0]["cells"])
 
 
-GOOD = {"tomato": {"basil"}, "basil": {"tomato"}}
+GOOD = {"tomato": {"basil", "marigold"}, "basil": {"tomato"}, "marigold": {"tomato"}}
 AVOID = {"tomato": {"fennel"}, "fennel": {"tomato"}}
-ONE_TOMATO = [want("tomato", "fruiting", TODAY, kg=8.0)]
-SEASON = (TODAY - timedelta(days=30), TODAY + timedelta(days=200))
+TOMATO = [sized("tomato", "fruiting", TODAY, (45, 45))]
+BASIL_BLOCK = [(6, 3), (7, 3), (6, 4), (7, 4)]
 
 
-def test_a_crop_goes_where_a_good_companion_already_grows():
-    alone, _ = run(2, 2, wants=ONE_TOMATO)
-    assert {i["bed_id"] for i in alone} == {1}
-    grid = [Bed(i, f"B{i}", 12, 8, 30) for i in (1, 2)]
-    kept = {2: [("basil", *SEASON)]}
-    items, _ = draft(grid, {}, ONE_TOMATO, TODAY, needs.weekly_target(2), [], {"good": GOOD}, kept)
-    assert {i["bed_id"] for i in items} == {2}
+def edge(cells, others):
+    return {(c + dc, r + dr) for c, r in cells for dc, dr in ((1, 0), (-1, 0), (0, 1), (0, -1))} & set(others)
+
+
+def test_a_crop_is_placed_touching_its_good_companion():
+    grid = [Bed(1, "B1", 12, 8, 30)]
+    taken = {1: grows("basil", BASIL_BLOCK)}
+    alone, _ = draft(grid, taken, TOMATO, TODAY, needs.weekly_target(2), [])
+    assert not edge({tuple(c) for c in alone[0]["cells"]}, BASIL_BLOCK)  # nothing draws it there
+    items, _ = draft(grid, taken, TOMATO, TODAY, needs.weekly_target(2), [], {"good": GOOD})
+    cells = {tuple(c) for c in items[0]["cells"]}
+    assert edge(cells, BASIL_BLOCK) and not cells & set(BASIL_BLOCK) and solid(cells)
     assert items[0]["pairs_with"] == ["Basil"]
 
 
 def test_a_crop_stays_out_of_a_bed_with_a_bad_neighbour():
     grid = [Bed(i, f"B{i}", 12, 8, 30) for i in (1, 2)]
-    kept = {1: [("fennel", *SEASON)]}
-    items, _ = draft(grid, {}, ONE_TOMATO, TODAY, needs.weekly_target(2), [], {"avoid": AVOID}, kept)
+    taken = {1: grows("fennel", [(0, 0)])}
+    items, _ = draft(grid, taken, TOMATO, TODAY, needs.weekly_target(2), [], {"avoid": AVOID})
     assert items and {i["bed_id"] for i in items} == {2}
     # a bad neighbour that is gone by sowing time is no obstacle
-    gone = {1: [("fennel", TODAY - timedelta(days=200), TODAY - timedelta(days=100))]}
-    items, _ = draft(grid, {}, ONE_TOMATO, TODAY, needs.weekly_target(2), [], {"avoid": AVOID}, gone)
+    gone = {1: grows("fennel", [(0, 0)], TODAY - timedelta(days=200), TODAY - timedelta(days=100))}
+    items, _ = draft(grid, gone, TOMATO, TODAY, needs.weekly_target(2), [], {"avoid": AVOID})
     assert {i["bed_id"] for i in items} == {1}
 
 
-def test_a_companion_flower_gets_a_small_block_beside_the_crop_it_goes_with():
+def test_a_companion_flower_stands_touching_the_crop_and_on_the_edge_of_the_bed():
     flowers = {"tomato": ["marigold"]}
-    marigold = want("marigold", None, TODAY + timedelta(days=10), kg=None, days=60)
+    marigold = sized("marigold", None, TODAY + timedelta(days=10), (30, 30), kg=None)
+    grid = [Bed(1, "B1", 12, 8, 30)]
     items, _ = draft(
-        [Bed(1, "B1", 12, 8, 30)], {}, [*ONE_TOMATO, marigold], TODAY, needs.weekly_target(2), [], {"flowers": flowers}
+        grid, {}, [*TOMATO, marigold], TODAY, needs.weekly_target(2), [], {"good": GOOD, "flowers": flowers}
     )
     tomato = next(i for i in items if i["crop"] == "tomato")
     flower = next(i for i in items if i["crop"] == "marigold")
+    t, f = {tuple(c) for c in tomato["cells"]}, {tuple(c) for c in flower["cells"]}
     assert flower["bed_id"] == tomato["bed_id"] and flower["companion_for"] == ["tomato"]
-    assert 2 <= len(flower["cells"]) <= 4 and not set(map(tuple, flower["cells"])) & set(map(tuple, tomato["cells"]))
+    assert len(f) == 2 and not t & f and edge(t, f)  # two cells, touching the tomatoes
     assert flower["food_group"] is None and flower["kg"] == 0
-    assert tomato["flowers"] == ["marigold"] and tomato["flower_hints"] == []
-    # without the flower in the catalog's wants the crop only gets the traditional hint
-    items, _ = draft([Bed(1, "B1", 12, 8, 30)], {}, ONE_TOMATO, TODAY, needs.weekly_target(2), [], {"flowers": flowers})
+    assert tomato["flowers"] == ["marigold"] and tomato["flower_hints"] == [] and "Marigold" not in tomato["pairs_with"]
+    # without the flower among the wants the crop only gets the traditional hint
+    items, _ = draft(grid, {}, TOMATO, TODAY, needs.weekly_target(2), [], {"flowers": flowers})
     assert [i["crop"] for i in items] == ["tomato"] and items[0]["flower_hints"] == ["Marigold"]
 
 
-def test_one_flower_block_serves_every_crop_in_the_bed_that_wants_it():
+def test_one_flower_stand_serves_every_crop_in_the_bed_that_wants_it():
     flowers = {"tomato": ["marigold"], "carrot": ["marigold"]}
-    both = [want("tomato", "fruiting", TODAY, kg=8.0), want("carrot", "root", TODAY, kg=4.0, days=90)]
-    marigold = want("marigold", None, TODAY + timedelta(days=5), kg=None, days=60)
+    both = [sized("tomato", "fruiting", TODAY, (45, 45)), want("carrot", "root", TODAY, kg=4.0, days=90)]
+    marigold = sized("marigold", None, TODAY + timedelta(days=5), (30, 30), kg=None)
     items, _ = draft(
         [Bed(1, "B1", 12, 8, 30)], {}, [*both, marigold], TODAY, needs.weekly_target(4), [], {"flowers": flowers}
     )

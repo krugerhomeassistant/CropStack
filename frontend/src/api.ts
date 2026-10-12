@@ -210,6 +210,7 @@ export type Recommendation = {
   harvest_from: string
   harvest_to: string
   family: string
+  purpose?: 'food' | 'companion'
   plants_per_cell: number
   cells_per_plant: number
 }

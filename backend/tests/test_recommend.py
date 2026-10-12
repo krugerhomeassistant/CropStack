@@ -36,7 +36,6 @@ def test_best_option_prefers_what_is_open_now():
 
 def test_cells_cover_the_bed_and_hold_a_crop_only_while_it_grows():
     assert layout.grid(1.2, 2.4, 30) == (4, 8) and layout.grid(0.5, 0.5, 30) == (2, 2)
-    assert layout.per_cell(30, 0.09) == 1 and layout.per_cell(30, 0.0025) == 16 and layout.per_cell(30, None) == 1
     a, b = layout.occupancy(date(2026, 10, 1), None, None, "sown", 60, date(2026, 10, 10))
     assert (a, b) == (date(2026, 10, 1), date(2026, 11, 30))
     _, over = layout.occupancy(date(2026, 10, 1), None, None, "finished", 60, date(2026, 10, 10))

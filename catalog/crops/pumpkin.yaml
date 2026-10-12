@@ -100,7 +100,7 @@ params:
     evidence: traditional
     confidence: low
     estimate: true
-    qualifiers: {basis: 'typical home-garden yield per crop cycle; replace with an extension-service figure'}
+    qualifiers: {basis: typical home-garden yield per crop cycle; replace with an extension-service figure}
   height_max:
     value: 0.4
     unit: m
@@ -197,3 +197,17 @@ params:
     sources:
     - {ref: mo-ext-g6201, locator: Table 1 (inches converted to cm), retrieved: 2026-10-11}
     - {ref: msu-planting-guide, locator: Depth of Planting column (inches converted to cm), retrieved: 2026-10-11}
+  plant_spread:
+    value: 90
+    unit: cm
+    evidence: traditional
+    confidence: low
+    estimate: true
+    qualifiers: {basis: usual spacing in the row and between rows from standard seed-packet and extension guidance}
+  row_spacing:
+    value: 120
+    unit: cm
+    evidence: traditional
+    confidence: low
+    estimate: true
+    qualifiers: {basis: usual spacing in the row and between rows from standard seed-packet and extension guidance}
