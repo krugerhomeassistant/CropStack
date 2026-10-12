@@ -75,7 +75,7 @@ export default function Auth({ registrationOpen, invite, notice, onDone }: Props
         </p>
       )}
 
-      <form className="card flex flex-col gap-4" onSubmit={submit}>
+      <form key={mode} className="card flex flex-col gap-4" onSubmit={submit}>
         {mode === 'register' && !invite && (
           <div role="radiogroup" aria-label={t('Household')} className="grid grid-cols-2 gap-2">
             {[false, true].map((j) => (
@@ -95,7 +95,7 @@ export default function Auth({ registrationOpen, invite, notice, onDone }: Props
         {mode === 'register' && join && !invite && (
           <label className="field">
             <span>{t('Invite link or code')}</span>
-            <input className="input" required autoCapitalize="none" autoComplete="off" value={code} onChange={(e) => setCode(e.target.value)} />
+            <input className="input" name="invite" required autoCapitalize="none" autoComplete="off" spellCheck={false} value={code} onChange={(e) => setCode(e.target.value)} />
             <span className="text-xs text-muted">{t('Ask a household owner for one: Household, then Create invite link.')}</span>
           </label>
         )}
@@ -104,6 +104,7 @@ export default function Auth({ registrationOpen, invite, notice, onDone }: Props
             <span>{t('Your name')}</span>
             <input
               className="input"
+              name="name"
               autoComplete="name"
               maxLength={64}
               value={displayName}
@@ -115,7 +116,11 @@ export default function Auth({ registrationOpen, invite, notice, onDone }: Props
           <span>{t('Username')}</span>
           <input
             className="input"
+            name="username"
+            id="username"
+            type="text"
             autoComplete="username"
+            spellCheck={false}
             autoCapitalize="none"
             required
             minLength={2}
@@ -129,6 +134,8 @@ export default function Auth({ registrationOpen, invite, notice, onDone }: Props
           <input
             className="input"
             type="password"
+            name="password"
+            id="password"
             autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
             required
             minLength={8}

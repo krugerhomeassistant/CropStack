@@ -5,6 +5,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.42.1] - 2026-10-12
+
+### Fixed
+- Password managers fill the sign-in form correctly: the fields now carry proper name, id and autocomplete attributes, and Log in and Create account are separate forms.
+
 ## [0.42.0] - 2026-10-12
 
 ### Added
@@ -388,7 +393,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - CI: ruff lint and format, backend tests, frontend build, image publishing to GHCR and automatic GitHub releases on a version bump.
 - Project docs: README, wiki, architecture, roadmap, contributing guide, security policy and Code of Conduct.
 
-[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.42.0...HEAD
+[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.42.1...HEAD
+[0.42.1]: https://github.com/krugerhomeassistant/CropStack/compare/v0.42.0...v0.42.1
 [0.42.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.41.0...v0.42.0
 [0.41.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.40.0...v0.41.0
 [0.40.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.39.1...v0.40.0
