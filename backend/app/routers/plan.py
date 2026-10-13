@@ -66,6 +66,38 @@ def with_coverage(grid, taken, wants, today: date, target, existing, companions=
     return items, cov
 
 
+def _plan_key(item) -> tuple:
+    return (
+        item.crop,
+        item.method,
+        item.start_date,
+        item.set_out_date,
+        item.bed_id,
+        tuple(sorted(tuple(cell) for cell in (item.cells or []))),
+    )
+
+
+def _preview_diff(existing: list[Planting], proposed: list[PlantingIn]) -> dict[str, int]:
+    old = [_plan_key(p) for p in existing]
+    new = [_plan_key(p) for p in proposed]
+    unchanged = 0
+    remaining_old = old.copy()
+    remaining_new = new.copy()
+    for key in old:
+        if key in remaining_new:
+            unchanged += 1
+            remaining_old.remove(key)
+            remaining_new.remove(key)
+    moved = 0
+    for old_key in remaining_old.copy():
+        match = next((key for key in remaining_new if key[:2] == old_key[:2]), None)
+        if match is not None:
+            moved += 1
+            remaining_old.remove(old_key)
+            remaining_new.remove(match)
+    return {"added": len(remaining_new), "removed": len(remaining_old), "moved": moved, "unchanged": unchanged}
+
+
 def _scheduled(db: SessionDep, household_id: int) -> int:
     return sum(replaceable(p) for p in db.exec(select(Planting).where(Planting.household_id == household_id)))
 
@@ -162,6 +194,15 @@ def year_plan(me: MemberDep, db: SessionDep, c: CatalogDep) -> dict:
         "coverage": cov,
         "skipped_no_yield": skipped,
     }
+
+
+@router.post("/year/preview")
+def preview_plan(items: list[PlantingIn], me: MemberDep, db: SessionDep) -> dict[str, int]:
+    """Describe how a proposed plan differs from the replaceable plan without changing data."""
+    if not 0 < len(items) <= 300:
+        raise HTTPException(422, "Send between 1 and 300 plantings")
+    existing = [p for p in db.exec(select(Planting).where(Planting.household_id == me.household_id)) if replaceable(p)]
+    return _preview_diff(existing, items)
 
 
 @router.post("/year", status_code=201)

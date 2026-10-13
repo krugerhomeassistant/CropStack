@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { CalendarRange, X } from 'lucide-react'
-import { api, type Coverage, type PlanItem } from '../api'
+import { api, type Coverage, type PlanDiff, type PlanItem } from '../api'
 import { t } from '../i18n'
 import { useApp } from '../state'
 import CoverageCard, { PeopleStepper } from './CoverageCard'
@@ -20,6 +20,8 @@ export default function YearPlan({ hasBeds, scheduled, plan, setPlan, onUsed, on
   const [people, setPeople] = useState<number | null>(null)
   const [coverage, setCoverage] = useState<Coverage | null>(null)
   const [skipped, setSkipped] = useState<string[]>([])
+ const [diff, setDiff] = useState<PlanDiff | null>(null)
+ const [confirmReplan, setConfirmReplan] = useState(false)
   const canChange = useApp().user.role === 'owner'
   const fail = (e: unknown) => {
     setBusy(false)
@@ -29,14 +31,25 @@ export default function YearPlan({ hasBeds, scheduled, plan, setPlan, onUsed, on
     api.householdSettings().then((s) => setPeople(s.people), fail)
   }, [])
   const draft = () => {
-    setBusy(true)
-    setError('')
+  if (scheduled > 0 && !confirmReplan) {
+  setConfirmReplan(true)
+  return
+  }
+  setConfirmReplan(false)
+  setBusy(true)
+  setError('')
     api.yearPlan().then((r) => {
       setPlan(r.items)
       setCoverage(r.coverage ?? null)
       setPeople(r.people)
       setSkipped(r.skipped_no_yield ?? [])
-      setBusy(false)
+ if (scheduled > 0) {
+ const proposed = r.items.map((i) => ({ crop: i.crop, method: i.method, start_date: i.start_date, set_out_date: i.set_out_date, bed_id: i.bed_id, cells: i.cells, location: '', notes: '' }))
+ api.previewPlan(proposed).then(setDiff, fail)
+ } else {
+ setDiff(null)
+ }
+ setBusy(false)
       if (r.items.length === 0) setError(t('Nothing fits right now. Add beds or free up cells, then draft again.'))
     }, fail)
   }
@@ -79,8 +92,10 @@ export default function YearPlan({ hasBeds, scheduled, plan, setPlan, onUsed, on
       {canEdit && hasBeds && (
         <div>
           <Button variant={plan.length ? 'secondary' : 'primary'} onClick={draft} disabled={busy}>
-            {busy ? t('Drafting…') : plan.length ? t('Draft again') : t('Draft a year plan')}
+          {busy ? t('Drafting…') : plan.length ? t('Draft again') : t('Draft a year plan')}
           </Button>
+          {confirmReplan && <span className="text-sm text-muted">{t('Drafting again will replace {n} not-started plan plantings. Continue?', { n: scheduled })}</span>}
+          {confirmReplan && <Button variant="ghost" onClick={() => setConfirmReplan(false)}>{t('Keep current plan')}</Button>}
         </div>
       )}
       {canEdit && scheduled > 0 && (
@@ -98,6 +113,11 @@ export default function YearPlan({ hasBeds, scheduled, plan, setPlan, onUsed, on
       )}
       {!hasBeds && <EmptyState icon={CalendarRange} title={t('Draw your beds first')}>{t('The plan fills the beds you draw on the Plan tab.')}</EmptyState>}
       {error && <ErrorMessage>{error}</ErrorMessage>}
+ {diff && (diff.added > 0 || diff.removed > 0 || diff.moved > 0) && (
+ <p className="rounded-[var(--radius-row)] border border-line p-3 text-sm">
+ {t('Draft changes: {added} added, {removed} removed, {moved} moved. Review the list below before using it; nothing has changed yet.', { added: diff.added, removed: diff.removed, moved: diff.moved })}
+ </p>
+ )}
       {skipped.length > 0 && <p className="text-sm text-muted">{t('Left out, no yield data yet: {crops}', { crops: skipped.join(', ') })}</p>}
       {months.map((m) => (
         <div key={m} className="flex flex-col gap-1">

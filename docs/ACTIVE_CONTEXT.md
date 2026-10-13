@@ -40,6 +40,16 @@ Personal, non-commercial. Fully dynamic (no presets). Never restrict or destroy 
 - Owner action: enable "Allow GitHub Actions to create pull requests" so the monthly catalog-refresh workflow can open PRs.
 - Sandbox quirks: `gh` GraphQL is blocked (use `gh run list`, REST); the sandbox proxy resets some connections (retry); `sqlite3` CLI is missing (use python).
 
+## Active development sequence
+- [ ] Year-plan re-plan diff: preview added/removed/moved items before replacement.
+- [ ] Year-plan lifecycle: preserve live crops until harvest/finish; support locked job dates.
+- [ ] Flower wording: expose planting purpose so companion plants use flowering/picking language.
+- [ ] Planner usability: consistent windows, map zoom/pan, move planting, undo/redo.
+- [ ] Data depth: sourced depths, Pantry storage metadata, varieties, animals and organisms.
+- [ ] Pantry ↔ harvest, then Mealie integration.
+- [ ] Home Assistant and assistant integrations.
+
+
 ## v0.45.0
 Exact placement: `layout.Patch/patch/best_block/plants_in` (spacing in both directions -> a patch of whole cells; a block is a solid rectangle of whole patches), `yearplan.draft` scores blocks by touching good companions (`COMPANION_BONUS`, `BED_COMPANION_BONUS`) and refuses beds with an "avoid" crop; flower stands go against the host block / bed edge. `taken` now carries the crop as a fifth element (so adjacency can see existing plantings); `Want.footprint` became `Want.dims`; `kept` was removed. `catalog/companions.yaml` is read in both directions with family-level expansion (363 good / 56 avoid), flowers are derived (good partners with `purpose: companion`); zinnia and petunia added; 12 crops got estimated spacings (`plant_spread`/`row_spacing`, flagged). Flowers say "pick"/"in flower" (job title, suggestions). Limits: a patch is whole cells, so a spacing that is not a multiple of the cell wastes ground (finer cells follow it more closely); odd spacings like 20 x 45 cm take a 2-cell patch for one plant; adjacency is edge-to-edge only; the avoid rule is bed-level; the Today button still says "Mark harvest started" for flowers and the planting list still says "Harvest expected". Next: per-planting `purpose` in the API so those two say "flowering"; calendula/cosmos (no pairs in the source for our crops: only worth adding with a pair source); the re-plan diff.
 

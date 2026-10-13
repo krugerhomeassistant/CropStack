@@ -203,6 +203,17 @@ def test_replanning_replaces_an_unstarted_plan_and_clearing_keeps_hand_made_work
     assert [p["id"] for p in owner.get("/api/v1/plantings").json()] == [mine["id"]]
 
 
+def test_replan_preview_reports_added_removed_and_moved_before_replacement(owner):  # noqa: F811
+    bed = owner.post("/api/v1/beds", json={"name": "Preview", "width": 1.2, "length": 1.2}).json()
+    old = {"crop": "testcrop", "method": "direct", "start_date": "2026-12-01", "bed_id": bed["id"], "cells": [[0, 0]]}
+    assert owner.post("/api/v1/plan/year", json=[old]).status_code == 201
+    proposed = [old | {"cells": [[1, 1]]}, old | {"cells": [[2, 2]], "start_date": "2027-01-01"}]
+    response = owner.post("/api/v1/plan/year/preview", json=proposed)
+    assert response.status_code == 200
+    assert response.json() == {"added": 1, "removed": 0, "moved": 1, "unchanged": 0}
+    assert owner.get("/api/v1/plan/year").json()["scheduled"] == 1
+
+
 def test_many_plantings_at_once_all_succeed(owner):  # noqa: F811
     from concurrent.futures import ThreadPoolExecutor
 
