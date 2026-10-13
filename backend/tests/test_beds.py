@@ -225,6 +225,16 @@ def test_companion_planting_exposes_its_purpose(owner):  # noqa: F811
     assert next(p for p in listed if p["id"] == made.json()["id"])["purpose"] == "food"
 
 
+def test_accepting_a_plan_rejects_overlapping_or_outside_cells(owner):  # noqa: F811
+    bed = owner.post("/api/v1/beds", json={"name": "Strict", "width": 0.6, "length": 0.6}).json()
+    body = {"crop": "testcrop", "method": "direct", "start_date": "2099-01-01", "bed_id": bed["id"]}
+    overlap = [body | {"cells": [[0, 0]]}, body | {"cells": [[0, 0]]}]
+    outside = [body | {"cells": [[2, 2]]}]
+    assert owner.post("/api/v1/plan/year", json=overlap).status_code == 422
+    assert owner.post("/api/v1/plan/year", json=outside).status_code == 422
+    assert owner.get("/api/v1/plantings").json() == []
+
+
 def test_many_plantings_at_once_all_succeed(owner):  # noqa: F811
     from concurrent.futures import ThreadPoolExecutor
 
