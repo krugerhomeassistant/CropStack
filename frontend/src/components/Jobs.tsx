@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { CalendarCheck, Check } from 'lucide-react'
+import { CalendarCheck, Check, ChevronDown } from 'lucide-react'
 import { api, type Job, type TodayData } from '../api'
 import { N_, t } from '../i18n'
 import { useApp } from '../state'
@@ -30,60 +30,37 @@ function brief(job: Job): string[] {
 
 function JobCard({ job, canEdit, onFinish }: { job: Job; canEdit: boolean; onFinish: (id: number, s: 'done' | 'skipped') => void }) {
  const harvestLabel = job.purpose === 'companion' ? N_('Mark flowering started') : N_('Mark harvest started')
-  return (
-    <li className="flex flex-col gap-2 rounded-[var(--radius-row)] bg-sunken p-4">
-      <div className="flex items-start justify-between gap-3">
-        <h4 className="text-lg font-bold">{job.title}</h4>
-        {job.overdue && <Badge tone="marigold">{t('Overdue')}</Badge>}
-      </div>
-      <p className="text-sm text-muted">{job.reason}</p>
-      {brief(job).length > 0 && <p className="text-sm font-semibold">{brief(job).join(' · ')}</p>}
-      {(job.facts.length > 0 || job.steps.length > 0) && (
-        <details className="group">
-          <summary className="min-h-11 cursor-pointer py-2 text-sm font-semibold text-leaf">{t('Details')}</summary>
-          {job.facts.length > 0 && (
-            <dl className="mb-3 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm">
-              {job.facts.map((f) => (
-                <div key={f.label} className="contents">
-                  <dt className="font-semibold text-muted">{t(f.label)}</dt>
-                  <dd>{f.text}</dd>
-                </div>
-              ))}
-            </dl>
-          )}
-          {job.steps.length > 0 && (
-            <ol className="list-decimal space-y-1 pl-5 text-sm">
-              {job.steps.map((step) => (
-                <li key={step}>{step}</li>
-              ))}
-            </ol>
-          )}
-          {job.watch.length > 0 && (
-            <ul className="mt-2 space-y-2 text-sm">
-              {job.watch.map((w) => (
-                <li key={w.slug}>
-                  <span className="font-semibold">{w.name}</span>
-                  {w.verdict && <span className="text-leaf"> · {t(w.verdict)}</span>}
-                  <p className="text-muted">{w.identify}</p>
-                  <p>{w.action}</p>
-                </li>
-              ))}
-            </ul>
-          )}
-        </details>
-      )}
-      {canEdit && (
-        <div className="flex flex-wrap gap-2">
-          <Button onClick={() => onFinish(job.id, 'done')}>
-            <Check className="size-4" aria-hidden /> {t(job.kind === 'harvest' ? harvestLabel : DONE[job.kind])}
-          </Button>
-          <Button variant="ghost" onClick={() => onFinish(job.id, 'skipped')}>
-            {t('Skip')}
-          </Button>
-        </div>
-      )}
-    </li>
-  )
+ const highlights = brief(job)
+ return (
+ <li className="rounded-[var(--radius-row)] border border-line bg-surface px-3 py-2.5">
+ <div className="flex items-start gap-3">
+ <div className="min-w-0 flex-1">
+ <div className="flex items-center gap-2">
+ <h4 className="truncate font-bold">{job.title}</h4>
+ {job.overdue && <Badge tone="marigold">{t('Overdue')}</Badge>}
+ </div>
+ <p className="mt-0.5 text-sm text-muted">{job.reason}</p>
+ {highlights.length > 0 && <p className="mt-1 text-xs font-semibold text-leaf">{highlights.join(' · ')}</p>}
+ </div>
+ {canEdit && <Button className="shrink-0" onClick={() => onFinish(job.id, 'done')}>
+ <Check className="size-4" aria-hidden /> {t(job.kind === 'harvest' ? harvestLabel : DONE[job.kind])}
+ </Button>}
+ </div>
+ {(job.facts.length > 0 || job.steps.length > 0 || job.watch.length > 0 || canEdit) && (
+ <details className="group mt-1">
+ <summary className="flex min-h-8 cursor-pointer list-none items-center gap-1 text-xs font-semibold text-leaf [&::-webkit-details-marker]:hidden">
+ <ChevronDown className="size-4 transition-transform group-open:rotate-180" aria-hidden /> {t('Details')}
+ </summary>
+ <div className="border-t border-line pt-2 text-sm">
+ {job.facts.length > 0 && <dl className="mb-3 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1">{job.facts.map((f) => <div key={f.label} className="contents"><dt className="font-semibold text-muted">{t(f.label)}</dt><dd>{f.text}</dd></div>)}</dl>}
+ {job.steps.length > 0 && <ol className="list-decimal space-y-1 pl-5">{job.steps.map((step) => <li key={step}>{step}</li>)}</ol>}
+ {job.watch.length > 0 && <ul className="mt-2 space-y-2">{job.watch.map((w) => <li key={w.slug}><span className="font-semibold">{w.name}</span>{w.verdict && <span className="text-leaf"> · {t(w.verdict)}</span>}<p className="text-muted">{w.identify}</p><p>{w.action}</p></li>)}</ul>}
+ {canEdit && <Button variant="ghost" className="mt-3" onClick={() => onFinish(job.id, 'skipped')}>{t('Skip')}</Button>}
+ </div>
+ </details>
+ )}
+ </li>
+ )
 }
 
 /** The household's jobs for today, grouped, and what is coming in the next two weeks. */
@@ -115,7 +92,7 @@ export default function Jobs() {
   const none = data.groups.length === 0
   return (
     <div className="flex flex-col gap-6 lg:order-1">
-      <Section title={title}>
+      <Section title={title} description={!none ? t('Small steps for the garden today. Open a job for full guidance.') : undefined}>
         {none ? (
           <EmptyState icon={CalendarCheck} title={t('Nothing to do today')}>
             {data.upcoming.length
@@ -139,7 +116,7 @@ export default function Jobs() {
         <Section title={t('Coming up')} description={t('The next two weeks.')}>
           <ul className="flex flex-col divide-y divide-line">
             {data.upcoming.map((job) => (
-              <li key={job.id} className="flex items-baseline justify-between gap-3 py-2 first:pt-0 last:pb-0">
+              <li key={job.id} className="flex items-baseline justify-between gap-3 border-b border-line py-2 last:border-0 last:pb-0 first:pt-0">
                 <span className="font-semibold">{job.title}</span>
                 <span className="shrink-0 text-sm text-muted">{day(job.ideal)}</span>
               </li>
