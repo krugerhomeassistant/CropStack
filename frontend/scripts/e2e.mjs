@@ -244,7 +244,7 @@ try {
   // Settings: start screen and units persist after a reload
   await owner.goto(`${base}/settings`)
   await owner.getByLabel(/Imperial/).check()
-  await owner.getByRole('radio', { name: /^Garden / }).check()
+  await owner.getByRole('radio', { name: 'Garden' }).check()
   await owner.waitForTimeout(400)
   await owner.goto(base)
   await owner.waitForURL(/\/garden$/)
