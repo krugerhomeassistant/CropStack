@@ -76,8 +76,8 @@ export default function GardenPage() {
         ]}
       />
       <div hidden={tab !== 'plan'} className="flex flex-col gap-4">
-      <GardenMap garden={garden} canEdit={user.role !== 'viewer'} />
       <LayoutEditor key={planRev} suggested={recs?.now ?? []} plan={plan} request={request} onChange={() => setRev((r) => r + 1)} />
+      <GardenMap garden={garden} canEdit={user.role !== 'viewer'} />
       </div>
       {tab === 'plant' && (
         <YearPlan
