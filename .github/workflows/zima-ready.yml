@@ -1,0 +1,23 @@
+name: Zima release ready
+
+on:
+  workflow_run:
+    workflows: [CI & release]
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  verify:
+    name: Verify Zima image
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify the published multi-architecture image
+        run: |
+          docker manifest inspect ghcr.io/${{ github.repository_owner }}/cropstack:latest >/dev/null
+          echo "Zima-ready image: ghcr.io/${{ github.repository_owner }}/cropstack:latest"
+          echo "Pull it with: docker pull ghcr.io/${{ github.repository_owner }}/cropstack:latest"

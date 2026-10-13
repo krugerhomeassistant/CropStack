@@ -102,8 +102,12 @@ def _scheduled(db: SessionDep, household_id: int) -> int:
     return sum(replaceable(p) for p in db.exec(select(Planting).where(Planting.household_id == household_id)))
 
 
+def _plan_count(db: SessionDep, household_id: int) -> int:
+    return sum(p.source == "plan" for p in db.exec(select(Planting).where(Planting.household_id == household_id)))
+
+
 def _clear(db: SessionDep, household_id: int) -> int:
-    rows = [p for p in db.exec(select(Planting).where(Planting.household_id == household_id)) if replaceable(p)]
+    rows = list(db.exec(select(Planting).where(Planting.household_id == household_id, Planting.source == "plan")))
     for p in rows:
         db.delete(p)  # its jobs go with it
     return len(rows)
@@ -205,12 +209,60 @@ def preview_plan(items: list[PlantingIn], me: MemberDep, db: SessionDep) -> dict
     return _preview_diff(existing, items)
 
 
+def _validate_plan(items: list[PlantingIn], db: SessionDep, household_id: int, c: CatalogDep) -> None:
+    """Reject impossible placements, reserving existing crops only while their cells are occupied."""
+    occupancy: dict[int, list[tuple[set[tuple[int, int]], date, date]]] = {}
+    proposed_windows: dict[int, tuple[date, date]] = {}
+    for item in items:
+        if item.bed_id is None:
+            continue
+        facts = crop_facts(db, c, household_id, item.crop, {})
+        first = item.set_out_date or item.start_date
+        last = item.ends_on or first + timedelta(days=round(facts["cycle_days"] or layout.DEFAULT_CYCLE_DAYS))
+        proposed_windows[id(item)] = (first, last)
+    for row in db.exec(select(Planting).where(Planting.household_id == household_id)).all():
+        if replaceable(row) or row.bed_id is None or not row.cells:
+            continue
+        facts = crop_facts(db, c, household_id, row.crop, {})
+        a, z = holds(row, facts, datetime.now(UTC).date())
+        if any(
+            item.bed_id == row.bed_id
+            and a <= proposed_windows.get(id(item), (date.max, date.min))[1]
+            and proposed_windows.get(id(item), (date.max, date.min))[0] <= z
+            for item in items
+        ):
+            occupancy.setdefault(row.bed_id, []).append((set(tuple(cell) for cell in row.cells), a, z))
+    for item in items:
+        if item.bed_id is None:
+            continue
+        bed = db.get(Bed, item.bed_id)
+        if not bed or bed.household_id != household_id:
+            raise HTTPException(422, "Every planned bed must belong to this household")
+        cols, rows = grid_of(bed)
+        cells = {tuple(cell) for cell in item.cells}
+        if any(c < 0 or r < 0 or c >= cols or r >= rows for c, r in cells):
+            raise HTTPException(422, f"Plan for {bed.name} uses cells outside the bed")
+        prior = occupancy.setdefault(bed.id, [])
+        window = proposed_windows[id(item)]
+        if any(
+            existing_cells & cells and existing_start <= window[1] and window[0] <= existing_end
+            for existing_cells, existing_start, existing_end in prior
+        ):
+            raise HTTPException(422, f"Year plan overlaps occupied cells in {bed.name}")
+        prior.append((cells, window[0], window[1]))
+        facts = crop_facts(db, c, household_id, item.crop, {})
+        capacity = layout.plants_in(bed.cell_cm, facts["dims"], len(cells))
+        if item.quantity is not None and item.quantity > capacity:
+            raise HTTPException(422, f"Plan for {bed.name} exceeds the spacing capacity")
+
+
 @router.post("/year", status_code=201)
 def accept_plan(items: list[PlantingIn], me: EditorDep, db: SessionDep, c: CatalogDep) -> dict:
     """Make plantings of the accepted items (the same bodies as POST /plantings), then plan their jobs once.
     An earlier plan that has not started is replaced; anything sown or planted by hand stays."""
     if not 0 < len(items) <= 300:
         raise HTTPException(422, "Send between 1 and 300 plantings")
+    _validate_plan(items, db, me.household_id, c)
     replaced = _clear(db, me.household_id)
     for body in items:
         row = make_planting(body, me, db, c)
@@ -223,7 +275,7 @@ def accept_plan(items: list[PlantingIn], me: EditorDep, db: SessionDep, c: Catal
 
 @router.delete("/year")
 def clear_plan(me: EditorDep, db: SessionDep, c: CatalogDep) -> dict:
-    """Remove what the year plan scheduled and nothing has started. Sown, planted and hand-made plantings stay."""
+    """Remove every planting created by the year plan; hand-made plantings stay."""
     removed = _clear(db, me.household_id)
     db.commit()
     refresh_tasks(db, me.household_id, c)

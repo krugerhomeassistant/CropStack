@@ -203,7 +203,24 @@ def test_replanning_replaces_an_unstarted_plan_and_clearing_keeps_hand_made_work
     assert [p["id"] for p in owner.get("/api/v1/plantings").json()] == [mine["id"]]
 
 
-def test_replan_preview_reports_added_removed_and_moved_before_replacement(owner):  # noqa: F811
+
+
+def test_editing_a_generated_planting_preserves_it_across_replan_and_clear(owner): # noqa: F811
+    bed = owner.post("/api/v1/beds", json={"name": "Owner edits", "width": 1.2, "length": 1.2}).json()
+    body = {"crop": "testcrop", "method": "direct", "start_date": "2099-12-01", "bed_id": bed["id"], "cells": [[0, 0]]}
+    made = owner.post("/api/v1/plan/year", json=[body]).json()
+    planned_id = owner.get("/api/v1/plantings").json()[0]["id"]
+    assert made["created"] == 1
+    assert owner.patch(f"/api/v1/plantings/{planned_id}", json={"notes": "Keep my change"}).status_code == 200
+    assert owner.post("/api/v1/plan/year", json=[body | {"cells": [[1, 1]]}]).json()["replaced"] == 0
+    assert owner.delete("/api/v1/plan/year").json()["removed"] == 1
+    rows = owner.get("/api/v1/plantings").json()
+    assert len(rows) == 1 and rows[0]["id"] == planned_id and rows[0]["notes"] == "Keep my change"
+
+
+
+
+def test_replan_preview_reports_added_removed_and_moved_before_replacement(owner): # noqa: F811
     bed = owner.post("/api/v1/beds", json={"name": "Preview", "width": 1.2, "length": 1.2}).json()
     old = {"crop": "testcrop", "method": "direct", "start_date": "2026-12-01", "bed_id": bed["id"], "cells": [[0, 0]]}
     assert owner.post("/api/v1/plan/year", json=[old]).status_code == 201
@@ -223,6 +240,28 @@ def test_companion_planting_exposes_its_purpose(owner):  # noqa: F811
     assert made.json()["purpose"] == "food"
     listed = owner.get("/api/v1/plantings").json()
     assert next(p for p in listed if p["id"] == made.json()["id"])["purpose"] == "food"
+
+
+def test_accepting_successive_plan_uses_the_same_cell_when_dates_do_not_overlap(owner):  # noqa: F811
+    bed = owner.post("/api/v1/beds", json={"name": "Succession", "width": 0.6, "length": 0.6}).json()
+    body = {"crop": "testcrop", "method": "direct", "bed_id": bed["id"], "cells": [[0, 0]]}
+    proposed = [
+        body | {"start_date": "2099-01-01", "ends_on": "2099-02-01"},
+        body | {"start_date": "2099-03-01", "ends_on": "2099-04-01"},
+    ]
+    response = owner.post("/api/v1/plan/year", json=proposed)
+    assert response.status_code == 201, response.text
+    assert response.json()["created"] == 2
+
+
+def test_accepting_a_plan_rejects_overlapping_or_outside_cells(owner):  # noqa: F811
+    bed = owner.post("/api/v1/beds", json={"name": "Strict", "width": 0.6, "length": 0.6}).json()
+    body = {"crop": "testcrop", "method": "direct", "start_date": "2099-01-01", "bed_id": bed["id"]}
+    overlap = [body | {"cells": [[0, 0]]}, body | {"cells": [[0, 0]]}]
+    outside = [body | {"cells": [[2, 2]]}]
+    assert owner.post("/api/v1/plan/year", json=overlap).status_code == 422
+    assert owner.post("/api/v1/plan/year", json=outside).status_code == 422
+    assert owner.get("/api/v1/plantings").json() == []
 
 
 def test_many_plantings_at_once_all_succeed(owner):  # noqa: F811
