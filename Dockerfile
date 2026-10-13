@@ -17,7 +17,7 @@ COPY backend/app ./app
 COPY catalog ./catalog
 COPY --from=web /web/dist ./static
 COPY backend/entrypoint.sh /entrypoint.sh
-RUN useradd -r -u 10001 -U cropstack && mkdir -p /data && chown cropstack:cropstack /data
+RUN chmod 755 /entrypoint.sh && useradd -r -u 10001 -U cropstack && mkdir -p /data && chown cropstack:cropstack /data
 VOLUME /data
 EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s \
