@@ -7,6 +7,7 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field, model_validator
 from sqlmodel import select
 
+from .. import catalog as cat
 from ..deps import EditorDep, MemberDep, SessionDep
 from ..engine import layout
 from ..models import Bed, Harvest, Planting, Task
@@ -87,6 +88,11 @@ def _bed(db: SessionDep, household_id: int, bed_id: int) -> Bed:
     return bed
 
 
+def _view(row: Planting, c: CatalogDep) -> dict:
+    item = cat.effective(c, "crop", row.crop, {})
+    return row.model_dump() | {"purpose": item.get("purpose", "food") if item else "food"}
+
+
 def outlook(db: SessionDep, household_id: int) -> dict[int, dict]:
     """Per planting: when its harvest is expected (from its harvest job) and its next open job."""
     out: dict[int, dict] = {}
@@ -103,12 +109,12 @@ def outlook(db: SessionDep, household_id: int) -> dict[int, dict]:
 
 
 @router.get("")
-def list_plantings(me: MemberDep, db: SessionDep) -> list[dict]:
+def list_plantings(me: MemberDep, db: SessionDep, c: CatalogDep) -> list[dict]:
     """Every planting, with its expected harvest and next job."""
     rows = db.exec(select(Planting).where(Planting.household_id == me.household_id).order_by(Planting.start_date))
     ahead = outlook(db, me.household_id)
     empty = {"harvest_from": None, "harvest_to": None, "next_job": None}
-    return [p.model_dump() | ahead.get(p.id, empty) for p in rows]
+    return [_view(p, c) | ahead.get(p.id, empty) for p in rows]
 
 
 def make_planting(body: PlantingIn, me: EditorDep, db: SessionDep, c: CatalogDep) -> Planting:
@@ -140,13 +146,13 @@ def make_planting(body: PlantingIn, me: EditorDep, db: SessionDep, c: CatalogDep
 
 
 @router.post("", status_code=201)
-def add_planting(body: PlantingIn, me: EditorDep, db: SessionDep, c: CatalogDep) -> Planting:
+def add_planting(body: PlantingIn, me: EditorDep, db: SessionDep, c: CatalogDep) -> dict:
     row = make_planting(body, me, db, c)
     db.add(row)
     db.commit()
     refresh_tasks(db, me.household_id, c)  # commits, which expires `row`
     db.refresh(row)
-    return row
+    return _view(row, c)
 
 
 @router.patch("/{planting_id}")
@@ -190,7 +196,7 @@ def update_planting(planting_id: int, body: PlantingPatch, me: EditorDep, db: Se
     db.commit()
     refresh_tasks(db, me.household_id, c)  # commits, which expires `row`
     db.refresh(row)
-    return row
+    return _view(row, c)
 
 
 @router.delete("/{planting_id}", status_code=204)

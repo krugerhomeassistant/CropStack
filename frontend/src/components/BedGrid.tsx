@@ -320,7 +320,7 @@ export default function BedGrid({
                 {t('{count} plants · {from} to {until}', { count: info.quantity, from: show(info.from), until: show(info.until) })}
               </p>
               {info.harvest_from && info.harvest_to && (
-                <p>{t('Harvest expected {from} to {to}', { from: show(info.harvest_from), to: show(info.harvest_to) })}</p>
+                <p>{info.purpose === 'companion' ? t('Flowering expected {from} to {to}', { from: show(info.harvest_from), to: show(info.harvest_to) }) : t('Harvest expected {from} to {to}', { from: show(info.harvest_from), to: show(info.harvest_to) })}</p>
               )}
               {info.next_job && <p>{t('Next: {job}, {date}', { job: info.next_job.title, date: show(info.next_job.date) })}</p>}
             </div>

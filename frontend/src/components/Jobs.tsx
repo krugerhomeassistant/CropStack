@@ -29,6 +29,7 @@ function brief(job: Job): string[] {
 }
 
 function JobCard({ job, canEdit, onFinish }: { job: Job; canEdit: boolean; onFinish: (id: number, s: 'done' | 'skipped') => void }) {
+ const harvestLabel = job.purpose === 'companion' ? N_('Mark flowering started') : N_('Mark harvest started')
   return (
     <li className="flex flex-col gap-2 rounded-[var(--radius-row)] bg-sunken p-4">
       <div className="flex items-start justify-between gap-3">
@@ -74,7 +75,7 @@ function JobCard({ job, canEdit, onFinish }: { job: Job; canEdit: boolean; onFin
       {canEdit && (
         <div className="flex flex-wrap gap-2">
           <Button onClick={() => onFinish(job.id, 'done')}>
-            <Check className="size-4" aria-hidden /> {t(DONE[job.kind])}
+            <Check className="size-4" aria-hidden /> {t(job.kind === 'harvest' ? harvestLabel : DONE[job.kind])}
           </Button>
           <Button variant="ghost" onClick={() => onFinish(job.id, 'skipped')}>
             {t('Skip')}

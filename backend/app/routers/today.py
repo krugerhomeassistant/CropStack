@@ -149,6 +149,7 @@ def _view(
     watch: list[dict] | None = None,
     crop: str = "",
     facts: list | None = None,
+    c: CatalogDep | None = None,
 ) -> dict:
     return {
         "facts": facts or [],
@@ -168,6 +169,7 @@ def _view(
         "latest": t.latest,
         "overdue": t.latest < today,
         "planting_id": t.planting_id,
+        "purpose": (cat.effective(c, "crop", crop, {}) or {}).get("purpose", "food") if c and crop else "food",
     }
 
 
@@ -205,13 +207,13 @@ def get_today(me: MemberDep, db: SessionDep, c: CatalogDep) -> dict:
             {
                 "group": g,
                 "tasks": [
-                    _view(t, today, how, watch, crops.get(t.planting_id, ""), facts(t)) for t in due if t.group == g
+                    _view(t, today, how, watch, crops.get(t.planting_id, ""), facts(t), c) for t in due if t.group == g
                 ],
             }
             for g in GROUPS
             if any(t.group == g for t in due)
         ],
-        "upcoming": [_view(t, today, how, watch, crops.get(t.planting_id, ""), facts(t)) for t in soon],
+        "upcoming": [_view(t, today, how, watch, crops.get(t.planting_id, ""), facts(t), c) for t in soon],
     }
 
 

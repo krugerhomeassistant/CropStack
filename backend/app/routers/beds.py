@@ -105,6 +105,9 @@ def list_beds(me: MemberDep, db: SessionDep, c: CatalogDep) -> list[dict]:
                 {
                     "planting_id": p.id,
                     "crop": p.crop,
+                    "purpose": cat.effective(c, "crop", p.crop, _overrides(db, me.household_id, "crop", p.crop)).get(
+                        "purpose", "food"
+                    ),
                     "name": f["name"],
                     "cells": p.cells,
                     "from": first,
