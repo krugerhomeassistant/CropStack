@@ -232,7 +232,7 @@ def accept_plan(items: list[PlantingIn], me: EditorDep, db: SessionDep, c: Catal
     """Make plantings of the accepted items (the same bodies as POST /plantings), then plan their jobs once.
     An earlier plan that has not started is replaced; anything sown or planted by hand stays."""
     if not 0 < len(items) <= 300:
-     raise HTTPException(422, "Send between 1 and 300 plantings")
+        raise HTTPException(422, "Send between 1 and 300 plantings")
     _validate_plan(items, db, me.household_id)
     replaced = _clear(db, me.household_id)
     for body in items:
