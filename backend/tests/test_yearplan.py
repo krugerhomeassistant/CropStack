@@ -42,17 +42,17 @@ def test_more_people_plant_more_until_the_target_is_met():
 
 
 def test_draft_never_overlaps_cells_across_generated_items():
- items, _ = run(8, 2)
- for bed_id in {i["bed_id"] for i in items}:
-  rows = [i for i in items if i["bed_id"] == bed_id]
-  for n, left in enumerate(rows):
-   left_cells = {tuple(c) for c in left["cells"]}
-   left_start = left["set_out_date"] or left["start_date"]
-   for right in rows[n + 1 :]:
-    right_cells = left_cells & {tuple(c) for c in right["cells"]}
-    right_start = right["set_out_date"] or right["start_date"]
-    overlap = left_start <= right["until"] and right_start <= left["until"]
-    assert not (right_cells and overlap), (bed_id, left, right)
+    items, _ = run(8, 2)
+    for bed_id in {i["bed_id"] for i in items}:
+        rows = [i for i in items if i["bed_id"] == bed_id]
+        for n, left in enumerate(rows):
+            left_cells = {tuple(c) for c in left["cells"]}
+            left_start = left["set_out_date"] or left["start_date"]
+            for right in rows[n + 1 :]:
+                right_cells = left_cells & {tuple(c) for c in right["cells"]}
+                right_start = right["set_out_date"] or right["start_date"]
+                overlap = left_start <= right["until"] and right_start <= left["until"]
+                assert not (right_cells and overlap), (bed_id, left, right)
 
 
 def test_nothing_is_double_booked_and_the_draft_is_repeatable():
