@@ -242,7 +242,7 @@ export default function LayoutEditor({ onChange, suggested, request, plan }: { o
             ))
           return (
             <g key={b.id} onPointerDown={(e) => bedDown(e, b)} className={canEdit && tool === 'select' ? 'cursor-grab' : ''}>
-              <clipPath id={`clip${b.id}`}>
+              <clipPath id={`clip${b.id}`} clipPathUnits="userSpaceOnUse">
                 {isPot ? <ellipse cx={b.x + b.width / 2} cy={b.y + b.length / 2} rx={b.width / 2} ry={b.length / 2} /> : <rect x={b.x} y={b.y} width={b.width} height={b.length} rx={0.12} />}
               </clipPath>
               {b.id === selected && (isPot ? <ellipse cx={b.x + b.width / 2} cy={b.y + b.length / 2} rx={b.width / 2 + 0.12} ry={b.length / 2 + 0.12} fill="none" className="stroke-leaf/25 pointer-events-none" strokeWidth={0.16} /> : <rect x={b.x - 0.12} y={b.y - 0.12} width={b.width + 0.24} height={b.length + 0.24} rx={0.18} fill="none" className="stroke-leaf/25 pointer-events-none" strokeWidth={0.16} />)}
@@ -258,8 +258,8 @@ export default function LayoutEditor({ onChange, suggested, request, plan }: { o
               </g>
               {b.crowded && <rect x={b.x} y={b.y} width={b.width} height={b.length} rx={0.12} fill="none" className="stroke-marigold pointer-events-none" strokeWidth={0.05} />}
               <g className="pointer-events-none select-none">
-                <rect x={b.x} y={b.y - 0.46} width={tag} height={0.34} rx={0.17} className="fill-surface stroke-line" strokeWidth={0.015} />
-                <text x={b.x + tag / 2} y={b.y - 0.46 + 0.24} textAnchor="middle" fontSize={0.2} className="fill-ink font-semibold">
+                <rect x={b.x} y={b.y + b.length + 0.12} width={tag} height={0.34} rx={0.17} className="fill-surface stroke-line" strokeWidth={0.015} />
+                <text x={b.x + tag / 2} y={b.y + b.length + 0.12 + 0.24} textAnchor="middle" fontSize={0.2} className="fill-ink font-semibold">
                   {label}
                 </text>
               </g>
