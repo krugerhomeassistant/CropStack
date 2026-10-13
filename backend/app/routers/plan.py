@@ -209,8 +209,14 @@ def preview_plan(items: list[PlantingIn], me: MemberDep, db: SessionDep) -> dict
     return _preview_diff(existing, items)
 
 
-def _validate_plan(items: list[PlantingIn], db: SessionDep, household_id: int) -> None:
+def _validate_plan(items: list[PlantingIn], db: SessionDep, household_id: int, c: CatalogDep) -> None:
+    """Reject any plan that cannot physically fit, before replacing existing plan rows."""
     occupancy: dict[int, set[tuple[int, int]]] = {}
+    existing = db.exec(select(Planting).where(Planting.household_id == household_id)).all()
+    for row in existing:
+        if replaceable(row) or row.bed_id is None:
+            continue
+        occupancy.setdefault(row.bed_id, set()).update(tuple(cell) for cell in row.cells)
     for item in items:
         if item.bed_id is None:
             continue
@@ -223,8 +229,12 @@ def _validate_plan(items: list[PlantingIn], db: SessionDep, household_id: int) -
             raise HTTPException(422, f"Plan for {bed.name} uses cells outside the bed")
         prior = occupancy.setdefault(bed.id, set())
         if prior & cells:
-            raise HTTPException(422, f"Year plan overlaps cells in {bed.name}")
+            raise HTTPException(422, f"Year plan overlaps existing plants in {bed.name}")
         occupancy[bed.id] = prior | cells
+        facts = crop_facts(db, c, household_id, item.crop, {})
+        capacity = layout.plants_in(bed.cell_cm, facts["dims"], len(cells))
+        if item.quantity is not None and item.quantity > capacity:
+            raise HTTPException(422, f"Plan for {bed.name} exceeds the spacing capacity")
 
 
 @router.post("/year", status_code=201)
@@ -233,7 +243,7 @@ def accept_plan(items: list[PlantingIn], me: EditorDep, db: SessionDep, c: Catal
     An earlier plan that has not started is replaced; anything sown or planted by hand stays."""
     if not 0 < len(items) <= 300:
         raise HTTPException(422, "Send between 1 and 300 plantings")
-    _validate_plan(items, db, me.household_id)
+    _validate_plan(items, db, me.household_id, c)
     replaced = _clear(db, me.household_id)
     for body in items:
         row = make_planting(body, me, db, c)
