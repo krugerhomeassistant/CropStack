@@ -303,6 +303,9 @@ export default function LayoutEditor({ onChange, suggested, request, plan }: { o
                 {t(x.short)}
               </button>
             ))}
+ <button type="button" aria-label={t('Clear plan')} onClick={() => {
+ if (window.confirm(t('Remove all plantings created by the year plan? Hand-planted crops stay.'))) api.clearPlan().then(refresh, fail)
+ }} className="flex min-h-11 items-center rounded-full px-2.5 text-sm font-semibold text-harvest hover:bg-sunken">{t('Clear plan')}</button>
           </div>
         </div>
       )}
