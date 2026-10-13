@@ -119,7 +119,7 @@ def draft(
         per_week = w.kg_per_m2 * (b.cell_cm / 100) ** 2 / harvest_weeks  # kg a week from one cell
         short = [max(0.0, target[w.food_group] - supply[w.food_group][k]) for k in weeks]
         wanted = min(max(CAP, p.cells), ceil(sum(short) / len(short) / per_week - 1e-9))
-        m = min(max(1, ceil(wanted / p.cells)), len(free) // p.cells)
+        m = min(max(1, ceil(wanted / p.cells)), CAP, len(free) // p.cells)
         if m < 1:
             return None
 

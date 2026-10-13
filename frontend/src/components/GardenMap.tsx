@@ -53,7 +53,7 @@ export default function GardenMap({ garden, canEdit }: { garden: Garden; canEdit
  <Section title={t('Garden map')} description={t('Drag the origin pin to align the plan, then drag individual beds into place. The grid editor below remains precise.') }>
  <div className="relative z-0 h-[22rem] overflow-hidden rounded-[var(--radius-section)] border border-line">
  <MapContainer center={mapCentre} zoom={20} scrollWheelZoom className="h-full w-full">
- <TileLayer attribution="&copy; OpenStreetMap contributors" url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+ <TileLayer attribution="&copy; OpenStreetMap contributors &copy; CARTO" url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png" />
  <FitGarden garden={alignedGarden} beds={beds} />
  <Marker position={origin} draggable={canEdit} eventHandlers={canEdit ? { dragend: (event) => { const p = event.target.getLatLng(); const next: [number, number] = [p.lat, p.lng]; setOrigin(next); localStorage.setItem(`cropstack-map-origin-${garden.id}`, JSON.stringify(next)) } } : undefined}>
  <Popup>{t('Garden origin — drag this to align the bed plan')}</Popup>
