@@ -158,13 +158,15 @@ def add_planting(body: PlantingIn, me: EditorDep, db: SessionDep, c: CatalogDep)
 @router.patch("/{planting_id}")
 def update_planting(planting_id: int, body: PlantingPatch, me: EditorDep, db: SessionDep, c: CatalogDep) -> Planting:
     row = _own(db, me.household_id, planting_id)
+    # An edited generated row becomes owner work and is never replanned or cleared.
+    row.source = "" if row.source == "plan" else row.source
     changes = body.model_dump(exclude_unset=True)
     status = changes.pop("status", None)
     if changes.get("bed_id") is not None:
         bed = _bed(db, me.household_id, changes["bed_id"])
         changes["location"] = bed.name
-        if "cells" not in changes and changes["bed_id"] != row.bed_id:
-            changes["cells"] = []  # a new bed: the old cells mean nothing there
+    if "cells" not in changes and changes.get("bed_id") != row.bed_id:
+        changes["cells"] = []  # a new bed: the old cells mean nothing there
     elif "bed_id" in changes:
         changes.pop("bed_id")
         row.bed_id = None  # taken out of its bed; the free-text place stays
@@ -173,8 +175,8 @@ def update_planting(planting_id: int, body: PlantingPatch, me: EditorDep, db: Se
         if not (changes.get("bed_id") or row.bed_id):
             raise HTTPException(422, "Cells need a bed")
         changes["cells"] = _cells(changes["cells"])
-        if "quantity" not in changes and row.cells and row.bed_id == (changes.get("bed_id") or row.bed_id):
-            changes["quantity"] = max(1, round(row.quantity * len(changes["cells"]) / len(row.cells)))  # same density
+    if "quantity" not in changes and row.cells and row.bed_id == (changes.get("bed_id") or row.bed_id):
+        changes["quantity"] = max(1, round(row.quantity * len(changes["cells"]) / len(row.cells)))  # same density
     elif "cells" in changes and changes["cells"] is None:
         changes.pop("cells")
     if status and status != row.status:

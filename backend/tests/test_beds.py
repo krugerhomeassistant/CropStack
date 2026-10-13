@@ -203,6 +203,19 @@ def test_replanning_replaces_an_unstarted_plan_and_clearing_keeps_hand_made_work
     assert [p["id"] for p in owner.get("/api/v1/plantings").json()] == [mine["id"]]
 
 
+def test_editing_a_generated_planting_preserves_it_across_replan_and_clear(owner):  # noqa: F811
+    bed = owner.post("/api/v1/beds", json={"name": "Owner edits", "width": 1.2, "length": 1.2}).json()
+    body = {"crop": "testcrop", "method": "direct", "start_date": "2099-12-01", "bed_id": bed["id"], "cells": [[0, 0]]}
+    made = owner.post("/api/v1/plan/year", json=[body]).json()
+    planned_id = owner.get("/api/v1/plantings").json()[0]["id"]
+    assert made["created"] == 1
+    assert owner.patch(f"/api/v1/plantings/{planned_id}", json={"notes": "Keep my change"}).status_code == 200
+    assert owner.post("/api/v1/plan/year", json=[body | {"cells": [[1, 1]]}]).json()["replaced"] == 0
+    assert owner.delete("/api/v1/plan/year").json()["removed"] == 1
+    rows = owner.get("/api/v1/plantings").json()
+    assert len(rows) == 1 and rows[0]["id"] == planned_id and rows[0]["notes"] == "Keep my change"
+
+
 def test_replan_preview_reports_added_removed_and_moved_before_replacement(owner):  # noqa: F811
     bed = owner.post("/api/v1/beds", json={"name": "Preview", "width": 1.2, "length": 1.2}).json()
     old = {"crop": "testcrop", "method": "direct", "start_date": "2026-12-01", "bed_id": bed["id"], "cells": [[0, 0]]}
