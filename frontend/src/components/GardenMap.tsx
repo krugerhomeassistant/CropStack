@@ -33,24 +33,36 @@ function FitGarden({ garden, beds }: { garden: Garden; beds: Bed[] }) {
 }
 
 export default function GardenMap({ garden, canEdit }: { garden: Garden; canEdit: boolean }) {
+
  const [beds, setBeds] = useState<Bed[] | null>(null)
  const [error, setError] = useState('')
  const [saving, setSaving] = useState<number | null>(null)
+ const [origin, setOrigin] = useState<[number, number]>(() => {
+ const saved = localStorage.getItem(`cropstack-map-origin-${garden.id}`)
+ if (saved) {
+ try { const parsed = JSON.parse(saved) as [number, number]; if (parsed.length === 2) return parsed } catch { /* use garden coordinates */ }
+ }
+ return [garden.latitude, garden.longitude]
+ })
  useEffect(() => { api.beds().then(setBeds, (e) => setError(e instanceof Error ? e.message : t('Failed to load'))) }, [])
  if (error) return <ErrorMessage>{error}</ErrorMessage>
  if (!beds) return <Skeleton className="h-72" />
- const mapCentre: LatLngExpression = [garden.latitude, garden.longitude]
+ const alignedGarden = { ...garden, latitude: origin[0], longitude: origin[1] }
+ const mapCentre: LatLngExpression = origin
  return (
- <Section title={t('Garden map')} description={t('Drag a bed marker to place it on the map. The plan below remains the precise metre-grid editor.') }>
+ <Section title={t('Garden map')} description={t('Drag the origin pin to align the plan, then drag individual beds into place. The grid editor below remains precise.') }>
  <div className="relative z-0 h-[22rem] overflow-hidden rounded-[var(--radius-section)] border border-line">
  <MapContainer center={mapCentre} zoom={20} scrollWheelZoom className="h-full w-full">
  <TileLayer attribution="&copy; OpenStreetMap contributors" url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
- <FitGarden garden={garden} beds={beds} />
+ <FitGarden garden={alignedGarden} beds={beds} />
+ <Marker position={origin} draggable={canEdit} eventHandlers={canEdit ? { dragend: (event) => { const p = event.target.getLatLng(); const next: [number, number] = [p.lat, p.lng]; setOrigin(next); localStorage.setItem(`cropstack-map-origin-${garden.id}`, JSON.stringify(next)) } } : undefined}>
+ <Popup>{t('Garden origin — drag this to align the bed plan')}</Popup>
+ </Marker>
  {beds.map((bed) => {
- const pos = centre(garden, bed)
+ const pos = centre(alignedGarden, bed)
  return (
  <span key={bed.id}>
- <Polygon positions={corners(garden, bed)} pathOptions={{ color: bed.id === saving ? '#b58a32' : '#4f795b', fillOpacity: 0.28 }}>
+ <Polygon positions={corners(alignedGarden, bed)} pathOptions={{ color: bed.id === saving ? '#b58a32' : '#4f795b', fillOpacity: 0.28 }}>
  <Popup>{bed.name} · {bed.width} × {bed.length} m</Popup>
  </Polygon>
  <Marker
