@@ -20,6 +20,7 @@ export default function YearPlan({ hasBeds, scheduled, plan, setPlan, onUsed, on
   const [people, setPeople] = useState<number | null>(null)
   const [coverage, setCoverage] = useState<Coverage | null>(null)
   const [skipped, setSkipped] = useState<string[]>([])
+ const [planCount, setPlanCount] = useState(0)
  const [diff, setDiff] = useState<PlanDiff | null>(null)
  const [confirmReplan, setConfirmReplan] = useState(false)
   const canChange = useApp().user.role === 'owner'
@@ -43,6 +44,7 @@ export default function YearPlan({ hasBeds, scheduled, plan, setPlan, onUsed, on
       setCoverage(r.coverage ?? null)
       setPeople(r.people)
       setSkipped(r.skipped_no_yield ?? [])
+ setPlanCount(r.plan_count ?? r.scheduled)
  if (scheduled > 0) {
  const proposed = r.items.map((i) => ({ crop: i.crop, method: i.method, start_date: i.start_date, set_out_date: i.set_out_date, bed_id: i.bed_id, cells: i.cells, location: '', notes: '' }))
  api.previewPlan(proposed).then(setDiff, fail)
@@ -94,16 +96,16 @@ export default function YearPlan({ hasBeds, scheduled, plan, setPlan, onUsed, on
           <Button variant={plan.length ? 'secondary' : 'primary'} onClick={draft} disabled={busy}>
           {busy ? t('Drafting…') : plan.length ? t('Draft again') : t('Draft a year plan')}
           </Button>
-          {confirmReplan && <span className="text-sm text-muted">{t('Drafting again will replace {n} not-started plan plantings. Continue?', { n: scheduled })}</span>}
+          {confirmReplan && <span className="text-sm text-muted">{t('Drafting again will replace {n} not-started plan plantings. Continue?', { n: planCount })}</span>}
           {confirmReplan && <Button variant="ghost" onClick={() => setConfirmReplan(false)}>{t('Keep current plan')}</Button>}
         </div>
       )}
-      {canEdit && scheduled > 0 && (
+      {canEdit && planCount > 0 && (
         <div className="flex flex-wrap items-center gap-2 text-sm">
-          <span className="text-muted">{t('{n} plantings from an earlier plan are still to do. Drafting again replaces them; what you have sown or planted stays.', { n: scheduled })}</span>
+          <span className="text-muted">{t('{n} plantings from an earlier plan are still to do. Drafting again replaces them; what you have sown or planted stays.', { n: planCount })}</span>
           {sure ? (
             <>
-              <Button variant="secondary" onClick={clear} disabled={busy}>{t('Yes, clear {n}', { n: scheduled })}</Button>
+              <Button variant="secondary" onClick={clear} disabled={busy}>{t('Yes, clear {n}', { n: planCount })}</Button>
               <Button variant="ghost" onClick={() => setSure(false)}>{t('Keep')}</Button>
             </>
           ) : (

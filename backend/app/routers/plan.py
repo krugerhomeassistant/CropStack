@@ -102,8 +102,12 @@ def _scheduled(db: SessionDep, household_id: int) -> int:
     return sum(replaceable(p) for p in db.exec(select(Planting).where(Planting.household_id == household_id)))
 
 
+def _plan_count(db: SessionDep, household_id: int) -> int:
+    return sum(p.source == "plan" for p in db.exec(select(Planting).where(Planting.household_id == household_id)))
+
+
 def _clear(db: SessionDep, household_id: int) -> int:
-    rows = [p for p in db.exec(select(Planting).where(Planting.household_id == household_id)) if replaceable(p)]
+    rows = list(db.exec(select(Planting).where(Planting.household_id == household_id, Planting.source == "plan")))
     for p in rows:
         db.delete(p)  # its jobs go with it
     return len(rows)
@@ -223,7 +227,7 @@ def accept_plan(items: list[PlantingIn], me: EditorDep, db: SessionDep, c: Catal
 
 @router.delete("/year")
 def clear_plan(me: EditorDep, db: SessionDep, c: CatalogDep) -> dict:
-    """Remove what the year plan scheduled and nothing has started. Sown, planted and hand-made plantings stay."""
+    """Remove every planting created by the year plan; hand-made plantings stay."""
     removed = _clear(db, me.household_id)
     db.commit()
     refresh_tasks(db, me.household_id, c)
