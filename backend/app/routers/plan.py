@@ -211,7 +211,7 @@ def preview_plan(items: list[PlantingIn], me: MemberDep, db: SessionDep) -> dict
 
 def _validate_plan(items: list[PlantingIn], db: SessionDep, household_id: int, c: CatalogDep) -> None:
     """Reject impossible placements, reserving existing crops only while their cells are occupied."""
-    occupancy: dict[int, set[tuple[int, int]]] = {}
+    occupancy: dict[int, list[tuple[set[tuple[int, int]], date, date]]] = {}
     proposed_windows: dict[int, tuple[date, date]] = {}
     for item in items:
         if item.bed_id is None:
@@ -231,7 +231,7 @@ def _validate_plan(items: list[PlantingIn], db: SessionDep, household_id: int, c
             and proposed_windows.get(id(item), (date.max, date.min))[0] <= z
             for item in items
         ):
-            occupancy.setdefault(row.bed_id, set()).update(tuple(cell) for cell in row.cells)
+            occupancy.setdefault(row.bed_id, []).append((set(tuple(cell) for cell in row.cells), a, z))
     for item in items:
         if item.bed_id is None:
             continue
@@ -242,10 +242,14 @@ def _validate_plan(items: list[PlantingIn], db: SessionDep, household_id: int, c
         cells = {tuple(cell) for cell in item.cells}
         if any(c < 0 or r < 0 or c >= cols or r >= rows for c, r in cells):
             raise HTTPException(422, f"Plan for {bed.name} uses cells outside the bed")
-        prior = occupancy.setdefault(bed.id, set())
-        if prior & cells:
+        prior = occupancy.setdefault(bed.id, [])
+        window = proposed_windows[id(item)]
+        if any(
+            existing_cells & cells and existing_start <= window[1] and window[0] <= existing_end
+            for existing_cells, existing_start, existing_end in prior
+        ):
             raise HTTPException(422, f"Year plan overlaps occupied cells in {bed.name}")
-        occupancy[bed.id] = prior | cells
+        prior.append((cells, window[0], window[1]))
         facts = crop_facts(db, c, household_id, item.crop, {})
         capacity = layout.plants_in(bed.cell_cm, facts["dims"], len(cells))
         if item.quantity is not None and item.quantity > capacity:

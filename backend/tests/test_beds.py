@@ -225,6 +225,18 @@ def test_companion_planting_exposes_its_purpose(owner):  # noqa: F811
     assert next(p for p in listed if p["id"] == made.json()["id"])["purpose"] == "food"
 
 
+def test_accepting_successive_plan_uses_the_same_cell_when_dates_do_not_overlap(owner):  # noqa: F811
+    bed = owner.post("/api/v1/beds", json={"name": "Succession", "width": 0.6, "length": 0.6}).json()
+    body = {"crop": "testcrop", "method": "direct", "bed_id": bed["id"], "cells": [[0, 0]]}
+    proposed = [
+        body | {"start_date": "2099-01-01", "ends_on": "2099-02-01"},
+        body | {"start_date": "2099-03-01", "ends_on": "2099-04-01"},
+    ]
+    response = owner.post("/api/v1/plan/year", json=proposed)
+    assert response.status_code == 201, response.text
+    assert response.json()["created"] == 2
+
+
 def test_accepting_a_plan_rejects_overlapping_or_outside_cells(owner):  # noqa: F811
     bed = owner.post("/api/v1/beds", json={"name": "Strict", "width": 0.6, "length": 0.6}).json()
     body = {"crop": "testcrop", "method": "direct", "start_date": "2099-01-01", "bed_id": bed["id"]}
