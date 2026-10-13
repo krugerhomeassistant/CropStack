@@ -85,8 +85,9 @@ export type CropWindows =
     } & SowAnalysis)
 export type PlantingStatus = 'planned' | 'sown' | 'germinated' | 'transplanted' | 'harvesting' | 'finished' | 'failed'
 export type Planting = {
-  id: number
-  crop: string
+ id: number
+ crop: string
+ purpose?: 'food' | 'companion'
   method: 'direct' | 'transplant'
   status: PlantingStatus
   start_date: string
@@ -179,6 +180,7 @@ export type BedIn = Pick<Bed, 'name' | 'kind' | 'x' | 'y' | 'width' | 'length' |
 export type Placement = {
   planting_id: number
   crop: string
+  purpose?: 'food' | 'companion'
   name: string
   cells: [number, number][]
   from: string
@@ -219,6 +221,7 @@ export type Recommendations = { garden: boolean; today?: string; has_beds?: bool
 export type Job = {
   id: number
   kind: 'sow' | 'set_out' | 'harvest' | 'frost' | 'heat' | 'water' | 'check'
+  purpose?: 'food' | 'companion'
   group: string
   title: string
   reason: string

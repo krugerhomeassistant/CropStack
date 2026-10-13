@@ -214,6 +214,17 @@ def test_replan_preview_reports_added_removed_and_moved_before_replacement(owner
     assert owner.get("/api/v1/plan/year").json()["scheduled"] == 1
 
 
+def test_companion_planting_exposes_its_purpose(owner):  # noqa: F811
+    made = owner.post(
+        "/api/v1/plantings",
+        json={"crop": "testcrop", "method": "direct", "start_date": "2099-01-01", "in_ground": True},
+    )
+    assert made.status_code == 201, made.text
+    assert made.json()["purpose"] == "food"
+    listed = owner.get("/api/v1/plantings").json()
+    assert next(p for p in listed if p["id"] == made.json()["id"])["purpose"] == "food"
+
+
 def test_many_plantings_at_once_all_succeed(owner):  # noqa: F811
     from concurrent.futures import ThreadPoolExecutor
 
