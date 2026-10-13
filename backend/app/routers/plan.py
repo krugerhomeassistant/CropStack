@@ -209,12 +209,31 @@ def preview_plan(items: list[PlantingIn], me: MemberDep, db: SessionDep) -> dict
     return _preview_diff(existing, items)
 
 
+def _validate_plan(items: list[PlantingIn], db: SessionDep, household_id: int) -> None:
+    occupancy: dict[int, set[tuple[int, int]]] = {}
+    for item in items:
+        if item.bed_id is None:
+            continue
+        bed = db.get(Bed, item.bed_id)
+        if not bed or bed.household_id != household_id:
+            raise HTTPException(422, "Every planned bed must belong to this household")
+        cols, rows = grid_of(bed)
+        cells = {tuple(cell) for cell in item.cells}
+        if any(c < 0 or r < 0 or c >= cols or r >= rows for c, r in cells):
+            raise HTTPException(422, f"Plan for {bed.name} uses cells outside the bed")
+        prior = occupancy.setdefault(bed.id, set())
+        if prior & cells:
+            raise HTTPException(422, f"Year plan overlaps cells in {bed.name}")
+        occupancy[bed.id] = prior | cells
+
+
 @router.post("/year", status_code=201)
 def accept_plan(items: list[PlantingIn], me: EditorDep, db: SessionDep, c: CatalogDep) -> dict:
     """Make plantings of the accepted items (the same bodies as POST /plantings), then plan their jobs once.
     An earlier plan that has not started is replaced; anything sown or planted by hand stays."""
     if not 0 < len(items) <= 300:
-        raise HTTPException(422, "Send between 1 and 300 plantings")
+     raise HTTPException(422, "Send between 1 and 300 plantings")
+    _validate_plan(items, db, me.household_id)
     replaced = _clear(db, me.household_id)
     for body in items:
         row = make_planting(body, me, db, c)
