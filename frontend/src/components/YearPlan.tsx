@@ -92,14 +92,19 @@ export default function YearPlan({ hasBeds, scheduled, plan, setPlan, onUsed, on
     >
       {people !== null && (coverage ? <CoverageCard coverage={coverage} people={people} canChange={canChange} onPeople={changePeople} /> : <PeopleStepper people={people} canChange={canChange} onPeople={changePeople} />)}
       {canEdit && hasBeds && (
-        <div>
-          <Button variant={plan.length ? 'secondary' : 'primary'} onClick={draft} disabled={busy}>
-          {busy ? t('Drafting…') : plan.length ? t('Draft again') : t('Draft a year plan')}
-          </Button>
-          {confirmReplan && <span className="text-sm text-muted">{t('Drafting again will replace {n} not-started plan plantings. Continue?', { n: planCount })}</span>}
-          {confirmReplan && <Button variant="ghost" onClick={() => setConfirmReplan(false)}>{t('Keep current plan')}</Button>}
-        </div>
-      )}
+ <div>
+ {!confirmReplan ? (
+ <Button variant={plan.length ? 'secondary' : 'primary'} onClick={draft} disabled={busy}>{busy ? t('Drafting…') : plan.length ? t('Draft again') : t('Draft a year plan')}</Button>
+ ) : (
+ <div className="flex flex-wrap items-center gap-2 rounded-[var(--radius-row)] border border-harvest/50 bg-harvest/10 p-3">
+ <span className="text-sm font-semibold text-harvest">{t('This replaces {n} plan plantings. Hand-planted crops stay.', { n: planCount })}</span>
+ <Button variant="secondary" onClick={() => draft()} disabled={busy}>{t('Continue draft')}</Button>
+ <Button variant="ghost" onClick={() => setConfirmReplan(false)}>{t('Keep current plan')}</Button>
+ </div>
+ )}
+ </div>
+ )}
+
       {canEdit && planCount > 0 && (
         <div className="flex flex-wrap items-center gap-2 text-sm">
           <span className="text-muted">{t('{n} plantings from an earlier plan are still to do. Drafting again replaces them; what you have sown or planted stays.', { n: planCount })}</span>
