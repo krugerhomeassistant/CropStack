@@ -210,13 +210,28 @@ def preview_plan(items: list[PlantingIn], me: MemberDep, db: SessionDep) -> dict
 
 
 def _validate_plan(items: list[PlantingIn], db: SessionDep, household_id: int, c: CatalogDep) -> None:
-    """Reject any plan that cannot physically fit, before replacing existing plan rows."""
+    """Reject impossible placements, reserving existing crops only while their cells are occupied."""
     occupancy: dict[int, set[tuple[int, int]]] = {}
-    existing = db.exec(select(Planting).where(Planting.household_id == household_id)).all()
-    for row in existing:
-        if replaceable(row) or row.bed_id is None:
+    proposed_windows: dict[int, tuple[date, date]] = {}
+    for item in items:
+        if item.bed_id is None:
             continue
-        occupancy.setdefault(row.bed_id, set()).update(tuple(cell) for cell in row.cells)
+        facts = crop_facts(db, c, household_id, item.crop, {})
+        first = item.set_out_date or item.start_date
+        last = item.ends_on or first + timedelta(days=round(facts["cycle_days"] or layout.DEFAULT_CYCLE_DAYS))
+        proposed_windows[id(item)] = (first, last)
+    for row in db.exec(select(Planting).where(Planting.household_id == household_id)).all():
+        if replaceable(row) or row.bed_id is None or not row.cells:
+            continue
+        facts = crop_facts(db, c, household_id, row.crop, {})
+        a, z = holds(row, facts, datetime.now(UTC).date())
+        if any(
+            item.bed_id == row.bed_id
+            and a <= proposed_windows.get(id(item), (date.max, date.min))[1]
+            and proposed_windows.get(id(item), (date.max, date.min))[0] <= z
+            for item in items
+        ):
+            occupancy.setdefault(row.bed_id, set()).update(tuple(cell) for cell in row.cells)
     for item in items:
         if item.bed_id is None:
             continue
@@ -229,7 +244,7 @@ def _validate_plan(items: list[PlantingIn], db: SessionDep, household_id: int, c
             raise HTTPException(422, f"Plan for {bed.name} uses cells outside the bed")
         prior = occupancy.setdefault(bed.id, set())
         if prior & cells:
-            raise HTTPException(422, f"Year plan overlaps existing plants in {bed.name}")
+            raise HTTPException(422, f"Year plan overlaps occupied cells in {bed.name}")
         occupancy[bed.id] = prior | cells
         facts = crop_facts(db, c, household_id, item.crop, {})
         capacity = layout.plants_in(bed.cell_cm, facts["dims"], len(cells))
