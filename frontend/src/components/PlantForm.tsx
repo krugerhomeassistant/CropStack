@@ -3,6 +3,7 @@ import { api, type Bed, type Planting } from '../api'
 import { t } from '../i18n'
 import { useApp } from '../state'
 import { Button, ErrorMessage, Field } from './ui'
+import DateField from './ui/DateField'
 
 const iso = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
 
@@ -78,7 +79,7 @@ export default function PlantForm({
       }}
     >
       <Field label={transplant ? t('Set-out date') : t('Sowing date')}>
-        <input className="input" type="date" required value={when} onChange={(e) => setWhen(e.target.value)} />
+        <DateField required value={when} onChange={setWhen} />
       </Field>
       {transplant && ageDays ? (
         <p className="text-sm text-muted">{t('Sow indoors {days} days before.', { days: ageDays })}</p>

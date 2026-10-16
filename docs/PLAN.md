@@ -12,6 +12,7 @@ Roadmap implementing [`SPEC.md`](SPEC.md). Every task is atomic and resumable in
 
 ## Next up
 
+- Seed vault (Phase 10): the seed list (v0.47.0) only records which crops you have seed for; add quantities, year, germination tests and reorder reminders.
 - Plot plan background: upload a top-view image (drone shot) and scale it to the plan; replaces the removed OpenStreetMap/Leaflet garden map (v0.46.0). (priority order; each is a self-contained spec)
 
 Status note: the former needs-model item is complete in v0.41.0. The active sequence is now:

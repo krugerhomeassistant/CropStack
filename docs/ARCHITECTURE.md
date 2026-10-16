@@ -48,6 +48,7 @@ Target architecture (engines, data model, API) is specified in `docs/SPEC.md` §
 | `engine/recommend.py` | **pure** what-to-plant timing: `timing`, `options` (direct, transplant), `best_option` from a sowing analysis |
 | `routers/recommend.py` | `GET /api/v1/recommendations?horizon=21`: plant now / coming up, each with a bed and free cells (prefers cells without the same family) |
 | `routers/plan.py` + `engine/yearplan.py` | `GET /plan/year` drafts a year of plantings (greedy: earliest window first, bed with most free cells, rotation-aware, sized from the household's needs; solid rectangles of whole spacing patches; placed touching good companions, never in a bed with a bad one; companion flowers against the crop's block); `POST /plan/year` creates the accepted ones and plans jobs once |
+| `routers/seeds.py` | `GET /api/v1/seeds`, `PUT /api/v1/seeds` (replace the list of crops the household has seed for); the year plan favours them and returns `buy` |
 | `routers/plantings.py` | plantings CRUD with forward-only status rules; regenerates tasks on every change; `GET /plantings` adds `harvest_from/harvest_to/next_job` per planting (`outlook`); past-dated plantings start as sown/transplanted; cells are never refused for the grid; harvest log (`GET /plantings/harvests`, `POST /plantings/{id}/harvests`, `DELETE /plantings/harvests/{id}`) |
 | `routers/today.py` | `GET /api/v1/today` (due jobs grouped Protect…Maintain, next 14 days), `PATCH /api/v1/tasks/{id}` (done/skipped; done moves the planting along), 12-hourly `tasks` job |
 | `routers/weather.py` | forecast refresh (3 h), `forecast` job, `GET /api/v1/sites/current/weather` |
@@ -88,13 +89,14 @@ Target architecture (engines, data model, API) is specified in `docs/SPEC.md` §
 | `CROPSTACK_AI_PROVIDER` / `_BASE_URL` / `_MODEL` / `_API_KEY` / `_TIMEOUT` | empty / 120 | Garden assistant defaults; Settings win |
 | `CROPSTACK_PORT` | `8430` | compose host port only |
 
-## DB schema (SQLite, Alembic migrations; head 0014)
+## DB schema (SQLite, Alembic migrations; head 0018)
 - **user**: id, username (unique, lowercased), password_hash (argon2id), display_name, created_at, prefs JSON (start, units)
 - **household**: id, name, created_at, settings JSON (forecast, place_search)
 - **membership**: user_id (PK → user, CASCADE), household_id (→ household, CASCADE, indexed), role (owner|member|viewer), created_at
 - **invite**: token_hash (PK, SHA-256), household_id (→ household, CASCADE), role, created_by (→ user, SET NULL), created_at, expires_at, used_at
 - **household.ai** (JSON): provider, base_url, model, api_key (plain text; see the shortcut in `routers/ai.py`)
-- **bed**: id, household_id (CASCADE), name, kind (bed, container, row), x, y, width, length (metres from the plan corner), cell_cm (grid cell, default 30), layout (group name, blank = alone), created_at. `planting.bed_id` → bed (SET NULL); `planting.location` carries the bed name
+- **bed**: id, household_id (CASCADE), name, kind (bed, container, row), x, y, width, length (metres from the plan corner), cell_cm (grid cell, sized to the plants by `layout.fit_cell`/`beds.suits`), layout (group name, blank = alone), created_at. `planting.bed_id` → bed (SET NULL); `planting.location` carries the bed name
+- **seed**: id, household_id (→ household, CASCADE, indexed), crop (catalog slug), created_at; unique (household_id, crop)
 - **harvest**: id, household_id (CASCADE), planting_id (→ planting, CASCADE), harvested_on, quantity (> 0), unit (kg, g, count, bunch), notes, created_by (SET NULL), created_at
 - **site**: id, household_id (→ household, unique, CASCADE), name, latitude, longitude, postal_code, frost_probability (10–90), soil ('', sandy, loamy, clay), created_at, updated_at
 - **forecast**: site_id (PK → site, CASCADE), latitude, longitude, raw JSON (Open-Meteo forecast response), fetched_at
@@ -103,8 +105,6 @@ Target architecture (engines, data model, API) is specified in `docs/SPEC.md` §
 - **planting**: id, household_id (→ household, CASCADE, indexed), crop (catalog slug), method (direct|transplant), status (planned|sown|germinated|transplanted|harvesting|finished|failed), start_date, set_out_date, quantity, location (bed name), bed_id, cells (JSON [[col,row],…]), ends_on (date the cells are released; null = the crop's longest cycle), notes, created_by (→ user, SET NULL), created_at
 - **task**: id, household_id (→ household, CASCADE), generator_key (unique per household), planting_id (→ planting, CASCADE), kind (sow|set_out|harvest), group (Today group), title, reason, earliest/ideal/latest, status (open|done|skipped), locked, completed_at/by, created_at
 - **taskchange**: id, task_id (→ task, CASCADE), at, what ("Moved from 4 Oct to 9 Oct")
-
-Planned: `bed`; `planting.location` becomes a bed reference with the layout editor.
 
 ## Invariants
 - **No presets (SPEC P1)**: no code branches on country, hemisphere, climate type or region; decisions come from requirement profiles × environment data. CI banned-pattern check planned (PLAN 4.4).

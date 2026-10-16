@@ -4,6 +4,7 @@ import { api, type PantryIn, type PantryItem, type PantryMethod } from '../api'
 import { Button, EmptyState, ErrorMessage, ErrorState, Field, PageHeader, Section, Sheet, Skeleton } from '../components/ui'
 import { t } from '../i18n'
 import { useApp } from '../state'
+import DateField from '../components/ui/DateField'
 
 const METHODS: { value: PantryMethod; label: string; icon: string; hint: string }[] = [
   { value: 'canned', label: 'Canned or jarred', icon: '🥫', hint: 'Best within about a year' },
@@ -63,10 +64,10 @@ function AddForm({ onSaved }: { onSaved: () => void }) {
         </Field>
       </div>
       <Field label={t('Put by on')}>
-        <input className="input" type="date" required value={madeOn} onChange={(e) => setMadeOn(e.target.value)} />
+        <DateField required value={madeOn} onChange={setMadeOn} />
       </Field>
       <Field label={t('Use by (optional)')} hint={t('Left blank, it is worked out from how it is kept.')}>
-        <input className="input" type="date" value={best} onChange={(e) => setBest(e.target.value)} />
+        <DateField value={best} onChange={setBest} />
       </Field>
       <Field label={t('Where is it?')}>
         <input className="input" maxLength={80} value={location} onChange={(e) => setLocation(e.target.value)} placeholder={t('Pantry shelf 2')} />
