@@ -85,10 +85,10 @@ def fits(width: float, length: float, cell_cm: int) -> bool:
     return round(width * 100) % cell_cm == 0 and round(length * 100) % cell_cm == 0
 
 
-def fit_cell(width: float, length: float) -> int:
-    """The cell size (cm) for a bed: the one nearest 30 cm whose whole cells exactly cover it. A bed whose sides share
-    no such size (not a multiple of 5 cm) keeps 30 cm, and its last cell is partial."""
-    for c in sorted(CELL_SIZES, key=lambda c: (abs(c - 30), c)):
+def fit_cell(width: float, length: float, target: int = 30) -> int:
+    """The cell size (cm) for a bed: the one nearest `target` whose whole cells exactly cover it. A bed whose sides
+    share no such size (not a multiple of 5 cm) keeps 30 cm, and its last cell is partial."""
+    for c in sorted(CELL_SIZES, key=lambda c: (abs(c - target), c)):
         if fits(width, length, c) and (round(width * 100) // c) * (round(length * 100) // c) <= MAX_CELLS:
             return c
     return 30

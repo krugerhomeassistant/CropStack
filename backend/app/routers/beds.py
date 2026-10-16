@@ -39,6 +39,7 @@ class BedPatch(BaseModel):
     length: float | None = Field(None, gt=0, le=100)
     cell_cm: int | None = Field(None, ge=5, le=100)
     layout: str | None = Field(None, max_length=60)
+    for_crop: str | None = Field(None, max_length=80)  # size the cells to suit this crop (and what already grows here)
 
 
 def _own(db: SessionDep, household_id: int, bed_id: int) -> Bed:
@@ -72,6 +73,24 @@ def crop_facts(db: Session, c: cat.Catalog, household_id: int, crop: str, cache:
 
 def holds(p: Planting, facts: dict, today: date) -> tuple[date, date]:
     return layout.occupancy(p.start_date, p.set_out_date, p.ends_on, p.status, facts["cycle_days"], today)
+
+
+def suits(db: Session, c: cat.Catalog, household_id: int, bed: Bed, crop: str | None = None) -> int:
+    """The cell size (cm) that suits what grows in a bed, so a plant takes about one cell: its smallest plant spacing
+    (not finer than 10 cm), else 30."""
+    live = db.exec(select(Planting.crop).where(Planting.bed_id == bed.id, Planting.status.not_in(("finished", "failed"))))
+    cache: dict = {}
+    sizes = [max(d) for k in {*live, *([crop] if crop else [])} if (d := crop_facts(db, c, household_id, k, cache)["dims"])]
+    return layout.fit_cell(bed.width, bed.length, max(10, round(min(sizes))) if sizes else 30)
+
+
+def regrid(db: Session, bed: Bed, cell_cm: int) -> None:
+    """Change a bed's cell size; what grows in it keeps its ground."""
+    for p in db.exec(select(Planting).where(Planting.bed_id == bed.id)):
+        p.cells = layout.remap(p.cells, bed.cell_cm, cell_cm)
+        db.add(p)
+    bed.cell_cm = cell_cm
+    db.add(bed)
 
 
 @router.get("")
@@ -163,12 +182,18 @@ def add_bed(body: BedIn, me: EditorDep, db: SessionDep) -> Bed:
 @router.patch("/{bed_id}")
 def update_bed(bed_id: int, body: BedPatch, me: EditorDep, db: SessionDep, c: CatalogDep) -> Bed:
     row = _own(db, me.household_id, bed_id)
-    changes = {k: v for k, v in body.model_dump(exclude_unset=True, exclude_none=True).items() if getattr(row, k) != v}
+    changes = {
+        k: v for k, v in body.model_dump(exclude_unset=True, exclude_none=True, exclude={"for_crop"}).items() if getattr(row, k) != v
+    }
     renamed = "name" in changes
     old_cm = row.cell_cm
     width, length = changes.get("width", row.width), changes.get("length", row.length)
     fit = layout.fit_cell(width, length)
-    if "cell_cm" not in changes and fit != old_cm and not layout.fits(width, length, old_cm):  # the cells no longer fit
+    if body.for_crop and "cell_cm" not in changes:
+        suit = suits(db, c, me.household_id, row, body.for_crop)
+        if suit != old_cm:
+            changes["cell_cm"] = suit
+    elif "cell_cm" not in changes and fit != old_cm and not layout.fits(width, length, old_cm):  # the cells no longer fit
         changes["cell_cm"] = fit
     for key, value in changes.items():
         setattr(row, key, value)

@@ -33,8 +33,10 @@ export function PlantedSummary({ beds, on }: { beds: Bed[]; on: string }) {
   for (const b of beds)
     for (const p of b.placements) {
       if (p.from > on || p.until < on) continue
+      const inside = p.cells.filter(([c, r]) => c < b.cols && r < b.rows).length // only what the grid shows
+      if (inside === 0) continue
       const s = sums.get(p.crop) ?? { name: p.name, now: 0 }
-      s.now += p.quantity
+      s.now += Math.round((p.quantity * inside) / p.cells.length)
       sums.set(p.crop, s)
     }
   if (sums.size === 0) return <p className="text-sm text-muted">{t('Nothing is planted on this date.')}</p>
@@ -173,6 +175,12 @@ export default function BedGrid({
   }
 
   const crop = brush && brush !== 'erase' ? brush : null
+  const slug = crop?.crop
+  // however a crop is chosen, the bed's cells are sized to suit it before anything is painted
+  useEffect(() => {
+    if (slug && canEdit) api.updateBed(bed.id, { for_crop: slug }).then(onChange, fail)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [slug, bed.id])
   const chips = suggested.slice(0, SUGGESTED)
   const nameOf = (slug: string) => crops.find((c) => c.slug === slug)?.names.en?.[0] ?? slug
   const pick = (r: Recommendation) => {
