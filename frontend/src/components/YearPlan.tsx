@@ -211,7 +211,7 @@ export default function YearPlan({ hasBeds, scheduled, plan, setPlan, onUsed, on
                         {cropIcon(p.crop)} {names[p.crop] ?? p.crop} <span className="font-normal text-muted">· {p.location}</span>
                       </p>
                       <p className="text-sm text-muted">
-                        {p.status === 'planned' ? (p.method === 'transplant' ? t('Set out') : t('Sow')) : t('Started')} {day(when(p))} · {p.harvest_from && p.harvest_to ? `${t('harvest {from} to {to}', { from: day(p.harvest_from), to: day(p.harvest_to) })} · ` : ''}{t('{n} plants on {cells} cells', { n: p.quantity, cells: p.cells.length })}
+                        {p.status === 'planned' ? (p.method === 'transplant' ? t('Set out') : t('Sow')) : t('Started')} {day(when(p))} · {p.harvest_from && p.harvest_to ? `${p.purpose === 'companion' ? t('in flower {from} to {to}', { from: day(p.harvest_from), to: day(p.harvest_to) }) : t('harvest {from} to {to}', { from: day(p.harvest_from), to: day(p.harvest_to) })} · ` : ''}{t('{n} plants on {cells} cells', { n: p.quantity, cells: p.cells.length })}
                       </p>
                     </li>
                   ))}

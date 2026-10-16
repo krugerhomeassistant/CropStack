@@ -17,6 +17,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - **One date for the whole plan.** The date stepper moved from the bed panel to above the plan, so the plan and the bed panel always show the same day. Plantings that start later show faint in both (before, the bed panel showed them nowhere, so a bed with a cabbage planned looked empty).
 - **What is planted.** The bed panel lists the plants per crop ("6× Chilli", with "+4 planned" for what goes in later), and with no bed selected the same list covers the whole garden.
 - **Your plan stays visible.** After "Use this plan" the Plant tab keeps a "Your plan" list of every saved plan planting by month, with plant totals per crop, and no longer jumps to the Plan tab. It follows Clear plan and re-drafts.
+- The Plant tab no longer flashes "Draw your beds first" while it is still loading, and the distance labels between beds no longer sit on top of bed names.
 - Beetroot, radish, strawberry and tomato are now red, chilli orange-red, carrot orange, and the other well-known crops keep their natural colours (beetroot was purple); other crops keep a steady colour from their name.
 
 ### Removed

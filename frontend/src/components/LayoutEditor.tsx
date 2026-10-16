@@ -57,7 +57,7 @@ function gaps(beds: Bed[]) {
         if (y1 - y0 > 0.05 && q.x - right > 0.05 && q.x - right <= MAX_GAP && !blocked((o) => hit(right, q.x, o.x, o.x + o.width) && hit(y0, y1, o.y, o.y + o.length)))
           out.push({ key: `h${a.id}-${b.id}`, x1: right, x2: q.x, y1: (y0 + y1) / 2, y2: (y0 + y1) / 2, m: q.x - right, ids: [a.id, b.id] })
         if (x1 - x0 > 0.05 && q.y - below > 0.05 && q.y - below <= MAX_GAP && !blocked((o) => hit(below, q.y, o.y, o.y + o.length) && hit(x0, x1, o.x, o.x + o.width)))
-          out.push({ key: `v${a.id}-${b.id}`, x1: (x0 + x1) / 2, x2: (x0 + x1) / 2, y1: below, y2: q.y, m: q.y - below, ids: [a.id, b.id] })
+          out.push({ key: `v${a.id}-${b.id}`, x1: x1 - x0 > 1.8 ? x1 - 0.3 : (x0 + x1) / 2, x2: x1 - x0 > 1.8 ? x1 - 0.3 : (x0 + x1) / 2, y1: below, y2: q.y, m: q.y - below, ids: [a.id, b.id] })
       }
     }
   return out
@@ -305,7 +305,8 @@ export default function LayoutEditor({ onChange, suggested, request, plan }: { o
           return (
             <g key={g.key} className={`pointer-events-none select-none ${on ? 'stroke-leaf fill-leaf' : 'stroke-muted fill-muted'}`}>
               <path d={horizontal ? `M${g.x1} ${g.y1}H${g.x2}M${g.x1} ${g.y1 - 0.08}V${g.y1 + 0.08}M${g.x2} ${g.y1 - 0.08}V${g.y1 + 0.08}` : `M${g.x1} ${g.y1}V${g.y2}M${g.x1 - 0.08} ${g.y1}H${g.x1 + 0.08}M${g.x1 - 0.08} ${g.y2}H${g.x1 + 0.08}`} strokeWidth={0.025} fill="none" />
-              <text x={horizontal ? (g.x1 + g.x2) / 2 : g.x1 + 0.1} y={horizontal ? g.y1 - 0.1 : (g.y1 + g.y2) / 2 + 0.07} textAnchor={horizontal ? 'middle' : 'start'} fontSize={0.2} stroke="none">
+              <rect x={(horizontal ? (g.x1 + g.x2) / 2 : g.x1 + 0.1 + 0.24) - 0.24} y={(horizontal ? g.y1 - 0.1 : (g.y1 + g.y2) / 2 + 0.07) - 0.19} width={0.48} height={0.26} rx={0.1} className="fill-surface stroke-none" fillOpacity={0.85} />
+              <text x={horizontal ? (g.x1 + g.x2) / 2 : g.x1 + 0.1 + 0.24} y={horizontal ? g.y1 - 0.1 : (g.y1 + g.y2) / 2 + 0.07} textAnchor="middle" fontSize={0.2} stroke="none">
                 {round(g.m)} m
               </text>
             </g>

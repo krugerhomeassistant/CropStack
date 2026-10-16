@@ -79,7 +79,7 @@ export default function GardenPage() {
       </div>
       {tab === 'plant' && (
         <YearPlan
-          hasBeds={!!recs?.has_beds}
+          hasBeds={recs ? !!recs.has_beds : true}
           scheduled={recs?.scheduled ?? 0}
           onCleared={() => {
             setRev((r) => r + 1)

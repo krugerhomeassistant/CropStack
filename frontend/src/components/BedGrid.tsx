@@ -44,8 +44,8 @@ export function PlantedSummary({ beds, on }: { beds: Bed[]; on: string }) {
       {[...sums].map(([crop, s]) => (
         <li key={crop} className="flex items-center gap-2">
           <span aria-hidden>{cropIcon(crop)}</span>
-          <span className="font-semibold">{s.now}× {s.name}</span>
-          {s.later > 0 && <span className="text-muted">{t('+{n} planned', { n: s.later })}</span>}
+          <span className="font-semibold">{s.now + s.later}× {s.name}</span>
+          {s.later > 0 && <span className="text-muted">{s.now > 0 ? t('{n} still to plant', { n: s.later }) : t('planned')}</span>}
         </li>
       ))}
     </ul>
