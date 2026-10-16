@@ -118,7 +118,7 @@ export default function BedGrid({
   function down(e: React.PointerEvent<SVGSVGElement>) {
     setError('')
     e.currentTarget.setPointerCapture(e.pointerId)
-    if (brush && canEdit) return add(e)
+    if (brush && canEdit) return fitting ? undefined : add(e)
     const k = at(e)
     const [c, r] = k ? k.split(',').map(Number) : [-1, -1]
     const p = here(c, r)[0] ?? null
@@ -180,9 +180,22 @@ export default function BedGrid({
 
   const crop = brush && brush !== 'erase' ? brush : null
   const slug = crop?.crop
-  // however a crop is chosen, the bed's cells are sized to suit it before anything is painted
+  // however a crop is chosen, the bed's cells are sized to suit it first; painting waits until the grid shows that size
+  const [fitted, setFitted] = useState<number | null>(null)
+  const fitting = fitted !== null && fitted !== bed.cell_cm
   useEffect(() => {
-    if (slug && canEdit) api.updateBed(bed.id, { for_crop: slug }).then(onChange, fail)
+    if (!slug || !canEdit) return
+    setFitted(-1)
+    api.updateBed(bed.id, { for_crop: slug }).then(
+      (b) => {
+        setFitted(b.cell_cm)
+        onChange()
+      },
+      (e) => {
+        setFitted(null)
+        fail(e)
+      },
+    )
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slug, bed.id])
   const chips = suggested.slice(0, SUGGESTED)
@@ -290,6 +303,7 @@ export default function BedGrid({
 
       <div className="mx-auto w-full rounded-2xl border border-line bg-sunken p-1.5" style={{ maxWidth: `${bed.cols * 4.5}rem` }}>
       <svg
+        aria-busy={fitting}
         viewBox={`0 0 ${bed.cols} ${bed.rows}`}
         className="block w-full touch-none select-none"
         role="img"
