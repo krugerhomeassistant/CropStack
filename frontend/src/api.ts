@@ -176,7 +176,7 @@ export type Bed = {
   unknown_footprint: number
   crowded: boolean
 }
-export type BedIn = Pick<Bed, 'name' | 'kind' | 'x' | 'y' | 'width' | 'length' | 'cell_cm' | 'layout'>
+export type BedIn = Pick<Bed, 'name' | 'kind' | 'x' | 'y' | 'width' | 'length' | 'layout'> & Partial<Pick<Bed, 'cell_cm'>> // no cell_cm: the server picks one that fits
 export type Placement = {
   planting_id: number
   crop: string

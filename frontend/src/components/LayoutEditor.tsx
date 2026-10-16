@@ -106,7 +106,7 @@ export default function LayoutEditor({ onChange, suggested, request, plan }: { o
   function create(r: Rect, kind: BedKind) {
     const tpl = TOOLS.find((x) => x.tool === kind)!
     const n = (beds ?? []).filter((b) => b.kind === kind).length + 1
-    const body: BedIn = { name: `${t(tpl.name!)} ${n}`, kind, x: round(r.x), y: round(r.y), width: round(r.width), length: round(r.length), cell_cm: 30, layout: '' }
+    const body: BedIn = { name: `${t(tpl.name!)} ${n}`, kind, x: round(r.x), y: round(r.y), width: round(r.width), length: round(r.length), layout: '' }
     api.addBed(body).then((b) => {
       setSelected(b.id)
       return refresh()
@@ -405,7 +405,7 @@ function BedForm({ bed, layouts, onSaved, onDeleted, fail }: { bed: Bed; layouts
       className="flex flex-wrap items-end gap-2 rounded-[var(--radius-row)] bg-sunken p-3"
       onSubmit={(e) => {
         e.preventDefault()
-        api.updateBed(bed.id, { name, width: Number(width), length: Number(length), cell_cm: Number(cell), layout: layout.trim() }).then(onSaved, fail)
+        api.updateBed(bed.id, { name, width: Number(width), length: Number(length), ...(Number(cell) !== bed.cell_cm && { cell_cm: Number(cell) }), layout: layout.trim() }).then(onSaved, fail)
       }}
     >
       <Field label={t('Name')}>
@@ -425,7 +425,7 @@ function BedForm({ bed, layouts, onSaved, onDeleted, fail }: { bed: Bed; layouts
       <Field label={t('Length (m)')}>
         <input className="input w-24" type="number" min="0.1" max="100" step="0.1" required value={length} onChange={(e) => setLength(e.target.value)} />
       </Field>
-      <Field label={t('Cell size (cm)')} hint={t('Plants keep their place; the cells are redrawn to the new size.')}>
+      <Field label={t('Cell size (cm)')} hint={t('Set automatically so whole cells fit the bed. Change it only for finer or coarser cells; plants keep their place.')}>
         <input className="input w-24" type="number" min="5" max="100" step="5" required value={cell} onChange={(e) => setCell(e.target.value)} />
       </Field>
       <Button type="submit">{t('Save')}</Button>

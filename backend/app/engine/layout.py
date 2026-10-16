@@ -76,6 +76,24 @@ def grid(width: float, length: float, cell_cm: int) -> tuple[int, int]:
     return max(1, ceil(width / cell - 1e-9)), max(1, ceil(length / cell - 1e-9))
 
 
+MAX_CELLS = 2500  # per bed
+CELL_SIZES = (5, 10, 15, 20, 25, 30, 35, 40, 45, 50)  # cm; the fit picks the one nearest 30
+
+
+def fits(width: float, length: float, cell_cm: int) -> bool:
+    """True when whole cells of this size exactly cover the bed, so none hangs over its edge."""
+    return round(width * 100) % cell_cm == 0 and round(length * 100) % cell_cm == 0
+
+
+def fit_cell(width: float, length: float) -> int:
+    """The cell size (cm) for a bed: the one nearest 30 cm whose whole cells exactly cover it. A bed whose sides share
+    no such size (not a multiple of 5 cm) keeps 30 cm, and its last cell is partial."""
+    for c in sorted(CELL_SIZES, key=lambda c: (abs(c - 30), c)):
+        if fits(width, length, c) and (round(width * 100) // c) * (round(length * 100) // c) <= MAX_CELLS:
+            return c
+    return 30
+
+
 @dataclass(frozen=True)
 class Patch:
     """The block of cells one planting unit takes at a crop's proper spacing: `w` x `h` cells holding `per` plants.

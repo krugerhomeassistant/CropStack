@@ -10,6 +10,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 ### Added
 - **Gaps between beds on the plot plan.** Where two beds face each other with nothing between them, a thin dimension line shows the clear ground in metres (up to 6 m apart). It follows the bed while you drag it, and lines for the selected bed turn green.
 
+### Fixed
+- **Cells no longer hang over the edge of a bed.** A 2.5 m bed on 30 cm cells got nine columns (2.7 m), so the last column of plants stuck out of the bed on the plan. The cell size is now picked so whole cells fit the bed exactly, the one nearest 30 cm (2.5 × 1.5 m gets 25 cm cells), when you draw a bed and again when you resize it. A size you set yourself stays while it still fits. Existing beds are refitted once on update; their plantings are mapped onto the new cells and the overhang is dropped. Beds whose sides are not a multiple of 5 cm keep 30 cm.
+
 ### Removed
 - **The Garden map section** (Leaflet with satellite/street tiles and the draggable origin pin) and its `leaflet`, `react-leaflet` and `@types/leaflet` dependencies. The plot plan is the one place beds are positioned. Place search in garden setup (OpenStreetMap Nominatim) stays. A top-view image (drone photo) as a plan background is planned instead.
 
