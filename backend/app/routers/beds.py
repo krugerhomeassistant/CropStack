@@ -78,9 +78,13 @@ def holds(p: Planting, facts: dict, today: date) -> tuple[date, date]:
 def suits(db: Session, c: cat.Catalog, household_id: int, bed: Bed, crop: str | None = None) -> int:
     """The cell size (cm) that suits what grows in a bed, so a plant takes about one cell: its smallest plant spacing
     (not finer than 10 cm), else 30."""
-    live = db.exec(select(Planting.crop).where(Planting.bed_id == bed.id, Planting.status.not_in(("finished", "failed"))))
+    live = db.exec(
+        select(Planting.crop).where(Planting.bed_id == bed.id, Planting.status.not_in(("finished", "failed")))
+    )
     cache: dict = {}
-    sizes = [max(d) for k in {*live, *([crop] if crop else [])} if (d := crop_facts(db, c, household_id, k, cache)["dims"])]
+    sizes = [
+        max(d) for k in {*live, *([crop] if crop else [])} if (d := crop_facts(db, c, household_id, k, cache)["dims"])
+    ]
     return layout.fit_cell(bed.width, bed.length, max(10, round(min(sizes))) if sizes else 30)
 
 
@@ -183,7 +187,9 @@ def add_bed(body: BedIn, me: EditorDep, db: SessionDep) -> Bed:
 def update_bed(bed_id: int, body: BedPatch, me: EditorDep, db: SessionDep, c: CatalogDep) -> Bed:
     row = _own(db, me.household_id, bed_id)
     changes = {
-        k: v for k, v in body.model_dump(exclude_unset=True, exclude_none=True, exclude={"for_crop"}).items() if getattr(row, k) != v
+        k: v
+        for k, v in body.model_dump(exclude_unset=True, exclude_none=True, exclude={"for_crop"}).items()
+        if getattr(row, k) != v
     }
     renamed = "name" in changes
     old_cm = row.cell_cm
@@ -193,7 +199,9 @@ def update_bed(bed_id: int, body: BedPatch, me: EditorDep, db: SessionDep, c: Ca
         suit = suits(db, c, me.household_id, row, body.for_crop)
         if suit != old_cm:
             changes["cell_cm"] = suit
-    elif "cell_cm" not in changes and fit != old_cm and not layout.fits(width, length, old_cm):  # the cells no longer fit
+    elif (
+        "cell_cm" not in changes and fit != old_cm and not layout.fits(width, length, old_cm)
+    ):  # the cells no longer fit
         changes["cell_cm"] = fit
     for key, value in changes.items():
         setattr(row, key, value)

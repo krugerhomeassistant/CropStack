@@ -491,7 +491,13 @@ def test_a_beds_cells_follow_the_plants_it_holds(owner, monkeypatch):  # noqa: F
     assert owner.patch(url, json={"for_crop": "beetroot"}).json()["cell_cm"] == 10  # 10 cm spacing: a plant a cell
     made = owner.post(
         "/api/v1/plantings",
-        json={"crop": "beetroot", "method": "direct", "start_date": "2026-08-30", "bed_id": bed["id"], "cells": [[0, 0]]},
+        json={
+            "crop": "beetroot",
+            "method": "direct",
+            "start_date": "2026-08-30",
+            "bed_id": bed["id"],
+            "cells": [[0, 0]],
+        },
     )
     assert made.status_code == 201 and made.json()["quantity"] == 1
     wide = owner.patch(url, json={"for_crop": "tomato"}).json()  # a bigger plant never coarsens a bed with small ones
