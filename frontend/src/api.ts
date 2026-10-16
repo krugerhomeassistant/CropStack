@@ -98,6 +98,7 @@ export type Planting = {
   cells: [number, number][]
   ends_on: string | null
   notes: string
+  source?: string // 'plan' when the year plan made it
   harvest_from?: string | null
   harvest_to?: string | null
   next_job?: { title: string; date: string } | null

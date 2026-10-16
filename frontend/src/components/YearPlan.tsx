@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { CalendarRange, X } from 'lucide-react'
-import { api, type Coverage, type PlanDiff, type PlanItem } from '../api'
+import { api, type Coverage, type PlanDiff, type PlanItem, type Planting } from '../api'
 import { t } from '../i18n'
 import { useApp } from '../state'
 import CoverageCard, { PeopleStepper } from './CoverageCard'
@@ -24,6 +24,15 @@ export default function YearPlan({ hasBeds, scheduled, plan, setPlan, onUsed, on
  const [diff, setDiff] = useState<PlanDiff | null>(null)
  const [confirmReplan, setConfirmReplan] = useState(false)
   const canChange = useApp().user.role === 'owner'
+  const [saved, setSaved] = useState<Planting[]>([])
+  const [names, setNames] = useState<Record<string, string>>({})
+  // The plan you have used stays here: it is the saved plantings the year plan made, whatever tab you are on.
+  useEffect(() => {
+    api.crops().then((cs) => setNames(Object.fromEntries(cs.map((c) => [c.slug, c.names.en?.[0] ?? c.slug]))), () => {})
+  }, [])
+  useEffect(() => {
+    api.plantings().then((ps) => setSaved(ps.filter((p) => p.source === 'plan' && !['finished', 'failed'].includes(p.status))), () => {})
+  }, [scheduled, busy])
   const fail = (e: unknown) => {
     setBusy(false)
     setError(e instanceof Error ? e.message : t('Failed to save'))
@@ -85,6 +94,11 @@ export default function YearPlan({ hasBeds, scheduled, plan, setPlan, onUsed, on
     }, fail)
   }
   const months = [...new Set(plan.map((i) => month(planted(i))))]
+  const when = (p: Planting) => p.set_out_date ?? p.start_date
+  const savedSorted = [...saved].sort((a, b) => when(a).localeCompare(when(b)))
+  const savedMonths = [...new Set(savedSorted.map((p) => month(when(p))))]
+  const totals = new Map<string, number>()
+  for (const p of saved) totals.set(p.crop, (totals.get(p.crop) ?? 0) + p.quantity)
   return (
     <Section
       title={t('Year plan')}
@@ -172,6 +186,40 @@ export default function YearPlan({ hasBeds, scheduled, plan, setPlan, onUsed, on
         </div>
       )}
       {plan.length > 0 && <p className="text-xs text-muted">{t('The Plan tab shows these as dashed cells in each bed. Nothing is saved until you use the plan; after that, every planting can still be changed.')}</p>}
+      {saved.length > 0 && (
+        <div className="flex flex-col gap-3 border-t border-line pt-4" aria-label={t('Your plan')}>
+          <div>
+            <h3 className="font-bold">{t('Your plan')}</h3>
+            <p className="text-sm text-muted">{t('{n} plantings are saved from the year plan. They show faint on the Plan tab until their day, and as jobs on Today and the Calendar.', { n: saved.length })}</p>
+          </div>
+          <ul className="flex flex-wrap gap-x-4 gap-y-0.5 text-sm" aria-label={t('What is planned')}>
+            {[...totals].sort((a, b) => (names[a[0]] ?? a[0]).localeCompare(names[b[0]] ?? b[0])).map(([crop, n]) => (
+              <li key={crop}>
+                <span aria-hidden>{cropIcon(crop)}</span> <span className="font-semibold">{n}× {names[crop] ?? crop}</span>
+              </li>
+            ))}
+          </ul>
+          {savedMonths.map((m) => (
+            <div key={m} className="flex flex-col gap-1">
+              <p className="text-sm font-semibold">{m}</p>
+              <ul className="flex flex-col divide-y divide-line">
+                {savedSorted
+                  .filter((p) => month(when(p)) === m)
+                  .map((p) => (
+                    <li key={p.id} className="py-2">
+                      <p className="font-bold">
+                        {cropIcon(p.crop)} {names[p.crop] ?? p.crop} <span className="font-normal text-muted">· {p.location}</span>
+                      </p>
+                      <p className="text-sm text-muted">
+                        {p.status === 'planned' ? (p.method === 'transplant' ? t('Set out') : t('Sow')) : t('Started')} {day(when(p))} · {p.harvest_from && p.harvest_to ? `${t('harvest {from} to {to}', { from: day(p.harvest_from), to: day(p.harvest_to) })} · ` : ''}{t('{n} plants on {cells} cells', { n: p.quantity, cells: p.cells.length })}
+                      </p>
+                    </li>
+                  ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      )}
     </Section>
   )
 }

@@ -92,7 +92,6 @@ export default function GardenPage() {
             setRev((r) => r + 1)
             setPlanRev((r) => r + 1)
             loadRecs()
-            go('plan')
           }}
         />
       )}
