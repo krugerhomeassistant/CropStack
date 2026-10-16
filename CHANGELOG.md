@@ -5,6 +5,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.46.1] - 2026-10-16
+
+### Changed
+- **A bed's cells follow its plants.** Choosing a crop sizes the bed's cells to suit it (the smallest plant spacing in the bed, never finer than 10 cm), so a small plant takes about one cell and a big one a block. What already grows there keeps its ground.
+
+### Fixed
+- Beetroot shows red, not purple, in the crop picker and summary.
+- The "What is planted" counts only plants that sit on cells the grid shows.
+
 ## [0.46.0] - 2026-10-16
 
 ### Added
@@ -449,7 +458,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - CI: ruff lint and format, backend tests, frontend build, image publishing to GHCR and automatic GitHub releases on a version bump.
 - Project docs: README, wiki, architecture, roadmap, contributing guide, security policy and Code of Conduct.
 
-[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.46.0...HEAD
+[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.46.1...HEAD
+[0.46.1]: https://github.com/krugerhomeassistant/CropStack/compare/v0.46.0...v0.46.1
 [0.46.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.45.1...v0.46.0
 [0.45.1]: https://github.com/krugerhomeassistant/CropStack/compare/v0.45.0...v0.45.1
 [0.45.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.44.0...v0.45.0

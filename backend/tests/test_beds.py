@@ -475,3 +475,30 @@ def test_cells_are_chosen_so_whole_cells_fit_the_bed(owner):  # noqa: F811
     assert same["cell_cm"] == 30
     manual = owner.patch(f"/api/v1/beds/{bed['id']}", json={"cell_cm": 20}).json()
     assert manual["cell_cm"] == 20  # an explicit choice that fits stays
+
+
+def test_a_beds_cells_follow_the_plants_it_holds(owner, monkeypatch):  # noqa: F811
+    from pathlib import Path
+
+    from app import catalog as cat
+    from app.main import app
+
+    monkeypatch.setattr(app.state, "catalog", cat.load(Path(__file__).resolve().parents[2] / "catalog"))
+    owner.put("/api/v1/sites/current", json=GARDEN)
+    bed = owner.post("/api/v1/beds", json={"name": "B", "width": 1.5, "length": 2.5}).json()
+    assert bed["cell_cm"] == 25
+    url = f"/api/v1/beds/{bed['id']}"
+    assert owner.patch(url, json={"for_crop": "beetroot"}).json()["cell_cm"] == 10  # 10 cm spacing: a plant a cell
+    made = owner.post(
+        "/api/v1/plantings",
+        json={
+            "crop": "beetroot",
+            "method": "direct",
+            "start_date": "2026-08-30",
+            "bed_id": bed["id"],
+            "cells": [[0, 0]],
+        },
+    )
+    assert made.status_code == 201 and made.json()["quantity"] == 1
+    wide = owner.patch(url, json={"for_crop": "tomato"}).json()  # a bigger plant never coarsens a bed with small ones
+    assert wide["cell_cm"] == 10
