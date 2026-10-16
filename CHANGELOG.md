@@ -5,6 +5,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.45.1] - 2026-10-16
+
 ### Fixed
 - **A drafted year plan can always be used.** "Year plan overlaps occupied cells in Bed N" appeared on plans the planner itself drew: the drafter held cells for the days to maturity it read from the climate, while the server (and every saved planting) holds them for the catalog cycle, so crops the drafter packed into the same cell one after the other clashed on acceptance. The drafter now reserves the longer of the two, and a test drafts and accepts a plan twice against the real catalog.
 
@@ -426,7 +428,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - CI: ruff lint and format, backend tests, frontend build, image publishing to GHCR and automatic GitHub releases on a version bump.
 - Project docs: README, wiki, architecture, roadmap, contributing guide, security policy and Code of Conduct.
 
-[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.45.0...HEAD
+[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.45.1...HEAD
+[0.45.1]: https://github.com/krugerhomeassistant/CropStack/compare/v0.45.0...v0.45.1
 [0.45.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.44.0...v0.45.0
 [0.44.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.43.0...v0.44.0
 [0.43.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.42.2...v0.43.0

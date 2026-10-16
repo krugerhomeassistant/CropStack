@@ -1,6 +1,6 @@
 # ACTIVE CONTEXT
 
-**Date:** 2026-10-12 · **Version:** 0.45.0 · **Alembic head:** 0016 · **Tests:** 198 backend, browser e2e green.
+**Date:** 2026-10-16 · **Version:** 0.45.1 · **Alembic head:** 0016 · **Tests:** 198 backend, browser e2e green.
 History of earlier sessions: `ACTIVE_CONTEXT_ARCHIVE.md`.
 
 ## What CropStack is today
@@ -34,7 +34,7 @@ Personal, non-commercial. Fully dynamic (no presets). Never restrict or destroy 
 6. Home Assistant integration (MQTT/REST), assistant photo diagnosis/tools/streaming/history, encrypt API key at rest, imperial units in job text (low priority).
 
 ## Open issues / unverified
-- Year plan overlap on accept fixed on branch `fix/year-plan-no-overlap` (unreleased; see CHANGELOG). Re-check on the owner's real data after deploy.
+- Year plan overlap on accept fixed in 0.45.1. Re-check on the owner's real data after deploy.
 - Owner's Bed 1 showed "6 cells have two plantings at once" (cause unknown: hand painting or an old plan). Ask him to check after updating to 0.40.0 and using Clear plan.
 - Planner look on his phone and the year plan on real climate data are unverified by me.
 - README screenshots in `docs/images/` are old (regenerate with `npm run screenshots`).
