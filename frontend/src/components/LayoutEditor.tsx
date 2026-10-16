@@ -286,7 +286,6 @@ export default function LayoutEditor({ onChange, suggested, request, plan }: { o
                 <rect data-testid="bed-body" x={b.x} y={b.y} width={b.width} height={b.length} rx={0.12} className="fill-feed/15 stroke-feed/60" strokeWidth={0.04} />
               )}
               <g clipPath={`url(#clip${b.id})`} className="pointer-events-none select-none">
-                {waiting.map((p) => mark(p, true))}
                 {growing.map((p) => mark(p, false))}
               </g>
               {b.crowded && <rect x={b.x} y={b.y} width={b.width} height={b.length} rx={0.12} fill="none" className="stroke-marigold pointer-events-none" strokeWidth={0.05} />}
@@ -356,7 +355,7 @@ export default function LayoutEditor({ onChange, suggested, request, plan }: { o
         </div>
       )}
       </div>
-        {beds.some((b) => b.placements.length > 0) && <p className="text-xs text-muted">{t('Solid colour is growing on the chosen date; faint colour is planted later. ⏳ counts what is still to plant.')}</p>}
+        {beds.some((b) => b.placements.length > 0) && <p className="text-xs text-muted">{t('Only what is planted on the chosen date is shown; ⏳ counts what is still to plant. Step the date to see the rest.')}</p>}
         {beds.length === 0 && <p className="text-sm text-muted">{canEdit ? t('No beds yet. Choose Draw bed, then drag on the plan.') : t('No beds have been drawn yet.')}</p>}
         {beds.length > 0 && (
           <div className="flex gap-2 overflow-x-auto pb-1" role="group" aria-label={t('Beds')}>

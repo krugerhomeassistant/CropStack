@@ -27,25 +27,23 @@ const HUES: Record<string, number> = {
   'sweet-corn': 52, lettuce: 105, cabbage: 95, kale: 140, spinach: 130, broccoli: 150, cucumber: 118, zucchini: 135, 'green-bean': 100, pea: 85, eggplant: 285,
 }
 
-/** What is in a bed (or the whole garden) on a date: plants per crop, and how many more are planned. */
+/** What is in a bed (or the whole garden) on a date: plants per crop. */
 export function PlantedSummary({ beds, on }: { beds: Bed[]; on: string }) {
-  const sums = new Map<string, { name: string; now: number; later: number }>()
+  const sums = new Map<string, { name: string; now: number }>()
   for (const b of beds)
     for (const p of b.placements) {
-      if (p.until < on) continue
-      const s = sums.get(p.crop) ?? { name: p.name, now: 0, later: 0 }
-      if (p.from <= on) s.now += p.quantity
-      else s.later += p.quantity
+      if (p.from > on || p.until < on) continue
+      const s = sums.get(p.crop) ?? { name: p.name, now: 0 }
+      s.now += p.quantity
       sums.set(p.crop, s)
     }
-  if (sums.size === 0) return <p className="text-sm text-muted">{t('Nothing planted or planned on this date.')}</p>
+  if (sums.size === 0) return <p className="text-sm text-muted">{t('Nothing is planted on this date.')}</p>
   return (
     <ul className="flex flex-col gap-0.5 text-sm" aria-label={t('What is planted')}>
       {[...sums].map(([crop, s]) => (
         <li key={crop} className="flex items-center gap-2">
           <span aria-hidden>{cropIcon(crop)}</span>
-          <span className="font-semibold">{s.now + s.later}× {s.name}</span>
-          {s.later > 0 && <span className="text-muted">{s.now > 0 ? t('{n} still to plant', { n: s.later }) : t('planned')}</span>}
+          <span className="font-semibold">{s.now}× {s.name}</span>
         </li>
       ))}
     </ul>
@@ -96,9 +94,6 @@ export default function BedGrid({
 
   const here = (c: number, r: number) =>
     bed.placements.filter((p) => p.cells.some(([x, y]) => x === c && y === r) && p.from <= on && on <= p.until)
-  // what is still to go in (starts after this date), shown faded like on the plan
-  const soon = (c: number, r: number) =>
-    bed.placements.filter((p) => p.from > on && p.cells.some(([x, y]) => x === c && y === r)).sort((a, b) => a.from.localeCompare(b.from))[0]
   // the drafted year plan, shown dashed on cells that are empty on this date
   const ghost = (c: number, r: number) =>
     plan.find((i) => i.cells.some(([x, y]) => x === c && y === r) && (i.set_out_date ?? i.start_date) <= on && on <= i.until)
@@ -124,7 +119,7 @@ export default function BedGrid({
     if (brush && canEdit) return add(e)
     const k = at(e)
     const [c, r] = k ? k.split(',').map(Number) : [-1, -1]
-    const p = here(c, r)[0] ?? soon(c, r) ?? null
+    const p = here(c, r)[0] ?? null
     setInfo(p)
     setEditing(false)
     setUntil(p?.until ?? '')
@@ -295,8 +290,7 @@ export default function BedGrid({
           Array.from({ length: bed.cols }, (_, c) => {
             const p = here(c, r)
             const marked = painted.includes(key(c, r))
-            const later = p[0] ? undefined : soon(c, r)
-            const g = p[0] || later ? undefined : ghost(c, r)
+            const g = p[0] ? undefined : ghost(c, r)
             return (
               <g key={key(c, r)}>
                 <rect
@@ -305,19 +299,19 @@ export default function BedGrid({
                   width={0.94}
                   height={0.94}
                   rx={0.14}
-                  fill={marked ? (crop ? cropColour(crop.crop) : 'transparent') : p[0] ? cropColour(p[0].crop) : later ? cropColour(later.crop) : g ? cropColour(g.crop) : 'transparent'}
-                  fillOpacity={later && !marked ? 0.3 : g && !marked ? 0.45 : 1}
+                  fill={marked ? (crop ? cropColour(crop.crop) : 'transparent') : p[0] ? cropColour(p[0].crop) : g ? cropColour(g.crop) : 'transparent'}
+                  fillOpacity={g && !marked ? 0.45 : 1}
                   className={clashing.has(key(c, r)) ? 'stroke-danger' : marked || g ? 'stroke-ink' : 'stroke-line'}
                   strokeWidth={clashing.has(key(c, r)) || marked || g ? 0.06 : 0.025}
                   strokeDasharray={marked || g ? '0.15 0.1' : undefined}
                 />
-                {(p[0] || later || g) && (
-                  <text textAnchor="middle" className="pointer-events-none fill-ink" opacity={later ? 0.55 : 1}>
+                {(p[0] || g) && (
+                  <text textAnchor="middle" className="pointer-events-none fill-ink">
                     <tspan x={c + 0.5} y={r + 0.52} fontSize={0.4}>
-                      {cropIcon((p[0] ?? later ?? g!).crop)}
+                      {cropIcon((p[0] ?? g!).crop)}
                     </tspan>
                     <tspan x={c + 0.5} y={r + 0.82} fontSize={0.2}>
-                      {(p[0] ?? later ?? g!).name.slice(0, 6)}
+                      {(p[0]?.name ?? g!.name).slice(0, 6)}
                     </tspan>
                   </text>
                 )}
@@ -331,7 +325,6 @@ export default function BedGrid({
         {t('One cell is {size} cm square.', { size: bed.cell_cm })}
         {plan.length > 0 && ` ${t('Dashed cells are the drafted plan; step the date to see it through the year.')}`}
         {bed.outside > 0 && ` ${t('{n} planted cells sit beyond the edge of this bed; make the bed bigger to see them.', { n: bed.outside })}`}
-        {bed.placements.some((p) => p.from > on) && ` ${t('Faint cells are planted later; step the date to see them.')}`}
       </p>
       <PlantedSummary beds={[bed]} on={on} />
 
