@@ -16,7 +16,7 @@ from .today import refresh_tasks
 
 router = APIRouter(prefix="/api/v1/beds", tags=["beds"])
 MAX_M = 1000.0
-MAX_CELLS = 2500  # per bed
+MAX_CELLS = layout.MAX_CELLS
 
 
 class BedIn(BaseModel):
@@ -26,7 +26,7 @@ class BedIn(BaseModel):
     y: float = Field(0, ge=0, le=MAX_M)
     width: float = Field(gt=0, le=100)
     length: float = Field(gt=0, le=100)
-    cell_cm: int = Field(30, ge=5, le=100)
+    cell_cm: int | None = Field(None, ge=5, le=100)  # blank: whole cells that fit the bed exactly
     layout: str = Field("", max_length=60)
 
 
@@ -148,7 +148,9 @@ def list_beds(me: MemberDep, db: SessionDep, c: CatalogDep) -> list[dict]:
 
 @router.post("", status_code=201)
 def add_bed(body: BedIn, me: EditorDep, db: SessionDep) -> Bed:
-    row = Bed(household_id=me.household_id, **body.model_dump())
+    data = body.model_dump()
+    data["cell_cm"] = body.cell_cm or layout.fit_cell(body.width, body.length)
+    row = Bed(household_id=me.household_id, **data)
     cols, rows = grid_of(row)
     if cols * rows > MAX_CELLS:
         raise HTTPException(422, "That many cells is too many; use a bigger cell size")
@@ -164,6 +166,10 @@ def update_bed(bed_id: int, body: BedPatch, me: EditorDep, db: SessionDep, c: Ca
     changes = {k: v for k, v in body.model_dump(exclude_unset=True, exclude_none=True).items() if getattr(row, k) != v}
     renamed = "name" in changes
     old_cm = row.cell_cm
+    width, length = changes.get("width", row.width), changes.get("length", row.length)
+    fit = layout.fit_cell(width, length)
+    if "cell_cm" not in changes and fit != old_cm and not layout.fits(width, length, old_cm):  # the cells no longer fit
+        changes["cell_cm"] = fit
     for key, value in changes.items():
         setattr(row, key, value)
     cols, rows = grid_of(row)

@@ -5,6 +5,27 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.46.0] - 2026-10-16
+
+### Added
+- **Gaps between beds on the plot plan.** Where two beds face each other with nothing between them, a thin dimension line shows the clear ground in metres (up to 6 m apart). It follows the bed while you drag it, and lines for the selected bed turn green.
+
+### Fixed
+- **Cells no longer hang over the edge of a bed.** A 2.5 m bed on 30 cm cells got nine columns (2.7 m), so the last column of plants stuck out of the bed on the plan. The cell size is now picked so whole cells fit the bed exactly, the one nearest 30 cm (2.5 × 1.5 m gets 25 cm cells), when you draw a bed and again when you resize it. A size you set yourself stays while it still fits. Existing beds are refitted once on update; their plantings are mapped onto the new cells and the overhang is dropped. Beds whose sides are not a multiple of 5 cm keep 30 cm.
+
+### Added
+- **Resizable windows.** Every window (plan, bed panel, year plan and the rest) has a bar at its bottom edge: drag it to make the window taller or shorter, use the arrow keys when it is focused, double tap to give it back its own height. The size is remembered per window on that device; the content scrolls inside a shortened window.
+
+### Changed
+- **One date for the whole plan.** The date stepper moved from the bed panel to above the plan, so the plan and the bed panel always show the same day. Both show only what is planted on that date (before, the plan showed planned crops faint while the bed panel showed an empty grid). The whole plan stays on the Plant tab.
+- **What is planted.** The bed panel lists the plants per crop ("6× Chilli") for the chosen date, and with no bed selected the same list covers the whole garden.
+- **Your plan stays visible.** After "Use this plan" the Plant tab keeps a "Your plan" list of every saved plan planting by month, with plant totals per crop, and no longer jumps to the Plan tab. It follows Clear plan and re-drafts.
+- The Plant tab no longer flashes "Draw your beds first" while it is still loading, and the distance labels between beds no longer sit on top of bed names.
+- Beetroot, radish, strawberry and tomato are now red, chilli orange-red, carrot orange, and the other well-known crops keep their natural colours (beetroot was purple); other crops keep a steady colour from their name.
+
+### Removed
+- **The Garden map section** (Leaflet with satellite/street tiles and the draggable origin pin) and its `leaflet`, `react-leaflet` and `@types/leaflet` dependencies. The plot plan is the one place beds are positioned. Place search in garden setup (OpenStreetMap Nominatim) stays. A top-view image (drone photo) as a plan background is planned instead.
+
 ## [0.45.1] - 2026-10-16
 
 ### Fixed
@@ -428,7 +449,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - CI: ruff lint and format, backend tests, frontend build, image publishing to GHCR and automatic GitHub releases on a version bump.
 - Project docs: README, wiki, architecture, roadmap, contributing guide, security policy and Code of Conduct.
 
-[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.45.1...HEAD
+[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.46.0...HEAD
+[0.46.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.45.1...v0.46.0
 [0.45.1]: https://github.com/krugerhomeassistant/CropStack/compare/v0.45.0...v0.45.1
 [0.45.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.44.0...v0.45.0
 [0.44.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.43.0...v0.44.0

@@ -448,3 +448,30 @@ def test_a_drafted_year_plan_can_always_be_accepted_and_replanned(owner, monkeyp
         body = [{k: i[k] for k in ("crop", "method", "start_date", "set_out_date", "bed_id", "cells")} for i in items]
         accepted = owner.post("/api/v1/plan/year", json=body)  # what the app sends: no ends_on
         assert accepted.status_code == 201, accepted.text
+
+
+def test_cells_are_chosen_so_whole_cells_fit_the_bed(owner):  # noqa: F811
+    from app.engine.layout import fit_cell
+
+    assert [fit_cell(*d) for d in ((1.2, 2.4), (2.5, 1.5), (1.3, 2.1), (0.5, 0.5), (1.23, 2.0))] == [30, 25, 10, 25, 30]
+    bed = owner.post("/api/v1/beds", json={"name": "Fit", "width": 2.5, "length": 1.5}).json()
+    assert bed["cell_cm"] == 25
+    made = owner.get("/api/v1/beds").json()[0]
+    assert (made["cols"], made["rows"]) == (10, 6)
+    owner.post(
+        "/api/v1/plantings",
+        json={
+            "crop": "testcrop",
+            "method": "direct",
+            "start_date": "2099-01-01",
+            "bed_id": bed["id"],
+            "cells": [[0, 0]],
+        },
+    )
+    resized = owner.patch(f"/api/v1/beds/{bed['id']}", json={"width": 1.2, "length": 2.4}).json()
+    assert resized["cell_cm"] == 30  # the new size is refitted, the planting maps onto it
+    assert owner.get("/api/v1/plantings").json()[0]["cells"]
+    same = owner.patch(f"/api/v1/beds/{bed['id']}", json={"name": "Renamed"}).json()
+    assert same["cell_cm"] == 30
+    manual = owner.patch(f"/api/v1/beds/{bed['id']}", json={"cell_cm": 20}).json()
+    assert manual["cell_cm"] == 20  # an explicit choice that fits stays

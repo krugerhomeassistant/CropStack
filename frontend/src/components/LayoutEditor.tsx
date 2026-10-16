@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
-import { Circle, MousePointer2, RectangleHorizontal, Rows3, Trash2, type LucideIcon } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Circle, MousePointer2, RectangleHorizontal, Rows3, Trash2, type LucideIcon } from 'lucide-react'
 import { api, type Bed, type BedIn, type BedKind, type CropSummary, type PlanItem, type Recommendation } from '../api'
 import { t } from '../i18n'
 import { useApp } from '../state'
-import BedGrid, { cropColour } from './BedGrid'
+import BedGrid, { addDays, cropColour, iso, PlantedSummary } from './BedGrid'
 import { cropIcon } from './cropIcon'
 import type { PlantRequest } from './Recommendations'
 import { Button, ErrorMessage, Field, IconButton, Section, Skeleton, Switch } from './ui'
@@ -11,6 +11,7 @@ import { Button, ErrorMessage, Field, IconButton, Section, Skeleton, Switch } fr
 const SNAP = 0.1 // metres
 const snap = (m: number) => Math.max(0, Math.round(m / SNAP) * SNAP)
 const round = (n: number) => Math.round(n * 100) / 100
+const MAX_GAP = 6 // metres: farther apart than this, beds are not shown as neighbours
 const MIN_DRAWN = 0.3 // a drag shorter than this in both directions is a click: place the default size
 
 type Tool = 'select' | BedKind
@@ -41,10 +42,32 @@ function frames(beds: Bed[]) {
   })
 }
 
+/** The clear ground between beds that face each other (nothing between them), as a dimension line: from (x1,y1) to (x2,y2). */
+function gaps(beds: Bed[]) {
+  const out: { key: string; x1: number; y1: number; x2: number; y2: number; m: number; ids: [number, number] }[] = []
+  const hit = (lo: number, hi: number, a: number, b: number) => Math.min(hi, b) - Math.max(lo, a) > 0.001
+  for (const a of beds)
+    for (const b of beds) {
+      if (a.id >= b.id) continue
+      for (const [p, q] of [[a, b], [b, a]]) {
+        const y0 = Math.max(p.y, q.y), y1 = Math.min(p.y + p.length, q.y + q.length)
+        const x0 = Math.max(p.x, q.x), x1 = Math.min(p.x + p.width, q.x + q.width)
+        const right = p.x + p.width, below = p.y + p.length
+        const blocked = (f: (o: Bed) => boolean) => beds.some((o) => o.id !== p.id && o.id !== q.id && f(o))
+        if (y1 - y0 > 0.05 && q.x - right > 0.05 && q.x - right <= MAX_GAP && !blocked((o) => hit(right, q.x, o.x, o.x + o.width) && hit(y0, y1, o.y, o.y + o.length)))
+          out.push({ key: `h${a.id}-${b.id}`, x1: right, x2: q.x, y1: (y0 + y1) / 2, y2: (y0 + y1) / 2, m: q.x - right, ids: [a.id, b.id] })
+        if (x1 - x0 > 0.05 && q.y - below > 0.05 && q.y - below <= MAX_GAP && !blocked((o) => hit(below, q.y, o.y, o.y + o.length) && hit(x0, x1, o.x, o.x + o.width)))
+          out.push({ key: `v${a.id}-${b.id}`, x1: x1 - x0 > 1.8 ? x1 - 0.3 : (x0 + x1) / 2, x2: x1 - x0 > 1.8 ? x1 - 0.3 : (x0 + x1) / 2, y1: below, y2: q.y, m: q.y - below, ids: [a.id, b.id] })
+      }
+    }
+  return out
+}
+
 /** The garden plan, drawn to scale in metres: draw beds by dragging, move or resize them, and group them into layouts. */
 export default function LayoutEditor({ onChange, suggested, request, plan }: { onChange: () => void; suggested: Recommendation[]; request: PlantRequest | null; plan: PlanItem[] }) {
   const { user } = useApp()
-  const today = new Date().toLocaleDateString('sv') // YYYY-MM-DD in local time
+  const today = iso(new Date())
+  const [on, setOn] = useState(request?.date ?? today) // the one date the plan and the bed panel both show
   const canEdit = user.role !== 'viewer'
   const [beds, setBeds] = useState<Bed[] | null>(null)
   const [selected, setSelected] = useState<number | null>(null)
@@ -62,6 +85,7 @@ export default function LayoutEditor({ onChange, suggested, request, plan }: { o
     api.beds().then(setBeds, (e) => setError(e instanceof Error ? e.message : t('Failed to load')))
   useEffect(() => {
     if (request?.bedId) setSelected(request.bedId)
+    if (request?.date) setOn(request.date)
   }, [request])
   useEffect(() => {
     load()
@@ -84,7 +108,7 @@ export default function LayoutEditor({ onChange, suggested, request, plan }: { o
   function create(r: Rect, kind: BedKind) {
     const tpl = TOOLS.find((x) => x.tool === kind)!
     const n = (beds ?? []).filter((b) => b.kind === kind).length + 1
-    const body: BedIn = { name: `${t(tpl.name!)} ${n}`, kind, x: round(r.x), y: round(r.y), width: round(r.width), length: round(r.length), cell_cm: 30, layout: '' }
+    const body: BedIn = { name: `${t(tpl.name!)} ${n}`, kind, x: round(r.x), y: round(r.y), width: round(r.width), length: round(r.length), layout: '' }
     api.addBed(body).then((b) => {
       setSelected(b.id)
       return refresh()
@@ -182,8 +206,18 @@ export default function LayoutEditor({ onChange, suggested, request, plan }: { o
   return (
     <div className="grid grid-cols-[minmax(0,1fr)] gap-4 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:items-start">
       <div className="lg:sticky lg:top-4">
-      <Section>
+      <Section name="plan">
         {error && <ErrorMessage>{error}</ErrorMessage>}
+      <div className="flex items-center gap-1">
+        <IconButton icon={ChevronLeft} label={t('A week earlier')} onClick={() => setOn(addDays(on, -7))} />
+        <input className="input w-auto flex-1" type="date" aria-label={t('Show the garden on')} value={on} onChange={(e) => e.target.value && setOn(e.target.value)} />
+        <IconButton icon={ChevronRight} label={t('A week later')} onClick={() => setOn(addDays(on, 7))} />
+        {on !== today && (
+          <Button variant="ghost" onClick={() => setOn(today)}>
+            {t('Today')}
+          </Button>
+        )}
+      </div>
       {canEdit && current?.layout && (
         <label className="flex min-h-11 items-center gap-2 text-sm">
           <Switch label={t('Beds in a layout move together')} checked={together} onChange={setTogether} />
@@ -224,9 +258,8 @@ export default function LayoutEditor({ onChange, suggested, request, plan }: { o
         ))}
         {beds.map((b) => {
           const cell = b.cell_cm / 100
-          const live = b.placements.filter((p) => p.from <= today && today <= p.until)
-          const growing = live.filter((p) => p.status !== 'planned')
-          const waiting = b.placements.filter((p) => p.status === 'planned' || p.from > today)
+          const growing = b.placements.filter((p) => p.from <= on && on <= p.until)
+          const waiting = b.placements.filter((p) => p.from > on)
           const isPot = b.kind === 'container'
           const size = Math.min(cell * 0.78, 0.5)
           const label = waiting.length > 0 ? `${b.name}  ⏳${waiting.length}` : b.name
@@ -253,7 +286,6 @@ export default function LayoutEditor({ onChange, suggested, request, plan }: { o
                 <rect data-testid="bed-body" x={b.x} y={b.y} width={b.width} height={b.length} rx={0.12} className="fill-feed/15 stroke-feed/60" strokeWidth={0.04} />
               )}
               <g clipPath={`url(#clip${b.id})`} className="pointer-events-none select-none">
-                {waiting.map((p) => mark(p, true))}
                 {growing.map((p) => mark(p, false))}
               </g>
               {b.crowded && <rect x={b.x} y={b.y} width={b.width} height={b.length} rx={0.12} fill="none" className="stroke-marigold pointer-events-none" strokeWidth={0.05} />}
@@ -263,6 +295,19 @@ export default function LayoutEditor({ onChange, suggested, request, plan }: { o
                   {label}
                 </text>
               </g>
+            </g>
+          )
+        })}
+        {gaps(beds).map((g) => {
+          const on = g.ids.includes(selected ?? -1)
+          const horizontal = g.y1 === g.y2
+          return (
+            <g key={g.key} className={`pointer-events-none select-none ${on ? 'stroke-leaf fill-leaf' : 'stroke-muted fill-muted'}`}>
+              <path d={horizontal ? `M${g.x1} ${g.y1}H${g.x2}M${g.x1} ${g.y1 - 0.08}V${g.y1 + 0.08}M${g.x2} ${g.y1 - 0.08}V${g.y1 + 0.08}` : `M${g.x1} ${g.y1}V${g.y2}M${g.x1 - 0.08} ${g.y1}H${g.x1 + 0.08}M${g.x1 - 0.08} ${g.y2}H${g.x1 + 0.08}`} strokeWidth={0.025} fill="none" />
+              <rect x={(horizontal ? (g.x1 + g.x2) / 2 : g.x1 + 0.1 + 0.24) - 0.24} y={(horizontal ? g.y1 - 0.1 : (g.y1 + g.y2) / 2 + 0.07) - 0.19} width={0.48} height={0.26} rx={0.1} className="fill-surface stroke-none" fillOpacity={0.85} />
+              <text x={horizontal ? (g.x1 + g.x2) / 2 : g.x1 + 0.1 + 0.24} y={horizontal ? g.y1 - 0.1 : (g.y1 + g.y2) / 2 + 0.07} textAnchor="middle" fontSize={0.2} stroke="none">
+                {round(g.m)} m
+              </text>
             </g>
           )
         })}
@@ -310,7 +355,7 @@ export default function LayoutEditor({ onChange, suggested, request, plan }: { o
         </div>
       )}
       </div>
-        {beds.some((b) => b.placements.length > 0) && <p className="text-xs text-muted">{t('Solid colour is growing now; faint colour is planned. ⏳ counts what is still to plant.')}</p>}
+        {beds.some((b) => b.placements.length > 0) && <p className="text-xs text-muted">{t('Only what is planted on the chosen date is shown; ⏳ counts what is still to plant. Step the date to see the rest.')}</p>}
         {beds.length === 0 && <p className="text-sm text-muted">{canEdit ? t('No beds yet. Choose Draw bed, then drag on the plan.') : t('No beds have been drawn yet.')}</p>}
         {beds.length > 0 && (
           <div className="flex gap-2 overflow-x-auto pb-1" role="group" aria-label={t('Beds')}>
@@ -324,8 +369,8 @@ export default function LayoutEditor({ onChange, suggested, request, plan }: { o
               >
                 {b.name}
                 {(() => {
-                  const live = b.placements.filter((p) => p.from <= today && today <= p.until && p.status !== 'planned')
-                  const wait = b.placements.filter((p) => p.status === 'planned' || p.from > today).length
+                  const live = b.placements.filter((p) => p.from <= on && on <= p.until)
+                  const wait = b.placements.filter((p) => p.from > on).length
                   const icons = [...new Set(live.map((p) => cropIcon(p.crop)))].slice(0, 3).join('')
                   return icons || wait ? <span className="ml-2 font-normal" aria-hidden>{icons}{wait > 0 && ` ⏳${wait}`}</span> : null
                 })()}
@@ -351,10 +396,14 @@ export default function LayoutEditor({ onChange, suggested, request, plan }: { o
           {canEdit && editBed && (
             <BedForm key={`form${current.id}:${current.width}:${current.length}`} bed={current} layouts={layouts} onSaved={refresh} onDeleted={() => { setSelected(null); refresh() }} fail={fail} />
           )}
-          <BedGrid key={`grid${current.id}`} bed={current} crops={crops} suggested={suggested} plan={plan.filter((i) => i.bed_id === current.id)} request={request && (request.bedId === null || request.bedId === current.id) ? request : null} onChange={refresh} />
+          <BedGrid key={`grid${current.id}`} bed={current} crops={crops} suggested={suggested} plan={plan.filter((i) => i.bed_id === current.id)} on={on} request={request && (request.bedId === null || request.bedId === current.id) ? request : null} onChange={refresh} />
         </Section>
       ) : (
-        beds.length > 0 && <p className="px-1 text-sm text-muted">{t('Tap a bed to plant in it.')}</p>
+        beds.length > 0 && (
+          <Section title={t('What is planted')} description={t('Tap a bed to plant in it.')}>
+            <PlantedSummary beds={beds} on={on} />
+          </Section>
+        )
       )}
     </div>
   )
@@ -371,7 +420,7 @@ function BedForm({ bed, layouts, onSaved, onDeleted, fail }: { bed: Bed; layouts
       className="flex flex-wrap items-end gap-2 rounded-[var(--radius-row)] bg-sunken p-3"
       onSubmit={(e) => {
         e.preventDefault()
-        api.updateBed(bed.id, { name, width: Number(width), length: Number(length), cell_cm: Number(cell), layout: layout.trim() }).then(onSaved, fail)
+        api.updateBed(bed.id, { name, width: Number(width), length: Number(length), ...(Number(cell) !== bed.cell_cm && { cell_cm: Number(cell) }), layout: layout.trim() }).then(onSaved, fail)
       }}
     >
       <Field label={t('Name')}>
@@ -391,7 +440,7 @@ function BedForm({ bed, layouts, onSaved, onDeleted, fail }: { bed: Bed; layouts
       <Field label={t('Length (m)')}>
         <input className="input w-24" type="number" min="0.1" max="100" step="0.1" required value={length} onChange={(e) => setLength(e.target.value)} />
       </Field>
-      <Field label={t('Cell size (cm)')} hint={t('Plants keep their place; the cells are redrawn to the new size.')}>
+      <Field label={t('Cell size (cm)')} hint={t('Set automatically so whole cells fit the bed. Change it only for finer or coarser cells; plants keep their place.')}>
         <input className="input w-24" type="number" min="5" max="100" step="5" required value={cell} onChange={(e) => setCell(e.target.value)} />
       </Field>
       <Button type="submit">{t('Save')}</Button>

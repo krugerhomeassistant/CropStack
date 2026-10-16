@@ -7,7 +7,6 @@ import { t } from '../i18n'
 import { useApp } from '../state'
 import CalendarTab from '../components/CalendarTab'
 import LayoutEditor from '../components/LayoutEditor'
-import GardenMap from '../components/GardenMap'
 import Plantings from '../components/Plantings'
 import Recommendations, { type PlantRequest } from '../components/Recommendations'
 import YearPlan from '../components/YearPlan'
@@ -77,11 +76,10 @@ export default function GardenPage() {
       />
       <div hidden={tab !== 'plan'} className="flex flex-col gap-4">
       <LayoutEditor key={planRev} suggested={recs?.now ?? []} plan={plan} request={request} onChange={() => setRev((r) => r + 1)} />
-      <GardenMap garden={garden} canEdit={user.role !== 'viewer'} />
       </div>
       {tab === 'plant' && (
         <YearPlan
-          hasBeds={!!recs?.has_beds}
+          hasBeds={recs ? !!recs.has_beds : true}
           scheduled={recs?.scheduled ?? 0}
           onCleared={() => {
             setRev((r) => r + 1)
@@ -94,7 +92,6 @@ export default function GardenPage() {
             setRev((r) => r + 1)
             setPlanRev((r) => r + 1)
             loadRecs()
-            go('plan')
           }}
         />
       )}

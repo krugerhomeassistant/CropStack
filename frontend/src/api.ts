@@ -98,6 +98,7 @@ export type Planting = {
   cells: [number, number][]
   ends_on: string | null
   notes: string
+  source?: string // 'plan' when the year plan made it
   harvest_from?: string | null
   harvest_to?: string | null
   next_job?: { title: string; date: string } | null
@@ -176,7 +177,7 @@ export type Bed = {
   unknown_footprint: number
   crowded: boolean
 }
-export type BedIn = Pick<Bed, 'name' | 'kind' | 'x' | 'y' | 'width' | 'length' | 'cell_cm' | 'layout'>
+export type BedIn = Pick<Bed, 'name' | 'kind' | 'x' | 'y' | 'width' | 'length' | 'layout'> & Partial<Pick<Bed, 'cell_cm'>> // no cell_cm: the server picks one that fits
 export type Placement = {
   planting_id: number
   crop: string
