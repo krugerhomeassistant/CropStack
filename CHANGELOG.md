@@ -5,6 +5,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.46.0] - 2026-10-16
+
+### Added
+- **Gaps between beds on the plot plan.** Where two beds face each other with nothing between them, a thin dimension line shows the clear ground in metres (up to 6 m apart). It follows the bed while you drag it, and lines for the selected bed turn green.
+
+### Removed
+- **The Garden map section** (Leaflet with satellite/street tiles and the draggable origin pin) and its `leaflet`, `react-leaflet` and `@types/leaflet` dependencies. The plot plan is the one place beds are positioned. Place search in garden setup (OpenStreetMap Nominatim) stays. A top-view image (drone photo) as a plan background is planned instead.
+
 ## [0.45.1] - 2026-10-16
 
 ### Fixed
@@ -428,7 +436,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - CI: ruff lint and format, backend tests, frontend build, image publishing to GHCR and automatic GitHub releases on a version bump.
 - Project docs: README, wiki, architecture, roadmap, contributing guide, security policy and Code of Conduct.
 
-[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.45.1...HEAD
+[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.46.0...HEAD
+[0.46.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.45.1...v0.46.0
 [0.45.1]: https://github.com/krugerhomeassistant/CropStack/compare/v0.45.0...v0.45.1
 [0.45.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.44.0...v0.45.0
 [0.44.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.43.0...v0.44.0

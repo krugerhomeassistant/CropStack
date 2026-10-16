@@ -11,6 +11,7 @@ import { Button, ErrorMessage, Field, IconButton, Section, Skeleton, Switch } fr
 const SNAP = 0.1 // metres
 const snap = (m: number) => Math.max(0, Math.round(m / SNAP) * SNAP)
 const round = (n: number) => Math.round(n * 100) / 100
+const MAX_GAP = 6 // metres: farther apart than this, beds are not shown as neighbours
 const MIN_DRAWN = 0.3 // a drag shorter than this in both directions is a click: place the default size
 
 type Tool = 'select' | BedKind
@@ -39,6 +40,27 @@ function frames(beds: Bed[]) {
     const y = Math.min(...members.map((b) => b.y)) - 0.2
     return { name, ids: members.map((b) => b.id), x, y, width: Math.max(...members.map((b) => b.x + b.width)) + 0.2 - x, length: Math.max(...members.map((b) => b.y + b.length)) + 0.2 - y }
   })
+}
+
+/** The clear ground between beds that face each other (nothing between them), as a dimension line: from (x1,y1) to (x2,y2). */
+function gaps(beds: Bed[]) {
+  const out: { key: string; x1: number; y1: number; x2: number; y2: number; m: number; ids: [number, number] }[] = []
+  const hit = (lo: number, hi: number, a: number, b: number) => Math.min(hi, b) - Math.max(lo, a) > 0.001
+  for (const a of beds)
+    for (const b of beds) {
+      if (a.id >= b.id) continue
+      for (const [p, q] of [[a, b], [b, a]]) {
+        const y0 = Math.max(p.y, q.y), y1 = Math.min(p.y + p.length, q.y + q.length)
+        const x0 = Math.max(p.x, q.x), x1 = Math.min(p.x + p.width, q.x + q.width)
+        const right = p.x + p.width, below = p.y + p.length
+        const blocked = (f: (o: Bed) => boolean) => beds.some((o) => o.id !== p.id && o.id !== q.id && f(o))
+        if (y1 - y0 > 0.05 && q.x - right > 0.05 && q.x - right <= MAX_GAP && !blocked((o) => hit(right, q.x, o.x, o.x + o.width) && hit(y0, y1, o.y, o.y + o.length)))
+          out.push({ key: `h${a.id}-${b.id}`, x1: right, x2: q.x, y1: (y0 + y1) / 2, y2: (y0 + y1) / 2, m: q.x - right, ids: [a.id, b.id] })
+        if (x1 - x0 > 0.05 && q.y - below > 0.05 && q.y - below <= MAX_GAP && !blocked((o) => hit(below, q.y, o.y, o.y + o.length) && hit(x0, x1, o.x, o.x + o.width)))
+          out.push({ key: `v${a.id}-${b.id}`, x1: (x0 + x1) / 2, x2: (x0 + x1) / 2, y1: below, y2: q.y, m: q.y - below, ids: [a.id, b.id] })
+      }
+    }
+  return out
 }
 
 /** The garden plan, drawn to scale in metres: draw beds by dragging, move or resize them, and group them into layouts. */
@@ -263,6 +285,18 @@ export default function LayoutEditor({ onChange, suggested, request, plan }: { o
                   {label}
                 </text>
               </g>
+            </g>
+          )
+        })}
+        {gaps(beds).map((g) => {
+          const on = g.ids.includes(selected ?? -1)
+          const horizontal = g.y1 === g.y2
+          return (
+            <g key={g.key} className={`pointer-events-none select-none ${on ? 'stroke-leaf fill-leaf' : 'stroke-muted fill-muted'}`}>
+              <path d={horizontal ? `M${g.x1} ${g.y1}H${g.x2}M${g.x1} ${g.y1 - 0.08}V${g.y1 + 0.08}M${g.x2} ${g.y1 - 0.08}V${g.y1 + 0.08}` : `M${g.x1} ${g.y1}V${g.y2}M${g.x1 - 0.08} ${g.y1}H${g.x1 + 0.08}M${g.x1 - 0.08} ${g.y2}H${g.x1 + 0.08}`} strokeWidth={0.025} fill="none" />
+              <text x={horizontal ? (g.x1 + g.x2) / 2 : g.x1 + 0.1} y={horizontal ? g.y1 - 0.1 : (g.y1 + g.y2) / 2 + 0.07} textAnchor={horizontal ? 'middle' : 'start'} fontSize={0.2} stroke="none">
+                {round(g.m)} m
+              </text>
             </g>
           )
         })}
