@@ -427,3 +427,24 @@ def test_the_plan_reports_coverage_and_targets_scale_with_people(owner, monkeypa
         assert two["coverage"]["groups"][group]["target_kg"] == round(needs.weekly_target(2)[group] * needs.WEEKS, 1)
         assert four["coverage"]["groups"][group]["target_kg"] == round(needs.weekly_target(4)[group] * needs.WEEKS, 1)
     assert 0 <= four["coverage"]["overall"] <= 1 and four["skipped_no_yield"] == []
+
+
+def test_a_drafted_year_plan_can_always_be_accepted_and_replanned(owner, monkeypatch):  # noqa: F811
+    from pathlib import Path
+
+    from app import catalog as cat
+    from app.main import app
+    from tests.e2e_server import fake_archive
+
+    # The real catalog: crops whose days to maturity differ from their catalog cycle exposed a draft/accept mismatch.
+    monkeypatch.setattr(app.state, "catalog", cat.load(Path(__file__).resolve().parents[2] / "catalog"))
+    monkeypatch.setattr(external, "fetch_climate_archive", fake_archive)
+    owner.put("/api/v1/sites/current", json=GARDEN)
+    for n, (width, length) in enumerate([(1.2, 2.4), (1.2, 2.4), (1.2, 3.6), (1.2, 2.4)], 1):
+        owner.post("/api/v1/beds", json={"name": f"Bed {n}", "width": width, "length": length})
+    for _ in range(2):  # the second round replaces the first
+        items = owner.get("/api/v1/plan/year").json()["items"]
+        assert items
+        body = [{k: i[k] for k in ("crop", "method", "start_date", "set_out_date", "bed_id", "cells")} for i in items]
+        accepted = owner.post("/api/v1/plan/year", json=body)  # what the app sends: no ends_on
+        assert accepted.status_code == 201, accepted.text

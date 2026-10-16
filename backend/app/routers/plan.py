@@ -161,11 +161,14 @@ def year_plan(me: MemberDep, db: SessionDep, c: CatalogDep) -> dict:
         for o in best.values():
             planted = o["best_from"]
             days = round(o["days_to_maturity"].get("p90") or f["cycle_days"] or layout.DEFAULT_CYCLE_DAYS)
+            # Accepted plantings hold their cells for the catalog cycle (no ends_on is saved), so the draft must
+            # reserve at least that long or accepting it would clash with itself.
+            hold = max(days, round(f["cycle_days"] or layout.DEFAULT_CYCLE_DAYS))
             transplant = o["method"] == "transplant"
             start = planted - timedelta(days=o["age_days"]) if transplant else planted
             wants.append(
                 yearplan.Want(
-                    slug, f["name"], f["family"], o["method"], start, planted if transplant else None, planted, days,
+                    slug, f["name"], f["family"], o["method"], start, planted if transplant else None, planted, hold,
                     o["success"], f["dims"],
                     planted + timedelta(days=round(o["days_to_maturity"].get("p10") or days)),
                     planted + timedelta(days=days),
