@@ -13,6 +13,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 ### Fixed
 - **Cells no longer hang over the edge of a bed.** A 2.5 m bed on 30 cm cells got nine columns (2.7 m), so the last column of plants stuck out of the bed on the plan. The cell size is now picked so whole cells fit the bed exactly, the one nearest 30 cm (2.5 × 1.5 m gets 25 cm cells), when you draw a bed and again when you resize it. A size you set yourself stays while it still fits. Existing beds are refitted once on update; their plantings are mapped onto the new cells and the overhang is dropped. Beds whose sides are not a multiple of 5 cm keep 30 cm.
 
+### Added
+- **Resizable windows.** Every window (plan, bed panel, year plan and the rest) has a bar at its bottom edge: drag it to make the window taller or shorter, use the arrow keys when it is focused, double tap to give it back its own height. The size is remembered per window on that device; the content scrolls inside a shortened window.
+
 ### Changed
 - **One date for the whole plan.** The date stepper moved from the bed panel to above the plan, so the plan and the bed panel always show the same day. Both show only what is planted on that date (before, the plan showed planned crops faint while the bed panel showed an empty grid). The whole plan stays on the Plant tab.
 - **What is planted.** The bed panel lists the plants per crop ("6× Chilli") for the chosen date, and with no bed selected the same list covers the whole garden.

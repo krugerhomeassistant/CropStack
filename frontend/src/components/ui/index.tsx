@@ -7,6 +7,7 @@ import {
   useEffect,
   useId,
   useRef,
+  useState,
   type ButtonHTMLAttributes,
   type ReactElement,
   type ReactNode,
@@ -73,8 +74,22 @@ export function PageHeader({ title, subtitle, back }: { title: string; subtitle?
   )
 }
 
+const MIN_WINDOW = 120 // px
+const sizeKey = (name: string) => `cropstack-window-${name}`
+const savedSize = (name?: string) => {
+  try {
+    const n = name ? Number(localStorage.getItem(sizeKey(name))) : 0
+    return n >= MIN_WINDOW ? n : null
+  } catch {
+    return null // storage can be blocked: the window just stays automatic
+  }
+}
+
+/** A window you can make taller or shorter by dragging its bottom handle (or with the arrow keys); a double tap on the
+ *  handle gives it back its own height. The size is remembered per window `name` (its title unless given). */
 export function Section({
   title,
+  name,
   description,
   action,
   children,
@@ -82,6 +97,7 @@ export function Section({
   ...rest
 }: {
   title?: string
+  name?: string
   description?: ReactNode
   action?: ReactNode
   children?: ReactNode
@@ -89,8 +105,27 @@ export function Section({
   'aria-label'?: string
 }) {
   const id = useId()
+  const key = name ?? title
+  const box = useRef<HTMLElement>(null)
+  const drag = useRef<{ y: number; h: number } | null>(null)
+  const [height, setHeight] = useState<number | null>(() => savedSize(key))
+  const keep = (h: number | null) => {
+    setHeight(h)
+    try {
+      if (key) h === null ? localStorage.removeItem(sizeKey(key)) : localStorage.setItem(sizeKey(key), String(Math.round(h)))
+    } catch {
+      /* not remembered */
+    }
+  }
+  const clamp = (h: number) => Math.min(4000, Math.max(MIN_WINDOW, h))
   return (
-    <section className={join('card flex flex-col gap-4', className)} aria-labelledby={title ? id : undefined} {...rest}>
+    <section
+      ref={box}
+      className={join('card flex flex-col gap-4', height !== null && 'overflow-y-auto', className)}
+      style={height === null ? undefined : { height }}
+      aria-labelledby={title ? id : undefined}
+      {...rest}
+    >
       {(title || action) && (
         <div className="flex items-start justify-between gap-3">
           <div>
@@ -105,6 +140,36 @@ export function Section({
         </div>
       )}
       {children}
+      {key && (
+        <div
+          role="separator"
+          aria-orientation="horizontal"
+          aria-label={t('Resize window')}
+          aria-valuenow={height ?? undefined}
+          tabIndex={0}
+          title={t('Drag to resize; double tap to reset')}
+          className="sticky bottom-0 z-10 -mb-2 flex h-5 shrink-0 cursor-row-resize touch-none items-center justify-center"
+          onPointerDown={(e) => {
+            e.currentTarget.setPointerCapture(e.pointerId)
+            drag.current = { y: e.clientY, h: box.current?.offsetHeight ?? MIN_WINDOW }
+          }}
+          onPointerMove={(e) => drag.current && e.buttons && setHeight(clamp(drag.current.h + e.clientY - drag.current.y))}
+          onPointerUp={() => {
+            if (drag.current && height !== null) keep(height)
+            drag.current = null
+          }}
+          onDoubleClick={() => keep(null)}
+          onKeyDown={(e) => {
+            const now = box.current?.offsetHeight ?? MIN_WINDOW
+            if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+              e.preventDefault()
+              keep(clamp(now + (e.key === 'ArrowDown' ? 40 : -40)))
+            } else if (e.key === 'Escape' || e.key === 'Home') keep(null)
+          }}
+        >
+          <span className="h-1 w-10 rounded-full bg-line" aria-hidden />
+        </div>
+      )}
     </section>
   )
 }

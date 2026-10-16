@@ -70,3 +70,5 @@ Plain verbs, sentence case, the user's words ("Water bed 3", not "Irrigation eve
 ## The planner (v0.38.0)
 
 The one place the app is allowed earth tones: the garden map is a plot plan. Beds use a soft `feed` tint with a thin edge, planted cells are tiles in the crop's colour (the same colour as in the bed editor) with the crop icon on top, the ground is a fine one-metre grid, and the selected bed has a soft `leaf` halo and thin ring. The bed editor sits in a thin rounded frame, not a thick border. Tools float over the map as a single pill (floating things may carry a shadow). Where two beds face each other, a thin dimension line shows the gap in metres (muted; green for the selected bed). The map frames the beds (1 m of margin, 2.6 m below for the pill) and holds still while a bed is dragged. Desktop: map (3/5) and bed panel (2/5) side by side; phone: stacked.
+
+**Resizable windows.** `Section` carries a bottom handle (`role=separator`) that sets the window's height by drag or arrow keys; double tap resets it. The height is kept in `localStorage` under the window's title (or its `name`, for a window without one). Content scrolls inside a shortened window.
