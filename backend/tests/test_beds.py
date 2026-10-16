@@ -502,3 +502,10 @@ def test_a_beds_cells_follow_the_plants_it_holds(owner, monkeypatch):  # noqa: F
     assert made.status_code == 201 and made.json()["quantity"] == 1
     wide = owner.patch(url, json={"for_crop": "tomato"}).json()  # a bigger plant never coarsens a bed with small ones
     assert wide["cell_cm"] == 10
+
+
+def test_a_null_quantity_never_reaches_the_database(owner):  # noqa: F811
+    bed = owner.post("/api/v1/beds", json={"name": "Q", "width": 1.2, "length": 1.2}).json()
+    made = plant(owner, bed["id"], [[0, 0]], "2026-08-30").json()
+    done = owner.patch(f"/api/v1/plantings/{made['id']}", json={"cells": [[0, 0], [1, 0]], "quantity": None})
+    assert done.status_code == 200 and done.json()["quantity"] >= 1

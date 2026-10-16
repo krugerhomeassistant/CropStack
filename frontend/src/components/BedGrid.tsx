@@ -155,7 +155,11 @@ export default function BedGrid({
       const union = [...same.cells, ...cells.filter(([c, r]) => !same.cells.some(([x, y]) => x === c && y === r))]
       if (union.length === same.cells.length) return
       api
-        .updatePlanting(same.planting_id, { cells: union, quantity: Math.max(1, Math.round((same.quantity * union.length) / same.cells.length)) })
+        .updatePlanting(same.planting_id, {
+          cells: union,
+          // a planting with no cells yet has no density to scale from; the server then keeps its count
+          ...(same.cells.length ? { quantity: Math.max(1, Math.round((same.quantity * union.length) / same.cells.length)) } : {}),
+        })
         .then(onChange, fail)
       return
     }
