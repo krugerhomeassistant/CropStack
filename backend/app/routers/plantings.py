@@ -117,7 +117,7 @@ def list_plantings(me: MemberDep, db: SessionDep, c: CatalogDep) -> list[dict]:
     return [_view(p, c) | ahead.get(p.id, empty) for p in rows]
 
 
-def make_planting(body: PlantingIn, me: EditorDep, db: SessionDep, c: CatalogDep, refit: bool = False) -> Planting:
+def make_planting(body: PlantingIn, me: EditorDep, db: SessionDep, c: CatalogDep) -> Planting:
     """A Planting row for `body`, added to the session but not committed."""
     if c.get("crop", body.crop) is None:
         raise HTTPException(422, f"No crop {body.crop!r} in the catalog")
@@ -126,13 +126,6 @@ def make_planting(body: PlantingIn, me: EditorDep, db: SessionDep, c: CatalogDep
         bed = _bed(db, me.household_id, body.bed_id)
         data["location"] = bed.name
         data["cells"] = _cells(body.cells)
-        if refit:  # a bed's cells follow its plants; the cells just painted are on the old grid
-            from .beds import regrid, suits
-
-            want = suits(db, c, me.household_id, bed, body.crop)
-            if want != bed.cell_cm:
-                data["cells"] = layout.remap(data["cells"], bed.cell_cm, want)
-                regrid(db, bed, want)
         if body.quantity is None:
             from .beds import crop_facts
 
@@ -154,7 +147,7 @@ def make_planting(body: PlantingIn, me: EditorDep, db: SessionDep, c: CatalogDep
 
 @router.post("", status_code=201)
 def add_planting(body: PlantingIn, me: EditorDep, db: SessionDep, c: CatalogDep) -> dict:
-    row = make_planting(body, me, db, c, refit=True)
+    row = make_planting(body, me, db, c)
     db.add(row)
     db.commit()
     refresh_tasks(db, me.household_id, c)  # commits, which expires `row`
