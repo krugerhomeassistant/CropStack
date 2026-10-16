@@ -13,6 +13,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 ### Fixed
 - **Cells no longer hang over the edge of a bed.** A 2.5 m bed on 30 cm cells got nine columns (2.7 m), so the last column of plants stuck out of the bed on the plan. The cell size is now picked so whole cells fit the bed exactly, the one nearest 30 cm (2.5 × 1.5 m gets 25 cm cells), when you draw a bed and again when you resize it. A size you set yourself stays while it still fits. Existing beds are refitted once on update; their plantings are mapped onto the new cells and the overhang is dropped. Beds whose sides are not a multiple of 5 cm keep 30 cm.
 
+### Changed
+- **One date for the whole plan.** The date stepper moved from the bed panel to above the plan, so the plan and the bed panel always show the same day. Plantings that start later show faint in both (before, the bed panel showed them nowhere, so a bed with a cabbage planned looked empty).
+- **What is planted.** The bed panel lists the plants per crop ("6× Chilli", with "+4 planned" for what goes in later), and with no bed selected the same list covers the whole garden.
+- Beetroot, radish, strawberry and tomato are now red, chilli orange-red, carrot orange, and the other well-known crops keep their natural colours (beetroot was purple); other crops keep a steady colour from their name.
+
 ### Removed
 - **The Garden map section** (Leaflet with satellite/street tiles and the draggable origin pin) and its `leaflet`, `react-leaflet` and `@types/leaflet` dependencies. The plot plan is the one place beds are positioned. Place search in garden setup (OpenStreetMap Nominatim) stays. A top-view image (drone photo) as a plan background is planned instead.
 

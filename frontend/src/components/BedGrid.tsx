@@ -1,22 +1,55 @@
 import { useEffect, useRef, useState } from 'react'
-import { ChevronLeft, ChevronRight, Eraser } from 'lucide-react'
+import { Eraser } from 'lucide-react'
 import { api, type Bed, type CropSummary, type Placement, type PlanItem, type Recommendation } from '../api'
 import { t } from '../i18n'
 import { useApp } from '../state'
 import { CropSheet, toRequest, type PlantRequest } from './Recommendations'
 import { cropIcon } from './cropIcon'
-import { Button, ErrorMessage, Field, IconButton } from './ui'
+import { Button, ErrorMessage, Field } from './ui'
 
-const iso = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
-const addDays = (s: string, n: number) => iso(new Date(new Date(`${s}T00:00:00`).getTime() + n * 864e5))
+export const iso = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+export const addDays = (s: string, n: number) => iso(new Date(new Date(`${s}T00:00:00`).getTime() + n * 864e5))
 const key = (c: number, r: number) => `${c},${r}`
 const show = (s: string) => new Date(`${s}T00:00:00`).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })
 
 /** A steady colour for each crop, so the same crop looks the same everywhere. */
 export function cropColour(slug: string): string {
-  let h = 0
-  for (const ch of slug) h = (h * 31 + ch.charCodeAt(0)) % 360
+  let h = HUES[slug]
+  if (h === undefined) {
+    h = 0
+    for (const ch of slug) h = (h * 31 + ch.charCodeAt(0)) % 360
+  }
   return `hsl(${h} 55% 55% / 0.5)`
+}
+// Crops whose colour everyone knows keep it; the rest get a steady hue from their name.
+const HUES: Record<string, number> = {
+  beetroot: 350, radish: 335, strawberry: 355, tomato: 8, chilli: 18, carrot: 30, pumpkin: 34, 'sweet-potato': 24, potato: 42, onion: 40,
+  'sweet-corn': 52, lettuce: 105, cabbage: 95, kale: 140, spinach: 130, broccoli: 150, cucumber: 118, zucchini: 135, 'green-bean': 100, pea: 85, eggplant: 285,
+}
+
+/** What is in a bed (or the whole garden) on a date: plants per crop, and how many more are planned. */
+export function PlantedSummary({ beds, on }: { beds: Bed[]; on: string }) {
+  const sums = new Map<string, { name: string; now: number; later: number }>()
+  for (const b of beds)
+    for (const p of b.placements) {
+      if (p.until < on) continue
+      const s = sums.get(p.crop) ?? { name: p.name, now: 0, later: 0 }
+      if (p.from <= on) s.now += p.quantity
+      else s.later += p.quantity
+      sums.set(p.crop, s)
+    }
+  if (sums.size === 0) return <p className="text-sm text-muted">{t('Nothing planted or planned on this date.')}</p>
+  return (
+    <ul className="flex flex-col gap-0.5 text-sm" aria-label={t('What is planted')}>
+      {[...sums].map(([crop, s]) => (
+        <li key={crop} className="flex items-center gap-2">
+          <span aria-hidden>{cropIcon(crop)}</span>
+          <span className="font-semibold">{s.now}× {s.name}</span>
+          {s.later > 0 && <span className="text-muted">{t('+{n} planned', { n: s.later })}</span>}
+        </li>
+      ))}
+    </ul>
+  )
 }
 
 type Brush = { crop: string; method: 'direct' | 'transplant'; weeks: number } | 'erase' | null
@@ -30,6 +63,7 @@ export default function BedGrid({
   suggested,
   request,
   plan,
+  on,
   onChange,
 }: {
   bed: Bed
@@ -37,11 +71,11 @@ export default function BedGrid({
   suggested: Recommendation[]
   request: PlantRequest | null
   plan: PlanItem[]
+  on: string // the date being looked at, chosen above the plan
   onChange: () => void
 }) {
   const canEdit = useApp().user.role !== 'viewer'
   const today = iso(new Date())
-  const [on, setOn] = useState(request?.date ?? today)
   const [brush, setBrush] = useState<Brush>(request ? { crop: request.crop, method: request.method, weeks: request.weeks } : null)
   const [painted, setPainted] = useState<string[]>([])
   const strokeRef = useRef<string[]>([]) // the cells of the stroke so far; a quick tap can end before a re-render
@@ -58,11 +92,13 @@ export default function BedGrid({
   useEffect(() => {
     if (!request) return
     setBrush({ crop: request.crop, method: request.method, weeks: request.weeks })
-    setOn(request.date)
   }, [request])
 
   const here = (c: number, r: number) =>
     bed.placements.filter((p) => p.cells.some(([x, y]) => x === c && y === r) && p.from <= on && on <= p.until)
+  // what is still to go in (starts after this date), shown faded like on the plan
+  const soon = (c: number, r: number) =>
+    bed.placements.filter((p) => p.from > on && p.cells.some(([x, y]) => x === c && y === r)).sort((a, b) => a.from.localeCompare(b.from))[0]
   // the drafted year plan, shown dashed on cells that are empty on this date
   const ghost = (c: number, r: number) =>
     plan.find((i) => i.cells.some(([x, y]) => x === c && y === r) && (i.set_out_date ?? i.start_date) <= on && on <= i.until)
@@ -88,7 +124,7 @@ export default function BedGrid({
     if (brush && canEdit) return add(e)
     const k = at(e)
     const [c, r] = k ? k.split(',').map(Number) : [-1, -1]
-    const p = here(c, r)[0] ?? null
+    const p = here(c, r)[0] ?? soon(c, r) ?? null
     setInfo(p)
     setEditing(false)
     setUntil(p?.until ?? '')
@@ -142,7 +178,6 @@ export default function BedGrid({
   }
 
   const crop = brush && brush !== 'erase' ? brush : null
-  const legend = [...new Map(bed.placements.map((p) => [p.crop, p.name])).entries()]
   const chips = suggested.slice(0, SUGGESTED)
   const nameOf = (slug: string) => crops.find((c) => c.slug === slug)?.names.en?.[0] ?? slug
   const pick = (r: Recommendation) => {
@@ -152,22 +187,9 @@ export default function BedGrid({
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-col gap-1">
-        <p className="text-sm font-semibold">{t('Date')}</p>
-        <div className="flex items-center gap-1">
-          <IconButton icon={ChevronLeft} label={t('A week earlier')} onClick={() => setOn(addDays(on, -7))} />
-          <input className="input w-auto flex-1" type="date" aria-label={t('Show the bed on')} value={on} onChange={(e) => e.target.value && setOn(e.target.value)} />
-          <IconButton icon={ChevronRight} label={t('A week later')} onClick={() => setOn(addDays(on, 7))} />
-          {on !== today && (
-            <Button variant="ghost" onClick={() => setOn(today)}>
-              {t('Today')}
-            </Button>
-          )}
-        </div>
-        {canEdit && on < today && (
-          <p className="text-sm text-muted">{t('Already growing? Plant on the day it went in and it is recorded as sown (or set out), with its harvest worked out from then.')}</p>
-        )}
-      </div>
+      {canEdit && on < today && (
+        <p className="text-sm text-muted">{t('Already growing? Plant on the day it went in and it is recorded as sown (or set out), with its harvest worked out from then.')}</p>
+      )}
 
       {canEdit && (
         <div className="flex flex-col gap-2">
@@ -273,7 +295,8 @@ export default function BedGrid({
           Array.from({ length: bed.cols }, (_, c) => {
             const p = here(c, r)
             const marked = painted.includes(key(c, r))
-            const g = p[0] ? undefined : ghost(c, r)
+            const later = p[0] ? undefined : soon(c, r)
+            const g = p[0] || later ? undefined : ghost(c, r)
             return (
               <g key={key(c, r)}>
                 <rect
@@ -282,19 +305,19 @@ export default function BedGrid({
                   width={0.94}
                   height={0.94}
                   rx={0.14}
-                  fill={marked ? (crop ? cropColour(crop.crop) : 'transparent') : p[0] ? cropColour(p[0].crop) : g ? cropColour(g.crop) : 'transparent'}
-                  fillOpacity={g && !marked ? 0.45 : 1}
+                  fill={marked ? (crop ? cropColour(crop.crop) : 'transparent') : p[0] ? cropColour(p[0].crop) : later ? cropColour(later.crop) : g ? cropColour(g.crop) : 'transparent'}
+                  fillOpacity={later && !marked ? 0.3 : g && !marked ? 0.45 : 1}
                   className={clashing.has(key(c, r)) ? 'stroke-danger' : marked || g ? 'stroke-ink' : 'stroke-line'}
                   strokeWidth={clashing.has(key(c, r)) || marked || g ? 0.06 : 0.025}
                   strokeDasharray={marked || g ? '0.15 0.1' : undefined}
                 />
-                {(p[0] || g) && (
-                  <text textAnchor="middle" className="pointer-events-none fill-ink">
+                {(p[0] || later || g) && (
+                  <text textAnchor="middle" className="pointer-events-none fill-ink" opacity={later ? 0.55 : 1}>
                     <tspan x={c + 0.5} y={r + 0.52} fontSize={0.4}>
-                      {cropIcon((p[0] ?? g!).crop)}
+                      {cropIcon((p[0] ?? later ?? g!).crop)}
                     </tspan>
                     <tspan x={c + 0.5} y={r + 0.82} fontSize={0.2}>
-                      {(p[0]?.name ?? g!.name).slice(0, 6)}
+                      {(p[0] ?? later ?? g!).name.slice(0, 6)}
                     </tspan>
                   </text>
                 )}
@@ -308,8 +331,9 @@ export default function BedGrid({
         {t('One cell is {size} cm square.', { size: bed.cell_cm })}
         {plan.length > 0 && ` ${t('Dashed cells are the drafted plan; step the date to see it through the year.')}`}
         {bed.outside > 0 && ` ${t('{n} planted cells sit beyond the edge of this bed; make the bed bigger to see them.', { n: bed.outside })}`}
-        {legend.length > 0 && ` ${t('In this bed: {crops}.', { crops: legend.map(([, n]) => n).join(', ') })}`}
+        {bed.placements.some((p) => p.from > on) && ` ${t('Faint cells are planted later; step the date to see them.')}`}
       </p>
+      <PlantedSummary beds={[bed]} on={on} />
 
       {info && (
         <div className="flex flex-col gap-2 rounded-[var(--radius-row)] bg-sunken p-3 text-sm">
