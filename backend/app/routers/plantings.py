@@ -167,6 +167,8 @@ def update_planting(planting_id: int, body: PlantingPatch, me: EditorDep, db: Se
     row = _own(db, me.household_id, planting_id)
     changes = body.model_dump(exclude_unset=True)
     status = changes.pop("status", None)
+    if changes.get("quantity") is None:
+        changes.pop("quantity", None)  # a count cannot be cleared
     if changes.get("bed_id") is not None:
         bed = _bed(db, me.household_id, changes["bed_id"])
         changes["location"] = bed.name

@@ -5,6 +5,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.46.2] - 2026-10-16
+
+### Fixed
+- Painting more of a crop onto a planting that had no cells yet failed with "Request failed (500)" (its plant count became empty). The count is now kept, and the server never accepts an empty count.
+
 ## [0.46.1] - 2026-10-16
 
 ### Changed
@@ -458,7 +463,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - CI: ruff lint and format, backend tests, frontend build, image publishing to GHCR and automatic GitHub releases on a version bump.
 - Project docs: README, wiki, architecture, roadmap, contributing guide, security policy and Code of Conduct.
 
-[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.46.1...HEAD
+[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.46.2...HEAD
+[0.46.2]: https://github.com/krugerhomeassistant/CropStack/compare/v0.46.1...v0.46.2
 [0.46.1]: https://github.com/krugerhomeassistant/CropStack/compare/v0.46.0...v0.46.1
 [0.46.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.45.1...v0.46.0
 [0.45.1]: https://github.com/krugerhomeassistant/CropStack/compare/v0.45.0...v0.45.1
