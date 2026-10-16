@@ -6,6 +6,7 @@ import { useApp } from '../state'
 import { CropSheet, toRequest, type PlantRequest } from './Recommendations'
 import { cropIcon } from './cropIcon'
 import { Button, ErrorMessage, Field } from './ui'
+import DateField from './ui/DateField'
 
 export const iso = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
 export const addDays = (s: string, n: number) => iso(new Date(new Date(`${s}T00:00:00`).getTime() + n * 864e5))
@@ -393,18 +394,18 @@ export default function BedGrid({
               }}
             >
               <Field label={t('Sow date')}>
-                <input className="input" type="date" required value={sow} onChange={(e) => setSow(e.target.value)} />
+                <DateField required value={sow} onChange={setSow} />
               </Field>
               {info.method === 'transplant' && (
                 <Field label={t('Set-out date')}>
-                  <input className="input" type="date" required value={setOut} onChange={(e) => setSetOut(e.target.value)} />
+                  <DateField required value={setOut} onChange={setSetOut} />
                 </Field>
               )}
               <Field label={t('Plants')}>
                 <input className="input w-24" type="number" min="1" max="100000" required value={qty} onChange={(e) => setQty(e.target.value)} />
               </Field>
               <Field label={t('Holds the cells until')}>
-                <input className="input" type="date" value={until} onChange={(e) => setUntil(e.target.value)} />
+                <DateField value={until} onChange={setUntil} />
               </Field>
               <Button type="submit" variant="secondary">
                 {t('Save')}

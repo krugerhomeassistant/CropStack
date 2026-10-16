@@ -36,7 +36,7 @@ It runs on your own hardware (a NAS, a Raspberry Pi, a home server) as one conta
 </p>
 
 > [!NOTE]
-> CropStack is in active development (v0.41). Climate, a 60-crop catalog, the garden planner, a year plan, daily jobs, watering and a pantry work today. Animals, Home Assistant and the Mealie link are next. See [what works now](#-what-works-now) and the [roadmap](#-roadmap).
+> CropStack is in active development (v0.47). Climate, a 60-crop catalog, the garden planner, a year plan with a seeds-to-buy list, daily jobs, watering and a pantry work today. Animals, Home Assistant and the Mealie link are next. See [what works now](#-what-works-now) and the [roadmap](#-roadmap).
 
 ## ✅ What works now
 
@@ -49,13 +49,13 @@ It runs on your own hardware (a NAS, a Raspberry Pi, a home server) as one conta
 - **Privacy you can see.** Settings lists every outside service CropStack talks to, what it sends and when. Owners can switch off the forecast and place search.
 - **Installable app.** Works as a phone app (PWA) in light and dark mode, with a desktop layout for larger screens.
 - **When to sow here.** Every crop page works out, from your own climate, the dates you can sow it in the ground and the dates you can set out seedlings started indoors, with the best stretch, days to harvest and the chance of success for each day. Nothing to configure; where a crop can't succeed it says why.
-- **Today's jobs.** From your plantings, Today lists what to do now (sow, set out seedlings, start harvesting), each with why now. Mark a job done and the planting moves along; the next two weeks are listed below.
+- **Today's jobs.** From your plantings, Today lists what to do now (sow, set out seedlings, start harvesting), each with why now. Mark a job done and the planting moves along, or **Decline** a sowing to take that planting out of the plan; the next two weeks are listed below.
 - **Watering.** CropStack tracks the water in the soil for each planting from evaporation, rain and root depth, and tells you when to water and how much, so you water when the crop needs it and not by the calendar.
 - **Weekly Check.** Each growing planting gets a weekly job listing what to look for and what to keep or remove.
 - **Garden assistant (optional).** Add a Claude, OpenAI or OpenRouter key, or an Ollama address, in Settings, then ask garden questions in Ask.
-- **Garden in four windows**: Plan, Plant, Calendar, Plantings.
+- **Garden in four windows**: Plan, Plant, Calendar, Plantings. Every window has a drag handle at its bottom edge to make it taller or shorter; the size is remembered per window on your device.
 - **Year plan.** *Draft a year plan* fills your beds with crops that suit your climate: earliest good window first, rotating plant families. Set how many people you feed and each crop is sized from a balanced vegetable basket; a coverage card shows how much of the need your beds meet, the weeks that fall short and the single change that helps most. Review the ghosted cells, then accept to schedule every job at once. Say which seeds you already have and the plan leans on them, then lists the seed still to buy. Nothing you have already planted is touched.
-- **Planner as a plot plan.** Beds, rows and pots on a to-scale map with floating tools; tap a bed to open its grid. Cells show crop icons and what is planted or planned; erasing never loses other work.
+- **Planner as a plot plan.** Beds, rows and pots on a to-scale map with floating tools; tap a bed to open its grid. Where two beds face each other a thin line shows the gap in metres. One date steps the plan and the bed panel together, so both show only what is planted that day, with a count of what is in the ground. Cells are sized to the plants you choose (a 10 cm plant gets 10 cm cells), so a plant never hangs over a bed's edge; erasing never loses other work.
 - **Past sowings count.** Log a sowing on a past date and it is recorded as sown (or set out) straight away.
 - **Key points per job.** Each job lists the crop's own facts: spacing, thin-to, sowing depth, soil temperature, days to emerge, light, seedling age.
 - **Pantry.** Track preserved and stored food (canned, frozen, dried, fermented, cellar, fresh) with batch dates and "use soon" reminders.

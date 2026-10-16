@@ -7,6 +7,7 @@ import BedGrid, { addDays, cropColour, iso, PlantedSummary } from './BedGrid'
 import { cropIcon } from './cropIcon'
 import type { PlantRequest } from './Recommendations'
 import { Button, ErrorMessage, Field, IconButton, Section, Skeleton, Switch } from './ui'
+import DateField from './ui/DateField'
 
 const SNAP = 0.1 // metres
 const snap = (m: number) => Math.max(0, Math.round(m / SNAP) * SNAP)
@@ -210,7 +211,7 @@ export default function LayoutEditor({ onChange, suggested, request, plan }: { o
         {error && <ErrorMessage>{error}</ErrorMessage>}
       <div className="flex items-center gap-1">
         <IconButton icon={ChevronLeft} label={t('A week earlier')} onClick={() => setOn(addDays(on, -7))} />
-        <input className="input w-auto flex-1" type="date" aria-label={t('Show the garden on')} value={on} onChange={(e) => e.target.value && setOn(e.target.value)} />
+        <DateField className="flex-1" aria-label={t('Show the garden on')} required value={on} onChange={(v) => v && setOn(v)} />
         <IconButton icon={ChevronRight} label={t('A week later')} onClick={() => setOn(addDays(on, 7))} />
         {on !== today && (
           <Button variant="ghost" onClick={() => setOn(today)}>

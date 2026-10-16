@@ -1,6 +1,6 @@
 # ACTIVE CONTEXT
 
-**Date:** 2026-10-16 · **Version:** 0.47.0 · **Alembic head:** 0018 · **Tests:** 209 backend, browser e2e green.
+**Date:** 2026-10-16 · **Version:** 0.47.1 · **Alembic head:** 0018 · **Tests:** 209 backend, browser e2e green.
 History of earlier sessions: `ACTIVE_CONTEXT_ARCHIVE.md`.
 
 ## What CropStack is today
@@ -10,7 +10,7 @@ Households and garden climate (30 y Open-Meteo), 60-crop catalog (CC BY-SA, cite
 Personal, non-commercial. Fully dynamic (no presets). Never restrict or destroy his work: only suggest. "Information is our main focus" but key points, not floods; cleaner "windows". Must look professional. English and metric only is fine. He sends many messages in a row: note each as a to-do here or in PLAN, do not stop the current work. Do not ask questions that research can answer.
 
 ## How to work (commands)
-- Backend tests: `cd backend && .venv/bin/python -m pytest -q` (155 pass, ~25 s).
+- Backend tests: `cd backend && .venv/bin/python -m pytest -q` (209 pass, ~40 s).
 - Lint (do before every push): `ruff format . && ruff check .` from repo root.
 - Frontend: `cd frontend && npx tsc --noEmit && npm run build`.
 - Browser e2e: `npm run build` once, then `scripts/e2e-local.sh` (wipes data, restarts the stubbed server on :8512; takes ~100 s, so run it in the background with a log: `(scripts/e2e-local.sh > /tmp/e2e.log 2>&1 &)`). First run after a cold start can fail on the setup form: run again. Never run e2e on a dirty DB.
@@ -21,7 +21,7 @@ Personal, non-commercial. Fully dynamic (no presets). Never restrict or destroy 
 ## Release checklist
 1. `python scripts/bump.py X.Y.Z`; CHANGELOG section; update README/WIKI/ARCHITECTURE/PLAN/LESSONS/this file; `python scripts/coverage.py`.
 2. Tests + lint + build + e2e locally (all green) before pushing.
-3. Commit with trailers `Co-Authored-By: Claude <model> <noreply@anthropic.com>` and the `Claude-Session:` line; `git pull --rebase`; push to `main`. A new version on main = release (CI: lint, tests, e2e, Docker image to ghcr, GitHub release; ~6 min). Poll `gh run list -L1` until `completed`.
+3. Work on a feature branch and open a PR (`gh api` REST; GraphQL is blocked in cloud sessions); wait for CI green, squash-merge to `main` (the owner has said to merge without asking again once CI is green). Commit with trailers `Co-Authored-By: Claude <model> <noreply@anthropic.com>` and the `Claude-Session:` line; `git pull --rebase`; push to `main`. A new version on main = release (CI: lint, tests, e2e, Docker image to ghcr, GitHub release; ~6 min). Poll `gh run list -L1` until `completed`.
 4. Deploy to the owner: his copy is `E:\Projects\Personal\CropStack` (device bridge `$HOME/mnt/Personal/CropStack`): shallow-clone main to a temp dir, `rm -rf .git`, `cp -rT` over it (never touch his git config). He then pulls `ghcr.io/krugerhomeassistant/cropstack:latest` in ZimaOS and restarts.
 5. Real-container smoke test: `docker pull` the image, run with `--network host -v /tmp/data:/data`, hit `/api/health` (needs `dockerd &` first in the sandbox; local `docker build` fails on the proxy CA, use the CI image).
 
