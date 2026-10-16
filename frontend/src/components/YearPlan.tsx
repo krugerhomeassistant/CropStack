@@ -26,6 +26,8 @@ export default function YearPlan({ hasBeds, scheduled, plan, setPlan, onUsed, on
   const canChange = useApp().user.role === 'owner'
   const [saved, setSaved] = useState<Planting[]>([])
   const [names, setNames] = useState<Record<string, string>>({})
+  const [seeds, setSeeds] = useState<string[]>([])
+  const [buy, setBuy] = useState<{ crop: string; name: string }[]>([])
   // The plan you have used stays here: it is the saved plantings the year plan made, whatever tab you are on.
   useEffect(() => {
     api.crops().then((cs) => setNames(Object.fromEntries(cs.map((c) => [c.slug, c.names.en?.[0] ?? c.slug]))), () => {})
@@ -36,6 +38,13 @@ export default function YearPlan({ hasBeds, scheduled, plan, setPlan, onUsed, on
   const fail = (e: unknown) => {
     setBusy(false)
     setError(e instanceof Error ? e.message : t('Failed to save'))
+  }
+  useEffect(() => {
+    api.seeds().then(setSeeds, () => {})
+  }, [])
+  const saveSeeds = (next: string[]) => {
+    setSeeds(next)
+    api.setSeeds(next).then(setSeeds, fail)
   }
   useEffect(() => {
     api.householdSettings().then((s) => setPeople(s.people), fail)
@@ -53,6 +62,7 @@ export default function YearPlan({ hasBeds, scheduled, plan, setPlan, onUsed, on
       setCoverage(r.coverage ?? null)
       setPeople(r.people)
       setSkipped(r.skipped_no_yield ?? [])
+      setBuy(r.buy ?? [])
  setPlanCount(r.plan_count ?? r.scheduled)
  if (scheduled > 0) {
  const proposed = r.items.map((i) => ({ crop: i.crop, method: i.method, start_date: i.start_date, set_out_date: i.set_out_date, bed_id: i.bed_id, cells: i.cells, location: '', notes: '' }))
@@ -105,6 +115,29 @@ export default function YearPlan({ hasBeds, scheduled, plan, setPlan, onUsed, on
       description={t('A draft of what to plant where over the next 12 months, from your climate and what already grows in your beds.')}
     >
       {people !== null && (coverage ? <CoverageCard coverage={coverage} people={people} canChange={canChange} onPeople={changePeople} /> : <PeopleStepper people={people} canChange={canChange} onPeople={changePeople} />)}
+      {canEdit && hasBeds && (
+        <div className="flex flex-col gap-2" aria-label={t('Seeds I have')}>
+          <p className="text-sm font-semibold">{t('Seeds I have')}</p>
+          <p className="text-sm text-muted">{t('Pick the seed you already have. The plan leans on it, then lists the seed still to buy.')}</p>
+          <ul className="flex flex-wrap gap-2">
+            {seeds.map((s) => (
+              <li key={s} className="flex items-center gap-1 rounded-full border border-line px-3 py-1 text-sm">
+                <span aria-hidden>{cropIcon(s)}</span> {names[s] ?? s}
+                <IconButton icon={X} label={t('Remove {crop}', { crop: names[s] ?? s })} onClick={() => saveSeeds(seeds.filter((x) => x !== s))} />
+              </li>
+            ))}
+          </ul>
+          <select className="input w-auto max-w-full" aria-label={t('Add seed')} value="" onChange={(e) => e.target.value && saveSeeds([...seeds, e.target.value])}>
+            <option value="">{t('Add a seed…')}</option>
+            {Object.entries(names)
+              .filter(([slug]) => !seeds.includes(slug))
+              .sort((a, b) => a[1].localeCompare(b[1]))
+              .map(([slug, name]) => (
+                <option key={slug} value={slug}>{name}</option>
+              ))}
+          </select>
+        </div>
+      )}
       {canEdit && hasBeds && (
  <div>
  {!confirmReplan ? (
@@ -183,6 +216,18 @@ export default function YearPlan({ hasBeds, scheduled, plan, setPlan, onUsed, on
           <Button variant="ghost" onClick={() => setPlan([])}>
             {t('Discard')}
           </Button>
+        </div>
+      )}
+      {plan.length > 0 && buy.length > 0 && (
+        <div className="flex flex-col gap-1" aria-label={t('Seeds to buy')}>
+          <p className="text-sm font-semibold">{t('Seeds to buy')}</p>
+          <ul className="flex flex-wrap gap-x-4 gap-y-0.5 text-sm">
+            {buy.filter((b) => plan.some((i) => i.crop === b.crop)).map((b) => (
+              <li key={b.crop}>
+                <span aria-hidden>{cropIcon(b.crop)}</span> {b.name}
+              </li>
+            ))}
+          </ul>
         </div>
       )}
       {plan.length > 0 && <p className="text-xs text-muted">{t('The Plan tab shows these as dashed cells in each bed. Nothing is saved until you use the plan; after that, every planting can still be changed.')}</p>}

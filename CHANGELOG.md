@@ -5,6 +5,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.47.0] - 2026-10-16
+
+### Added
+- **Seeds I have.** On the Year plan, pick the seed you already have. The drafter gives those crops extra weight (it never leaves other crops out), and a **Seeds to buy** list shows the crops in the plan you have no seed for. Leave a crop out of the plan and it drops off the list.
+- **Decline a job.** Open a sowing or set-out job on Today and choose **Decline**, then confirm: that planting is taken out of the plan and its jobs go with it.
+
 ## [0.46.4] - 2026-10-16
 
 ### Fixed
@@ -473,7 +479,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - CI: ruff lint and format, backend tests, frontend build, image publishing to GHCR and automatic GitHub releases on a version bump.
 - Project docs: README, wiki, architecture, roadmap, contributing guide, security policy and Code of Conduct.
 
-[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.46.4...HEAD
+[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.47.0...HEAD\n[0.47.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.46.4...v0.47.0
 [0.46.4]: https://github.com/krugerhomeassistant/CropStack/compare/v0.46.3...v0.46.4
 [0.46.3]: https://github.com/krugerhomeassistant/CropStack/compare/v0.46.2...v0.46.3
 [0.46.2]: https://github.com/krugerhomeassistant/CropStack/compare/v0.46.1...v0.46.2
