@@ -261,6 +261,7 @@ export default function LayoutEditor({ onChange, suggested, request, plan }: { o
           const growing = b.placements.filter((p) => p.from <= on && on <= p.until)
           const waiting = b.placements.filter((p) => p.from > on)
           const isPot = b.kind === 'container'
+          const edge = Math.min(0.07, Math.min(b.width, b.length) / 10)
           const size = Math.min(cell * 0.78, 0.5)
           const label = waiting.length > 0 ? `${b.name}  ⏳${waiting.length}` : b.name
           const tag = Math.max(0.9, label.length * 0.15 + 0.3)
@@ -286,7 +287,10 @@ export default function LayoutEditor({ onChange, suggested, request, plan }: { o
                 <rect data-testid="bed-body" x={b.x} y={b.y} width={b.width} height={b.length} rx={0.12} className="fill-feed/15 stroke-feed/60" strokeWidth={0.04} />
               )}
               <g clipPath={`url(#clip${b.id})`} className="pointer-events-none select-none">
-                {growing.map((p) => mark(p, false))}
+                {/* plants sit a little inside the border so the outline never covers them */}
+                <g transform={`translate(${b.x + edge} ${b.y + edge}) scale(${(b.width - 2 * edge) / b.width} ${(b.length - 2 * edge) / b.length}) translate(${-b.x} ${-b.y})`}>
+                  {growing.map((p) => mark(p, false))}
+                </g>
               </g>
               {b.crowded && <rect x={b.x} y={b.y} width={b.width} height={b.length} rx={0.12} fill="none" className="stroke-marigold pointer-events-none" strokeWidth={0.05} />}
               <g className="pointer-events-none select-none">

@@ -5,6 +5,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.46.4] - 2026-10-16
+
+### Fixed
+- On the plot plan, plants sit a little inside the bed's border, so the outline no longer covers the plants along the edge.
+
 ## [0.46.3] - 2026-10-16
 
 ### Fixed
@@ -468,7 +473,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - CI: ruff lint and format, backend tests, frontend build, image publishing to GHCR and automatic GitHub releases on a version bump.
 - Project docs: README, wiki, architecture, roadmap, contributing guide, security policy and Code of Conduct.
 
-[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.46.3...HEAD
+[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.46.4...HEAD
+[0.46.4]: https://github.com/krugerhomeassistant/CropStack/compare/v0.46.3...v0.46.4
 [0.46.3]: https://github.com/krugerhomeassistant/CropStack/compare/v0.46.2...v0.46.3
 [0.46.2]: https://github.com/krugerhomeassistant/CropStack/compare/v0.46.1...v0.46.2
 [0.46.1]: https://github.com/krugerhomeassistant/CropStack/compare/v0.46.0...v0.46.1
