@@ -5,6 +5,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+### Fixed
+- **A drafted year plan can always be used.** "Year plan overlaps occupied cells in Bed N" appeared on plans the planner itself drew: the drafter held cells for the days to maturity it read from the climate, while the server (and every saved planting) holds them for the catalog cycle, so crops the drafter packed into the same cell one after the other clashed on acceptance. The drafter now reserves the longer of the two, and a test drafts and accepts a plan twice against the real catalog.
+
 ## [0.45.0] - 2026-10-12
 
 ### Added
