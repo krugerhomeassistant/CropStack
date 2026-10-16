@@ -25,6 +25,7 @@ from .routers import (
     plan,
     plantings,
     recommend,
+    seeds,
     today,
     weather,
 )
@@ -75,6 +76,7 @@ def create_app() -> FastAPI:
         recommend.router,
         plan.router,
         pantry.router,
+        seeds.router,
         plantings.router,
         today.router,
         weather.router,

@@ -21,6 +21,7 @@ FLOWERS_SHOWN = 2
 FLOWER_PATCHES = 2  # patches of a companion flower beside a crop: a small stand, not a bed
 FLOWER_LEAD_DAYS = 28  # a flower may go in this long before the crop it accompanies
 FLOWER_BLOOM_AFTER = 30  # ...and must be sown at least this long before that crop is done
+SEED_BONUS = 1.0  # extra weight for a crop the household already has seed for (suggest, never require)
 MIN_GAIN = 1.0  # kg a placement must add toward a shortfall; below this it is not worth a planting
 
 Cell = tuple[int, int]
@@ -82,6 +83,7 @@ def draft(
     target: dict[str, float],
     existing: Sequence[tuple[str, float, date, date]] = (),
     companions: dict | None = None,
+    owned: frozenset[str] = frozenset(),
 ) -> tuple[list[dict], dict[str, list[float]]]:
     """Place the crop that adds the most food per cell, again and again, until the weekly target is met or the beds
     are full. Returns the plantings and the weekly supply per food group (existing plantings included).
@@ -89,7 +91,8 @@ def draft(
     from, harvest to) of plantings that stay. Rotation: a block avoids cells that held the same family. Nothing is
     placed twice on overlapping days and a crop is not repeated in a month. `companions` = {"good": {crop: {crops}},
     "avoid": ..., "flowers": {crop: [flowers]}}: a block is placed touching a good companion that grows then, and a
-    crop never goes into a bed that holds one of its "avoid" crops at the same time."""
+    crop never goes into a bed that holds one of its "avoid" crops at the same time. `owned` = crops with seed on
+    hand: a block of one scores higher, so the plan leans on them without leaving the rest out."""
     good, avoid = (companions or {}).get("good", {}), (companions or {}).get("avoid", {})
     flowers = (companions or {}).get("flowers", {})
     held = {b.id: [_entry(t) for t in taken.get(b.id, [])] for b in beds}
@@ -140,6 +143,7 @@ def draft(
         touching = beside(cells) if pals else 0
         elsewhere = len(set(pals.values())) - touching if pals else 0
         boost = 1 + COMPANION_BONUS * min(2, touching) + BED_COMPANION_BONUS * min(2, max(0, elsewhere))
+        boost += SEED_BONUS * (w.crop in owned)
         k = (-gain / n * boost, sum(c in same for c in cells), -len(free), w.name, b.id, i)
         return k, cells, last
 

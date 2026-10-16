@@ -223,3 +223,14 @@ class PantryItem(SQLModel, table=True):
     notes: str = ""
     created_by: int | None = Field(default=None, foreign_key="user.id", ondelete="SET NULL")
     created_at: datetime = Field(default_factory=now)
+
+
+class Seed(SQLModel, table=True):
+    """A crop the household has seed for. The year plan favours these and lists the seed still to buy."""
+
+    __table_args__ = (UniqueConstraint("household_id", "crop"),)
+
+    id: int | None = Field(default=None, primary_key=True)
+    household_id: int = Field(foreign_key="household.id", ondelete="CASCADE", index=True)
+    crop: str  # catalog slug
+    created_at: datetime = Field(default_factory=now)

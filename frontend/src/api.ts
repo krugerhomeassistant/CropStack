@@ -138,7 +138,7 @@ export type Coverage = {
   best_change: { kind: 'add_bed_area'; m2: number; gain: number } | null
 }
 export type PlanDiff = { added: number; removed: number; moved: number; unchanged: number }
-export type YearPlan = { garden: boolean; beds: boolean; scheduled: number; plan_count?: number; people: number; items: PlanItem[]; coverage?: Coverage; skipped_no_yield?: string[] }
+export type YearPlan = { garden: boolean; beds: boolean; scheduled: number; plan_count?: number; people: number; items: PlanItem[]; coverage?: Coverage; skipped_no_yield?: string[]; buy?: { crop: string; name: string }[] }
 export type PantryMethod = 'canned' | 'frozen' | 'dried' | 'fermented' | 'cellar' | 'fresh'
 export type PantryItem = {
   id: number
@@ -391,6 +391,8 @@ export const api = {
   addPantry: (body: PantryIn) => request<PantryItem>('POST', '/pantry', body),
   updatePantry: (id: number, body: Partial<Pick<PantryItem, 'name' | 'quantity' | 'best_before' | 'location' | 'notes'>>) => request<PantryItem>('PATCH', `/pantry/${id}`, body),
   deletePantry: (id: number) => request<null>('DELETE', `/pantry/${id}`),
+  seeds: () => request<string[]>('GET', '/seeds'),
+  setSeeds: (crops: string[]) => request<string[]>('PUT', '/seeds', { crops }),
   yearPlan: () => request<YearPlan>('GET', '/plan/year'),
   acceptPlan: (items: PlantingIn[]) => request<{ created: number; replaced: number }>('POST', '/plan/year', items),
   previewPlan: (items: PlantingIn[]) => request<PlanDiff>('POST', '/plan/year/preview', items),

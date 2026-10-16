@@ -28,7 +28,9 @@ function brief(job: Job): string[] {
   return [depth && (depth.startsWith('barely') ? t('barely covered') : t('{depth} deep', { depth })), space, roots && t('roots {roots}', { roots })].filter((x): x is string => !!x)
 }
 
-function JobCard({ job, canEdit, onFinish }: { job: Job; canEdit: boolean; onFinish: (id: number, s: 'done' | 'skipped') => void }) {
+function JobCard({ job, canEdit, onFinish, onDecline }: { job: Job; canEdit: boolean; onFinish: (id: number, s: 'done' | 'skipped') => void; onDecline: (plantingId: number) => void }) {
+ const [sure, setSure] = useState(false)
+ const declinable = canEdit && job.planting_id !== null && (job.kind === 'sow' || job.kind === 'set_out')
  const harvestLabel = job.purpose === 'companion' ? N_('Mark flowering started') : N_('Mark harvest started')
  const highlights = brief(job)
  return (
@@ -55,7 +57,17 @@ function JobCard({ job, canEdit, onFinish }: { job: Job; canEdit: boolean; onFin
  {job.facts.length > 0 && <dl className="mb-3 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1">{job.facts.map((f) => <div key={f.label} className="contents"><dt className="font-semibold text-muted">{t(f.label)}</dt><dd>{f.text}</dd></div>)}</dl>}
  {job.steps.length > 0 && <ol className="list-decimal space-y-1 pl-5">{job.steps.map((step) => <li key={step}>{step}</li>)}</ol>}
  {job.watch.length > 0 && <ul className="mt-2 space-y-2">{job.watch.map((w) => <li key={w.slug}><span className="font-semibold">{w.name}</span>{w.verdict && <span className="text-leaf"> · {t(w.verdict)}</span>}<p className="text-muted">{w.identify}</p><p>{w.action}</p></li>)}</ul>}
- {canEdit && <Button variant="ghost" className="mt-3" onClick={() => onFinish(job.id, 'skipped')}>{t('Skip')}</Button>}
+ <div className="mt-3 flex flex-wrap items-center gap-2">
+ {canEdit && <Button variant="ghost" onClick={() => onFinish(job.id, 'skipped')}>{t('Skip')}</Button>}
+ {declinable && !sure && <Button variant="ghost" onClick={() => setSure(true)}>{t('Decline')}</Button>}
+ {declinable && sure && (
+ <>
+ <span className="text-sm text-muted">{t('Take this planting out of the plan?')}</span>
+ <Button variant="secondary" onClick={() => onDecline(job.planting_id!)}>{t('Yes, remove it')}</Button>
+ <Button variant="ghost" onClick={() => setSure(false)}>{t('Keep')}</Button>
+ </>
+ )}
+ </div>
  </div>
  </details>
  )}
@@ -78,6 +90,10 @@ export default function Jobs() {
 
   function finish(id: number, status: 'done' | 'skipped') {
     api.finishJob(id, status).then(load, (e) => setError(e instanceof Error ? e.message : t('Failed to save')))
+  }
+
+  function decline(plantingId: number) {
+    api.deletePlanting(plantingId).then(load, (e) => setError(e instanceof Error ? e.message : t('Failed to save')))
   }
 
   const title = t("Today's jobs")
@@ -105,7 +121,7 @@ export default function Jobs() {
               <h3 className="font-display text-lg font-bold">{t(GROUP[group] ?? group)}</h3>
               <ul className="flex flex-col gap-3">
                 {tasks.map((job) => (
-                  <JobCard key={job.id} job={job} canEdit={canEdit} onFinish={finish} />
+                  <JobCard key={job.id} job={job} canEdit={canEdit} onFinish={finish} onDecline={decline} />
                 ))}
               </ul>
             </div>

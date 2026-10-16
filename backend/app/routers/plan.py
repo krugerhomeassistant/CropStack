@@ -9,6 +9,7 @@ from .. import catalog as cat
 from ..deps import EditorDep, MemberDep, SessionDep
 from ..engine import layout, needs, phenology, recommend, windows, yearplan
 from ..models import Bed, Forecast, Household, Planting, Site
+from . import seeds
 from .beds import crop_facts, grid_of, holds
 from .catalog import CatalogDep, _overrides
 from .garden import _archive, _climatology
@@ -52,14 +53,16 @@ def existing_supply(plantings, facts_of, beds_by_id, window_of, today: date) -> 
     return out
 
 
-def with_coverage(grid, taken, wants, today: date, target, existing, companions=None) -> tuple[list[dict], dict]:
+def with_coverage(
+    grid, taken, wants, today: date, target, existing, companions=None, owned: frozenset[str] = frozenset()
+) -> tuple[list[dict], dict]:
     """The draft, its coverage of the weekly target, and the one change that would lift coverage most: a 4 m² bed
     when it adds at least 1 point (none once coverage reaches ENOUGH)."""
-    items, supply = yearplan.draft(grid, taken, wants, today, target, existing, companions)
+    items, supply = yearplan.draft(grid, taken, wants, today, target, existing, companions, owned)
     cov = needs.coverage(target, supply, today)
     cov["best_change"] = None
     if cov["overall"] < ENOUGH:
-        _, more = yearplan.draft([*grid, EXTRA_BED], taken, wants, today, target, existing, companions)
+        _, more = yearplan.draft([*grid, EXTRA_BED], taken, wants, today, target, existing, companions, owned)
         gain = needs.coverage(target, more, today)["overall"] - cov["overall"]
         if gain >= 0.01:
             cov["best_change"] = {"kind": "add_bed_area", "m2": EXTRA_M2, "gain": round(gain, 3)}
@@ -190,7 +193,11 @@ def year_plan(me: MemberDep, db: SessionDep, c: CatalogDep) -> dict:
         today,
     )
     grid = [yearplan.Bed(b.id, b.name, *grid_of(b), b.cell_cm) for b in beds]
-    items, cov = with_coverage(grid, taken, wants, today, target, existing, c.companions)
+    have = frozenset(seeds.owned(db, me.household_id))
+    items, cov = with_coverage(grid, taken, wants, today, target, existing, c.companions, have)
+    for i in items:
+        i["have_seed"] = i["crop"] in have
+    buy = {i["crop"]: i["name"] for i in items if i["crop"] not in have}
     return {
         "garden": True,
         "beds": True,
@@ -200,6 +207,8 @@ def year_plan(me: MemberDep, db: SessionDep, c: CatalogDep) -> dict:
         "items": items,
         "coverage": cov,
         "skipped_no_yield": skipped,
+        "seeds": sorted(have),
+        "buy": [{"crop": k, "name": v} for k, v in sorted(buy.items(), key=lambda kv: kv[1])],
     }
 
 
