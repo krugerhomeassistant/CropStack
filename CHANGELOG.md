@@ -5,8 +5,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.48.0] - 2026-10-17
+
 ### Changed
 - **Crop icons.** Every crop now has its own flat colour icon (68 drawn for this release) in place of a shared emoji, on Today, the year plan, the bed grid and the plot plan. A crop without an icon falls back to a seedling.
+- **Faster releases.** CI builds the Docker image while the tests run and adds the `latest` and version tags only after every check passes, so a release lands in about 2 to 4 minutes instead of 8. Screenshots now run on pull requests only.
 
 ## [0.47.1] - 2026-10-16
 
@@ -488,7 +491,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - CI: ruff lint and format, backend tests, frontend build, image publishing to GHCR and automatic GitHub releases on a version bump.
 - Project docs: README, wiki, architecture, roadmap, contributing guide, security policy and Code of Conduct.
 
-[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.47.1...HEAD
+[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.48.0...HEAD
+[0.48.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.47.1...v0.48.0
 [0.47.1]: https://github.com/krugerhomeassistant/CropStack/compare/v0.47.0...v0.47.1
 [0.47.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.46.4...v0.47.0
 [0.46.4]: https://github.com/krugerhomeassistant/CropStack/compare/v0.46.3...v0.46.4
