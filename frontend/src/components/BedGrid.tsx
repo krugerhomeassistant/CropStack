@@ -4,7 +4,7 @@ import { api, type Bed, type CropSummary, type Placement, type PlanItem, type Re
 import { t } from '../i18n'
 import { useApp } from '../state'
 import { CropSheet, toRequest, type PlantRequest } from './Recommendations'
-import { cropIcon } from './cropIcon'
+import { CropIcon, cropIconUrl } from './CropIcon'
 import { Button, ErrorMessage, Field } from './ui'
 import DateField from './ui/DateField'
 
@@ -45,7 +45,7 @@ export function PlantedSummary({ beds, on }: { beds: Bed[]; on: string }) {
     <ul className="flex flex-col gap-0.5 text-sm" aria-label={t('What is planted')}>
       {[...sums].map(([crop, s]) => (
         <li key={crop} className="flex items-center gap-2">
-          <span aria-hidden>{cropIcon(crop)}</span>
+          <span aria-hidden><CropIcon crop={crop} /></span>
           <span className="font-semibold">{s.now}× {s.name}</span>
         </li>
       ))}
@@ -230,7 +230,7 @@ export default function BedGrid({
                 className={`flex min-h-16 min-w-20 shrink-0 flex-col items-center justify-center gap-0.5 rounded-xl border-2 px-3 py-2 text-sm font-semibold ${crop?.crop === r.crop ? 'border-leaf bg-leaf/15' : 'border-line bg-surface'}`}
               >
                 <span className="text-2xl leading-none" aria-hidden>
-                  {cropIcon(r.crop)}
+                  <CropIcon crop={r.crop} />
                 </span>
                 {r.name}
               </button>
@@ -333,14 +333,12 @@ export default function BedGrid({
                   strokeDasharray={marked || g ? '0.15 0.1' : undefined}
                 />
                 {(p[0] || g) && (
-                  <text textAnchor="middle" className="pointer-events-none fill-ink">
-                    <tspan x={c + 0.5} y={r + 0.52} fontSize={0.4}>
-                      {cropIcon((p[0] ?? g!).crop)}
-                    </tspan>
-                    <tspan x={c + 0.5} y={r + 0.82} fontSize={0.2}>
+                  <>
+                    <image href={cropIconUrl((p[0] ?? g!).crop)} x={c + 0.27} y={r + 0.1} width={0.46} height={0.46} className="pointer-events-none" />
+                    <text x={c + 0.5} y={r + 0.82} fontSize={0.2} textAnchor="middle" className="pointer-events-none fill-ink">
                       {(p[0]?.name ?? g!.name).slice(0, 6)}
-                    </tspan>
-                  </text>
+                    </text>
+                  </>
                 )}
               </g>
             )

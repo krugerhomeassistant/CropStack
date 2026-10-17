@@ -4,7 +4,7 @@ import { api, type Coverage, type PlanDiff, type PlanItem, type Planting } from 
 import { t } from '../i18n'
 import { useApp } from '../state'
 import CoverageCard, { PeopleStepper } from './CoverageCard'
-import { cropIcon } from './cropIcon'
+import { CropIcon } from './CropIcon'
 import { Button, EmptyState, ErrorMessage, IconButton, Section } from './ui'
 
 const day = (s: string) => new Date(`${s}T00:00:00`).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })
@@ -122,7 +122,7 @@ export default function YearPlan({ hasBeds, scheduled, plan, setPlan, onUsed, on
           <ul className="flex flex-wrap gap-2">
             {seeds.map((s) => (
               <li key={s} className="flex items-center gap-1 rounded-full border border-line px-3 py-1 text-sm">
-                <span aria-hidden>{cropIcon(s)}</span> {names[s] ?? s}
+                <span aria-hidden><CropIcon crop={s} /></span> {names[s] ?? s}
                 <IconButton icon={X} label={t('Remove {crop}', { crop: names[s] ?? s })} onClick={() => saveSeeds(seeds.filter((x) => x !== s))} />
               </li>
             ))}
@@ -183,7 +183,7 @@ export default function YearPlan({ hasBeds, scheduled, plan, setPlan, onUsed, on
                 <li key={`${i.crop}${i.bed_id}${planted(i)}`} className="flex items-center justify-between gap-3 py-2">
                   <div className="min-w-0">
                     <p className="font-bold">
-                      {cropIcon(i.crop)} {i.name} <span className="font-normal text-muted">· {i.bed}</span>
+                      <CropIcon crop={i.crop} /> {i.name} <span className="font-normal text-muted">· {i.bed}</span>
                     </p>
                     <p className="text-sm text-muted">
                       {i.method === 'transplant' ? t('Set out') : t('Sow')} {day(planted(i))} · {i.companion_for?.length ? t('in flower {from} to {to}', { from: day(i.harvest_from), to: day(i.harvest_to) }) : t('harvest {from} to {to}', { from: day(i.harvest_from), to: day(i.harvest_to) })} · {i.companion_for?.length ? t('{n} cells', { n: i.cells.length }) : t('{n} plants on {cells} cells', { n: i.plants, cells: i.cells.length })}
@@ -224,7 +224,7 @@ export default function YearPlan({ hasBeds, scheduled, plan, setPlan, onUsed, on
           <ul className="flex flex-wrap gap-x-4 gap-y-0.5 text-sm">
             {buy.filter((b) => plan.some((i) => i.crop === b.crop)).map((b) => (
               <li key={b.crop}>
-                <span aria-hidden>{cropIcon(b.crop)}</span> {b.name}
+                <span aria-hidden><CropIcon crop={b.crop} /></span> {b.name}
               </li>
             ))}
           </ul>
@@ -240,7 +240,7 @@ export default function YearPlan({ hasBeds, scheduled, plan, setPlan, onUsed, on
           <ul className="flex flex-wrap gap-x-4 gap-y-0.5 text-sm" aria-label={t('What is planned')}>
             {[...totals].sort((a, b) => (names[a[0]] ?? a[0]).localeCompare(names[b[0]] ?? b[0])).map(([crop, n]) => (
               <li key={crop}>
-                <span aria-hidden>{cropIcon(crop)}</span> <span className="font-semibold">{n}× {names[crop] ?? crop}</span>
+                <span aria-hidden><CropIcon crop={crop} /></span> <span className="font-semibold">{n}× {names[crop] ?? crop}</span>
               </li>
             ))}
           </ul>
@@ -253,7 +253,7 @@ export default function YearPlan({ hasBeds, scheduled, plan, setPlan, onUsed, on
                   .map((p) => (
                     <li key={p.id} className="py-2">
                       <p className="font-bold">
-                        {cropIcon(p.crop)} {names[p.crop] ?? p.crop} <span className="font-normal text-muted">· {p.location}</span>
+                        <CropIcon crop={p.crop} /> {names[p.crop] ?? p.crop} <span className="font-normal text-muted">· {p.location}</span>
                       </p>
                       <p className="text-sm text-muted">
                         {p.status === 'planned' ? (p.method === 'transplant' ? t('Set out') : t('Sow')) : t('Started')} {day(when(p))} · {p.harvest_from && p.harvest_to ? `${p.purpose === 'companion' ? t('in flower {from} to {to}', { from: day(p.harvest_from), to: day(p.harvest_to) }) : t('harvest {from} to {to}', { from: day(p.harvest_from), to: day(p.harvest_to) })} · ` : ''}{t('{n} plants on {cells} cells', { n: p.quantity, cells: p.cells.length })}

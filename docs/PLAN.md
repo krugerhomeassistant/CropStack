@@ -21,7 +21,7 @@ Status note: the former needs-model item is complete in v0.41.0. The active sequ
 2. **Year-plan lifecycle polish**: live crops hold cells until harvested/finished, not only to their cycle end; add "lock a job date".
 3. **Flower wording correctness**: carry planting purpose through the API so companion flowers say "pick"/"flowering", not "harvest".
 4. **Planner usability**: window style for Climate, Crops and More; map pinch-zoom/pan; move a planting between cells/beds; undo/redo.
-5. **Data depth**: source the remaining estimated sow depths; add storage life/method to Pantry; add varieties, animals and more organisms with citations.
+5. **Data depth**: animal and organism icons in the crop-icon style (`frontend/src/icons/`); source the remaining estimated sow depths; add storage life/method to Pantry; add varieties, animals and more organisms with citations.
 6. **Pantry ↔ harvest**, then Mealie integration.
 7. **Integrations and assistant**: Home Assistant, assistant photo diagnosis/tools/streaming/history, API-key encryption at rest, and imperial wording if needed.
 

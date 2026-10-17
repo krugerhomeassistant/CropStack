@@ -67,6 +67,7 @@ Target architecture (engines, data model, API) is specified in `docs/SPEC.md` §
 | `src/i18n.ts` | `t()` / `N_()` translation layer (English only for now) |
 | `src/units.ts` | SI → metric/imperial display helpers |
 | `src/components/Layout.tsx` | page frame: bottom nav < 1024 px (`--nav-h` incl. safe area), left rail ≥ 1024 px; content max 960 px |
+| `src/components/CropIcon.tsx`, `src/icons/crops/*.svg` | one flat SVG per catalog crop (`_seedling.svg` fallback), loaded with `import.meta.glob`; style rules in DESIGN.md "Crop icons"; a backend test requires an icon for every catalog crop |
 | `src/components/charts.tsx` | dependency-free SVG charts: `YearChart` (lines, bands, today marker, crosshair, keyboard, table view), `MonthBars`; sized to the container with a `ResizeObserver` |
 | `src/components/ClimateCharts.tsx` | the Climate page charts: loads `climate/bands` (tmax, tmin, soil_t) and `climate/probability` (tmin ≤ 0), converts units, shows the freezing-night chart only where freezing occurs |
 | `src/components/ui/index.tsx` | UI kit (DESIGN.md): Button, IconButton, PageHeader, Section, Field, RadioCards, Switch, Badge, ErrorMessage, ErrorState, EmptyState, Skeleton |

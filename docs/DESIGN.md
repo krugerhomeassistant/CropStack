@@ -72,3 +72,12 @@ Plain verbs, sentence case, the user's words ("Water bed 3", not "Irrigation eve
 The one place the app is allowed earth tones: the garden map is a plot plan. Beds use a soft `feed` tint with a thin edge, planted cells are tiles in the crop's colour (the same colour as in the bed editor) with the crop icon on top, the ground is a fine one-metre grid, and the selected bed has a soft `leaf` halo and thin ring. The bed editor sits in a thin rounded frame, not a thick border. Tools float over the map as a single pill (floating things may carry a shadow). Where two beds face each other, a thin dimension line shows the gap in metres (muted; green for the selected bed). The map frames the beds (1 m of margin, 2.6 m below for the pill) and holds still while a bed is dragged. Desktop: map (3/5) and bed panel (2/5) side by side; phone: stacked.
 
 **Resizable windows.** `Section` carries a bottom handle (`role=separator`) that sets the window's height by drag or arrow keys; double tap resets it. The height is kept in `localStorage` under the window's title (or its `name`, for a window without one). Content scrolls inside a shortened window.
+
+## Crop icons
+
+One flat icon per catalog crop in `frontend/src/icons/crops/<slug>.svg` (`_seedling.svg` is the fallback for a crop without one). `CropIcon` draws it in HTML and scales with the surrounding text; inside an `<svg>` (plot plan, bed grid) use `<image href={cropIconUrl(slug)}>`. A backend test fails when a catalog crop has no icon.
+
+- **Flat colour**: solid shapes in the plant's true-to-life colour, no outlines, no gradients, no filters. Details are fills or 2.6 px round-cap strokes in a darker or lighter shade of the same plant.
+- **Canvas**: `viewBox="0 0 64 64"`, subject centred and filling roughly 56 px, leaves and stems may reach the edge but never clip. Plain `<svg>` with one `viewBox` and no ids, scripts, fonts or external references (Vite inlines the small files, so the PWA works offline).
+- **Palette**: leaf greens `#2E6B3F` `#5FA845` `#A7D96B`, soil/wood `#7A5230`, then each crop's own fruit, root or flower colour. At most one soft white highlight (`opacity .3-.4`) on round fruit.
+- **Check**: after adding or changing icons, view them at 96 px and 24 px side by side; they must stay recognisable at 24 px.
