@@ -52,7 +52,7 @@ jobs:
       - run: ruff format --check .
 
   test:
-    name: Backend tests + frontend build
+    name: Backend tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -62,11 +62,20 @@ jobs:
       - run: python -m pytest -q
       - name: Coverage report is current
         run: pip install pyyaml && python scripts/coverage.py --check
+
+  e2e:
+    name: Frontend build + browser E2E
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with: { python-version: "3.14", cache: pip, cache-dependency-path: backend/requirements.txt }
+      - run: pip install -r backend/requirements.txt pytest  # tests.e2e_server imports the test helpers
       - uses: actions/setup-node@v7
         with: { node-version: 24, cache: npm, cache-dependency-path: frontend/package-lock.json }
       - run: npm ci && npm run build
         working-directory: frontend
-      - name: Browser E2E and screenshots (outside services stubbed)
+      - name: Browser E2E (outside services stubbed)
         working-directory: frontend
         env: { CROPSTACK_URL: "http://127.0.0.1:8512" }
         run: |
@@ -75,7 +84,11 @@ jobs:
             python -m tests.e2e_server --port 8512 > $RUNNER_TEMP/server.log 2>&1 &)
           timeout 30 bash -c 'until curl -sf $CROPSTACK_URL/api/health; do sleep 1; done'
           npm run e2e
-          CROPSTACK_USER=jan CROPSTACK_PASSWORD=garden123 npm run screenshots
+      - name: Screenshots (pull requests only, so main releases sooner)
+        if: github.event_name == 'pull_request'
+        working-directory: frontend
+        env: { CROPSTACK_URL: "http://127.0.0.1:8512", CROPSTACK_USER: jan, CROPSTACK_PASSWORD: garden123 }
+        run: npm run screenshots
       - if: always()
         uses: actions/upload-artifact@v7
         with:
@@ -85,7 +98,7 @@ jobs:
 
   image:
     name: Docker image
-    needs: [version, lint, test]
+    needs: [version]
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     permissions: { contents: read, packages: write }
@@ -99,11 +112,7 @@ jobs:
         uses: docker/metadata-action@v6
         with:
           images: ghcr.io/${{ github.repository_owner }}/cropstack
-          tags: |
-            type=raw,value=latest,enable={{is_default_branch}}
-            type=semver,pattern={{version}},value=v${{ needs.version.outputs.version }},enable=${{ needs.version.outputs.release }}
-            type=semver,pattern={{major}}.{{minor}},value=v${{ needs.version.outputs.version }},enable=${{ needs.version.outputs.release }}
-            type=sha,format=short
+          tags: type=sha,format=short
       - uses: docker/build-push-action@v7
         with:
           context: .
@@ -114,9 +123,28 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+  publish:
+    name: Publish tags
+    needs: [version, lint, test, e2e, image]
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    permissions: { contents: read, packages: write }
+    steps:
+      - uses: docker/setup-buildx-action@v4
+      - uses: docker/login-action@v4
+        with: { registry: ghcr.io, username: "${{ github.actor }}", password: "${{ secrets.GITHUB_TOKEN }}" }
+      - name: Tag the tested image (latest on main, version tags on a release)
+        run: |
+          IMG="ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/cropstack"
+          V="${{ needs.version.outputs.version }}"
+          T=()
+          [ "$GITHUB_REF" = "refs/heads/main" ] && T+=(-t "$IMG:latest")
+          [ "${{ needs.version.outputs.release }}" = "true" ] && T+=(-t "$IMG:$V" -t "$IMG:${V%.*}")
+          [ ${#T[@]} -eq 0 ] || docker buildx imagetools create "${T[@]}" "$IMG:sha-${GITHUB_SHA::7}"
+
   release:
     name: GitHub release
-    needs: [version, image]
+    needs: [version, publish]
     if: needs.version.outputs.release == 'true'
     runs-on: ubuntu-latest
     permissions: { contents: write }
