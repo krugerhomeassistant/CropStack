@@ -5,6 +5,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+### Changed
+- **Crop icons.** Every crop now has its own flat colour icon (68 drawn for this release) in place of a shared emoji, on Today, the year plan, the bed grid and the plot plan. A crop without an icon falls back to a seedling.
+
 ## [0.47.1] - 2026-10-16
 
 ### Changed

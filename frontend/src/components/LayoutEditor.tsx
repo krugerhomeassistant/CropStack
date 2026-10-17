@@ -4,7 +4,7 @@ import { api, type Bed, type BedIn, type BedKind, type CropSummary, type PlanIte
 import { t } from '../i18n'
 import { useApp } from '../state'
 import BedGrid, { addDays, cropColour, iso, PlantedSummary } from './BedGrid'
-import { cropIcon } from './cropIcon'
+import { CropIcon, cropIconUrl } from './CropIcon'
 import type { PlantRequest } from './Recommendations'
 import { Button, ErrorMessage, Field, IconButton, Section, Skeleton, Switch } from './ui'
 import DateField from './ui/DateField'
@@ -270,9 +270,7 @@ export default function LayoutEditor({ onChange, suggested, request, plan }: { o
             p.cells.map(([c, r]) => (
               <g key={`${faded ? 'w' : 'g'}${p.planting_id}${c},${r}`}>
                 <rect x={b.x + c * cell} y={b.y + r * cell} width={cell + 0.004} height={cell + 0.004} fill={cropColour(p.crop)} fillOpacity={faded ? 0.28 : 1} shapeRendering="crispEdges" />
-                <text x={b.x + (c + 0.5) * cell} y={b.y + (r + 0.5) * cell + size * 0.34} fontSize={size} textAnchor="middle" opacity={faded ? 0.5 : 0.95}>
-                  {cropIcon(p.crop)}
-                </text>
+                <image href={cropIconUrl(p.crop)} x={b.x + (c + 0.5) * cell - size * 0.55} y={b.y + (r + 0.5) * cell - size * 0.55} width={size * 1.1} height={size * 1.1} opacity={faded ? 0.5 : 0.95} />
               </g>
             ))
           return (
@@ -376,8 +374,8 @@ export default function LayoutEditor({ onChange, suggested, request, plan }: { o
                 {(() => {
                   const live = b.placements.filter((p) => p.from <= on && on <= p.until)
                   const wait = b.placements.filter((p) => p.from > on).length
-                  const icons = [...new Set(live.map((p) => cropIcon(p.crop)))].slice(0, 3).join('')
-                  return icons || wait ? <span className="ml-2 font-normal" aria-hidden>{icons}{wait > 0 && ` ⏳${wait}`}</span> : null
+                  const icons = [...new Set(live.map((p) => p.crop))].slice(0, 3)
+                  return icons.length || wait ? <span className="ml-2 font-normal" aria-hidden>{icons.map((c) => <CropIcon key={c} crop={c} />)}{wait > 0 && ` ⏳${wait}`}</span> : null
                 })()}
               </button>
             ))}

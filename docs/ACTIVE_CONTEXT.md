@@ -15,6 +15,7 @@ Personal, non-commercial. Fully dynamic (no presets). Never restrict or destroy 
 - Frontend: `cd frontend && npx tsc --noEmit && npm run build`.
 - Browser e2e: `npm run build` once, then `scripts/e2e-local.sh` (wipes data, restarts the stubbed server on :8512; takes ~100 s, so run it in the background with a log: `(scripts/e2e-local.sh > /tmp/e2e.log 2>&1 &)`). First run after a cold start can fail on the setup form: run again. Never run e2e on a dirty DB.
 - Screenshots: `npm run screenshots` (see CI for the env vars).
+- New crop: also draw `frontend/src/icons/crops/<slug>.svg` (DESIGN.md "Crop icons"); `test_every_real_crop_has_a_frontend_icon` fails without it.
 - Catalog: `backend/.venv/bin/python scripts/ingest check` (needs network; the real-catalog pytest covers validity offline), `python scripts/coverage.py` (regenerate `docs/COVERAGE.md`; CI fails if stale).
 - Migrations: set `CROPSTACK_DATA_DIR=/tmp/cs-mig`, `alembic upgrade head`, then `alembic revision --autogenerate` (or hand-write like 0016), name `NNNN_name.py`, revision id = number, `ruff check --fix`, bump `HEAD` in `backend/tests/test_migrations.py`.
 

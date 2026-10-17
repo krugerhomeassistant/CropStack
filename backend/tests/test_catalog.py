@@ -251,3 +251,9 @@ def test_companion_flowers_are_catalog_crops_that_are_not_food():
     for slug in flowers:
         item = loaded.get("crop", slug)
         assert item and item["purpose"] == "companion" and not item.get("food_group"), slug
+
+
+def test_every_real_crop_has_a_frontend_icon():
+    icons = {p.stem for p in (REPO / "frontend/src/icons/crops").glob("*.svg")}
+    crops = {p.stem for p in (REPO / "catalog/crops").glob("*.yaml")}
+    assert crops - icons == set(), "add frontend/src/icons/crops/<slug>.svg (see docs/DESIGN.md, Crop icons)"
