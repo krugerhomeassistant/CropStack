@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { api, type CropSummary, type Garden, type YearPlan } from '../api'
 import { CropIcon } from '../components/CropIcon'
+import CropPicker from '../components/CropPicker'
 import { PeopleStepper } from '../components/CoverageCard'
 import { Button, ErrorMessage, PageHeader } from '../components/ui'
 import { t } from '../i18n'
@@ -9,38 +10,6 @@ import GardenSetup from './GardenSetup'
 type Props = { garden: Garden | null; onDone: (garden: Garden) => void }
 type Step = 'place' | 'people' | 'want' | 'seeds' | 'done'
 const STEPS: Step[] = ['place', 'people', 'want', 'seeds', 'done']
-
-const label = (c: CropSummary) => c.names.en?.[0] ?? c.slug
-
-/** Tick any number of crops. Used for "what do you want to grow" and "which seed do you have". */
-function CropPicker({ crops, chosen, onChange }: { crops: CropSummary[]; chosen: Set<string>; onChange: (s: Set<string>) => void }) {
-  const [q, setQ] = useState('')
-  const shown = crops.filter((c) => label(c).toLowerCase().includes(q.trim().toLowerCase()))
-  const toggle = (slug: string) => {
-    const next = new Set(chosen)
-    if (!next.delete(slug)) next.add(slug)
-    onChange(next)
-  }
-  return (
-    <div className="flex flex-col gap-3">
-      <input className="input" type="search" placeholder={t('Search crops')} value={q} onChange={(e) => setQ(e.target.value)} />
-      <div className="flex flex-wrap gap-2">
-        {shown.map((c) => (
-          <button
-            key={c.slug}
-            type="button"
-            aria-pressed={chosen.has(c.slug)}
-            onClick={() => toggle(c.slug)}
-            className={`rounded-full border px-3 py-1.5 text-sm ${chosen.has(c.slug) ? 'border-accent bg-accent/15 font-semibold' : 'border-line'}`}
-          >
-            <CropIcon crop={c.slug} /> {label(c)}
-          </button>
-        ))}
-      </div>
-      <p className="text-sm text-muted">{t('{n} chosen', { n: chosen.size })}</p>
-    </div>
-  )
-}
 
 /** First-run and "run setup again": place, people, wanted crops, seeds in hand, then a draft plan with the seed list. */
 export default function Setup({ garden: start, onDone }: Props) {

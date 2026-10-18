@@ -1,3 +1,4 @@
+import ArrangePanel from './ArrangePanel'
 import { useEffect, useRef, useState } from 'react'
 import { Eraser } from 'lucide-react'
 import { api, type Bed, type CropSummary, type Placement, type PlanItem, type Recommendation } from '../api'
@@ -89,6 +90,7 @@ export default function BedGrid({
   const [qty, setQty] = useState('')
   const [error, setError] = useState('')
   const [about, setAbout] = useState<Recommendation | null>(null)
+  const [arranged, setArranged] = useState<PlanItem[]>([]) // an Arrange preview, shown whatever the date
 
   // arriving from a recommendation: the crop is chosen and the date set
   useEffect(() => {
@@ -99,7 +101,7 @@ export default function BedGrid({
   const here = (c: number, r: number) =>
     bed.placements.filter((p) => p.cells.some(([x, y]) => x === c && y === r) && p.from <= on && on <= p.until)
   // the drafted year plan, its plants shown dashed on this date
-  const ghosts = plan.filter((i) => i.bed_id === bed.id && (i.set_out_date ?? i.start_date) <= on && on <= i.until)
+  const ghosts = [...plan.filter((i) => i.bed_id === bed.id && (i.set_out_date ?? i.start_date) <= on && on <= i.until), ...arranged]
   const clashing = new Set(bed.clashes.flatMap((x) => x.plantings))
   const fail = (e: unknown) => setError(e instanceof Error ? e.message : t('Failed to save'))
 
@@ -371,6 +373,7 @@ export default function BedGrid({
         {bed.outside > 0 && ` ${t('{n} planted cells sit beyond the edge of this bed; make the bed bigger to see them.', { n: bed.outside })}`}
       </p>
       <PlantedSummary beds={[bed]} on={on} />
+      {canEdit && <ArrangePanel bed={bed} crops={crops} preview={arranged} onPreview={setArranged} onChange={onChange} />}
 
       {info && (
         <div className="flex flex-col gap-2 rounded-[var(--radius-row)] bg-sunken p-3 text-sm">

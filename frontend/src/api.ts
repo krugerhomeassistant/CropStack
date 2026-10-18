@@ -397,7 +397,8 @@ export const api = {
   resetData: () => request<Record<string, number>>('POST', '/household/reset', { confirm: 'RESET' }),
   seeds: () => request<string[]>('GET', '/seeds'),
   setSeeds: (crops: string[]) => request<string[]>('PUT', '/seeds', { crops }),
-  yearPlan: () => request<YearPlan>('GET', '/plan/year'),
+  yearPlan: (arrange?: { bed: number; crops: string[] }) =>
+    request<YearPlan>('GET', arrange ? `/plan/year?bed=${arrange.bed}&crops=${arrange.crops.join(',')}` : '/plan/year'),
   acceptPlan: (items: PlantingIn[]) => request<{ created: number; replaced: number }>('POST', '/plan/year', items),
   previewPlan: (items: PlantingIn[]) => request<PlanDiff>('POST', '/plan/year/preview', items),
   clearPlan: () => request<{ removed: number }>('DELETE', '/plan/year'),
