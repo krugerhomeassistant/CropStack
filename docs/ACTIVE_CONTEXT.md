@@ -1,6 +1,6 @@
 # ACTIVE CONTEXT
 
-**Date:** 2026-10-18 · **Version:** 0.50.0 · **Alembic head:** 0019 · **Tests:** 219 backend, browser e2e green.
+**Date:** 2026-10-18 · **Version:** 0.51.0 · **Alembic head:** 0019 · **Tests:** 220 backend, browser e2e green.
 History of earlier sessions: `ACTIVE_CONTEXT_ARCHIVE.md`.
 
 ## What CropStack is today
@@ -27,7 +27,7 @@ Personal, non-commercial. Fully dynamic (no presets). Never restrict or destroy 
 5. Real-container smoke test: `docker pull` the image, run with `--network host -v /tmp/data:/data`, hit `/api/health` (needs `dockerd &` first in the sandbox; local `docker build` fails on the proxy CA, use the CI image).
 
 ## Next (owner asked, not done)
-Bed "Arrange" tool (tick crops, server sizes amounts and lays out real-size spots, preview then confirm); butternut (Cucurbita moschata) in the catalog with cited values.
+Butternut (Cucurbita moschata) in the catalog with cited values.
 
 ## Next up (priority order; specs in PLAN.md "Next up")
 1. Needs model (PLAN 8.2) so the year plan sizes each crop's block to what the household eats.

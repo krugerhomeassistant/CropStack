@@ -5,6 +5,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.51.0] - 2026-10-18
+
+### Added
+- **Arrange crops in a bed.** In a bed, tick the crops you want and preview them laid out at real size in staggered rows, going round what already grows there (an earlier year plan included), then plant them in one tap. Amounts come from your household's needs and the room in the bed; each crop gets its earliest sowing window.
+
+## [0.51.0] - 2026-10-18
+
 ## [0.50.0] - 2026-10-18
 
 ### Added
@@ -523,7 +530,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - CI: ruff lint and format, backend tests, frontend build, image publishing to GHCR and automatic GitHub releases on a version bump.
 - Project docs: README, wiki, architecture, roadmap, contributing guide, security policy and Code of Conduct.
 
-[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.50.0...HEAD
+[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.51.0...HEAD
+[0.51.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.50.0...v0.51.0
 [0.50.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.49.2...v0.50.0
 [0.49.2]: https://github.com/krugerhomeassistant/CropStack/compare/v0.49.1...v0.49.2
 [0.49.1]: https://github.com/krugerhomeassistant/CropStack/compare/v0.49.0...v0.49.1
