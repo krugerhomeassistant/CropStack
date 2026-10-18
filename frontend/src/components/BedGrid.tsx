@@ -34,10 +34,11 @@ export function PlantedSummary({ beds, on }: { beds: Bed[]; on: string }) {
   for (const b of beds)
     for (const p of b.placements) {
       if (p.from > on || p.until < on) continue
-      const inside = p.cells.filter(([c, r]) => c < b.cols && r < b.rows).length // only what the grid shows
-      if (inside === 0) continue
+      const shown = p.spots.filter(([x, y]) => x < b.width * 100 && y < b.length * 100).length // only what the bed shows
+      const inside = p.cells.filter(([c, r]) => c < b.cols && r < b.rows).length
+      if (shown === 0 && (p.spots.length > 0 || inside === 0)) continue
       const s = sums.get(p.crop) ?? { name: p.name, now: 0 }
-      s.now += Math.round((p.quantity * inside) / p.cells.length)
+      s.now += p.spots.length ? shown : Math.round((p.quantity * inside) / p.cells.length)
       sums.set(p.crop, s)
     }
   if (sums.size === 0) return <p className="text-sm text-muted">{t('Nothing is planted on this date.')}</p>
@@ -100,7 +101,7 @@ export default function BedGrid({
   // the drafted year plan, shown dashed on cells that are empty on this date
   const ghost = (c: number, r: number) =>
     plan.find((i) => i.cells.some(([x, y]) => x === c && y === r) && (i.set_out_date ?? i.start_date) <= on && on <= i.until)
-  const clashing = new Set(bed.clashes.map((x) => key(x.cell[0], x.cell[1])))
+  const clashing = new Set(bed.clashes.flatMap((x) => x.plantings))
   const fail = (e: unknown) => setError(e instanceof Error ? e.message : t('Failed to save'))
 
   const at = (e: React.PointerEvent<SVGSVGElement>) => {
@@ -108,6 +109,17 @@ export default function BedGrid({
     const c = Math.floor(((e.clientX - box.left) / box.width) * bed.cols)
     const r = Math.floor(((e.clientY - box.top) / box.height) * bed.rows)
     return c >= 0 && r >= 0 && c < bed.cols && r < bed.rows ? key(c, r) : null
+  }
+  // the plant standing under a tap, else whatever holds the cell
+  const plantAt = (e: React.PointerEvent<SVGSVGElement>, c: number, r: number) => {
+    const box = e.currentTarget.getBoundingClientRect()
+    const x = ((e.clientX - box.left) / box.width) * bed.cols * bed.cell_cm
+    const y = ((e.clientY - box.top) / box.height) * bed.rows * bed.cell_cm
+    return (
+      bed.placements.find((p) => p.from <= on && on <= p.until && p.spots.some(([sx, sy, w, h]) => x >= sx && x < sx + w && y >= sy && y < sy + h)) ??
+      here(c, r)[0] ??
+      null
+    )
   }
   function add(e: React.PointerEvent<SVGSVGElement>) {
     const k = at(e)
@@ -119,10 +131,10 @@ export default function BedGrid({
   function down(e: React.PointerEvent<SVGSVGElement>) {
     setError('')
     e.currentTarget.setPointerCapture(e.pointerId)
-    if (brush && canEdit) return fitting ? undefined : add(e)
+    if (brush && canEdit) return add(e)
     const k = at(e)
     const [c, r] = k ? k.split(',').map(Number) : [-1, -1]
-    const p = here(c, r)[0] ?? null
+    const p = plantAt(e, c, r)
     setInfo(p)
     setEditing(false)
     setUntil(p?.until ?? '')
@@ -157,9 +169,7 @@ export default function BedGrid({
       if (union.length === same.cells.length) return
       api
         .updatePlanting(same.planting_id, {
-          cells: union,
-          // a planting with no cells yet has no density to scale from; the server then keeps its count
-          ...(same.cells.length ? { quantity: Math.max(1, Math.round((same.quantity * union.length) / same.cells.length)) } : {}),
+          cells: union, // the server keeps the plants already there and adds new ones only on the new cells
         })
         .then(onChange, fail)
       return
@@ -180,25 +190,6 @@ export default function BedGrid({
   }
 
   const crop = brush && brush !== 'erase' ? brush : null
-  const slug = crop?.crop
-  // however a crop is chosen, the bed's cells are sized to suit it first; painting waits until the grid shows that size
-  const [fitted, setFitted] = useState<number | null>(null)
-  const fitting = fitted !== null && fitted !== bed.cell_cm
-  useEffect(() => {
-    if (!slug || !canEdit) return
-    setFitted(-1)
-    api.updateBed(bed.id, { for_crop: slug }).then(
-      (b) => {
-        setFitted(b.cell_cm)
-        onChange()
-      },
-      (e) => {
-        setFitted(null)
-        fail(e)
-      },
-    )
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [slug, bed.id])
   const chips = suggested.slice(0, SUGGESTED)
   const nameOf = (slug: string) => crops.find((c) => c.slug === slug)?.names.en?.[0] ?? slug
   const pick = (r: Recommendation) => {
@@ -304,7 +295,6 @@ export default function BedGrid({
 
       <div className="mx-auto w-full rounded-2xl border border-line bg-sunken p-1.5" style={{ maxWidth: `${bed.cols * 4.5}rem` }}>
       <svg
-        aria-busy={fitting}
         viewBox={`0 0 ${bed.cols} ${bed.rows}`}
         className="block w-full touch-none select-none"
         role="img"
@@ -326,17 +316,17 @@ export default function BedGrid({
                   width={0.94}
                   height={0.94}
                   rx={0.14}
-                  fill={marked ? (crop ? cropColour(crop.crop) : 'transparent') : p[0] ? cropColour(p[0].crop) : g ? cropColour(g.crop) : 'transparent'}
+                  fill={marked ? (crop ? cropColour(crop.crop) : 'transparent') : g ? cropColour(g.crop) : 'transparent'}
                   fillOpacity={g && !marked ? 0.45 : 1}
-                  className={clashing.has(key(c, r)) ? 'stroke-danger' : marked || g ? 'stroke-ink' : 'stroke-line'}
-                  strokeWidth={clashing.has(key(c, r)) || marked || g ? 0.06 : 0.025}
+                  className={marked || g ? 'stroke-ink' : 'stroke-line'}
+                  strokeWidth={marked || g ? 0.06 : 0.025}
                   strokeDasharray={marked || g ? '0.15 0.1' : undefined}
                 />
-                {(p[0] || g) && (
+                {g && (
                   <>
-                    <image href={cropIconUrl((p[0] ?? g!).crop)} x={c + 0.27} y={r + 0.1} width={0.46} height={0.46} className="pointer-events-none" />
+                    <image href={cropIconUrl(g.crop)} x={c + 0.27} y={r + 0.1} width={0.46} height={0.46} className="pointer-events-none" />
                     <text x={c + 0.5} y={r + 0.82} fontSize={0.2} textAnchor="middle" className="pointer-events-none fill-ink">
-                      {(p[0]?.name ?? g!.name).slice(0, 6)}
+                      {g.name.slice(0, 6)}
                     </text>
                   </>
                 )}
@@ -344,6 +334,35 @@ export default function BedGrid({
             )
           }),
         )}
+        {/* the plants themselves: each one a square of its own real spacing, whatever the cells are */}
+        {bed.placements
+          .filter((p) => p.from <= on && on <= p.until)
+          .flatMap((p) =>
+            p.spots.map(([sx, sy, w, h], i) => {
+              const u = bed.cell_cm
+              const side = Math.min(w, h) / u
+              return (
+                <g key={`${p.planting_id}-${i}`} className="pointer-events-none">
+                  <rect
+                    x={sx / u + 0.02}
+                    y={sy / u + 0.02}
+                    width={w / u - 0.04}
+                    height={h / u - 0.04}
+                    rx={Math.min(0.14, side / 4)}
+                    fill={cropColour(p.crop)}
+                    className={clashing.has(p.planting_id) ? 'stroke-danger' : 'stroke-ink/40'}
+                    strokeWidth={clashing.has(p.planting_id) ? 0.06 : 0.02}
+                  />
+                  <image href={cropIconUrl(p.crop)} x={sx / u + (w / u - side * 0.6) / 2} y={sy / u + (h / u - side * 0.6) / 2 - (side > 0.9 ? 0.08 : 0)} width={side * 0.6} height={side * 0.6} />
+                  {side > 0.9 && (
+                    <text x={sx / u + w / u / 2} y={sy / u + h / u - 0.1} fontSize={0.18} textAnchor="middle" className="fill-ink">
+                      {p.name.slice(0, 8)}
+                    </text>
+                  )}
+                </g>
+              )
+            }),
+          )}
       </svg>
       </div>
       <p className="text-xs text-muted">

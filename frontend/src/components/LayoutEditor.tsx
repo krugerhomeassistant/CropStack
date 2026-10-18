@@ -267,7 +267,17 @@ export default function LayoutEditor({ onChange, suggested, request, plan }: { o
           const label = waiting.length > 0 ? `${b.name}  ⏳${waiting.length}` : b.name
           const tag = Math.max(0.9, label.length * 0.15 + 0.3)
           const mark = (p: (typeof growing)[number], faded: boolean) =>
-            p.cells.map(([c, r]) => (
+            p.spots.length > 0
+              ? p.spots.map(([sx, sy, w, h], i) => {
+                  const side = Math.min(w, h) / 100
+                  return (
+                    <g key={`${faded ? 'w' : 'g'}${p.planting_id}-${i}`}>
+                      <rect x={b.x + sx / 100 + 0.01} y={b.y + sy / 100 + 0.01} width={w / 100 - 0.02} height={h / 100 - 0.02} rx={Math.min(0.05, side / 4)} fill={cropColour(p.crop)} fillOpacity={faded ? 0.28 : 1} />
+                      <image href={cropIconUrl(p.crop)} x={b.x + (sx + w / 2) / 100 - side * 0.3} y={b.y + (sy + h / 2) / 100 - side * 0.3} width={side * 0.6} height={side * 0.6} opacity={faded ? 0.5 : 0.95} />
+                    </g>
+                  )
+                })
+              : p.cells.map(([c, r]) => (
               <g key={`${faded ? 'w' : 'g'}${p.planting_id}${c},${r}`}>
                 <rect x={b.x + c * cell} y={b.y + r * cell} width={cell + 0.004} height={cell + 0.004} fill={cropColour(p.crop)} fillOpacity={faded ? 0.28 : 1} shapeRendering="crispEdges" />
                 <image href={cropIconUrl(p.crop)} x={b.x + (c + 0.5) * cell - size * 0.55} y={b.y + (r + 0.5) * cell - size * 0.55} width={size * 1.1} height={size * 1.1} opacity={faded ? 0.5 : 0.95} />

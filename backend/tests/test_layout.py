@@ -1,3 +1,5 @@
+from datetime import date
+
 from app.engine.layout import Patch, best_block, dims_cm, patch, plants_in, stagger
 
 
@@ -63,3 +65,28 @@ def test_no_offset_when_there_is_nothing_to_shift_or_no_room():
     assert stagger(best_block(4, 4, tight, p, 4)[0], 4, 4, tight, p) is None  # no spare width for the moved row
     strip = {(c, r) for c in range(8) for r in range(2)}
     assert stagger(best_block(8, 2, strip, p, 4)[0], 8, 2, strip, p) is None  # one row of patches: nothing to offset
+
+
+def test_fill_lays_plants_at_their_real_size_in_offset_rows():
+    from app.engine.layout import fill, overlap
+
+    cells = [(c, r) for c in range(6, 9) for r in range(4)]  # 3 x 4 cells of 25 cm
+    spots = fill(cells, 25, 250, 150, (45, 45))
+    assert len(spots) == 3 and {(w, h) for _, _, w, h in spots} == {(45, 45)}
+    assert len({x for x, y, _, _ in spots if y == 0} - {x for x, y, _, _ in spots if y == 45}) > 0  # rows are offset
+    assert not any(overlap(a, b) for i, a in enumerate(spots) for b in spots[i + 1 :])
+    assert fill([(0, 0)], 25, 250, 150, (45, 45)) == [(0, 0, 45, 45)]  # one tapped cell, one plant, moved into the bed
+    assert fill([(20, 20)], 25, 250, 150, (45, 45)) == []  # cells outside the bed take nothing
+    assert fill(cells, 25, 250, 150, (45, 45), avoid=[(150, 0, 45, 45)])[0] != (150, 0, 45, 45)  # goes round others
+    assert len(fill(cells, 25, 250, 150, (10, 10))) > 3 * len(spots)  # small plants, many more
+
+
+def test_cover_and_spot_clashes_follow_the_ground_not_the_cell():
+    from app.engine.layout import cover, spot_clashes
+
+    assert cover([(0, 0, 45, 45)], 25) == [[0, 0], [1, 0], [0, 1], [1, 1]]
+    day = date(2026, 10, 1)
+    near = [(1, (0, 0, 20, 20), day, day), (2, (22, 0, 20, 20), day, day)]  # same 25 cm cell, apart on the ground
+    assert spot_clashes(near, 25) == []
+    on_top = [(1, (0, 0, 20, 20), day, day), (2, (10, 0, 20, 20), day, day)]
+    assert [(p, q) for _, p, q in spot_clashes(on_top, 25)] == [(1, 2)]

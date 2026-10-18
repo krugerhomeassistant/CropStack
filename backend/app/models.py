@@ -152,7 +152,10 @@ class Planting(SQLModel, table=True):
     bed_id: int | None = Field(default=None, foreign_key="bed.id", ondelete="SET NULL", index=True)
     cells: list[list[int]] = Field(
         default_factory=list, sa_column=Column(JSON, nullable=False, server_default="[]")
-    )  # [column, row] in the bed
+    )  # [column, row] in the bed: the grid cells the plants cover (a brush and a summary, derived from `spots`)
+    spots: list[list[int]] = Field(
+        default_factory=list, sa_column=Column(JSON, nullable=False, server_default="[]")
+    )  # [x, y, w, h] in cm in the bed, one per plant at its real spacing; empty on rows made before spots existed
     ends_on: date | None = None  # last day it holds its cells; blank = the crop's longest cycle after planting
     notes: str = ""
     source: str = Field(default="", sa_column_kwargs={"server_default": ""})  # "plan" when the year plan made it
