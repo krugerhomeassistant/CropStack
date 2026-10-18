@@ -96,7 +96,7 @@ Target architecture (engines, data model, API) is specified in `docs/SPEC.md` §
 - **membership**: user_id (PK → user, CASCADE), household_id (→ household, CASCADE, indexed), role (owner|member|viewer), created_at
 - **invite**: token_hash (PK, SHA-256), household_id (→ household, CASCADE), role, created_by (→ user, SET NULL), created_at, expires_at, used_at
 - **household.ai** (JSON): provider, base_url, model, api_key (plain text; see the shortcut in `routers/ai.py`)
-- **bed**: id, household_id (CASCADE), name, kind (bed, container, row), x, y, width, length (metres from the plan corner), cell_cm (grid cell, sized to the plants by `layout.fit_cell`/`beds.suits`), layout (group name, blank = alone), created_at. `planting.bed_id` → bed (SET NULL); `planting.location` carries the bed name
+- **bed**: id, household_id (CASCADE), name, kind (bed, container, row), x, y, width, length (metres from the plan corner), cell_cm (grid cell, the painting brush; whole cells that fit the bed by `layout.fit_cell`), layout (group name, blank = alone), created_at. `planting.bed_id` → bed (SET NULL); `planting.location` carries the bed name
 - **seed**: id, household_id (→ household, CASCADE, indexed), crop (catalog slug), created_at; unique (household_id, crop)
 - **harvest**: id, household_id (CASCADE), planting_id (→ planting, CASCADE), harvested_on, quantity (> 0), unit (kg, g, count, bunch), notes, created_by (SET NULL), created_at
 - **site**: id, household_id (→ household, unique, CASCADE), name, latitude, longitude, postal_code, frost_probability (10–90), soil ('', sandy, loamy, clay), created_at, updated_at

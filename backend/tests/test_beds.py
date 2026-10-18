@@ -96,9 +96,9 @@ def test_cells_are_never_refused_for_the_grid_and_follow_a_bed_that_shrinks(owne
     def mine():
         return next(p for p in owner.get("/api/v1/plantings").json() if p["id"] == made["id"])["cells"]
 
-    assert mine() == [[0, 0], [3, 3]]  # kept, shown as outside
+    assert [0, 0] in mine() and [3, 3] in mine()  # kept, shown as outside
     owner.patch(f"/api/v1/plantings/{made['id']}", json={"cells": [[1, 1]]})
-    assert mine() == [[1, 1]]
+    assert [1, 1] in mine() and [3, 3] not in mine()
     owner.patch(f"/api/v1/plantings/{made['id']}", json={"bed_id": None})
     assert mine() == []
 
@@ -162,9 +162,9 @@ def test_changing_a_bed_never_throws_away_where_things_grow(owner):  # noqa: F81
     )  # unchanged size
     owner.patch(url, json={"width": 0.6})  # smaller: the cell at column 3 is outside but kept
     mine = next(p for p in owner.get("/api/v1/plantings").json() if p["id"] == made["id"])
-    assert mine["cells"] == [[0, 0], [3, 3]]
+    assert [0, 0] in mine["cells"] and [3, 3] in mine["cells"]
     shown = next(b for b in owner.get("/api/v1/beds").json() if b["id"] == bed["id"])
-    assert shown["outside"] == 1
+    assert shown["outside"] == 2  # a 45 cm plant at the edge covers two cells
     erased = owner.patch(f"/api/v1/plantings/{made['id']}", json={"cells": [[3, 3]]})  # erase inside, keep outside
     assert erased.status_code == 200
     owner.patch(url, json={"cell_cm": 60})
@@ -477,34 +477,7 @@ def test_cells_are_chosen_so_whole_cells_fit_the_bed(owner):  # noqa: F811
     assert manual["cell_cm"] == 20  # an explicit choice that fits stays
 
 
-def test_a_beds_cells_follow_the_plants_it_holds(owner, monkeypatch):  # noqa: F811
-    from pathlib import Path
-
-    from app import catalog as cat
-    from app.main import app
-
-    monkeypatch.setattr(app.state, "catalog", cat.load(Path(__file__).resolve().parents[2] / "catalog"))
-    owner.put("/api/v1/sites/current", json=GARDEN)
-    bed = owner.post("/api/v1/beds", json={"name": "B", "width": 1.5, "length": 2.5}).json()
-    assert bed["cell_cm"] == 25
-    url = f"/api/v1/beds/{bed['id']}"
-    assert owner.patch(url, json={"for_crop": "beetroot"}).json()["cell_cm"] == 10  # 10 cm spacing: a plant a cell
-    made = owner.post(
-        "/api/v1/plantings",
-        json={
-            "crop": "beetroot",
-            "method": "direct",
-            "start_date": "2026-08-30",
-            "bed_id": bed["id"],
-            "cells": [[0, 0]],
-        },
-    )
-    assert made.status_code == 201 and made.json()["quantity"] == 1
-    wide = owner.patch(url, json={"for_crop": "tomato"}).json()  # a bigger plant never coarsens a bed with small ones
-    assert wide["cell_cm"] == 10
-
-
-def test_choosing_another_crop_never_resizes_what_is_planted(owner, monkeypatch):  # noqa: F811
+def test_plants_keep_their_place_and_real_size_whatever_the_cells_or_the_next_crop(owner, monkeypatch):  # noqa: F811
     from pathlib import Path
 
     from app import catalog as cat
@@ -514,18 +487,69 @@ def test_choosing_another_crop_never_resizes_what_is_planted(owner, monkeypatch)
     owner.put("/api/v1/sites/current", json=GARDEN)
     bed = owner.post("/api/v1/beds", json={"name": "B", "width": 1.0, "length": 2.0, "cell_cm": 50}).json()
     url = f"/api/v1/beds/{bed['id']}"
-    assert plant(owner, bed["id"], [[0, 0], [1, 0]], "2026-08-30", crop="tomato").status_code == 201  # 50 x 100 cm
+    assert plant(owner, bed["id"], [[0, 0], [1, 0]], "2026-08-30", crop="tomato").status_code == 201
 
-    def ground() -> set:
-        cells = owner.get("/api/v1/plantings").json()[0]["cells"]
-        size = owner.get("/api/v1/beds").json()[0]["cell_cm"]
-        return {(x * size + i, y * size + j) for x, y in cells for i in range(size) for j in range(size)}
+    def spots(crop):
+        placed = owner.get("/api/v1/beds").json()[0]["placements"]
+        return next(p["spots"] for p in placed if p["crop"] == crop)
 
-    before = ground()
-    fine = owner.patch(url, json={"for_crop": "beetroot"}).json()  # a finer grid: the old cells split exactly
-    assert fine["cell_cm"] < 50 and 50 % fine["cell_cm"] == 0 and ground() == before
-    back = owner.patch(url, json={"for_crop": "tomato"}).json()  # a bigger plant never coarsens it again
-    assert back["cell_cm"] == fine["cell_cm"] and ground() == before
+    tomatoes = spots("tomato")
+    assert tomatoes and len({(w, h) for _, _, w, h in tomatoes}) == 1  # one size: the tomato's spacing
+    w, h = tomatoes[0][2:]
+    assert (w, h) != (50, 50)  # not the size of the cell
+    assert owner.get("/api/v1/plantings").json()[0]["quantity"] == len(tomatoes)
+    # beetroot beside them: its own, smaller size; the tomatoes do not move or change
+    assert plant(owner, bed["id"], [[0, 2], [1, 2]], "2026-08-30", crop="beetroot").status_code == 201
+    beets = spots("beetroot")
+    assert beets and beets[0][2] < w and spots("tomato") == tomatoes
+    # a different cell size changes only which cells are shown, never the plants
+    assert owner.patch(url, json={"cell_cm": 25}).status_code == 200
+    assert spots("tomato") == tomatoes and spots("beetroot") == beets
+
+
+def test_painting_more_adds_plants_in_offset_rows_and_keeps_the_ones_there(owner, monkeypatch):  # noqa: F811
+    from pathlib import Path
+
+    from app import catalog as cat
+    from app.main import app
+
+    monkeypatch.setattr(app.state, "catalog", cat.load(Path(__file__).resolve().parents[2] / "catalog"))
+    owner.put("/api/v1/sites/current", json=GARDEN)
+    bed = owner.post("/api/v1/beds", json={"name": "B", "width": 1.5, "length": 2.5, "cell_cm": 25}).json()
+    made = plant(owner, bed["id"], [[c, r] for c in range(3) for r in range(4)], "2026-08-30", crop="chilli").json()
+    first = next(p for p in owner.get("/api/v1/beds").json()[0]["placements"])["spots"]
+    assert len(first) == made["quantity"] > 1
+    rows = {}
+    for x, y, _, _ in first:
+        rows.setdefault(y, []).append(x)
+    assert len(rows) > 1 and len({min(xs) for xs in rows.values()}) > 1  # rows do not all start in one column
+    more = owner.patch(f"/api/v1/plantings/{made['id']}", json={"cells": [[c, r] for c in range(5) for r in range(4)]})
+    assert more.status_code == 200
+    after = next(p for p in owner.get("/api/v1/beds").json()[0]["placements"])["spots"]
+    assert all(s in after for s in first) and len(after) > len(first)
+
+
+def test_other_crops_go_round_plants_already_on_the_ground_and_clash_only_on_real_overlap(owner, monkeypatch):  # noqa: F811
+    from pathlib import Path
+
+    from app import catalog as cat
+    from app.main import app
+
+    monkeypatch.setattr(app.state, "catalog", cat.load(Path(__file__).resolve().parents[2] / "catalog"))
+    owner.put("/api/v1/sites/current", json=GARDEN)
+    bed = owner.post("/api/v1/beds", json={"name": "B", "width": 1.5, "length": 1.5, "cell_cm": 25}).json()
+    cells = [[c, r] for c in range(6) for r in range(6)]
+    assert plant(owner, bed["id"], [[0, 0], [1, 0]], "2026-08-30", crop="tomato").status_code == 201
+    assert plant(owner, bed["id"], cells, "2026-08-30", crop="beetroot").status_code == 201
+    [row] = owner.get("/api/v1/beds").json()
+    assert row["clashes"] == []  # beetroot fills the gaps, never on top of a tomato
+    tomato = next(p for p in row["placements"] if p["crop"] == "tomato")["spots"]
+    beet = next(p for p in row["placements"] if p["crop"] == "beetroot")["spots"]
+    assert beet and not any(
+        a[0] < b[0] + b[2] and b[0] < a[0] + a[2] and a[1] < b[1] + b[3] and b[1] < a[1] + a[3]
+        for a in tomato
+        for b in beet
+    )
 
 
 def test_a_null_quantity_never_reaches_the_database(owner):  # noqa: F811

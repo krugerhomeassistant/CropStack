@@ -59,7 +59,7 @@ It runs on your own hardware (a NAS, a Raspberry Pi, a home server) as one conta
 - **Past sowings count.** Log a sowing on a past date and it is recorded as sown (or set out) straight away.
 - **Key points per job.** Each job lists the crop's own facts: spacing, thin-to, sowing depth, soil temperature, days to emerge, light, seedling age.
 - **Pantry.** Track preserved and stored food (canned, frozen, dried, fermented, cellar, fresh) with batch dates and "use soon" reminders.
-- **Garden plan.** Draw beds, rows and pots freely to scale, group them into layouts that move as one to match your garden, then paint exactly which crop goes in which cells. Mix and stagger crops in one bed (the date slider shows it over time), and get "what to plant now and where" suggestions from your climate.
+- **Garden plan.** Draw beds, rows and pots freely to scale, group them into layouts that move as one to match your garden, then paint where each crop goes. Every plant is drawn at its real spacing in staggered rows, and small crops fill the gaps between big ones. Mix crops in one bed (the date slider shows it over time), and get "what to plant now and where" suggestions from your climate.
 - **Harvest log.** Record what you pick from each planting; the Garden page shows the running total.
 - **Frost and heat alerts.** If the forecast shows a night too cold or a day too hot for something you have growing, Today lists a Protect job with the figure and the crop's limit.
 - **Plantings.** Choose *Plant this* on a window, and the Garden tab keeps track: what, how many, where, and whether it is sown, up, set out, harvesting, finished or failed.

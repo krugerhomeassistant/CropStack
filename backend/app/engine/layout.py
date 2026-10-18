@@ -237,3 +237,77 @@ def clashes(held: list[tuple[int, Cell, date, date]]) -> list[tuple[Cell, int, i
             if cell == other and p != q and a <= d and c <= b:
                 out.append((cell, p, q))
     return out
+
+
+# ---------------------------------------------------------------- plants at their real size
+
+Spot = tuple[int, int, int, int]  # one plant: x, y, width, height in cm from the bed's top left corner
+
+
+def spot_size(cell_cm: int, dims: tuple[float, float] | None) -> tuple[int, int]:
+    """The ground one plant takes, in cm: its spacing in the row by between rows (a cell when the spacing is unknown)."""
+    return (max(1, round(dims[0])), max(1, round(dims[1]))) if dims else (cell_cm, cell_cm)
+
+
+def overlap(a: Spot, b: Spot) -> bool:
+    return a[0] < b[0] + b[2] and b[0] < a[0] + a[2] and a[1] < b[1] + b[3] and b[1] < a[1] + a[3]
+
+
+def fill(cells, cell_cm: int, width_cm: int, length_cm: int, dims, avoid=(), limit: int = MAX_CELLS) -> list[Spot]:
+    """Plants at their real spacing over painted `cells`, in rows with every other row shifted half a plant (so they
+    stagger, never a solid block). A plant goes where its centre is in a painted cell, so one tapped cell takes one plant
+    even when the plant is bigger than the cell; it is moved in from the bed's edge, and never lands on `avoid` spots
+    (other crops on the ground then) or on a plant of its own. At most `limit` plants."""
+    region = {tuple(c) for c in cells}
+    w, h = spot_size(cell_cm, dims)
+    if not region or w > width_cm or h > length_cm:
+        return []
+    x0, y0 = min(c for c, _ in region) * cell_cm, min(r for _, r in region) * cell_cm
+    x1, y1 = (max(c for c, _ in region) + 1) * cell_cm, (max(r for _, r in region) + 1) * cell_cm
+    out: list[Spot] = []
+    row: list[Spot] = []
+    j, cy = 0, y0 + h / 2
+    while cy < y1 and len(out) < limit:
+        before, row = row, []  # a plant can only touch its own row and the one before it
+        cx = x0 + w / 2 + (w / 2 if j % 2 else 0)
+        while cx < x1 and len(out) < limit:
+            if cx < width_cm and cy < length_cm and (int(cx // cell_cm), int(cy // cell_cm)) in region:
+                s = (
+                    min(max(round(cx - w / 2), 0), width_cm - w),
+                    min(max(round(cy - h / 2), 0), length_cm - h),
+                    w,
+                    h,
+                )
+                if not any(overlap(s, o) for o in (*avoid, *before, *row)):
+                    row.append(s)
+                    out.append(s)
+            cx += w
+        j, cy = j + 1, cy + h
+    return out
+
+
+def cover(spots, cell_cm: int) -> list[list[int]]:
+    """The grid cells that plants touch, in reading order."""
+    out = {
+        (x, y)
+        for sx, sy, w, h in spots
+        for x in range(sx // cell_cm, (sx + w - 1) // cell_cm + 1)
+        for y in range(sy // cell_cm, (sy + h - 1) // cell_cm + 1)
+    }
+    return [list(c) for c in sorted(out, key=lambda c: (c[1], c[0]))]
+
+
+def spot_clashes(held, cell_cm: int) -> list[tuple[Cell, int, int]]:
+    """Pairs of plantings (ids) with plants on the same ground on overlapping days, each with a cell it happens in.
+    `held` = (planting id, spot, from, to). Plants of different crops sharing a cell but not the ground do not clash."""
+    by_cell: dict[tuple[int, int], list] = {}
+    for item in held:
+        for c, r in cover([item[1]], cell_cm):
+            by_cell.setdefault((c, r), []).append(item)
+    found: dict[tuple[int, int], Cell] = {}
+    for cell, group in by_cell.items():
+        for i, (p, a, f, t) in enumerate(group):
+            for q, b, g, u in group[i + 1 :]:
+                if p != q and f <= u and g <= t and overlap(a, b):
+                    found.setdefault((min(p, q), max(p, q)), cell)
+    return [(cell, p, q) for (p, q), cell in sorted(found.items())]

@@ -1,6 +1,6 @@
 """Plantings: what the household has sown or plans to sow (SPEC §6.2)."""
 
-from datetime import UTC, date, datetime
+from datetime import UTC, date, datetime, timedelta
 from typing import Literal
 
 from fastapi import APIRouter, HTTPException
@@ -88,6 +88,20 @@ def _bed(db: SessionDep, household_id: int, bed_id: int) -> Bed:
     return bed
 
 
+def _place(
+    db: SessionDep, c: CatalogDep, household_id: int, bed: Bed, crop: str, cells, first: date, last: date | None,
+    keep=(), skip: int | None = None, limit: int = layout.MAX_CELLS,
+) -> list[list[int]]:  # fmt: skip
+    """The plants for painted `cells` of a bed: `keep` stay as they are and new ones are laid out at the crop's real
+    spacing round the other plantings that hold the ground in that time."""
+    from .beds import cm, crop_facts, ground_taken
+
+    f = crop_facts(db, c, household_id, crop, {})
+    last = last or first + timedelta(days=round(f["cycle_days"] or layout.DEFAULT_CYCLE_DAYS))
+    avoid = [*ground_taken(db, c, household_id, bed, first, last, skip), *map(tuple, keep)]
+    return [*map(list, keep), *map(list, layout.fill(cells, bed.cell_cm, *cm(bed), f["dims"], avoid, limit))]
+
+
 def _view(row: Planting, c: CatalogDep) -> dict:
     item = cat.effective(c, "crop", row.crop, {})
     return row.model_dump() | {"purpose": item.get("purpose", "food") if item else "food"}
@@ -126,11 +140,12 @@ def make_planting(body: PlantingIn, me: EditorDep, db: SessionDep, c: CatalogDep
         bed = _bed(db, me.household_id, body.bed_id)
         data["location"] = bed.name
         data["cells"] = _cells(body.cells)
-        if body.quantity is None:
-            from .beds import crop_facts
-
-            f = crop_facts(db, c, me.household_id, body.crop, {})
-            data["quantity"] = layout.plants_in(bed.cell_cm, f["dims"], max(1, len(data["cells"])))
+        first = body.set_out_date or body.start_date
+        spots = _place(
+            db, c, me.household_id, bed, body.crop, data["cells"], first, body.ends_on, limit=body.quantity or layout.MAX_CELLS
+        )  # fmt: skip
+        if spots:  # the cells hold exactly the ground these plants take
+            data["spots"], data["cells"], data["quantity"] = spots, layout.cover(spots, bed.cell_cm), len(spots)
     elif body.cells:
         raise HTTPException(422, "Cells need a bed")
     data["quantity"] = data["quantity"] or 1
@@ -175,10 +190,26 @@ def update_planting(planting_id: int, body: PlantingPatch, me: EditorDep, db: Se
         if not (changes.get("bed_id") or row.bed_id):
             raise HTTPException(422, "Cells need a bed")
         changes["cells"] = _cells(changes["cells"])
-        if "quantity" not in changes and row.cells and row.bed_id == (changes.get("bed_id") or row.bed_id):
-            changes["quantity"] = max(1, round(row.quantity * len(changes["cells"]) / len(row.cells)))  # same density
+        bed = _bed(db, me.household_id, changes.get("bed_id") or row.bed_id)
+        from .beds import crop_facts, spots_of
+
+        # Plants already there keep their place and size; only the newly painted cells get new ones.
+        same = bed.id == row.bed_id
+        painted = {tuple(x) for x in changes["cells"]}
+        keep = [
+            s for s in (spots_of(row, bed, crop_facts(db, c, me.household_id, row.crop, {})["dims"]) if same else [])
+            if (( s[0] + s[2] // 2) // bed.cell_cm, (s[1] + s[3] // 2) // bed.cell_cm) in painted
+        ]  # fmt: skip
+        fresh = painted - ({tuple(x) for x in row.cells} if same else set())
+        first = changes.get("set_out_date") or row.set_out_date or changes.get("start_date") or row.start_date
+        spots = _place(db, c, me.household_id, bed, row.crop, fresh, first, row.ends_on, keep, row.id)
+        if spots:
+            changes["spots"], changes["cells"] = spots, layout.cover(spots, bed.cell_cm)
+            changes.setdefault("quantity", len(spots))
     elif "cells" in changes and changes["cells"] is None:
         changes.pop("cells")
+    if changes.get("cells") == []:
+        changes["spots"] = []
     if status and status != row.status:
         if status not in NEXT[row.status]:
             raise HTTPException(409, f"A planting cannot go from {row.status} to {status}")

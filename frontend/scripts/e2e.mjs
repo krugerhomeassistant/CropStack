@@ -159,7 +159,7 @@ try {
   // Cells: paint two crops into one bed, then see recommendations with a place in the plan
   await owner.getByRole('button', { name: /^Bed 1/ }).click()
   await owner.getByLabel('Plant', { exact: true }).selectOption('lettuce')
-  await owner.locator('svg[aria-busy=false][aria-label="Cells of Bed 1"]').waitFor() // cells sized to the crop first
+  await owner.locator('svg[aria-label="Cells of Bed 1"]').waitFor()
   await owner.getByRole('img', { name: 'Cells of Bed 1' }).scrollIntoViewIfNeeded()
   const cells = await stableBox(owner.getByRole('img', { name: 'Cells of Bed 1' }))
   await owner.mouse.move(cells.x + 10, cells.y + 10)
@@ -168,14 +168,14 @@ try {
   await owner.mouse.up()
   await owner.getByRole('list', { name: 'What is planted' }).getByText(/Lettuce/).waitFor()
   await owner.getByLabel('Plant', { exact: true }).selectOption('radish')
-  await owner.locator('svg[aria-busy=false][aria-label="Cells of Bed 1"]').waitFor()
+  await owner.locator('svg[aria-label="Cells of Bed 1"]').waitFor()
   const again = await stableBox(owner.getByRole('img', { name: 'Cells of Bed 1' })) // suggestions may have loaded above the grid
   await owner.mouse.move(again.x + again.width * 0.9, again.y + 10)
   await owner.mouse.down()
   await owner.mouse.up()
   await owner.getByRole('list', { name: 'What is planted' }).getByText(/Radish/).waitFor()
   await owner.getByLabel('Plant', { exact: true }).selectOption('lettuce')
-  await owner.locator('svg[aria-busy=false][aria-label="Cells of Bed 1"]').waitFor()
+  await owner.locator('svg[aria-label="Cells of Bed 1"]').waitFor()
   const third = await stableBox(owner.getByRole('img', { name: 'Cells of Bed 1' }))
   await owner.mouse.move(third.x + third.width * 0.75, third.y + 10)
   await owner.mouse.down()

@@ -39,7 +39,6 @@ class BedPatch(BaseModel):
     length: float | None = Field(None, gt=0, le=100)
     cell_cm: int | None = Field(None, ge=5, le=100)
     layout: str | None = Field(None, max_length=60)
-    for_crop: str | None = Field(None, max_length=80)  # size the cells to suit this crop (and what already grows here)
 
 
 def _own(db: SessionDep, household_id: int, bed_id: int) -> Bed:
@@ -75,43 +74,32 @@ def holds(p: Planting, facts: dict, today: date) -> tuple[date, date]:
     return layout.occupancy(p.start_date, p.set_out_date, p.ends_on, p.status, facts["cycle_days"], today)
 
 
-def suits(db: Session, c: cat.Catalog, household_id: int, bed: Bed, crop: str | None = None) -> int:
-    """The cell size (cm) that suits what grows in a bed, so a plant takes about one cell: its smallest plant spacing
-    (not finer than 10 cm), else 30."""
-    live = db.exec(
-        select(Planting.crop).where(Planting.bed_id == bed.id, Planting.status.not_in(("finished", "failed")))
-    )
+def cm(bed: Bed) -> tuple[int, int]:
+    return round(bed.width * 100), round(bed.length * 100)
+
+
+def spots_of(p: Planting, bed: Bed, dims) -> list[list[int]]:
+    """Where a planting's plants stand: as saved, else laid out over its cells (rows made before plants had places)."""
+    if p.spots or not p.cells:
+        return p.spots
+    return [list(s) for s in layout.fill(p.cells, bed.cell_cm, *cm(bed), dims, limit=p.quantity)]
+
+
+def ground_taken(
+    db: Session, c: cat.Catalog, household_id: int, bed: Bed, first: date, last: date, skip: int | None = None
+) -> list[layout.Spot]:
+    """Plants of other plantings that stand in a bed at any time between two dates, so new ones go round them."""
     cache: dict = {}
-    sizes = [
-        max(d) for k in {*live, *([crop] if crop else [])} if (d := crop_facts(db, c, household_id, k, cache)["dims"])
-    ]
-    return layout.fit_cell(bed.width, bed.length, max(10, round(min(sizes))) if sizes else 30)
-
-
-def keep_planted(db: Session, bed: Bed, suit: int) -> int:
-    """The cell size to switch to when a crop is chosen. With nothing placed in the bed, the one that suits the crop.
-    With plantings placed their ground must keep its size and shape, so the grid may only get finer, in whole steps of
-    the current cells (a 50 cm cell becomes 25, 10 or 5 cm; never 30), and never coarser."""
-    if not any(p.cells for p in db.exec(select(Planting).where(Planting.bed_id == bed.id))):
-        return suit
-    ok = [bed.cell_cm] + [
-        c
-        for c in layout.CELL_SIZES
-        if c < bed.cell_cm
-        and bed.cell_cm % c == 0
-        and layout.fits(bed.width, bed.length, c)
-        and layout.grid(bed.width, bed.length, c)[0] * layout.grid(bed.width, bed.length, c)[1] <= layout.MAX_CELLS
-    ]
-    return min(ok, key=lambda c: (abs(c - suit), c))
-
-
-def regrid(db: Session, bed: Bed, cell_cm: int) -> None:
-    """Change a bed's cell size; what grows in it keeps its ground."""
+    today = datetime.now(UTC).date()
+    out: list[layout.Spot] = []
     for p in db.exec(select(Planting).where(Planting.bed_id == bed.id)):
-        p.cells = layout.remap(p.cells, bed.cell_cm, cell_cm)
-        db.add(p)
-    bed.cell_cm = cell_cm
-    db.add(bed)
+        if p.id == skip or not p.cells or p.status in ("finished", "failed"):
+            continue
+        f = crop_facts(db, c, household_id, p.crop, cache)
+        a, z = holds(p, f, today)
+        if a <= last and first <= z:
+            out += [tuple(s) for s in spots_of(p, bed, f["dims"])]  # type: ignore[misc]
+    return out
 
 
 @router.get("")
@@ -134,9 +122,10 @@ def list_beds(me: MemberDep, db: SessionDep, c: CatalogDep) -> list[dict]:
             first, last = holds(p, f, today)
             live = p.status not in ("finished", "failed")
             cells = [tuple(x) for x in p.cells]
-            capacity = layout.plants_in(bed.cell_cm, f["dims"], len(cells))
+            spots = spots_of(p, bed, f["dims"])
+            capacity = len(spots)
             if cells:
-                held += [(p.id, cell, first, last) for cell in cells]
+                held += [(p.id, tuple(s), first, last) for s in spots]
                 if live and p.quantity > capacity:
                     over.append(p.id)
             elif live:
@@ -150,6 +139,7 @@ def list_beds(me: MemberDep, db: SessionDep, c: CatalogDep) -> list[dict]:
                     ),
                     "name": f["name"],
                     "cells": p.cells,
+                    "spots": spots,
                     "from": first,
                     "until": last,
                     "quantity": p.quantity,
@@ -163,7 +153,7 @@ def list_beds(me: MemberDep, db: SessionDep, c: CatalogDep) -> list[dict]:
                     "status": p.status,
                 }
             )
-        clash = layout.clashes(held)
+        clash = layout.spot_clashes(held, bed.cell_cm)
         use = layout.bed_use(bed.width * bed.length, legacy)
         out.append(
             bed.model_dump()
@@ -203,22 +193,12 @@ def add_bed(body: BedIn, me: EditorDep, db: SessionDep) -> Bed:
 @router.patch("/{bed_id}")
 def update_bed(bed_id: int, body: BedPatch, me: EditorDep, db: SessionDep, c: CatalogDep) -> Bed:
     row = _own(db, me.household_id, bed_id)
-    changes = {
-        k: v
-        for k, v in body.model_dump(exclude_unset=True, exclude_none=True, exclude={"for_crop"}).items()
-        if getattr(row, k) != v
-    }
+    changes = {k: v for k, v in body.model_dump(exclude_unset=True, exclude_none=True).items() if getattr(row, k) != v}
     renamed = "name" in changes
     old_cm = row.cell_cm
     width, length = changes.get("width", row.width), changes.get("length", row.length)
     fit = layout.fit_cell(width, length)
-    if body.for_crop and "cell_cm" not in changes:
-        suit = keep_planted(db, row, suits(db, c, me.household_id, row, body.for_crop))
-        if suit != old_cm:
-            changes["cell_cm"] = suit
-    elif (
-        "cell_cm" not in changes and fit != old_cm and not layout.fits(width, length, old_cm)
-    ):  # the cells no longer fit
+    if "cell_cm" not in changes and fit != old_cm and not layout.fits(width, length, old_cm):  # the cells no longer fit
         changes["cell_cm"] = fit
     for key, value in changes.items():
         setattr(row, key, value)
@@ -229,10 +209,10 @@ def update_bed(bed_id: int, body: BedPatch, me: EditorDep, db: SessionDep, c: Ca
     for p in db.exec(select(Planting).where(Planting.bed_id == bed_id)):
         if renamed:  # plantings and their jobs say "in <bed>", so they follow the new name
             p.location = row.name
-        # Never drop where things grow: a new cell size maps the same ground onto the new grid, and cells left
+        # Never drop where things grow: plants keep their place and size whatever the cells are, and plants left
         # outside a smaller bed are kept (and reported) so making it bigger again brings them back.
         if "cell_cm" in changes:
-            p.cells = layout.remap(p.cells, old_cm, row.cell_cm)
+            p.cells = layout.cover(p.spots, row.cell_cm) if p.spots else layout.remap(p.cells, old_cm, row.cell_cm)
         db.add(p)
     db.commit()
     if renamed:
