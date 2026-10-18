@@ -3,7 +3,7 @@ import { api, type Prefs } from '../api'
 import AiSettings from '../components/AiSettings'
 import DataSources from '../components/DataSources'
 import { N_, t } from '../i18n'
-import { ErrorMessage, PageHeader, RadioCards, Section } from '../components/ui'
+import { Button, ErrorMessage, Field, PageHeader, RadioCards, Section } from '../components/ui'
 import { useApp } from '../state'
 
 const START = [
@@ -35,6 +35,37 @@ function Choice<V extends string>(props: {
         value={props.value}
         onChange={props.onChange}
       />
+    </Section>
+  )
+}
+
+/** Owner only: wipe beds, plantings, jobs, harvests and seeds, to start the garden over. */
+function ResetData() {
+  const [word, setWord] = useState('')
+  const [error, setError] = useState('')
+  async function reset() {
+    setError('')
+    try {
+      await api.resetData()
+      window.location.assign('/garden')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t('Something went wrong'))
+    }
+  }
+  return (
+    <Section title={t('Start the garden over')}>
+      <p className="text-sm text-muted">
+        {t('Removes every bed, planting, job, harvest and seed. Your login, members, garden location and pantry stay. This cannot be undone.')}
+      </p>
+      <div className="flex flex-wrap items-end gap-2">
+        <Field label={t('Type RESET to confirm')}>
+          <input className="input w-40" value={word} onChange={(e) => setWord(e.target.value)} autoCapitalize="characters" />
+        </Field>
+        <Button variant="danger" disabled={word !== 'RESET'} onClick={reset}>
+          {t('Reset garden data')}
+        </Button>
+      </div>
+      {error && <ErrorMessage>{error}</ErrorMessage>}
     </Section>
   )
 }
@@ -80,6 +111,7 @@ export default function Settings() {
       />
       <DataSources isOwner={user.role === 'owner'} />
       {user.role === 'owner' && <AiSettings />}
+      {user.role === 'owner' && <ResetData />}
     </>
   )
 }

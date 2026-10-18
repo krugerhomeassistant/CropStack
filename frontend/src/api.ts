@@ -394,6 +394,7 @@ export const api = {
   addPantry: (body: PantryIn) => request<PantryItem>('POST', '/pantry', body),
   updatePantry: (id: number, body: Partial<Pick<PantryItem, 'name' | 'quantity' | 'best_before' | 'location' | 'notes'>>) => request<PantryItem>('PATCH', `/pantry/${id}`, body),
   deletePantry: (id: number) => request<null>('DELETE', `/pantry/${id}`),
+  resetData: () => request<Record<string, number>>('POST', '/household/reset', { confirm: 'RESET' }),
   seeds: () => request<string[]>('GET', '/seeds'),
   setSeeds: (crops: string[]) => request<string[]>('PUT', '/seeds', { crops }),
   yearPlan: () => request<YearPlan>('GET', '/plan/year'),

@@ -122,7 +122,7 @@ def test_people_default_to_two_and_a_switch_does_not_reset_them(owner):
     after = owner.put(
         "/api/v1/household/settings", json={"forecast": False}
     ).json()  # what Settings → Data sources sends
-    assert after == {"forecast": False, "place_search": True, "people": 5}
+    assert after == {"forecast": False, "place_search": True, "people": 5, "wanted": []}
     assert owner.get("/api/v1/household/settings").json()["people"] == 5
 
 

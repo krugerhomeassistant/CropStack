@@ -578,3 +578,15 @@ def test_the_year_plan_previews_real_size_plants_and_accepting_plants_exactly_th
     [row] = owner.get("/api/v1/beds").json()
     planted = {p["crop"]: p["spots"] for p in row["placements"]}
     assert all(planted[i["crop"]] == i["spots"] for i in items) and row["clashes"] == []
+
+
+def test_reset_clears_the_garden_but_keeps_the_login_and_needs_the_word(owner):  # noqa: F811
+    bed = owner.post("/api/v1/beds", json={"name": "R", "width": 1.2, "length": 1.2}).json()
+    assert plant(owner, bed["id"], [[0, 0]], "2026-10-01").status_code == 201
+    assert owner.put("/api/v1/seeds", json={"crops": ["testcrop"]}).status_code == 200
+    assert owner.post("/api/v1/household/reset", json={"confirm": "no"}).status_code == 422
+    assert owner.get("/api/v1/beds").json()  # nothing happened
+    done = owner.post("/api/v1/household/reset", json={"confirm": "RESET"})
+    assert done.status_code == 200 and done.json()["bed"] == 1 and done.json()["planting"] == 1
+    assert owner.get("/api/v1/beds").json() == [] and owner.get("/api/v1/plantings").json() == []
+    assert owner.get("/api/v1/seeds").json() == [] and owner.get("/api/v1/household").status_code == 200

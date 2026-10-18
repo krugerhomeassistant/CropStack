@@ -22,6 +22,7 @@ FLOWER_PATCHES = 2  # patches of a companion flower beside a crop: a small stand
 FLOWER_LEAD_DAYS = 28  # a flower may go in this long before the crop it accompanies
 FLOWER_BLOOM_AFTER = 30  # ...and must be sown at least this long before that crop is done
 SEED_BONUS = 1.0  # extra weight for a crop the household already has seed for (suggest, never require)
+WANT_BONUS = 1.5  # ...and for a crop the household said it wants to grow
 MIN_GAIN = 1.0  # kg a placement must add toward a shortfall; below this it is not worth a planting
 
 Cell = tuple[int, int]
@@ -84,6 +85,7 @@ def draft(
     existing: Sequence[tuple[str, float, date, date]] = (),
     companions: dict | None = None,
     owned: frozenset[str] = frozenset(),
+    wish: frozenset[str] = frozenset(),
 ) -> tuple[list[dict], dict[str, list[float]]]:
     """Place the crop that adds the most food per cell, again and again, until the weekly target is met or the beds
     are full. Returns the plantings and the weekly supply per food group (existing plantings included).
@@ -92,7 +94,8 @@ def draft(
     placed twice on overlapping days and a crop is not repeated in a month. `companions` = {"good": {crop: {crops}},
     "avoid": ..., "flowers": {crop: [flowers]}}: a block is placed touching a good companion that grows then, and a
     crop never goes into a bed that holds one of its "avoid" crops at the same time. `owned` = crops with seed on
-    hand: a block of one scores higher, so the plan leans on them without leaving the rest out."""
+    hand: a block of one scores higher, so the plan leans on them without leaving the rest out. `wish` = crops the
+    household asked for: they score higher still and are planted even when the food target is already met."""
     good, avoid = (companions or {}).get("good", {}), (companions or {}).get("avoid", {})
     flowers = (companions or {}).get("flowers", {})
     held = {b.id: [_entry(t) for t in taken.get(b.id, [])] for b in beds}
@@ -140,12 +143,14 @@ def draft(
             cells = layout.stagger(cells, b.cols, b.rows, free, p, key if (same or pals) else None) or cells
         n = len(cells)
         gain = sum(min(n * per_week, s) for s in short)
+        if w.crop in wish:
+            gain = max(gain, MIN_GAIN)
         if gain < MIN_GAIN:
             return None
         touching = beside(cells) if pals else 0
         elsewhere = len(set(pals.values())) - touching if pals else 0
         boost = 1 + COMPANION_BONUS * min(2, touching) + BED_COMPANION_BONUS * min(2, max(0, elsewhere))
-        boost += SEED_BONUS * (w.crop in owned)
+        boost += SEED_BONUS * (w.crop in owned) + WANT_BONUS * (w.crop in wish)
         k = (-gain / n * boost, sum(c in same for c in cells), -len(free), w.name, b.id, i)
         return k, cells, last
 

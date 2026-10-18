@@ -20,6 +20,7 @@ from .weather import local_today
 
 router = APIRouter(prefix="/api/v1/plan", tags=["plan"])
 MIN_SUCCESS = 0.6  # a crop is drafted only where it works in at least this share of years
+BUY_LEAD_DAYS = 14  # seed is wanted in hand this long before its first sowing
 EXTRA_BED = yearplan.Bed(-1, "Extra bed", 7, 7, 30)  # 7 x 7 cells of 30 cm, about 4 m²
 EXTRA_M2 = 4
 ENOUGH = 0.95  # coverage at which no further change is suggested
@@ -54,15 +55,15 @@ def existing_supply(plantings, facts_of, beds_by_id, window_of, today: date) -> 
 
 
 def with_coverage(
-    grid, taken, wants, today: date, target, existing, companions=None, owned: frozenset[str] = frozenset()
+    grid, taken, wants, today: date, target, existing, companions=None, owned=frozenset(), wanted=frozenset()
 ) -> tuple[list[dict], dict]:
     """The draft, its coverage of the weekly target, and the one change that would lift coverage most: a 4 m² bed
     when it adds at least 1 point (none once coverage reaches ENOUGH)."""
-    items, supply = yearplan.draft(grid, taken, wants, today, target, existing, companions, owned)
+    items, supply = yearplan.draft(grid, taken, wants, today, target, existing, companions, owned, wanted)
     cov = needs.coverage(target, supply, today)
     cov["best_change"] = None
     if cov["overall"] < ENOUGH:
-        _, more = yearplan.draft([*grid, EXTRA_BED], taken, wants, today, target, existing, companions, owned)
+        _, more = yearplan.draft([*grid, EXTRA_BED], taken, wants, today, target, existing, companions, owned, wanted)
         gain = needs.coverage(target, more, today)["overall"] - cov["overall"]
         if gain >= 0.01:
             cov["best_change"] = {"kind": "add_bed_area", "m2": EXTRA_M2, "gain": round(gain, 3)}
@@ -219,11 +220,19 @@ def year_plan(me: MemberDep, db: SessionDep, c: CatalogDep) -> dict:
     )
     grid = [yearplan.Bed(b.id, b.name, *grid_of(b), b.cell_cm) for b in beds]
     have = frozenset(seeds.owned(db, me.household_id))
-    items, cov = with_coverage(grid, taken, wants, today, target, existing, c.companions, have)
+    wish = frozenset(household_settings(db.get(Household, me.household_id)).wanted)
+    items, cov = with_coverage(grid, taken, wants, today, target, existing, c.companions, have, wish)
     _lay_out(db, c, me.household_id, items, beds_by_id, [p for p in plantings if not replaceable(p)], today)
     for i in items:
         i["have_seed"] = i["crop"] in have
-    buy = {i["crop"]: i["name"] for i in items if i["crop"] not in have}
+    sow: dict[str, tuple[str, date]] = {}  # crop without seed -> its name and first sowing in the plan
+    for i in items:
+        if i["crop"] not in have and (i["crop"] not in sow or i["start_date"] < sow[i["crop"]][1]):
+            sow[i["crop"]] = (i["name"], i["start_date"])
+    buy = [  # buy-by: two weeks before the first sowing, never before today
+        {"crop": k, "name": n, "buy_by": max(today, d - timedelta(days=BUY_LEAD_DAYS)), "first_sowing": d}
+        for k, (n, d) in sow.items()
+    ]
     return {
         "garden": True,
         "beds": True,
@@ -234,7 +243,8 @@ def year_plan(me: MemberDep, db: SessionDep, c: CatalogDep) -> dict:
         "coverage": cov,
         "skipped_no_yield": skipped,
         "seeds": sorted(have),
-        "buy": [{"crop": k, "name": v} for k, v in sorted(buy.items(), key=lambda kv: kv[1])],
+        "buy": sorted(buy, key=lambda b: (b["buy_by"], b["name"])),
+        "wanted": sorted(wish),
     }
 
 

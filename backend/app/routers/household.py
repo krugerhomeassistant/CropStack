@@ -10,7 +10,7 @@ from sqlmodel import Session, func, select
 
 from .. import ai
 from ..deps import MemberDep, OwnerDep, SessionDep
-from ..models import Household, Invite, Membership, User, now
+from ..models import Bed, Harvest, Household, Invite, Membership, Planting, Seed, Task, User, now
 from .auth import token_hash, valid_invite
 
 router = APIRouter(prefix="/api/v1", tags=["household"])
@@ -37,6 +37,7 @@ class HouseholdSettings(BaseModel):
     forecast: bool = True
     place_search: bool = True
     people: int = Field(2, ge=1, le=20)  # how many the garden should feed (PLAN 8.2)
+    wanted: list[str] = Field(default_factory=list, max_length=500)  # crops the household asked to grow (a nudge)
 
 
 def household_settings(household: Household) -> HouseholdSettings:
@@ -134,6 +135,24 @@ def save_settings(body: HouseholdSettings, owner: OwnerDep, db: SessionDep) -> H
     db.add(household)
     db.commit()
     return merged
+
+
+class ResetIn(BaseModel):
+    confirm: Literal["RESET"]
+
+
+@router.post("/household/reset")
+def reset_garden(body: ResetIn, me: OwnerDep, db: SessionDep) -> dict[str, int]:
+    """Start the garden over: beds, plantings, jobs, harvests and seeds go. The login, members, garden location and
+    settings, pantry and crop edits stay. For testing and a fresh start; it cannot be undone."""
+    removed = {}
+    for model in (Task, Harvest, Planting, Bed, Seed):  # children first
+        rows = db.exec(select(model).where(model.household_id == me.household_id)).all()
+        for row in rows:
+            db.delete(row)
+        removed[model.__name__.lower()] = len(rows)
+    db.commit()
+    return removed
 
 
 @router.get("/household/data-sources")
