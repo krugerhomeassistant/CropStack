@@ -212,11 +212,14 @@ def occupancy(
     start: date, set_out: date | None, ends_on: date | None, status: str, cycle_days: float | None, today: date
 ) -> tuple[date, date]:
     """The days a planting holds its cells: from sowing (or set-out) to `ends_on`, else the crop's longest cycle.
-    A finished or failed planting lets go of its cells today."""
+    One that is still going (not finished or failed) keeps its cells at least until today, however long it runs past
+    the catalogued cycle; a finished or failed one lets go of them today."""
     first = set_out or start
     last = ends_on or first + timedelta(days=round(cycle_days or DEFAULT_CYCLE_DAYS))
     if status in ("finished", "failed"):
         last = min(last, max(first, today))
+    elif not ends_on:
+        last = max(last, today)
     return first, max(first, last)
 
 

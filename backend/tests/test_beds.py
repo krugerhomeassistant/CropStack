@@ -631,3 +631,15 @@ def test_status_can_be_set_freely_and_a_planting_with_no_place_can_be_placed(own
     [row] = owner.get("/api/v1/beds").json()
     assert 0 < len(row["placements"][0]["spots"]) <= 3 and row["clashes"] == []
     assert owner.post("/api/v1/plantings/99999/place").status_code == 404
+
+
+def test_a_planting_still_going_keeps_its_place_past_the_catalogued_cycle(owner):  # noqa: F811
+    bed = owner.post("/api/v1/beds", json={"name": "L", "width": 1.2, "length": 1.2}).json()
+    pid = plant(owner, bed["id"], [[0, 0]], "2026-01-01").json()["id"]  # long past any cycle, never finished
+    [row] = owner.get("/api/v1/beds").json()
+    assert (
+        row["placements"][0]["until"] >= row["placements"][0]["from"] and row["placements"][0]["until"] > "2026-06-01"
+    )
+    owner.patch(f"/api/v1/plantings/{pid}", json={"status": "finished"})
+    [row] = owner.get("/api/v1/beds").json()
+    assert row["placements"][0]["until"] < "2027-01-01"  # lets go once finished
