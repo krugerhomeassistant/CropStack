@@ -42,6 +42,7 @@ try {
   await owner.getByLabel('Longitude').fill('18.86')
   await owner.getByLabel(/Cautious/).check()
   await owner.getByRole('button', { name: 'Save garden' }).click()
+  for (const name of ['Next', 'Next', 'Draft my plan', 'Open my garden']) await owner.getByRole('button', { name }).click()
   await owner.getByText('Nothing to do today').waitFor()
   assert.equal(path(owner), '/today')
   await owner.getByRole('list', { name: 'Next 7 days' }).waitFor()
