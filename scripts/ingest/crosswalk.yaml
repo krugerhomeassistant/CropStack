@@ -77,3 +77,4 @@ alyssum: {gbif: Lobularia maritima}
 sunflower: {gbif: Helianthus annuus, openfarm: sunflower, ecocrop: 46}
 zinnia: {gbif: Zinnia elegans}
 petunia: {gbif: Petunia x atkinsiana}
+butternut: {gbif: Cucurbita moschata, fao56_stages: pumpkin winter squash, fao56_kc: pumpkin winter squash, fao56_roots: pumpkin winter squash, harrington: Pumpkin, ecocrop: 163}
