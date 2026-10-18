@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router'
 import { useState } from 'react'
 import { api, type Prefs } from '../api'
 import AiSettings from '../components/AiSettings'
@@ -72,6 +73,7 @@ function ResetData() {
 
 export default function Settings() {
   const { user, reload } = useApp()
+  const navigate = useNavigate()
   const [prefs, setPrefs] = useState(user.prefs) // shown immediately; the server copy follows
   const [error, setError] = useState('')
 
@@ -111,6 +113,12 @@ export default function Settings() {
       />
       <DataSources isOwner={user.role === 'owner'} />
       {user.role === 'owner' && <AiSettings />}
+      {user.role === 'owner' && (
+        <Section title={t('Setup wizard')}>
+          <p className="text-sm text-muted">{t('Go through people, crops you want and seeds you have again. Nothing is deleted.')}</p>
+          <Button variant="secondary" onClick={() => navigate('/setup')}>{t('Run setup again')}</Button>
+        </Section>
+      )}
       {user.role === 'owner' && <ResetData />}
     </>
   )

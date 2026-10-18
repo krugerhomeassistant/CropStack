@@ -140,7 +140,7 @@ export type Coverage = {
   best_change: { kind: 'add_bed_area'; m2: number; gain: number } | null
 }
 export type PlanDiff = { added: number; removed: number; moved: number; unchanged: number }
-export type YearPlan = { garden: boolean; beds: boolean; scheduled: number; plan_count?: number; people: number; items: PlanItem[]; coverage?: Coverage; skipped_no_yield?: string[]; buy?: { crop: string; name: string }[] }
+export type YearPlan = { garden: boolean; beds: boolean; scheduled: number; plan_count?: number; people: number; items: PlanItem[]; coverage?: Coverage; skipped_no_yield?: string[]; buy?: { crop: string; name: string; buy_by: string; first_sowing: string }[] }
 export type PantryMethod = 'canned' | 'frozen' | 'dried' | 'fermented' | 'cellar' | 'fresh'
 export type PantryItem = {
   id: number
@@ -267,7 +267,7 @@ export type Weather = {
   source: string
 }
 
-export type HouseholdSettings = { forecast: boolean; place_search: boolean; people: number }
+export type HouseholdSettings = { forecast: boolean; place_search: boolean; people: number; wanted: string[] }
 export type DataSource = {
   id: string
   name: string
