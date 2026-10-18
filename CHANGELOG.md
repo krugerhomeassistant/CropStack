@@ -5,6 +5,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.49.0] - 2026-10-18
+
 ### Changed
 - **Staggered planting in the year plan.** A crop that needs a block of several multi-cell patches is now laid in offset rows (every other row moved half a patch) instead of one solid block, whenever the bed has room for it; in a tight bed it stays solid so no plant is lost.
 
@@ -497,7 +499,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - CI: ruff lint and format, backend tests, frontend build, image publishing to GHCR and automatic GitHub releases on a version bump.
 - Project docs: README, wiki, architecture, roadmap, contributing guide, security policy and Code of Conduct.
 
-[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.48.0...HEAD
+[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.49.0...HEAD
+[0.49.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.48.0...v0.49.0
 [0.48.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.47.1...v0.48.0
 [0.47.1]: https://github.com/krugerhomeassistant/CropStack/compare/v0.47.0...v0.47.1
 [0.47.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.46.4...v0.47.0
