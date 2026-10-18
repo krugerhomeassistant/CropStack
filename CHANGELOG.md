@@ -5,6 +5,16 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.50.0] - 2026-10-18
+
+### Added
+- **Setup wizard.** First run (and Settings → Run setup again) walks through location, how many people to feed, the crops you want to grow, and the seed you already have, then drafts the plan. Every answer stays editable and nothing is deleted when you run it again.
+- **Wanted crops.** Crops you tick are favoured by the year plan and planted even when the food target is already met. They never restrict it.
+- **Seeds to buy with a buy-by date.** Crops in the plan without seed are listed with a date two weeks before their first sowing, in the wizard and the Plan tab.
+- **Reset my data.** Owners can wipe beds, plantings, jobs, harvests and seeds from Settings (type RESET). Login, members, garden location and pantry stay.
+
+## [0.50.0] - 2026-10-18
+
 ## [0.49.2] - 2026-10-18
 
 ### Changed
@@ -513,7 +523,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - CI: ruff lint and format, backend tests, frontend build, image publishing to GHCR and automatic GitHub releases on a version bump.
 - Project docs: README, wiki, architecture, roadmap, contributing guide, security policy and Code of Conduct.
 
-[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.49.2...HEAD
+[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.50.0...HEAD
+[0.50.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.49.2...v0.50.0
 [0.49.2]: https://github.com/krugerhomeassistant/CropStack/compare/v0.49.1...v0.49.2
 [0.49.1]: https://github.com/krugerhomeassistant/CropStack/compare/v0.49.0...v0.49.1
 [0.49.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.48.0...v0.49.0
