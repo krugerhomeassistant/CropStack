@@ -88,6 +88,23 @@ def suits(db: Session, c: cat.Catalog, household_id: int, bed: Bed, crop: str | 
     return layout.fit_cell(bed.width, bed.length, max(10, round(min(sizes))) if sizes else 30)
 
 
+def keep_planted(db: Session, bed: Bed, suit: int) -> int:
+    """The cell size to switch to when a crop is chosen. With nothing placed in the bed, the one that suits the crop.
+    With plantings placed their ground must keep its size and shape, so the grid may only get finer, in whole steps of
+    the current cells (a 50 cm cell becomes 25, 10 or 5 cm; never 30), and never coarser."""
+    if not any(p.cells for p in db.exec(select(Planting).where(Planting.bed_id == bed.id))):
+        return suit
+    ok = [bed.cell_cm] + [
+        c
+        for c in layout.CELL_SIZES
+        if c < bed.cell_cm
+        and bed.cell_cm % c == 0
+        and layout.fits(bed.width, bed.length, c)
+        and layout.grid(bed.width, bed.length, c)[0] * layout.grid(bed.width, bed.length, c)[1] <= layout.MAX_CELLS
+    ]
+    return min(ok, key=lambda c: (abs(c - suit), c))
+
+
 def regrid(db: Session, bed: Bed, cell_cm: int) -> None:
     """Change a bed's cell size; what grows in it keeps its ground."""
     for p in db.exec(select(Planting).where(Planting.bed_id == bed.id)):
@@ -196,7 +213,7 @@ def update_bed(bed_id: int, body: BedPatch, me: EditorDep, db: SessionDep, c: Ca
     width, length = changes.get("width", row.width), changes.get("length", row.length)
     fit = layout.fit_cell(width, length)
     if body.for_crop and "cell_cm" not in changes:
-        suit = suits(db, c, me.household_id, row, body.for_crop)
+        suit = keep_planted(db, row, suits(db, c, me.household_id, row, body.for_crop))
         if suit != old_cm:
             changes["cell_cm"] = suit
     elif (

@@ -5,6 +5,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+### Fixed
+- **Choosing another crop no longer resizes what is already planted.** The cell size used to follow the crop picked, so going from a small crop to a large one stretched the planted cells. With plantings placed in a bed the grid now only gets finer, in whole steps of the current cells, and never coarser; an empty bed still picks the size that suits the crop.
+
 ## [0.48.0] - 2026-10-17
 
 ### Changed
