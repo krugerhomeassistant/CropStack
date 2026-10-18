@@ -1,37 +1,11 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router'
 import { Sprout, Trash2 } from 'lucide-react'
-import { api, type Bed, type CropSummary, type Harvest, type HarvestUnit, type Planting, type PlantingStatus } from '../api'
+import { api, type Bed, type CropSummary, type Harvest, type HarvestUnit, type Planting } from '../api'
 import { N_, t } from '../i18n'
 import { useApp } from '../state'
+import StatusSelect, { STATUS } from './StatusSelect'
 import { Badge, Button, EmptyState, ErrorState, Field, IconButton, Section, Skeleton } from './ui'
-
-const STATUS: Record<PlantingStatus, string> = {
-  planned: N_('Planned'),
-  sown: N_('Sown'),
-  germinated: N_('Up'),
-  transplanted: N_('Set out'),
-  harvesting: N_('Harvesting'),
-  finished: N_('Finished'),
-  failed: N_('Failed'),
-}
-/** The one forward step offered as a button; "failed" is a second, quieter button. Mirrors the server's rules. */
-const ADVANCE: Partial<Record<PlantingStatus, (p: Planting) => PlantingStatus>> = {
-  planned: () => 'sown',
-  sown: () => 'germinated',
-  germinated: (p) => (p.method === 'transplant' ? 'transplanted' : 'harvesting'),
-  transplanted: () => 'harvesting',
-  harvesting: () => 'finished',
-}
-const ACTION: Record<PlantingStatus, string> = {
-  planned: N_('Mark sown'),
-  sown: N_('Mark up'),
-  germinated: N_('Mark set out'),
-  transplanted: N_('Start harvest'),
-  harvesting: N_('Mark finished'),
-  finished: '',
-  failed: '',
-}
 
 const date = (iso: string) => new Date(`${iso}T00:00:00`).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })
 
@@ -166,7 +140,6 @@ export default function Plantings({ onBedChange }: { onBedChange?: () => void })
           const p = members[0]
           const ids = members.map((m) => m.id)
           const quantity = members.reduce((n, m) => n + m.quantity, 0)
-          const next = ADVANCE[p.status]
           const crop = names[p.crop]
           const cropName = crop?.names.en?.[0] ?? p.crop
           const mine = harvests.filter((h) => ids.includes(h.planting_id))
@@ -191,15 +164,14 @@ export default function Plantings({ onBedChange }: { onBedChange?: () => void })
                   )}
                   {p.next_job && <p className="text-sm text-muted">{t('Next: {job}, {date}', { job: p.next_job.title, date: short(p.next_job.date) })}</p>}
                 </div>
-                <Badge tone={p.status === 'failed' ? 'marigold' : p.status === 'planned' ? 'muted' : 'leaf'}>{t(STATUS[p.status])}</Badge>
+                {canEdit ? (
+                  <StatusSelect status={p.status} method={p.method} label={t('Stage of {crop}', { crop: cropName })} onChange={(status) => change(ids, { status })} />
+                ) : (
+                  <Badge tone={p.status === 'failed' ? 'marigold' : p.status === 'planned' ? 'muted' : 'leaf'}>{t(STATUS[p.status])}</Badge>
+                )}
               </div>
               {canEdit && (
                 <div className="flex flex-wrap items-center gap-2">
-                  {next && (
-                    <Button variant="secondary" onClick={() => change(ids, { status: next(p) })}>
-                      {t(ACTION[p.status])}
-                    </Button>
-                  )}
                   <Button variant="ghost" onClick={() => setMore(more === gk ? null : gk)}>
                     {more === gk ? t('Less') : t('More')}
                   </Button>
@@ -207,11 +179,6 @@ export default function Plantings({ onBedChange }: { onBedChange?: () => void })
               )}
               {canEdit && more === gk && (
                 <div className="flex flex-wrap items-center gap-2 rounded-[var(--radius-row)] bg-sunken p-3">
-                  {next && (
-                    <Button variant="ghost" onClick={() => change(ids, { status: 'failed' })}>
-                      {t('It failed')}
-                    </Button>
-                  )}
                   {!['planned', 'sown', 'failed'].includes(p.status) && (
                     <HarvestForm plantingId={p.id} onSaved={(h) => setHarvests((hs) => [...hs, h])} />
                   )}

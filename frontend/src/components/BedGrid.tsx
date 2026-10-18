@@ -1,4 +1,5 @@
 import ArrangePanel from './ArrangePanel'
+import StatusSelect from './StatusSelect'
 import { useEffect, useRef, useState } from 'react'
 import { Eraser } from 'lucide-react'
 import { api, type Bed, type CropSummary, type Placement, type PlanItem, type Recommendation } from '../api'
@@ -49,6 +50,37 @@ export function PlantedSummary({ beds, on }: { beds: Bed[]; on: string }) {
         <li key={crop} className="flex items-center gap-2">
           <span aria-hidden><CropIcon crop={crop} /></span>
           <span className="font-semibold">{s.now}× {s.name}</span>
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+/** What is in one bed on the chosen date, each planting with its stage to change. One that stands nowhere on the grid
+ *  (made before plants had places) is listed too, with a button that finds it room. */
+function BedPlantings({ bed, on, canEdit, onChange, fail }: { bed: Bed; on: string; canEdit: boolean; onChange: () => void; fail: (e: unknown) => void }) {
+  const live = (p: Placement) => !['finished', 'failed'].includes(p.status)
+  const rows = bed.placements.filter((p) => (p.from <= on && on <= p.until) || (live(p) && p.spots.length === 0))
+  if (rows.length === 0) return <p className="text-sm text-muted">{t('Nothing is planted on this date.')}</p>
+  return (
+    <ul className="flex flex-col gap-2 text-sm" aria-label={t('What is planted')}>
+      {rows.map((p) => (
+        <li key={p.planting_id} className="flex flex-wrap items-center justify-between gap-2">
+          <span className="flex items-center gap-2 font-semibold">
+            <span aria-hidden><CropIcon crop={p.crop} /></span>
+            {p.quantity}× {p.name}
+          </span>
+          {canEdit && (
+            <span className="flex items-center gap-2">
+              {p.spots.length === 0 && live(p) && (
+                <Button variant="secondary" onClick={() => api.placePlanting(p.planting_id).then(onChange, fail)}>
+                  {t('Place in bed')}
+                </Button>
+              )}
+              <StatusSelect status={p.status} method={p.method} label={t('Stage of {crop}', { crop: p.name })} onChange={(status) => api.updatePlanting(p.planting_id, { status }).then(onChange, fail)} />
+            </span>
+          )}
+          {p.spots.length === 0 && live(p) && <span className="w-full text-muted">{t('Not on the grid yet.')}</span>}
         </li>
       ))}
     </ul>
@@ -372,7 +404,7 @@ export default function BedGrid({
         {plan.length > 0 && ` ${t('Dashed plants are the drafted plan; step the date to see it through the year.')}`}
         {bed.outside > 0 && ` ${t('{n} planted cells sit beyond the edge of this bed; make the bed bigger to see them.', { n: bed.outside })}`}
       </p>
-      <PlantedSummary beds={[bed]} on={on} />
+      <BedPlantings bed={bed} on={on} canEdit={canEdit} onChange={onChange} fail={fail} />
       {canEdit && <ArrangePanel bed={bed} crops={crops} preview={arranged} onPreview={setArranged} onChange={onChange} />}
 
       {info && (

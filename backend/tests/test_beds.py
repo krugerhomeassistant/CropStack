@@ -615,3 +615,19 @@ def test_arranging_chosen_crops_fills_one_bed_with_exactly_those_and_plants_clea
     assert owner.get("/api/v1/beds").json()[0]["clashes"] == []
     assert owner.get(f"/api/v1/plan/year?bed=99999&crops={crops}").status_code == 404
     assert other["id"] != bed["id"]
+
+
+def test_status_can_be_set_freely_and_a_planting_with_no_place_can_be_placed(owner):  # noqa: F811
+    bed = owner.post("/api/v1/beds", json={"name": "P", "width": 1.2, "length": 1.2}).json()
+    pid = plant(owner, bed["id"], [[0, 0]], "2026-10-01", quantity=3).json()["id"]
+    for status in ("finished", "sown", "failed", "germinated"):  # any way round, back as well as forward
+        assert owner.patch(f"/api/v1/plantings/{pid}", json={"status": status}).json()["status"] == status
+    assert owner.patch(f"/api/v1/plantings/{pid}", json={"status": "transplanted"}).status_code == 409  # direct sown
+    assert owner.patch(f"/api/v1/plantings/{pid}", json={"cells": []}).status_code == 200  # an unplaced one
+    [row] = owner.get("/api/v1/beds").json()
+    assert row["placements"][0]["spots"] == []
+    placed = owner.post(f"/api/v1/plantings/{pid}/place")
+    assert placed.status_code == 201 or placed.status_code == 200
+    [row] = owner.get("/api/v1/beds").json()
+    assert 0 < len(row["placements"][0]["spots"]) <= 3 and row["clashes"] == []
+    assert owner.post("/api/v1/plantings/99999/place").status_code == 404

@@ -17,16 +17,6 @@ from .today import refresh_tasks
 router = APIRouter(prefix="/api/v1/plantings", tags=["plantings"])
 
 Status = Literal["planned", "sown", "germinated", "transplanted", "harvesting", "finished", "failed"]
-# Forward only, and "failed" from anywhere that is not already over; a mistake is fixed by deleting the planting.
-NEXT: dict[str, set[str]] = {
-    "planned": {"sown", "failed"},
-    "sown": {"germinated", "failed"},
-    "germinated": {"transplanted", "harvesting", "failed"},
-    "transplanted": {"harvesting", "failed"},
-    "harvesting": {"finished", "failed"},
-    "finished": set(),
-    "failed": set(),
-}
 
 
 class PlantingIn(BaseModel):
@@ -219,8 +209,6 @@ def update_planting(planting_id: int, body: PlantingPatch, me: EditorDep, db: Se
     if changes.get("cells") == []:
         changes["spots"] = []
     if status and status != row.status:
-        if status not in NEXT[row.status]:
-            raise HTTPException(409, f"A planting cannot go from {row.status} to {status}")
         if status == "transplanted" and row.method != "transplant":
             raise HTTPException(409, "Only transplants are set out")
         row.status = status
@@ -238,6 +226,30 @@ def update_planting(planting_id: int, body: PlantingPatch, me: EditorDep, db: Se
     refresh_tasks(db, me.household_id, c)  # commits, which expires `row`
     db.refresh(row)
     return _view(row, c)
+
+
+@router.post("/{planting_id}/place")
+def place_planting(planting_id: int, me: EditorDep, db: SessionDep, c: CatalogDep) -> Planting:
+    """Give a planting that stands nowhere on its bed's grid (made before plants had places) its plants, in the free
+    ground of that bed at the crop's real spacing."""
+    from .beds import grid_of
+
+    row = _own(db, me.household_id, planting_id)
+    bed = db.get(Bed, row.bed_id) if row.bed_id else None
+    if bed is None:
+        raise HTTPException(422, "Put the planting in a bed first")
+    cols, rows = grid_of(bed)
+    everywhere = [(x, y) for x in range(cols) for y in range(rows)]
+    first = row.set_out_date or row.start_date
+    spots = _place(
+        db, c, me.household_id, bed, row.crop, everywhere, first, row.ends_on, skip=row.id, limit=row.quantity
+    )
+    if not spots:
+        raise HTTPException(409, "There is no free room for it in this bed")
+    row.spots, row.cells = spots, layout.cover(spots, bed.cell_cm)
+    db.add(row)
+    db.commit()
+    return row
 
 
 @router.delete("/{planting_id}", status_code=204)
