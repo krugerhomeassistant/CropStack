@@ -107,7 +107,9 @@ export function Section({
   const id = useId()
   const key = name ?? title
   const box = useRef<HTMLElement>(null)
+  const body = useRef<HTMLDivElement>(null)
   const drag = useRef<{ y: number; h: number } | null>(null)
+  const [natural, setNatural] = useState<number | null>(null) // the height that fits everything: the box never grows past it
   const [height, setHeight] = useState<number | null>(() => savedSize(key))
   const keep = (h: number | null) => {
     setHeight(h)
@@ -117,15 +119,30 @@ export function Section({
       /* not remembered */
     }
   }
-  const clamp = (h: number) => Math.min(4000, Math.max(MIN_WINDOW, h))
+  const clamp = (h: number) => Math.min(natural ?? 4000, Math.max(MIN_WINDOW, h))
+  useEffect(() => {
+    const el = body.current
+    const card = box.current
+    if (!el || !card || !key) return
+    const measure = () => {
+      const s = getComputedStyle(card)
+      const frame = ['paddingTop', 'paddingBottom', 'borderTopWidth', 'borderBottomWidth'].reduce((n, k) => n + parseFloat(s[k as 'paddingTop']), 0)
+      setNatural(Math.ceil(el.offsetHeight + frame + 16 + 20 - 8)) // + gap-4, the h-5 handle, its -mb-2
+    }
+    measure()
+    const watch = new ResizeObserver(measure)
+    watch.observe(el)
+    return () => watch.disconnect()
+  }, [key])
   return (
     <section
       ref={box}
       className={join('card flex flex-col gap-4', height !== null && 'overflow-y-auto', className)}
-      style={height === null ? undefined : { height }}
+      style={height === null ? undefined : { height: natural === null ? height : Math.min(height, natural) }}
       aria-labelledby={title ? id : undefined}
       {...rest}
     >
+      <div ref={body} className="flex flex-col gap-4">
       {(title || action) && (
         <div className="flex items-start justify-between gap-3">
           <div>
@@ -140,6 +157,7 @@ export function Section({
         </div>
       )}
       {children}
+      </div>
       {key && (
         <div
           role="separator"

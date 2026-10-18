@@ -104,9 +104,24 @@ try {
   await owner.goto(`${base}/garden?tab=plantings`)
   await owner.getByRole('heading', { name: 'Plantings' }).waitFor()
   await owner.getByText('6 planted · Bed 1').waitFor()
-  await owner.getByRole('button', { name: 'Mark sown' }).click()
-  await owner.getByText('Sown', { exact: true }).waitFor()
-  step('plant from a window, list and advance')
+  await owner.getByLabel(/^Stage of/).selectOption('sown')
+  await owner.waitForFunction(() => document.querySelector('select[aria-label^="Stage of"]')?.value === 'sown')
+  step('plant from a window, list and set its stage')
+
+  // A window cannot be dragged taller than what it holds, and its handle stays on the bottom edge
+  const win = owner.getByRole('region', { name: 'Plantings' })
+  const grip = await stableBox(win.getByRole('separator'))
+  const was = await stableBox(win)
+  await owner.mouse.move(grip.x + grip.width / 2, grip.y + grip.height / 2)
+  await owner.mouse.down()
+  await owner.mouse.move(grip.x + grip.width / 2, grip.y + 700, { steps: 8 })
+  await owner.mouse.up()
+  const now = await stableBox(win)
+  const end = await stableBox(win.getByRole('separator'))
+  assert.ok(now.height <= was.height + 40, 'the window stops at its content')
+  assert.ok(end.y + end.height <= now.y + now.height + 2, 'the handle stays inside the window')
+  await win.getByRole('separator').dblclick() // back to its own size
+  step('window resize stops at its content')
 
   // Garden plan: add a bed, drag it, and give a planting a place in it
   await owner.goto(`${base}/garden`)

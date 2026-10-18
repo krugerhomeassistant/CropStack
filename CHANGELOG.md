@@ -5,6 +5,16 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.52.0] - 2026-10-18
+
+### Changed
+- **Stage is a selector.** "Mark sown / Mark up / Mark set out" buttons are replaced by a stage selector on every planting, in the Plantings list and in each bed's panel. Any stage can be picked, ahead or back, so a slip is undone with one tap (it was forward-only).
+- **The bed panel lists what is in the bed** with each planting's stage, so day-to-day changes happen in the plan.
+
+### Fixed
+- **A planting with no place on the grid no longer disappears.** Plantings made before plants had places (listed under Plantings, counted by the plan, but not drawn) now show in their bed's panel as "Not on the grid yet", with a "Place in bed" button that finds them room at their real spacing.
+- **Resizable windows stop at their content.** Dragging a window taller than what it holds no longer leaves the handle stranded above an empty box; the box stops at its content and the handle stays on its bottom edge.
+
 ## [0.51.1] - 2026-10-18
 
 ### Added
@@ -535,7 +545,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - CI: ruff lint and format, backend tests, frontend build, image publishing to GHCR and automatic GitHub releases on a version bump.
 - Project docs: README, wiki, architecture, roadmap, contributing guide, security policy and Code of Conduct.
 
-[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.51.1...HEAD
+[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.52.0...HEAD
+[0.52.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.51.1...v0.52.0
 [0.51.1]: https://github.com/krugerhomeassistant/CropStack/compare/v0.51.0...v0.51.1
 [0.51.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.50.0...v0.51.0
 [0.50.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.49.2...v0.50.0

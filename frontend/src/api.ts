@@ -389,6 +389,7 @@ export const api = {
   addPlanting: (body: PlantingIn) => request<Planting>('POST', '/plantings', body),
   updatePlanting: (id: number, body: Partial<Pick<Planting, 'status' | 'start_date' | 'set_out_date' | 'quantity' | 'location' | 'bed_id' | 'cells' | 'ends_on' | 'notes'>>) =>
     request<Planting>('PATCH', `/plantings/${id}`, body),
+  placePlanting: (id: number) => request<Planting>('POST', `/plantings/${id}/place`),
   deletePlanting: (id: number) => request<null>('DELETE', `/plantings/${id}`),
   pantry: () => request<PantryItem[]>('GET', '/pantry'),
   addPantry: (body: PantryIn) => request<PantryItem>('POST', '/pantry', body),

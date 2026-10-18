@@ -10,12 +10,12 @@ def test_planting_lifecycle(owner):  # noqa: F811
     assert [p["id"] for p in owner.get("/api/v1/plantings").json()] == [pid]
 
     step = lambda s: owner.patch(f"/api/v1/plantings/{pid}", json={"status": s})  # noqa: E731
-    assert step("harvesting").status_code == 409  # cannot skip ahead
+    assert step("harvesting").json()["status"] == "harvesting"  # any state can be picked, ahead or back
     assert step("sown").json()["status"] == "sown"
     assert step("germinated").status_code == 200
     assert step("transplanted").status_code == 409  # direct-sown plantings are not set out
     assert step("failed").status_code == 200
-    assert step("sown").status_code == 409  # over for good
+    assert step("sown").json()["status"] == "sown"  # a slip is undone, not locked in
     assert owner.patch(f"/api/v1/plantings/{pid}", json={"notes": "slugs"}).json()["notes"] == "slugs"
 
     assert owner.delete(f"/api/v1/plantings/{pid}").status_code == 204
