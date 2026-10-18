@@ -5,6 +5,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.52.0] - 2026-10-18
+
 ### Changed
 - **Stage is a selector.** "Mark sown / Mark up / Mark set out" buttons are replaced by a stage selector on every planting, in the Plantings list and in each bed's panel. Any stage can be picked, ahead or back, so a slip is undone with one tap (it was forward-only).
 - **The bed panel lists what is in the bed** with each planting's stage, so day-to-day changes happen in the plan.
@@ -543,7 +545,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - CI: ruff lint and format, backend tests, frontend build, image publishing to GHCR and automatic GitHub releases on a version bump.
 - Project docs: README, wiki, architecture, roadmap, contributing guide, security policy and Code of Conduct.
 
-[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.51.1...HEAD
+[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.52.0...HEAD
+[0.52.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.51.1...v0.52.0
 [0.51.1]: https://github.com/krugerhomeassistant/CropStack/compare/v0.51.0...v0.51.1
 [0.51.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.50.0...v0.51.0
 [0.50.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.49.2...v0.50.0
