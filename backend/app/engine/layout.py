@@ -166,6 +166,37 @@ def best_block(cols: int, rows: int, free, p: Patch, m: int, key=None, limit: in
     return None
 
 
+def stagger(cells, cols: int, rows: int, free, p: Patch, key=None) -> list[tuple[int, int]] | None:
+    """The patches of the solid block `cells`, re-laid in offset rows: every other row of patches moves half a patch
+    along the row (a brick pattern), so plants do not line up in one block. The same count of patches, on `free`
+    ground; None when a patch is one cell wide (no half to move), the block is a single row, or the moved rows do not
+    fit. Several offsets may fit; `key(cells)` (lower is better) picks, else the first."""
+    free = set(free)
+    xs, ys = [c for c, _ in cells], [r for _, r in cells]
+    c0, r0, rw, rh = min(xs), min(ys), max(xs) - min(xs) + 1, max(ys) - min(ys) + 1
+    for q in (p, p.turned()):
+        if rw % q.w or rh % q.h:
+            continue
+        a, b, shift = rw // q.w, rh // q.h, q.w // 2
+        if not shift or b < 2:
+            continue
+        fits = []
+        for x0 in (c0, c0 - shift):  # the rows alternate between x0 and x0 + shift, either row first
+            for flip in (0, 1):
+                out = [
+                    (x0 + (shift if (j + flip) % 2 else 0) + i * q.w + dx, r0 + j * q.h + dy)
+                    for j in range(b)
+                    for i in range(a)
+                    for dx in range(q.w)
+                    for dy in range(q.h)
+                ]
+                if all(0 <= x < cols and 0 <= y < rows and (x, y) in free for x, y in out):
+                    fits.append(out)
+        if fits:
+            return min(fits, key=key) if key else fits[0]
+    return None
+
+
 def remap(cells: list[list[int]], old_cm: int, new_cm: int) -> list[list[int]]:
     """The same ground on a grid of a different cell size: every new cell that overlaps an old one."""
     out = {
