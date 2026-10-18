@@ -5,6 +5,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+### Changed
+- **Staggered planting in the year plan.** A crop that needs a block of several multi-cell patches is now laid in offset rows (every other row moved half a patch) instead of one solid block, whenever the bed has room for it; in a tight bed it stays solid so no plant is lost.
+
 ### Fixed
 - **Choosing another crop no longer resizes what is already planted.** The cell size used to follow the crop picked, so going from a small crop to a large one stretched the planted cells. With plantings placed in a bed the grid now only gets finer, in whole steps of the current cells, and never coarser; an empty bed still picks the size that suits the crop.
 

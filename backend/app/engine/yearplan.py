@@ -135,7 +135,9 @@ def draft(
         found = layout.best_block(b.cols, b.rows, free, p, m, key if (same or pals) else None)
         if not found:
             return None
-        cells, _ = found
+        cells, count = found
+        if count > 1:  # offset rows rather than one solid block, when the ground allows
+            cells = layout.stagger(cells, b.cols, b.rows, free, p, key if (same or pals) else None) or cells
         n = len(cells)
         gain = sum(min(n * per_week, s) for s in short)
         if gain < MIN_GAIN:
