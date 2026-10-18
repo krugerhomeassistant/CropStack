@@ -5,6 +5,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+### Added
+- **Butternut squash** (*Cucurbita moschata*) joins the crop catalog with cited climate, water and germination values (FAO-56, ECOCROP, Oregon State Extension); yield, spacing and seedling age are marked as estimates. Sow depth is not filled yet.
+
 ## [0.51.0] - 2026-10-18
 
 ### Added
