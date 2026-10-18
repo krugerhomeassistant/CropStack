@@ -98,9 +98,8 @@ export default function BedGrid({
 
   const here = (c: number, r: number) =>
     bed.placements.filter((p) => p.cells.some(([x, y]) => x === c && y === r) && p.from <= on && on <= p.until)
-  // the drafted year plan, shown dashed on cells that are empty on this date
-  const ghost = (c: number, r: number) =>
-    plan.find((i) => i.cells.some(([x, y]) => x === c && y === r) && (i.set_out_date ?? i.start_date) <= on && on <= i.until)
+  // the drafted year plan, its plants shown dashed on this date
+  const ghosts = plan.filter((i) => i.bed_id === bed.id && (i.set_out_date ?? i.start_date) <= on && on <= i.until)
   const clashing = new Set(bed.clashes.flatMap((x) => x.plantings))
   const fail = (e: unknown) => setError(e instanceof Error ? e.message : t('Failed to save'))
 
@@ -305,9 +304,7 @@ export default function BedGrid({
       >
         {Array.from({ length: bed.rows }, (_, r) =>
           Array.from({ length: bed.cols }, (_, c) => {
-            const p = here(c, r)
             const marked = painted.includes(key(c, r))
-            const g = p[0] ? undefined : ghost(c, r)
             return (
               <g key={key(c, r)}>
                 <rect
@@ -316,20 +313,23 @@ export default function BedGrid({
                   width={0.94}
                   height={0.94}
                   rx={0.14}
-                  fill={marked ? (crop ? cropColour(crop.crop) : 'transparent') : g ? cropColour(g.crop) : 'transparent'}
-                  fillOpacity={g && !marked ? 0.45 : 1}
-                  className={marked || g ? 'stroke-ink' : 'stroke-line'}
-                  strokeWidth={marked || g ? 0.06 : 0.025}
-                  strokeDasharray={marked || g ? '0.15 0.1' : undefined}
+                  fill={marked && crop ? cropColour(crop.crop) : 'transparent'}
+                  className={marked ? 'stroke-ink' : 'stroke-line'}
+                  strokeWidth={marked ? 0.06 : 0.025}
+                  strokeDasharray={marked ? '0.15 0.1' : undefined}
                 />
-                {g && (
-                  <>
-                    <image href={cropIconUrl(g.crop)} x={c + 0.27} y={r + 0.1} width={0.46} height={0.46} className="pointer-events-none" />
-                    <text x={c + 0.5} y={r + 0.82} fontSize={0.2} textAnchor="middle" className="pointer-events-none fill-ink">
-                      {g.name.slice(0, 6)}
-                    </text>
-                  </>
-                )}
+              </g>
+            )
+          }),
+        )}
+        {ghosts.flatMap((i) =>
+          i.spots.map(([sx, sy, w, h], n) => {
+            const u = bed.cell_cm
+            const side = Math.min(w, h) / u
+            return (
+              <g key={`plan-${i.crop}-${i.start_date}-${n}`} className="pointer-events-none" opacity={0.6}>
+                <rect x={sx / u + 0.02} y={sy / u + 0.02} width={w / u - 0.04} height={h / u - 0.04} rx={Math.min(0.14, side / 4)} fill={cropColour(i.crop)} fillOpacity={0.5} className="stroke-ink" strokeWidth={0.03} strokeDasharray="0.12 0.08" />
+                <image href={cropIconUrl(i.crop)} x={sx / u + (w / u - side * 0.6) / 2} y={sy / u + (h / u - side * 0.6) / 2} width={side * 0.6} height={side * 0.6} />
               </g>
             )
           }),
@@ -367,7 +367,7 @@ export default function BedGrid({
       </div>
       <p className="text-xs text-muted">
         {t('One cell is {size} cm square.', { size: bed.cell_cm })}
-        {plan.length > 0 && ` ${t('Dashed cells are the drafted plan; step the date to see it through the year.')}`}
+        {plan.length > 0 && ` ${t('Dashed plants are the drafted plan; step the date to see it through the year.')}`}
         {bed.outside > 0 && ` ${t('{n} planted cells sit beyond the edge of this bed; make the bed bigger to see them.', { n: bed.outside })}`}
       </p>
       <PlantedSummary beds={[bed]} on={on} />

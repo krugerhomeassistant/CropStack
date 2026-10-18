@@ -10,7 +10,7 @@ from ..deps import EditorDep, MemberDep, SessionDep
 from ..engine import layout, needs, phenology, recommend, windows, yearplan
 from ..models import Bed, Forecast, Household, Planting, Site
 from . import seeds
-from .beds import crop_facts, grid_of, holds
+from .beds import cm, crop_facts, grid_of, holds, spots_of
 from .catalog import CatalogDep, _overrides
 from .garden import _archive, _climatology
 from .household import household_settings
@@ -116,6 +116,31 @@ def _clear(db: SessionDep, household_id: int) -> int:
     return len(rows)
 
 
+def _lay_out(db: SessionDep, c: CatalogDep, household_id: int, items: list[dict], beds: dict, standing, today) -> None:
+    """Give each drafted item its plants at real size in offset rows, going round what already grows there and the
+    items drafted before it, so the preview shows exactly what accepting will plant."""
+    cache: dict = {}
+    ground: dict[int, list] = {}
+    for p in standing:
+        if p.bed_id in beds and p.cells and p.status not in ("finished", "failed"):
+            f = crop_facts(db, c, household_id, p.crop, cache)
+            a, z = holds(p, f, today)
+            ground.setdefault(p.bed_id, []).extend((tuple(s), a, z) for s in spots_of(p, beds[p.bed_id], f["dims"]))
+    for i in sorted(items, key=lambda i: i["set_out_date"] or i["start_date"]):
+        bed = beds.get(i["bed_id"])
+        if bed is None:  # the extra bed the draft suggests is not a real one
+            continue
+        first, last = i["set_out_date"] or i["start_date"], i["until"]
+        avoid = [s for s, a, z in ground.get(bed.id, []) if a <= last and first <= z]
+        spots = layout.fill(
+            i["cells"], bed.cell_cm, *cm(bed), crop_facts(db, c, household_id, i["crop"], cache)["dims"], avoid
+        )
+        i["spots"] = [list(s) for s in spots]
+        if spots:
+            i["plants"] = len(spots)
+            ground.setdefault(bed.id, []).extend((s, first, last) for s in spots)
+
+
 @router.get("/year")
 def year_plan(me: MemberDep, db: SessionDep, c: CatalogDep) -> dict:
     """Plantings for the next 12 months that fit the beds, climate and what already grows there."""
@@ -195,6 +220,7 @@ def year_plan(me: MemberDep, db: SessionDep, c: CatalogDep) -> dict:
     grid = [yearplan.Bed(b.id, b.name, *grid_of(b), b.cell_cm) for b in beds]
     have = frozenset(seeds.owned(db, me.household_id))
     items, cov = with_coverage(grid, taken, wants, today, target, existing, c.companions, have)
+    _lay_out(db, c, me.household_id, items, beds_by_id, [p for p in plantings if not replaceable(p)], today)
     for i in items:
         i["have_seed"] = i["crop"] in have
     buy = {i["crop"]: i["name"] for i in items if i["crop"] not in have}
