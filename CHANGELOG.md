@@ -5,6 +5,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.49.1] - 2026-10-18
+
 ### Changed
 - **Every plant now has its own place and real size.** A bed is drawn with each plant as a square of its own spacing (a chilli is a big square, a lettuce a small one), set in staggered rows instead of filling whole cells. Dragging across cells lays plants at that crop's spacing over them, going round whatever else is already growing there, so small crops fill the gaps between big ones. The count shown is the plants you can see.
 - **The bed's cell size no longer follows the crop.** Cells are only the brush and the grid; choosing a crop never changes the grid, and changing the grid never moves or resizes a plant.
@@ -506,7 +508,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - CI: ruff lint and format, backend tests, frontend build, image publishing to GHCR and automatic GitHub releases on a version bump.
 - Project docs: README, wiki, architecture, roadmap, contributing guide, security policy and Code of Conduct.
 
-[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.49.0...HEAD
+[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.49.1...HEAD
+[0.49.1]: https://github.com/krugerhomeassistant/CropStack/compare/v0.49.0...v0.49.1
 [0.49.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.48.0...v0.49.0
 [0.48.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.47.1...v0.48.0
 [0.47.1]: https://github.com/krugerhomeassistant/CropStack/compare/v0.47.0...v0.47.1
