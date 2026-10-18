@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { CalendarRange, X } from 'lucide-react'
-import { api, type Coverage, type PlanDiff, type PlanItem, type Planting } from '../api'
+import { api, type Coverage, type PlanDiff, type PlanItem, type Planting, type YearPlan as YearPlanType } from '../api'
 import { t } from '../i18n'
 import { useApp } from '../state'
 import CoverageCard, { PeopleStepper } from './CoverageCard'
@@ -27,7 +27,7 @@ export default function YearPlan({ hasBeds, scheduled, plan, setPlan, onUsed, on
   const [saved, setSaved] = useState<Planting[]>([])
   const [names, setNames] = useState<Record<string, string>>({})
   const [seeds, setSeeds] = useState<string[]>([])
-  const [buy, setBuy] = useState<{ crop: string; name: string }[]>([])
+  const [buy, setBuy] = useState<NonNullable<YearPlanType["buy"]>>([])
   // The plan you have used stays here: it is the saved plantings the year plan made, whatever tab you are on.
   useEffect(() => {
     api.crops().then((cs) => setNames(Object.fromEntries(cs.map((c) => [c.slug, c.names.en?.[0] ?? c.slug]))), () => {})
@@ -224,7 +224,7 @@ export default function YearPlan({ hasBeds, scheduled, plan, setPlan, onUsed, on
           <ul className="flex flex-wrap gap-x-4 gap-y-0.5 text-sm">
             {buy.filter((b) => plan.some((i) => i.crop === b.crop)).map((b) => (
               <li key={b.crop}>
-                <span aria-hidden><CropIcon crop={b.crop} /></span> {b.name}
+                <span aria-hidden><CropIcon crop={b.crop} /></span> {b.name} · {t("buy by {date}", { date: b.buy_by })}
               </li>
             ))}
           </ul>

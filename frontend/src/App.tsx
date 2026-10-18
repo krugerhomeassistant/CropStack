@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Navigate, Route, Routes } from 'react-router'
+import { Navigate, Route, Routes, useNavigate } from 'react-router'
 import { Sprout } from 'lucide-react'
 import { api, ApiError, type Garden, type User } from './api'
 import Layout from './components/Layout'
@@ -10,14 +10,14 @@ import Crop from './pages/Crop'
 import CropData from './pages/CropData'
 import Crops from './pages/Crops'
 import GardenPage from './pages/Garden'
-import GardenSetup from './pages/GardenSetup'
+import Setup from './pages/Setup'
 import Household from './pages/Household'
 import Pantry from './pages/Pantry'
 import More from './pages/More'
 import Ask from './pages/Ask'
 import Settings from './pages/Settings'
 import Today from './pages/Today'
-import { AppContext } from './state'
+import { AppContext, useApp } from './state'
 
 const INVITE_PATH = /^\/invite\/([^/]+)$/
 
@@ -124,7 +124,7 @@ export default function App() {
     case 'setup':
       return (
         <main className="mx-auto flex min-h-dvh max-w-xl flex-col gap-6 px-4 py-10 sm:px-8">
-          <GardenSetup garden={null} onSaved={(garden) => setState({ screen: 'app', user: state.user, garden })} />
+          <Setup garden={null} onDone={(garden) => setState({ screen: 'app', user: state.user, garden })} />
         </main>
       )
     case 'waiting':
@@ -166,6 +166,7 @@ export default function App() {
               <Route path="/pantry" element={<Pantry />} />
               <Route path="/ask" element={<Ask />} />
               <Route path="/settings" element={<Settings />} />
+              <Route path="/setup" element={<SetupAgain />} />
             </Route>
             {/* "/", a used invite link, or anything unknown: the person's own start screen */}
             <Route path="*" element={<Navigate to={`/${state.user.prefs.start}`} replace />} />
@@ -174,4 +175,11 @@ export default function App() {
       )
     }
   }
+}
+
+/** The wizard again, from Settings: everything is prefilled, nothing is deleted. */
+function SetupAgain() {
+  const { garden, setGarden } = useApp()
+  const navigate = useNavigate()
+  return <Setup garden={garden} onDone={(g) => { setGarden(g); navigate('/garden') }} />
 }
