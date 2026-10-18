@@ -557,3 +557,24 @@ def test_a_null_quantity_never_reaches_the_database(owner):  # noqa: F811
     made = plant(owner, bed["id"], [[0, 0]], "2026-08-30").json()
     done = owner.patch(f"/api/v1/plantings/{made['id']}", json={"cells": [[0, 0], [1, 0]], "quantity": None})
     assert done.status_code == 200 and done.json()["quantity"] >= 1
+
+
+def test_the_year_plan_previews_real_size_plants_and_accepting_plants_exactly_those(owner, monkeypatch):  # noqa: F811
+    from pathlib import Path
+
+    from app import catalog as cat
+    from app import external
+    from app.main import app
+    from tests.e2e_server import fake_archive
+
+    monkeypatch.setattr(external, "fetch_climate_archive", fake_archive)  # never the live archive
+    monkeypatch.setattr(app.state, "catalog", cat.load(Path(__file__).resolve().parents[2] / "catalog"))
+    owner.put("/api/v1/sites/current", json=GARDEN)
+    bed = owner.post("/api/v1/beds", json={"name": "Bed 5", "width": 1.2, "length": 2.4}).json()
+    items = [i for i in owner.get("/api/v1/plan/year").json()["items"] if i["bed_id"] == bed["id"]][:8]
+    assert items and all(i["spots"] and i["plants"] == len(i["spots"]) for i in items)
+    fields = ("crop", "method", "start_date", "set_out_date", "bed_id", "cells", "spots")
+    assert owner.post("/api/v1/plan/year", json=[{k: i[k] for k in fields} for i in items]).status_code == 201
+    [row] = owner.get("/api/v1/beds").json()
+    planted = {p["crop"]: p["spots"] for p in row["placements"]}
+    assert all(planted[i["crop"]] == i["spots"] for i in items) and row["clashes"] == []

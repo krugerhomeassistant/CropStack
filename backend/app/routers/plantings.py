@@ -38,6 +38,7 @@ class PlantingIn(BaseModel):
     location: str = Field("", max_length=120)
     bed_id: int | None = None
     cells: list[list[int]] = Field(default_factory=list, max_length=2500)
+    spots: list[list[int]] = Field(default_factory=list, max_length=2500)  # [x, y, w, h] cm; blank: laid out from cells
     ends_on: date | None = None
     notes: str = Field("", max_length=2000)
     in_ground: bool = False  # logged as done even when dated today
@@ -79,6 +80,13 @@ def _cells(cells: list[list[int]]) -> list[list[int]]:
             raise HTTPException(422, f"Cell {cell} is not a cell")
         seen.add((cell[0], cell[1]))
     return [list(x) for x in sorted(seen, key=lambda x: (x[1], x[0]))]
+
+
+def _spots(spots: list[list[int]]) -> list[list[int]]:
+    for s in spots:
+        if len(s) != 4 or min(s) < 0 or s[2] < 1 or s[3] < 1:
+            raise HTTPException(422, f"Spot {s} is not a plant's place")
+    return spots
 
 
 def _bed(db: SessionDep, household_id: int, bed_id: int) -> Bed:
@@ -141,7 +149,7 @@ def make_planting(body: PlantingIn, me: EditorDep, db: SessionDep, c: CatalogDep
         data["location"] = bed.name
         data["cells"] = _cells(body.cells)
         first = body.set_out_date or body.start_date
-        spots = _place(
+        spots = _spots(body.spots) or _place(
             db, c, me.household_id, bed, body.crop, data["cells"], first, body.ends_on, limit=body.quantity or layout.MAX_CELLS
         )  # fmt: skip
         if spots:  # the cells hold exactly the ground these plants take

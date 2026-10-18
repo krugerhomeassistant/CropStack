@@ -107,6 +107,7 @@ export type PlantingIn = Pick<Planting, 'crop' | 'method' | 'start_date' | 'set_
   quantity?: number
   bed_id?: number | null
   cells?: [number, number][]
+  spots?: [number, number, number, number][] // blank: the server lays plants out over the cells
   ends_on?: string | null
   in_ground?: boolean
 }
@@ -119,6 +120,7 @@ export type PlanItem = {
   bed_id: number
   bed: string
   cells: [number, number][]
+  spots: [number, number, number, number][] // the drafted plants at real size, as accepting will plant them
   plants: number
   cells_per_plant?: number
   pairs_with?: string[]

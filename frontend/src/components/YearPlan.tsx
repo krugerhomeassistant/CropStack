@@ -87,7 +87,7 @@ export default function YearPlan({ hasBeds, scheduled, plan, setPlan, onUsed, on
   const use = () => {
     setBusy(true)
     api
-      .acceptPlan(plan.map((i) => ({ crop: i.crop, method: i.method, start_date: i.start_date, set_out_date: i.set_out_date, bed_id: i.bed_id, cells: i.cells, location: '', notes: '' })))
+      .acceptPlan(plan.map((i) => ({ crop: i.crop, method: i.method, start_date: i.start_date, set_out_date: i.set_out_date, bed_id: i.bed_id, cells: i.cells, spots: i.spots, location: '', notes: '' })))
       .then(() => {
         setBusy(false)
         setPlan([])
@@ -230,7 +230,7 @@ export default function YearPlan({ hasBeds, scheduled, plan, setPlan, onUsed, on
           </ul>
         </div>
       )}
-      {plan.length > 0 && <p className="text-xs text-muted">{t('The Plan tab shows these as dashed cells in each bed. Nothing is saved until you use the plan; after that, every planting can still be changed.')}</p>}
+      {plan.length > 0 && <p className="text-xs text-muted">{t('The Plan tab shows these as dashed plants in each bed. Nothing is saved until you use the plan; after that, every planting can still be changed.')}</p>}
       {saved.length > 0 && (
         <div className="flex flex-col gap-3 border-t border-line pt-4" aria-label={t('Your plan')}>
           <div>

@@ -5,6 +5,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+### Changed
+- **The year plan shows real-size plants too.** The dashed preview in a bed is now each drafted plant at its own spacing in offset rows (it was bundled cells), going round what already grows there, and accepting the plan plants exactly those. The plan's plant counts are the plants you see.
+
 ## [0.49.1] - 2026-10-18
 
 ### Changed
