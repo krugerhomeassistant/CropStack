@@ -112,6 +112,7 @@ Tokens in `frontend/src/index.css`, components in `frontend/src/components/ui/` 
 
 ## Data, backups and migrations
 - `data/cropstack.db` (SQLite, WAL) and `data/secret.key` (generated, mode 600); the private catalog pack lives in `data/catalog-private/`. Back up the whole `data/` folder.
+- Arrange: `GET /plan/year?bed=<id>&crops=a,b` drafts just those crops in one bed (first sowing each, around all standing plantings); the bed panel previews it and plants via `POST /plantings`.
 - Setup wizard (`/setup`, first run and Settings): people, `wanted` crops (household settings JSON, a drafter boost, never a limit) and seeds; `POST /household/reset` (owner, body `confirm: RESET`) clears beds, plantings, jobs, harvests, seeds. `GET /plan/year` `buy` items carry `buy_by` (first sowing minus 14 days).
 - Alembic migrations in `backend/app/migrations/versions/` run on every start. Every model change needs a revision (`alembic revision --autogenerate -m "…"`, then review it); CI fails when models and migrations differ.
 - Migrations run with SQLite foreign keys off: batch mode rebuilds tables, and a cascade on drop would delete child rows. Upgrades from older versions are tested with stored fixtures.

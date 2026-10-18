@@ -590,3 +590,28 @@ def test_reset_clears_the_garden_but_keeps_the_login_and_needs_the_word(owner): 
     assert done.status_code == 200 and done.json()["bed"] == 1 and done.json()["planting"] == 1
     assert owner.get("/api/v1/beds").json() == [] and owner.get("/api/v1/plantings").json() == []
     assert owner.get("/api/v1/seeds").json() == [] and owner.get("/api/v1/household").status_code == 200
+
+
+def test_arranging_chosen_crops_fills_one_bed_with_exactly_those_and_plants_cleanly(owner, monkeypatch):  # noqa: F811
+    from pathlib import Path
+
+    from app import catalog as cat
+    from app import external
+    from app.main import app
+    from tests.e2e_server import fake_archive
+
+    monkeypatch.setattr(external, "fetch_climate_archive", fake_archive)
+    monkeypatch.setattr(app.state, "catalog", cat.load(Path(__file__).resolve().parents[2] / "catalog"))
+    owner.put("/api/v1/sites/current", json=GARDEN)
+    bed = owner.post("/api/v1/beds", json={"name": "A", "width": 1.2, "length": 2.4}).json()
+    other = owner.post("/api/v1/beds", json={"name": "B", "width": 1.2, "length": 2.4}).json()
+    crops = "lettuce,radish"
+    r = owner.get(f"/api/v1/plan/year?bed={bed['id']}&crops={crops}").json()
+    assert r["items"] and {i["crop"] for i in r["items"]} <= {"lettuce", "radish"}
+    assert {i["bed_id"] for i in r["items"]} == {bed["id"]} and all(i["spots"] for i in r["items"])
+    fields = ("crop", "method", "start_date", "set_out_date", "bed_id", "cells", "spots")
+    for i in r["items"]:
+        assert owner.post("/api/v1/plantings", json={k: i[k] for k in fields}).status_code == 201
+    assert owner.get("/api/v1/beds").json()[0]["clashes"] == []
+    assert owner.get(f"/api/v1/plan/year?bed=99999&crops={crops}").status_code == 404
+    assert other["id"] != bed["id"]

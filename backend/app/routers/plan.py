@@ -143,10 +143,18 @@ def _lay_out(db: SessionDep, c: CatalogDep, household_id: int, items: list[dict]
 
 
 @router.get("/year")
-def year_plan(me: MemberDep, db: SessionDep, c: CatalogDep) -> dict:
-    """Plantings for the next 12 months that fit the beds, climate and what already grows there."""
+def year_plan(me: MemberDep, db: SessionDep, c: CatalogDep, bed: int | None = None, crops: str = "") -> dict:
+    """Plantings for the next 12 months that fit the beds, climate and what already grows there. With `bed` and
+    `crops` (comma separated): arrange just those crops in that one bed, around everything already in it (an earlier
+    plan included), each crop's first sowing only; nothing is scheduled until the caller plants the items."""
+    only = frozenset(s for s in crops.split(",") if s)
     site = db.exec(select(Site).where(Site.household_id == me.household_id)).first()
     beds = db.exec(select(Bed).where(Bed.household_id == me.household_id).order_by(Bed.id)).all()
+    if bed is not None:
+        beds = [b for b in beds if b.id == bed]
+        if not beds:
+            raise HTTPException(404, "No such bed")
+    is_old = (lambda p: False) if bed is not None else replaceable  # arranging goes round the old plan, not over it
     people = household_settings(db.get(Household, me.household_id)).people
     if site is None or not beds:
         return {
@@ -164,7 +172,7 @@ def year_plan(me: MemberDep, db: SessionDep, c: CatalogDep) -> dict:
     plantings = db.exec(select(Planting).where(Planting.household_id == me.household_id)).all()
     taken: dict[int, list] = {b.id: [] for b in beds}
     for p in plantings:
-        if replaceable(p):  # an earlier plan not yet started is replaced by this one, not added to
+        if is_old(p):  # an earlier plan not yet started is replaced by this one, not added to
             continue
         if p.bed_id in taken and p.cells:  # finished ones too: they decide rotation
             f = crop_facts(db, c, me.household_id, p.crop, cache)
@@ -172,6 +180,8 @@ def year_plan(me: MemberDep, db: SessionDep, c: CatalogDep) -> dict:
             taken[p.bed_id] += [((x[0], x[1]), a, z, f["family"], p.crop) for x in p.cells]
     wants = []
     for slug, _ in c.list("crop"):
+        if only and slug not in only:
+            continue
         item = cat.effective(c, "crop", slug, _overrides(db, me.household_id, "crop", slug))
         profile = phenology.profile_from_item(item) if item else None
         if not profile or not profile.usable:
@@ -212,7 +222,7 @@ def year_plan(me: MemberDep, db: SessionDep, c: CatalogDep) -> dict:
     target = needs.weekly_target(people)
     beds_by_id = {b.id: b for b in beds}
     existing = existing_supply(
-        [p for p in plantings if not replaceable(p)],
+        [p for p in plantings if not is_old(p)],
         lambda crop: crop_facts(db, c, me.household_id, crop, cache),
         beds_by_id,
         lambda p: holds(p, crop_facts(db, c, me.household_id, p.crop, cache), today),
@@ -220,9 +230,14 @@ def year_plan(me: MemberDep, db: SessionDep, c: CatalogDep) -> dict:
     )
     grid = [yearplan.Bed(b.id, b.name, *grid_of(b), b.cell_cm) for b in beds]
     have = frozenset(seeds.owned(db, me.household_id))
-    wish = frozenset(household_settings(db.get(Household, me.household_id)).wanted)
+    wish = only or frozenset(household_settings(db.get(Household, me.household_id)).wanted)
     items, cov = with_coverage(grid, taken, wants, today, target, existing, c.companions, have, wish)
-    _lay_out(db, c, me.household_id, items, beds_by_id, [p for p in plantings if not replaceable(p)], today)
+    if only:  # one sowing per crop: the earliest block of each, not a year of successions
+        first = {}
+        for i in items:
+            first[i["crop"]] = min(first.get(i["crop"], i["start_date"]), i["start_date"])
+        items = [i for i in items if (i["start_date"] - first[i["crop"]]).days <= 14]
+    _lay_out(db, c, me.household_id, items, beds_by_id, [p for p in plantings if not is_old(p)], today)
     for i in items:
         i["have_seed"] = i["crop"] in have
     sow: dict[str, tuple[str, date]] = {}  # crop without seed -> its name and first sowing in the plan
