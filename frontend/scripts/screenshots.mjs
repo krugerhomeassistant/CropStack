@@ -34,6 +34,7 @@ if (await latitude.isVisible()) {
   await latitude.fill('-33.93')
   await setup.getByLabel('Longitude').fill('18.86')
   await setup.getByRole('button', { name: 'Save garden' }).click()
+  for (const name of ['Next', 'Next', 'Draft my plan', 'Open my garden']) await setup.getByRole('button', { name }).click() // the setup wizard
   await setup.waitForURL(/\/today$/)
 }
 const ago = (days) => new Date(Date.now() - days * 864e5).toISOString().slice(0, 10)

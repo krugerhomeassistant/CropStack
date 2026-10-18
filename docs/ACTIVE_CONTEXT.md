@@ -41,7 +41,6 @@ Butternut (Cucurbita moschata) in the catalog with cited values.
 - Year plan overlap on accept fixed in 0.45.1. Re-check on the owner's real data after deploy.
 - Owner's Bed 1 showed "6 cells have two plantings at once" (cause unknown: hand painting or an old plan). Ask him to check after updating to 0.40.0 and using Clear plan.
 - Planner look on his phone and the year plan on real climate data are unverified by me.
-- README screenshots in `docs/images/` are old (regenerate with `npm run screenshots`).
 - Owner action: enable "Allow GitHub Actions to create pull requests" so the monthly catalog-refresh workflow can open PRs.
 - Sandbox quirks: `gh` GraphQL is blocked (use `gh run list`, REST); the sandbox proxy resets some connections (retry); `sqlite3` CLI is missing (use python).
 

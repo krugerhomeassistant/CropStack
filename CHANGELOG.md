@@ -5,6 +5,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+### Changed
+- README screenshots are regenerated from the current app, and the screenshot script walks through the setup wizard.
+
 ## [0.52.0] - 2026-10-18
 
 ### Changed
