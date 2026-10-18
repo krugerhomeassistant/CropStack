@@ -1,6 +1,6 @@
 # ACTIVE CONTEXT
 
-**Date:** 2026-10-18 · **Version:** 0.52.0 · **Alembic head:** 0019 · **Tests:** 221 backend, browser e2e green.
+**Date:** 2026-10-18 · **Version:** 0.52.1 · **Alembic head:** 0019 · **Tests:** 222 backend, browser e2e green.
 History of earlier sessions: `ACTIVE_CONTEXT_ARCHIVE.md`.
 
 ## What CropStack is today
@@ -67,4 +67,4 @@ Year plan: proper spacing (plants needing more than a cell take several, kept to
 Plot plan restyle (metre grid, soil-tinted beds, crop-colour tiles, halo on selection; styling only) and always-open sign-up with "Start my own" / "Join a household" (invite still required to join; `CROPSTACK_ALLOW_REGISTRATION` default `true`, `auto` alias, `false` closes). Next on the plot plan: flat crop marks instead of emoji, per-bed fill bar, pinch-zoom/pan, tidier bed toolbar. Laptop dev (Windows): Python 3.12 venv in `backend/.venv`, set `PYTHONUTF8=1` for pytest, Node LTS via winget; the bash/Chromium e2e script is Linux-only, CI runs it.
 
 ## v0.41.0
-Needs model: `people` setting, `food_group` + `yield_per_m2` on all 60 crops, demand-driven drafter, coverage card on the Plan tab. Limits: yields are estimates, harvests spread evenly, live crops hold cells only to cycle end. Next: sourced yields, setup interview 8.1, Climate/Crops/More facelift, move planting + undo.
+Needs model: `people` setting, `food_group` + `yield_per_m2` on all 60 crops, demand-driven drafter, coverage card on the Plan tab. Limits: yields are estimates, harvests spread evenly, live crops keep their cells until finished. Next: sourced yields, setup interview 8.1, Climate/Crops/More facelift, move planting + undo.

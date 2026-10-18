@@ -5,6 +5,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.52.1] - 2026-10-18
+
+### Fixed
+- **A crop that is still growing no longer vanishes from its bed.** A planting held its place only for the crop's catalogued cycle, so a beetroot sown on 30 Aug and still in the ground showed in Plantings but not on the plan. A planting now keeps its place until you mark it finished or failed (or set an end date).
+
 ### Changed
 - README screenshots are regenerated from the current app, and the screenshot script walks through the setup wizard.
 
@@ -548,7 +553,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - CI: ruff lint and format, backend tests, frontend build, image publishing to GHCR and automatic GitHub releases on a version bump.
 - Project docs: README, wiki, architecture, roadmap, contributing guide, security policy and Code of Conduct.
 
-[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.52.0...HEAD
+[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.52.1...HEAD
+[0.52.1]: https://github.com/krugerhomeassistant/CropStack/compare/v0.52.0...v0.52.1
 [0.52.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.51.1...v0.52.0
 [0.51.1]: https://github.com/krugerhomeassistant/CropStack/compare/v0.51.0...v0.51.1
 [0.51.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.50.0...v0.51.0
