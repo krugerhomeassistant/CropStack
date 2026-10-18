@@ -504,6 +504,30 @@ def test_a_beds_cells_follow_the_plants_it_holds(owner, monkeypatch):  # noqa: F
     assert wide["cell_cm"] == 10
 
 
+def test_choosing_another_crop_never_resizes_what_is_planted(owner, monkeypatch):  # noqa: F811
+    from pathlib import Path
+
+    from app import catalog as cat
+    from app.main import app
+
+    monkeypatch.setattr(app.state, "catalog", cat.load(Path(__file__).resolve().parents[2] / "catalog"))
+    owner.put("/api/v1/sites/current", json=GARDEN)
+    bed = owner.post("/api/v1/beds", json={"name": "B", "width": 1.0, "length": 2.0, "cell_cm": 50}).json()
+    url = f"/api/v1/beds/{bed['id']}"
+    assert plant(owner, bed["id"], [[0, 0], [1, 0]], "2026-08-30", crop="tomato").status_code == 201  # 50 x 100 cm
+
+    def ground() -> set:
+        cells = owner.get("/api/v1/plantings").json()[0]["cells"]
+        size = owner.get("/api/v1/beds").json()[0]["cell_cm"]
+        return {(x * size + i, y * size + j) for x, y in cells for i in range(size) for j in range(size)}
+
+    before = ground()
+    fine = owner.patch(url, json={"for_crop": "beetroot"}).json()  # a finer grid: the old cells split exactly
+    assert fine["cell_cm"] < 50 and 50 % fine["cell_cm"] == 0 and ground() == before
+    back = owner.patch(url, json={"for_crop": "tomato"}).json()  # a bigger plant never coarsens it again
+    assert back["cell_cm"] == fine["cell_cm"] and ground() == before
+
+
 def test_a_null_quantity_never_reaches_the_database(owner):  # noqa: F811
     bed = owner.post("/api/v1/beds", json={"name": "Q", "width": 1.2, "length": 1.2}).json()
     made = plant(owner, bed["id"], [[0, 0]], "2026-08-30").json()

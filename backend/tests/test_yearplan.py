@@ -106,24 +106,33 @@ def grows(crop, cells, a=TODAY - timedelta(days=30), z=TODAY + timedelta(days=20
     return [(tuple(c), a, z, "", crop) for c in cells]
 
 
-def solid(cells):
-    cols, rows = {c for c, _ in cells}, {r for _, r in cells}
-    return len(cols) * len(rows) == len(cells)
-
-
-def test_a_big_plant_takes_a_solid_block_of_the_patches_its_spacing_needs():
-    # 60 cm plants on 30 cm cells: a 2 x 2 patch each, and the block is one solid rectangle of whole patches
+def test_a_big_plant_takes_whole_patches_of_the_ground_its_spacing_needs():
+    # 60 cm plants on 30 cm cells: a 2 x 2 patch each, in whole patches
     items, _ = run(4, 1, wants=[sized("zucchini", "squash", TODAY, (60, 60))])
     assert items
     for i in items:
         assert i["patch"] == [2, 2] and i["cells_per_plant"] == 4 and len(i["cells"]) % 4 == 0
-        assert i["plants"] == len(i["cells"]) // 4 and solid(i["cells"])
+        assert i["plants"] == len(i["cells"]) // 4
     # a plant wider one way than the other needs a patch that long: 20 x 45 cm is 1 x 2 or 2 x 1 cells
     odd, _ = run(4, 1, wants=[sized("bean", "legume", TODAY, (20, 45))])
-    assert odd and all(i["patch"] in ([1, 2], [2, 1]) and solid(i["cells"]) for i in odd)
+    assert odd and all(i["patch"] in ([1, 2], [2, 1]) for i in odd)
     # small plants still go several to a cell, as many as fit at their spacing in both directions
     small, _ = run(4, 1, wants=[sized("lettuce", "leafy", TODAY, (10, 10), kg=3.0)])
     assert small and small[0]["cells_per_plant"] == 1 and small[0]["plants"] == 9 * len(small[0]["cells"])
+
+
+def test_several_big_plants_are_staggered_in_offset_rows_not_one_solid_block():
+    items, _ = run(4, 1, wants=[sized("zucchini", "squash", TODAY, (60, 60))])
+    blocks = [i for i in items if len(i["cells"]) >= 8]  # at least two rows of 2 x 2 patches
+    assert blocks
+    for i in blocks:
+        cells = {tuple(c) for c in i["cells"]}
+        starts = {
+            min(c for c, r in cells if r in (y, y + 1))
+            for y in {min(r for _, r in cells), max(r for _, r in cells) - 1}
+        }
+        assert len(starts) > 1  # the rows of patches do not all begin in the same column
+        assert i["plants"] == len(cells) // 4 and i["patch"] == [2, 2]
 
 
 GOOD = {"tomato": {"basil", "marigold"}, "basil": {"tomato"}, "marigold": {"tomato"}}
@@ -143,7 +152,7 @@ def test_a_crop_is_placed_touching_its_good_companion():
     assert not edge({tuple(c) for c in alone[0]["cells"]}, BASIL_BLOCK)  # nothing draws it there
     items, _ = draft(grid, taken, TOMATO, TODAY, needs.weekly_target(2), [], {"good": GOOD})
     cells = {tuple(c) for c in items[0]["cells"]}
-    assert edge(cells, BASIL_BLOCK) and not cells & set(BASIL_BLOCK) and solid(cells)
+    assert edge(cells, BASIL_BLOCK) and not cells & set(BASIL_BLOCK)
     assert items[0]["pairs_with"] == ["Basil"]
 
 
