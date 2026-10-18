@@ -1,6 +1,6 @@
 # ACTIVE CONTEXT
 
-**Date:** 2026-10-16 · **Version:** 0.49.1 · **Alembic head:** 0019 · **Tests:** 217 backend, browser e2e green.
+**Date:** 2026-10-16 · **Version:** 0.49.2 · **Alembic head:** 0019 · **Tests:** 218 backend, browser e2e green.
 History of earlier sessions: `ACTIVE_CONTEXT_ARCHIVE.md`.
 
 ## What CropStack is today

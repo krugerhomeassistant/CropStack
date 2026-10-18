@@ -5,6 +5,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.49.2] - 2026-10-18
+
 ### Changed
 - **The year plan shows real-size plants too.** The dashed preview in a bed is now each drafted plant at its own spacing in offset rows (it was bundled cells), going round what already grows there, and accepting the plan plants exactly those. The plan's plant counts are the plants you see.
 
@@ -511,7 +513,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - CI: ruff lint and format, backend tests, frontend build, image publishing to GHCR and automatic GitHub releases on a version bump.
 - Project docs: README, wiki, architecture, roadmap, contributing guide, security policy and Code of Conduct.
 
-[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.49.1...HEAD
+[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.49.2...HEAD
+[0.49.2]: https://github.com/krugerhomeassistant/CropStack/compare/v0.49.1...v0.49.2
 [0.49.1]: https://github.com/krugerhomeassistant/CropStack/compare/v0.49.0...v0.49.1
 [0.49.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.48.0...v0.49.0
 [0.48.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.47.1...v0.48.0
