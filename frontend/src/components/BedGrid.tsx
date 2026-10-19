@@ -1,4 +1,4 @@
-import ArrangePanel from './ArrangePanel'
+import ArrangePanel, { type Area, type Ghost } from './ArrangePanel'
 import StatusSelect from './StatusSelect'
 import { useEffect, useRef, useState } from 'react'
 import { Eraser } from 'lucide-react'
@@ -122,7 +122,10 @@ export default function BedGrid({
   const [qty, setQty] = useState('')
   const [error, setError] = useState('')
   const [about, setAbout] = useState<Recommendation | null>(null)
-  const [arranged, setArranged] = useState<PlanItem[]>([]) // an Arrange preview, shown whatever the date
+  const [arranged, setArranged] = useState<Ghost[]>([]) // an Arrange preview, shown whatever the date
+  const [arranging, setArranging] = useState(false)
+  const [area, setArea] = useState<Area>(null) // the section drawn for Arrange
+  const dragFrom = useRef<[number, number] | null>(null)
 
   // arriving from a recommendation: the crop is chosen and the date set
   useEffect(() => {
@@ -133,7 +136,7 @@ export default function BedGrid({
   const here = (c: number, r: number) =>
     bed.placements.filter((p) => p.cells.some(([x, y]) => x === c && y === r) && p.from <= on && on <= p.until)
   // the drafted year plan, its plants shown dashed on this date
-  const ghosts = [...plan.filter((i) => i.bed_id === bed.id && (i.set_out_date ?? i.start_date) <= on && on <= i.until), ...arranged]
+  const ghosts: Ghost[] = [...plan.filter((i) => i.bed_id === bed.id && (i.set_out_date ?? i.start_date) <= on && on <= i.until), ...arranged]
   const clashing = new Set(bed.clashes.flatMap((x) => x.plantings))
   const fail = (e: unknown) => setError(e instanceof Error ? e.message : t('Failed to save'))
 
@@ -161,9 +164,20 @@ export default function BedGrid({
       setPainted(strokeRef.current)
     }
   }
+  function drawTo(k: string | null) {
+    const from = dragFrom.current
+    if (!from || !k) return
+    const [c, r] = k.split(',').map(Number)
+    setArea([Math.min(from[0], c), Math.min(from[1], r), Math.max(from[0], c), Math.max(from[1], r)])
+  }
   function down(e: React.PointerEvent<SVGSVGElement>) {
     setError('')
     e.currentTarget.setPointerCapture(e.pointerId)
+    if (arranging) {
+      const k = at(e)
+      dragFrom.current = k ? (k.split(',').map(Number) as [number, number]) : null
+      return drawTo(k)
+    }
     if (brush && canEdit) return add(e)
     const k = at(e)
     const [c, r] = k ? k.split(',').map(Number) : [-1, -1]
@@ -176,6 +190,7 @@ export default function BedGrid({
     setQty(p ? String(p.quantity) : '')
   }
   function up() {
+    dragFrom.current = null
     const cells = strokeRef.current.map((k) => k.split(',').map(Number) as [number, number])
     strokeRef.current = []
     setPainted([])
@@ -333,7 +348,7 @@ export default function BedGrid({
         role="img"
         aria-label={t('Cells of {bed}', { bed: bed.name })}
         onPointerDown={down}
-        onPointerMove={(e) => brush && canEdit && e.buttons && add(e)}
+        onPointerMove={(e) => (dragFrom.current ? drawTo(at(e)) : brush && canEdit && e.buttons && add(e))}
         onPointerUp={up}
       >
         {Array.from({ length: bed.rows }, (_, r) =>
@@ -356,12 +371,15 @@ export default function BedGrid({
             )
           }),
         )}
+        {area && (
+          <rect x={area[0]} y={area[1]} width={area[2] - area[0] + 1} height={area[3] - area[1] + 1} rx={0.14} fill="none" className="pointer-events-none stroke-leaf" strokeWidth={0.1} strokeDasharray="0.25 0.15" />
+        )}
         {ghosts.flatMap((i) =>
           i.spots.map(([sx, sy, w, h], n) => {
             const u = bed.cell_cm
             const side = Math.min(w, h) / u
             return (
-              <g key={`plan-${i.crop}-${i.start_date}-${n}`} className="pointer-events-none" opacity={0.6}>
+              <g key={`plan-${i.crop}-${n}`} className="pointer-events-none" opacity={0.6}>
                 <rect x={sx / u + 0.02} y={sy / u + 0.02} width={w / u - 0.04} height={h / u - 0.04} rx={Math.min(0.14, side / 4)} fill={cropColour(i.crop)} fillOpacity={0.5} className="stroke-ink" strokeWidth={0.03} strokeDasharray="0.12 0.08" />
                 <image href={cropIconUrl(i.crop)} x={sx / u + (w / u - side * 0.6) / 2} y={sy / u + (h / u - side * 0.6) / 2} width={side * 0.6} height={side * 0.6} />
               </g>
@@ -404,8 +422,23 @@ export default function BedGrid({
         {plan.length > 0 && ` ${t('Dashed plants are the drafted plan; step the date to see it through the year.')}`}
         {bed.outside > 0 && ` ${t('{n} planted cells sit beyond the edge of this bed; make the bed bigger to see them.', { n: bed.outside })}`}
       </p>
+      {canEdit && bed.clashes.length > 0 && (
+        <Button
+          variant="secondary"
+          onClick={async () => {
+            try {
+              for (const id of new Set(bed.clashes.map((x) => Math.max(...x.plantings)))) await api.placePlanting(id) // the newer one moves
+              onChange()
+            } catch (e) {
+              fail(e)
+            }
+          }}
+        >
+          {t('Fix overlaps')}
+        </Button>
+      )}
       <BedPlantings bed={bed} on={on} canEdit={canEdit} onChange={onChange} fail={fail} />
-      {canEdit && <ArrangePanel bed={bed} crops={crops} preview={arranged} onPreview={setArranged} onChange={onChange} />}
+      {canEdit && <ArrangePanel bed={bed} crops={crops} on={on} area={area} onArea={setArea} onOpen={setArranging} onPreview={setArranged} onChange={onChange} />}
 
       {info && (
         <div className="flex flex-col gap-2 rounded-[var(--radius-row)] bg-sunken p-3 text-sm">

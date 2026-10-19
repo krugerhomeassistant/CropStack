@@ -643,3 +643,49 @@ def test_a_planting_still_going_keeps_its_place_past_the_catalogued_cycle(owner)
     owner.patch(f"/api/v1/plantings/{pid}", json={"status": "finished"})
     [row] = owner.get("/api/v1/beds").json()
     assert row["placements"][0]["until"] < "2027-01-01"  # lets go once finished
+
+
+def test_arranging_by_whole_bed_section_and_amount_never_overlaps_and_suggests_friends(owner, monkeypatch):  # noqa: F811
+    from pathlib import Path
+
+    from app import catalog as cat
+    from app.engine import layout
+    from app.main import app
+
+    monkeypatch.setattr(app.state, "catalog", cat.load(Path(__file__).resolve().parents[2] / "catalog"))
+    bed = owner.post("/api/v1/beds", json={"name": "A", "width": 1.2, "length": 2.4}).json()
+    url, day = f"/api/v1/beds/{bed['id']}/arrange", "2026-10-01"
+
+    def arrange(crops, **extra):
+        r = owner.post(url, json={"crops": crops, "start_date": day} | extra)
+        assert r.status_code == 200, r.text
+        return r.json()
+
+    whole = arrange([{"crop": "beetroot"}])
+    cap = whole["items"][0]["capacity"]
+    assert whole["full"] and whole["items"][0]["amount"] == cap > 10 and whole["companions"]
+    few = arrange([{"crop": "beetroot", "amount": 5}])["items"][0]  # a number, spread over the whole bed
+    ys = {s[1] for s in few["spots"]}
+    assert few["amount"] == 5 and few["capacity"] == cap and len(ys) > 1
+    section = arrange([{"crop": "beetroot"}], area=[0, 0, 1, 1])
+    assert not section["full"] and 0 < section["items"][0]["amount"] < cap
+    grown = arrange([{"crop": "beetroot", "amount": cap - 3}], area=[0, 0, 1, 1])  # asks for more than fits: grows
+    assert grown["area"][2] * grown["area"][3] > 1 and grown["items"][0]["amount"] == cap - 3
+    huge = arrange([{"crop": "beetroot", "amount": cap + 50}], area=[0, 0, 1, 1])
+    assert huge["full"] and huge["items"][0]["amount"] == cap  # until the bed is at its limit
+    for how in ("mixed", "rows", "columns"):
+        two = arrange([{"crop": "beetroot"}, {"crop": "lettuce"}], how=how)["items"]
+        spots = [tuple(s) for i in two for s in i["spots"]]
+        assert all(i["amount"] for i in two) and not any(
+            layout.overlap(a, b) for n, a in enumerate(spots) for b in spots[n + 1 :]
+        )
+    assert owner.post(url, json={"crops": [{"crop": "nope"}], "start_date": day}).status_code == 422
+
+
+def test_planting_over_others_moves_the_plants_to_free_ground(owner):  # noqa: F811
+    bed = owner.post("/api/v1/beds", json={"name": "A", "width": 1.2, "length": 1.2}).json()
+    a = plant(owner, bed["id"], [[0, 0], [1, 0], [0, 1], [1, 1]], "2026-10-01", quantity=4).json()
+    b = plant(owner, bed["id"], [[0, 0]], "2026-10-01", spots=[a["spots"][0]]).json()  # asked for the very same ground
+    assert b["spots"] and b["spots"][0] != a["spots"][0]
+    [row] = owner.get("/api/v1/beds").json()
+    assert row["clashes"] == []

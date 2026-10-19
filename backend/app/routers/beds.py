@@ -1,6 +1,6 @@
 """Beds on the garden plan: where things grow, how big, which cells hold what and when (SPEC §7.1, §7.2)."""
 
-from datetime import UTC, date, datetime
+from datetime import UTC, date, datetime, timedelta
 from typing import Literal
 
 from fastapi import APIRouter, HTTPException
@@ -174,6 +174,60 @@ def list_beds(me: MemberDep, db: SessionDep, c: CatalogDep) -> list[dict]:
             }
         )
     return out
+
+
+class ArrangeCrop(BaseModel):
+    crop: str
+    amount: int | None = Field(None, ge=1, le=MAX_CELLS)  # blank: as many as fit
+
+
+class ArrangeIn(BaseModel):
+    crops: list[ArrangeCrop] = Field(min_length=1, max_length=12)
+    area: list[int] | None = Field(
+        None, min_length=4, max_length=4
+    )  # a section: first col, first row, last col, last row
+    how: Literal["mixed", "rows", "columns"] = "mixed"
+    start_date: date
+
+
+@router.post("/{bed_id}/arrange")
+def arrange_bed(bed_id: int, body: ArrangeIn, me: MemberDep, db: SessionDep, c: CatalogDep) -> dict:
+    """Where chosen crops would stand in a bed (nothing is saved): the whole bed, a section, or a number of plants, any
+    mix of them, with what else grows well beside them. A section too small for the amounts grows until they fit."""
+    bed = _own(db, me.household_id, bed_id)
+    cache: dict = {}
+    for x in body.crops:
+        if c.get("crop", x.crop) is None:
+            raise HTTPException(422, f"No crop {x.crop!r} in the catalog")
+    facts = [crop_facts(db, c, me.household_id, x.crop, cache) for x in body.crops]
+    cols, rows = grid_of(bed)
+    area = None
+    if body.area:
+        c0, r0, c1, r1 = body.area
+        area = (max(0, min(c0, c1)), max(0, min(r0, r1)), min(cols - 1, max(c0, c1)), min(rows - 1, max(r0, r1)))
+        if area[0] > area[2] or area[1] > area[3]:
+            raise HTTPException(422, "That section is outside the bed")
+    last = body.start_date + timedelta(days=round(max((f["cycle_days"] or layout.DEFAULT_CYCLE_DAYS) for f in facts)))
+    used, laid = layout.arrange(
+        cols, rows, bed.cell_cm, *cm(bed), [(f["dims"], x.amount) for f, x in zip(facts, body.crops, strict=True)],
+        area, body.how, ground_taken(db, c, me.household_id, bed, body.start_date, last),
+    )  # fmt: skip
+    chosen = {x.crop for x in body.crops}
+    score: dict[str, int] = {}
+    for x in chosen:
+        for friend in c.companions["good"].get(x, ()):
+            score[friend] = score.get(friend, 0) + 1
+    bad = {b for x in chosen for b in c.companions["avoid"].get(x, ())}
+    friends = sorted((k for k in score if k not in chosen | bad), key=lambda k: (-score[k], k))[:8]
+    return {
+        "area": list(used),
+        "full": used == (0, 0, cols - 1, rows - 1),
+        "items": [
+            {"crop": x.crop, "name": f["name"], "amount": len(s), "capacity": cap, "spots": [list(p) for p in s]}
+            for x, f, (s, cap) in zip(body.crops, facts, laid, strict=True)
+        ],
+        "companions": [{"crop": k, "name": crop_facts(db, c, me.household_id, k, cache)["name"]} for k in friends],
+    }
 
 
 @router.post("", status_code=201)

@@ -5,6 +5,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.53.0] - 2026-10-19
+
+### Added
+- **Arrange, redesigned.** Pick crops from a selector box that keeps each crop's icon, then choose the whole bed, a section you drag on the bed, or a number of plants. The section and the numbers follow each other: draw a section and the numbers show what fits; raise a number and the section grows until the bed is full. Several crops can be scattered or set in alternating columns or rows, a preview shows each as you choose, and crops that grow well beside your choice are suggested.
+- **Fix overlaps** button on a bed whose plants overlap.
+
+### Fixed
+- Plants never land on each other: if a planting asks for ground another planting holds, those plants move to free ground.
+
 ## [0.52.1] - 2026-10-18
 
 ### Fixed
@@ -553,7 +562,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - CI: ruff lint and format, backend tests, frontend build, image publishing to GHCR and automatic GitHub releases on a version bump.
 - Project docs: README, wiki, architecture, roadmap, contributing guide, security policy and Code of Conduct.
 
-[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.52.1...HEAD
+[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.53.0...HEAD
+[0.53.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.52.1...v0.53.0
 [0.52.1]: https://github.com/krugerhomeassistant/CropStack/compare/v0.52.0...v0.52.1
 [0.52.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.51.1...v0.52.0
 [0.51.1]: https://github.com/krugerhomeassistant/CropStack/compare/v0.51.0...v0.51.1

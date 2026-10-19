@@ -314,3 +314,51 @@ def spot_clashes(held, cell_cm: int) -> list[tuple[Cell, int, int]]:
                 if p != q and f <= u and g <= t and overlap(a, b):
                     found.setdefault((min(p, q), max(p, q)), cell)
     return [(cell, p, q) for (p, q), cell in sorted(found.items())]
+
+
+# ---------------------------------------------------------------- arranging chosen crops in a bed
+
+Rect = tuple[int, int, int, int]  # first column, first row, last column, last row (cells, inclusive)
+
+
+def _cells_in(r: Rect) -> list[Cell]:
+    return [(c, y) for y in range(r[1], r[3] + 1) for c in range(r[0], r[2] + 1)]
+
+
+def _lay(cell_cm, width_cm, length_cm, dims, r: Rect, how: str, avoid) -> list[list[Spot]]:
+    """Every crop's plants over `r`: one crop takes it all; several share it in strips as wide as a plant (alternating
+    columns or rows) or in a checkerboard of such blocks (mixed)."""
+    n = len(dims)
+    sizes = [spot_size(cell_cm, d) for d in dims]
+    kc = max(-(-w // cell_cm) for w, _ in sizes)
+    kr = max(-(-h // cell_cm) for _, h in sizes)
+    group = {"columns": lambda c, y: c // kc, "rows": lambda c, y: y // kr}.get(how, lambda c, y: c // kc + y // kr)
+    out: list[list[Spot]] = []
+    taken = list(avoid)
+    for i, d in enumerate(dims):
+        cells = [(c, y) for c, y in _cells_in(r) if n == 1 or group(c, y) % n == i]
+        spots = fill(cells, cell_cm, width_cm, length_cm, d, taken, MAX_CELLS)
+        taken += spots
+        out.append(spots)
+    return out
+
+
+def arrange(cols, rows, cell_cm, width_cm, length_cm, wants, area: Rect | None, how: str, avoid=()):
+    """Lay out `wants` = [(dims, amount or None)] in a bed. No `area`: the whole bed, with `amount` plants spread evenly
+    over it. An `area` (a section) that cannot hold every amount grows, right then down, until it does or the bed is full.
+    Returns (area used, per crop: (plants, how many fit))."""
+    full: Rect = (0, 0, cols - 1, rows - 1)
+    r = area or full
+    dims = [d for d, _ in wants]
+    while True:
+        laid = _lay(cell_cm, width_cm, length_cm, dims, r, how, avoid)
+        short = any(a and a > len(s) for (_, a), s in zip(wants, laid, strict=True))
+        if not short or r == full:
+            break
+        grow_right = ((r[2] - r[0]) <= (r[3] - r[1]) and r[2] < full[2]) or r[3] == full[3]
+        r = (r[0], r[1], r[2] + 1, r[3]) if grow_right else (r[0], r[1], r[2], r[3] + 1)
+    out = []
+    for (_, a), s in zip(wants, laid, strict=True):
+        keep = [s[int(i * len(s) / a)] for i in range(a)] if a and a < len(s) else s
+        out.append((keep, len(s)))
+    return r, out

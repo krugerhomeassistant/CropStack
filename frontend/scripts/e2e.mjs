@@ -217,6 +217,19 @@ try {
   await owner.getByRole('group', { name: 'Choose what to plant' }).getByRole('button', { pressed: true }).first().waitFor()
   step('garden plan: paint a mixed bed, recommendations shown')
 
+  // Arrange: pick from the icon selector, ask for a number of plants, and they are planted without overlapping
+  await owner.getByRole('button', { name: 'Arrange crops' }).click()
+  await owner.getByRole('button', { name: 'Choose crops…' }).click()
+  await owner.getByRole('listbox', { name: 'Crops' }).getByRole('option', { name: 'Radish', exact: true }).click()
+  await owner.getByRole('button', { name: 'A number' }).click()
+  await owner.getByLabel('Plants of Radish').fill('2')
+  await owner.getByRole('button', { name: 'Plant 2', exact: true }).click()
+  await owner.getByRole('button', { name: 'Arrange crops' }).waitFor()
+  const radish = (await (await owner.request.get(`${base}/api/v1/plantings`)).json()).filter((p) => p.crop === 'radish' && p.bed_id)
+  assert.ok(radish.some((p) => p.quantity === 2), 'the amount asked for is what is planted')
+  assert.deepEqual((await (await owner.request.get(`${base}/api/v1/beds`)).json())[0].clashes, [], 'nothing overlaps')
+  step('arrange: icon selector, number of plants, no overlap')
+
   // Harvests are logged once a crop is growing
   const first = (await (await owner.request.get(`${base}/api/v1/plantings`)).json()).find((p) => p.quantity === 6) // the one sown above
   for (const status of ['germinated', 'harvesting'])

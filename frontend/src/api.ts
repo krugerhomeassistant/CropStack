@@ -111,6 +111,12 @@ export type PlantingIn = Pick<Planting, 'crop' | 'method' | 'start_date' | 'set_
   ends_on?: string | null
   in_ground?: boolean
 }
+export type Arrangement = {
+  area: [number, number, number, number] // the section used: first col, first row, last col, last row
+  full: boolean
+  items: { crop: string; name: string; amount: number; capacity: number; spots: [number, number, number, number][] }[]
+  companions: { crop: string; name: string }[]
+}
 export type PlanItem = {
   crop: string
   name: string
@@ -389,6 +395,8 @@ export const api = {
   addPlanting: (body: PlantingIn) => request<Planting>('POST', '/plantings', body),
   updatePlanting: (id: number, body: Partial<Pick<Planting, 'status' | 'start_date' | 'set_out_date' | 'quantity' | 'location' | 'bed_id' | 'cells' | 'ends_on' | 'notes'>>) =>
     request<Planting>('PATCH', `/plantings/${id}`, body),
+  arrangeBed: (id: number, body: { crops: { crop: string; amount?: number }[]; area: number[] | null; how: string; start_date: string }) =>
+    request<Arrangement>('POST', `/beds/${id}/arrange`, body),
   placePlanting: (id: number) => request<Planting>('POST', `/plantings/${id}/place`),
   deletePlanting: (id: number) => request<null>('DELETE', `/plantings/${id}`),
   pantry: () => request<PantryItem[]>('GET', '/pantry'),
