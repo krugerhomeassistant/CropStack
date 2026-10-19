@@ -129,6 +129,26 @@ def list_plantings(me: MemberDep, db: SessionDep, c: CatalogDep) -> list[dict]:
     return [_view(p, c) | ahead.get(p.id, empty) for p in rows]
 
 
+def _clear(
+    db: SessionDep, c: CatalogDep, household_id: int, bed: Bed, body: PlantingIn, first: date
+) -> list[list[int]]:
+    """The plants asked for, but never on ground another planting holds then: any that would are moved to free ground."""
+    from .beds import crop_facts, grid_of, ground_taken
+
+    spots = _spots(body.spots)
+    f = crop_facts(db, c, household_id, body.crop, {})
+    last = body.ends_on or first + timedelta(days=round(f["cycle_days"] or layout.DEFAULT_CYCLE_DAYS))
+    taken = ground_taken(db, c, household_id, bed, first, last)
+    ok = [s for s in spots if not any(layout.overlap(tuple(s), o) for o in taken)]  # type: ignore[arg-type]
+    if len(ok) == len(spots):
+        return spots
+    cols, rows = grid_of(bed)
+    everywhere = [(x, y) for x in range(cols) for y in range(rows)]
+    return _place(
+        db, c, household_id, bed, body.crop, everywhere, first, body.ends_on, keep=ok, limit=len(spots) - len(ok)
+    )
+
+
 def make_planting(body: PlantingIn, me: EditorDep, db: SessionDep, c: CatalogDep) -> Planting:
     """A Planting row for `body`, added to the session but not committed."""
     if c.get("crop", body.crop) is None:
@@ -139,7 +159,7 @@ def make_planting(body: PlantingIn, me: EditorDep, db: SessionDep, c: CatalogDep
         data["location"] = bed.name
         data["cells"] = _cells(body.cells)
         first = body.set_out_date or body.start_date
-        spots = _spots(body.spots) or _place(
+        spots = _clear(db, c, me.household_id, bed, body, first) if body.spots else _place(
             db, c, me.household_id, bed, body.crop, data["cells"], first, body.ends_on, limit=body.quantity or layout.MAX_CELLS
         )  # fmt: skip
         if spots:  # the cells hold exactly the ground these plants take
