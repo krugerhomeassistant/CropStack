@@ -80,4 +80,5 @@ One flat icon per catalog crop in `frontend/src/icons/crops/<slug>.svg` (`_seedl
 - **Flat colour**: solid shapes in the plant's true-to-life colour, no outlines, no gradients, no filters. Details are fills or 2.6 px round-cap strokes in a darker or lighter shade of the same plant.
 - **Canvas**: `viewBox="0 0 64 64"`, subject centred and filling roughly 56 px, leaves and stems may reach the edge but never clip. Plain `<svg>` with one `viewBox` and no ids, scripts, fonts or external references (Vite inlines the small files, so the PWA works offline).
 - **Palette**: leaf greens `#2E6B3F` `#5FA845` `#A7D96B`, soil/wood `#7A5230`, then each crop's own fruit, root or flower colour. At most one soft white highlight (`opacity .3-.4`) on round fruit.
+- **Same style for the rest**: pests, diseases and beneficial insects live in `frontend/src/icons/organisms/<slug>.svg` (a test requires one per `catalog/organisms` entry) and animals in `frontend/src/icons/animals/<slug>.svg`; they follow the same rules.
 - **Check**: after adding or changing icons, view them at 96 px and 24 px side by side; they must stay recognisable at 24 px.

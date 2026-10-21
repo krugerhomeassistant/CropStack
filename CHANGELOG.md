@@ -5,6 +5,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.53.3] - 2026-10-21
+
+### Fixed
+- **The year plan's harvest windows follow the catalogued cycle** when the heat model runs past it, the same fix as for a planting (v0.53.2). A drafted beetroot no longer harvests months late.
+
+### Added
+- Icons for every pest, disease and beneficial insect in the catalog, and for hens and bees, in the crop-icon style.
+
 ## [0.53.2] - 2026-10-21
 
 ### Fixed
@@ -572,7 +580,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - CI: ruff lint and format, backend tests, frontend build, image publishing to GHCR and automatic GitHub releases on a version bump.
 - Project docs: README, wiki, architecture, roadmap, contributing guide, security policy and Code of Conduct.
 
-[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.53.2...HEAD
+[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.53.3...HEAD
+[0.53.3]: https://github.com/krugerhomeassistant/CropStack/compare/v0.53.2...v0.53.3
 [0.53.2]: https://github.com/krugerhomeassistant/CropStack/compare/v0.53.1...v0.53.2
 [0.53.1]: https://github.com/krugerhomeassistant/CropStack/compare/v0.53.0...v0.53.1
 [0.53.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.52.1...v0.53.0

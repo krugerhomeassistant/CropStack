@@ -199,7 +199,12 @@ def year_plan(me: MemberDep, db: SessionDep, c: CatalogDep, bed: int | None = No
                 best[key] = o
         for o in best.values():
             planted = o["best_from"]
-            days = round(o["days_to_maturity"].get("p90") or f["cycle_days"] or layout.DEFAULT_CYCLE_DAYS)
+            dtm = o["days_to_maturity"]
+            if (
+                dtm.get("p50") and dtm["p50"] > profile.cycle_days[1]
+            ):  # the heat model ran cold: trust the catalogued cycle
+                dtm = {"p10": profile.cycle_days[0], "p90": profile.cycle_days[1]}
+            days = round(dtm.get("p90") or f["cycle_days"] or layout.DEFAULT_CYCLE_DAYS)
             # Accepted plantings hold their cells for the catalog cycle (no ends_on is saved), so the draft must
             # reserve at least that long or accepting it would clash with itself.
             hold = max(days, round(f["cycle_days"] or layout.DEFAULT_CYCLE_DAYS))
@@ -209,7 +214,7 @@ def year_plan(me: MemberDep, db: SessionDep, c: CatalogDep, bed: int | None = No
                 yearplan.Want(
                     slug, f["name"], f["family"], o["method"], start, planted if transplant else None, planted, hold,
                     o["success"], f["dims"],
-                    planted + timedelta(days=round(o["days_to_maturity"].get("p10") or days)),
+                    planted + timedelta(days=round(dtm.get("p10") or days)),
                     planted + timedelta(days=days),
                     f["yield_per_m2"],
                     f["food_group"],
