@@ -80,7 +80,7 @@ function BedPlantings({ bed, on, canEdit, onChange, fail }: { bed: Bed; on: stri
               <StatusSelect status={p.status} method={p.method} label={t('Stage of {crop}', { crop: p.name })} onChange={(status) => api.updatePlanting(p.planting_id, { status }).then(onChange, fail)} />
             </span>
           )}
-          {p.spots.length === 0 && live(p) && <span className="w-full text-muted">{t('Not on the grid yet.')}</span>}
+          {p.spots.length === 0 && live(p) && <span className="-mt-1 w-full pl-7 text-muted">{t('Not on the grid yet.')}</span>}
         </li>
       ))}
     </ul>
