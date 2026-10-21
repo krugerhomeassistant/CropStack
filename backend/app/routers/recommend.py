@@ -70,7 +70,7 @@ def recommendations(me: MemberDep, db: SessionDep, c: CatalogDep, horizon: int =
     today = local_today(forecast.raw) if forecast else datetime.now(UTC).date()
     climate = _climatology(_archive(site, db))
     threshold = windows.success_threshold(site.frost_probability)
-    beds = db.exec(select(Bed).where(Bed.household_id == me.household_id).order_by(Bed.id)).all()
+    beds = db.exec(select(Bed).where(Bed.household_id == me.household_id, Bed.kind != "coop").order_by(Bed.id)).all()
     plantings = db.exec(select(Planting).where(Planting.household_id == me.household_id)).all()
     cache: dict = {}
 

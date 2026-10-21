@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
-import { ChevronLeft, ChevronRight, Circle, MousePointer2, RectangleHorizontal, Rows3, Trash2, type LucideIcon } from 'lucide-react'
+import { Link } from 'react-router'
+import { ChevronLeft, ChevronRight, Circle, House, MousePointer2, RectangleHorizontal, Rows3, Trash2, type LucideIcon } from 'lucide-react'
 import { api, type Bed, type BedIn, type BedKind, type CropSummary, type PlanItem, type Recommendation } from '../api'
 import { t } from '../i18n'
 import { useApp } from '../state'
 import BedGrid, { addDays, cropColour, iso, PlantedSummary } from './BedGrid'
 import { CropIcon, cropIconUrl } from './CropIcon'
+import hen from '../icons/animals/hen.svg'
 import type { PlantRequest } from './Recommendations'
 import { Button, ErrorMessage, Field, IconButton, Section, Skeleton, Switch } from './ui'
 import DateField from './ui/DateField'
@@ -21,6 +23,7 @@ const TOOLS: { tool: Tool; label: string; short: string; icon: LucideIcon; name?
   { tool: 'bed', label: 'Draw bed', short: 'Bed', icon: RectangleHorizontal, name: 'Bed', width: 1.2, length: 2.4 },
   { tool: 'row', label: 'Draw row', short: 'Row', icon: Rows3, name: 'Row', width: 0.6, length: 5 },
   { tool: 'container', label: 'Draw pot', short: 'Pot', icon: Circle, name: 'Pot', width: 0.5, length: 0.5 },
+  { tool: 'coop', label: 'Draw coop and run', short: 'Coop', icon: House, name: 'Coop', width: 2, length: 3 },
 ]
 
 type Frame = { x0: number; y0: number; x1: number; y1: number }
@@ -293,8 +296,9 @@ export default function LayoutEditor({ onChange, suggested, request, plan }: { o
               {isPot ? (
                 <ellipse cx={b.x + b.width / 2} cy={b.y + b.length / 2} rx={b.width / 2} ry={b.length / 2} className="fill-feed/15 stroke-feed/60" strokeWidth={0.04} />
               ) : (
-                <rect data-testid="bed-body" x={b.x} y={b.y} width={b.width} height={b.length} rx={0.12} className="fill-feed/15 stroke-feed/60" strokeWidth={0.04} />
+                <rect data-testid="bed-body" x={b.x} y={b.y} width={b.width} height={b.length} rx={0.12} className={b.kind === 'coop' ? 'fill-harvest/15 stroke-harvest/60' : 'fill-feed/15 stroke-feed/60'} strokeWidth={0.04} />
               )}
+              {b.kind === 'coop' && <image href={hen} x={b.x + b.width / 2 - 0.35} y={b.y + b.length / 2 - 0.35} width={0.7} height={0.7} className="pointer-events-none" />}
               <g clipPath={`url(#clip${b.id})`} className="pointer-events-none select-none">
                 {/* plants sit a little inside the border so the outline never covers them */}
                 <g transform={`translate(${b.x + edge} ${b.y + edge}) scale(${(b.width - 2 * edge) / b.width} ${(b.length - 2 * edge) / b.length}) translate(${-b.x} ${-b.y})`}>
@@ -409,7 +413,13 @@ export default function LayoutEditor({ onChange, suggested, request, plan }: { o
           {canEdit && editBed && (
             <BedForm key={`form${current.id}:${current.width}:${current.length}`} bed={current} layouts={layouts} onSaved={refresh} onDeleted={() => { setSelected(null); refresh() }} fail={fail} />
           )}
+          {current.kind === 'coop' ? (
+            <p className="text-sm">
+              {t('A coop and run for your animals. It is never planted.')} <Link to="/animals" className="font-semibold underline">{t('Keep hens here')}</Link>
+            </p>
+          ) : (
           <BedGrid key={`grid${current.id}`} bed={current} crops={crops} suggested={suggested} plan={plan.filter((i) => i.bed_id === current.id)} on={on} request={request && (request.bedId === null || request.bedId === current.id) ? request : null} onChange={refresh} />
+          )}
         </Section>
       ) : (
         beds.length > 0 && (

@@ -230,6 +230,17 @@ try {
   assert.deepEqual((await (await owner.request.get(`${base}/api/v1/beds`)).json())[0].clashes, [], 'nothing overlaps')
   step('arrange: icon selector, number of plants, no overlap')
 
+  // Animals: a coop on the plan, hens in it, eggs logged
+  const coop = await (await owner.request.post(`${base}/api/v1/beds`, { data: { name: 'Coop 1', kind: 'coop', x: 8, y: 0, width: 2, length: 3 } })).json()
+  await owner.goto(`${base}/animals`)
+  await owner.getByRole('button', { name: 'Add hens' }).first().click()
+  await owner.getByLabel('Coop').selectOption(String(coop.id))
+  await owner.getByRole('button', { name: 'Add flock' }).click()
+  await owner.getByLabel('Eggs today').fill('3')
+  await owner.getByRole('button', { name: 'Save eggs' }).click()
+  await owner.getByText(/3 eggs this week/).waitFor()
+  step('animals: coop, hens, eggs')
+
   // Harvests are logged once a crop is growing
   const first = (await (await owner.request.get(`${base}/api/v1/plantings`)).json()).find((p) => p.quantity === 6) // the one sown above
   for (const status of ['germinated', 'harvesting'])

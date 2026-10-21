@@ -124,7 +124,7 @@ class Bed(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
     household_id: int = Field(foreign_key="household.id", ondelete="CASCADE", index=True)
     name: str
-    kind: str = "bed"  # bed, container or row
+    kind: str = "bed"  # bed, container, row or coop (a coop and run for animals; never planted)
     x: float = 0
     y: float = 0
     width: float  # m, along x
@@ -135,6 +135,31 @@ class Bed(SQLModel, table=True):
     # Beds sharing a layout name move together on the plan ("Back garden"); empty = on its own.
     layout: str = Field(default="", sa_column=Column(String, nullable=False, server_default=""))
     created_at: datetime = Field(default_factory=now)
+
+
+class Flock(SQLModel, table=True):
+    """Animals of one kind kept together, usually in a coop: how many, since when, and what they lay."""
+
+    id: int | None = Field(default=None, primary_key=True)
+    household_id: int = Field(foreign_key="household.id", ondelete="CASCADE", index=True)
+    name: str
+    species: str = "hen"
+    breed: str = ""
+    count: int = 1
+    got_on: date
+    coop_id: int | None = Field(default=None, foreign_key="bed.id", ondelete="SET NULL")
+    notes: str = ""
+    created_at: datetime = Field(default_factory=now)
+
+
+class EggLog(SQLModel, table=True):
+    """Eggs collected from a flock on a day (one row per flock and day)."""
+
+    id: int | None = Field(default=None, primary_key=True)
+    household_id: int = Field(foreign_key="household.id", ondelete="CASCADE", index=True)
+    flock_id: int = Field(foreign_key="flock.id", ondelete="CASCADE", index=True)
+    laid_on: date
+    count: int
 
 
 class Planting(SQLModel, table=True):
