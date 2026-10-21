@@ -10,10 +10,11 @@ Households and garden climate (30 y Open-Meteo), 60-crop catalog (CC BY-SA, cite
 Personal, non-commercial. Fully dynamic (no presets). Never restrict or destroy his work: only suggest. "Information is our main focus" but key points, not floods; cleaner "windows". Must look professional. English and metric only is fine. He sends many messages in a row: note each as a to-do here or in PLAN, do not stop the current work. Do not ask questions that research can answer.
 
 ## How to work (commands)
-- Backend tests: `cd backend && .venv/bin/python -m pytest -q` (209 pass, ~40 s).
+- Backend tests: `cd backend && python -m pytest -q` (228 pass, ~80 s; venv in the cloud sandbox: `/tmp/csvenv`).
 - Lint (do before every push): `ruff format . && ruff check .` from repo root.
 - Frontend: `cd frontend && npx tsc --noEmit && npm run build`.
-- Browser e2e: `npm run build` once, then `scripts/e2e-local.sh` (wipes data, restarts the stubbed server on :8512; takes ~100 s, so run it in the background with a log: `(scripts/e2e-local.sh > /tmp/e2e.log 2>&1 &)`). First run after a cold start can fail on the setup form: run again. Never run e2e on a dirty DB.
+- Local e2e in the sandbox: kill any old server first, `rm -rf /tmp/claude-0/e2edata`, then `cd backend && CROPSTACK_DATA_DIR=/tmp/claude-0/e2edata CROPSTACK_STATIC_DIR=../frontend/dist CROPSTACK_SCHEDULER=false python -m tests.e2e_server --port 8512 &` and `cd frontend && CROPSTACK_URL=http://127.0.0.1:8512 CHROMIUM_PATH=/opt/pw-browsers/chromium npm run e2e` (fresh data each run).
+- Browser e2e (his machine): `npm run build` once, then `scripts/e2e-local.sh` (wipes data, restarts the stubbed server on :8512; takes ~100 s, so run it in the background with a log: `(scripts/e2e-local.sh > /tmp/e2e.log 2>&1 &)`). First run after a cold start can fail on the setup form: run again. Never run e2e on a dirty DB.
 - Screenshots: `npm run screenshots` (see CI for the env vars).
 - New crop: also draw `frontend/src/icons/crops/<slug>.svg` (DESIGN.md "Crop icons"); `test_every_real_crop_has_a_frontend_icon` fails without it.
 - Catalog: `backend/.venv/bin/python scripts/ingest check` (needs network; the real-catalog pytest covers validity offline), `python scripts/coverage.py` (regenerate `docs/COVERAGE.md`; CI fails if stale).
@@ -26,33 +27,26 @@ Personal, non-commercial. Fully dynamic (no presets). Never restrict or destroy 
 4. Deploy to the owner: his copy is `E:\Projects\Personal\CropStack` (device bridge `$HOME/mnt/Personal/CropStack`): shallow-clone main to a temp dir, `rm -rf .git`, `cp -rT` over it (never touch his git config). He then pulls `ghcr.io/krugerhomeassistant/cropstack:latest` in ZimaOS and restarts.
 5. Real-container smoke test: `docker pull` the image, run with `--network host -v /tmp/data:/data`, hit `/api/health` (needs `dockerd &` first in the sandbox; local `docker build` fails on the proxy CA, use the CI image).
 
-## Next (owner asked, not done)
-Butternut (Cucurbita moschata) in the catalog with cited values.
+## Where we are (2026-10-21, v0.54.0)
+Shipped this stretch: setup wizard, wanted crops, buy-by seed list, household reset, Arrange v2 (icon selector, whole bed / section / amount linked, scatter/rows/columns, companions, preview, plants never overlap, Fix overlaps), butternut, stage selector, Place in bed, harvest windows capped at the catalogued cycle (planting and year plan), icons for all 22 organisms plus hen and bee, **Animals v0** (coop shape on the plan, flocks, egg log, Animals page under More). The owner confirmed on his phone that the beetroot dates and the drafter look right.
 
-## Next up (priority order; specs in PLAN.md "Next up")
-1. Needs model (PLAN 8.2) so the year plan sizes each crop's block to what the household eats.
-2. Year plan polish: re-plan diff view; live crops keep their cells until harvested (known gap); lock a job's date.
-3. Look and feel: apply the plot-plan/window style to Climate, Crops, More; map pinch-zoom/pan; move a planting between cells/beds; undo/redo.
-4. Data: sow depth still an estimate for 36 crops; companions (Wikipedia CC BY-SA list); storage life per crop (USDA AH-66) for Pantry; varieties; animals catalog; more organisms.
-5. Pantry link to harvest; Mealie integration (future, owner not running Mealie).
-6. Home Assistant integration (MQTT/REST), assistant photo diagnosis/tools/streaming/history, encrypt API key at rest, imperial units in job text (low priority).
+## Owner asks, not done (priority order)
+1. **The year-plan drafter is his source of truth.** Keep checking its dates and amounts against what he sees. The heat model (`phenology`, GDD at a 20 °C reference) runs slow for cool-season crops; v0.53.2/.3 only cap its answer at the catalogued cycle. A proper fix re-fits the model or the cycle data per crop.
+2. **Animals, next slices:** catalog species and breeds for hens and bees (cited or `estimate: true`; replaces the 0.4 + 1.0 m² per hen guess in `routers/flocks.py`), animal jobs on Today (coop cleaning, health checks), bees, other animals. Icons exist in `frontend/src/icons/animals/` (hen, bee; add more in the same style).
+3. **Data, once-off and shipped as defaults** (his words: gather, scrape or write from our own knowledge, then the user's edits win). Nothing is fetched at run time. Work list: `docs/COVERAGE.md` (empty and estimated fields, crop by crop, starting with beetroot, butternut, lettuce, tomato); butternut sow depth, pH, yield, spacing; storage life per crop for Pantry; South African varieties; more organisms. User changes are overrides (`cat.effective`), they never rewrite the shipped files.
+4. **Crops missing from his vegetable list:** he has not named them yet; ask once, then add each with cited values and an icon.
+5. Show the organism and animal icons in the UI (pests on crop pages and Today, hens on the plan), now that the art exists.
+6. Small: the setup wizard crop pick now uses `CropSelect`; Arrange only logs eggs for today; no per-day egg history yet.
+
+## Next up (roadmap, PLAN.md "Next up" has the specs)
+Seed vault quantities and germination tests; plot plan background image; re-plan diff view; lock a job's date; Climate/Crops/More window style; map pinch-zoom/pan; move a planting; undo/redo; Pantry link to harvest; Home Assistant (MQTT/REST); assistant photo diagnosis; encrypt the API key at rest; Mealie (he does not run it).
 
 ## Open issues / unverified
-- Year plan overlap on accept fixed in 0.45.1. Re-check on the owner's real data after deploy.
-- Owner's Bed 1 showed "6 cells have two plantings at once" (cause unknown: hand painting or an old plan). Ask him to check after updating to 0.40.0 and using Clear plan.
-- Planner look on his phone and the year plan on real climate data are unverified by me.
+- Still unchecked on his phone: Arrange v2 end to end, Fix overlaps on his Bed 5, the coop shape and Animals page (v0.54.0).
+- Stale jobs: harvest dates live in `Task` rows; after a release that changes the logic they update only when jobs refresh (the "tasks" scheduler job runs shortly after start, then every 12 h; any planting edit refreshes too). If he reports an old date after an update, ask him to wait a few minutes or touch the planting before debugging.
 - Owner action: enable "Allow GitHub Actions to create pull requests" so the monthly catalog-refresh workflow can open PRs.
-- Sandbox quirks: `gh` GraphQL is blocked (use `gh run list`, REST); the sandbox proxy resets some connections (retry); `sqlite3` CLI is missing (use python).
-
-## Active development sequence
-- [ ] Year-plan re-plan diff: preview added/removed/moved items before replacement.
-- [ ] Year-plan lifecycle: preserve live crops until harvest/finish; support locked job dates.
-- [ ] Flower wording: expose planting purpose so companion plants use flowering/picking language.
-- [ ] Planner usability: consistent windows, map zoom/pan, move planting, undo/redo.
-- [ ] Data depth: sourced depths, Pantry storage metadata, varieties, animals and organisms.
-- [ ] Pantry ↔ harvest, then Mealie integration.
-- [ ] Home Assistant and assistant integrations.
-
+- Sandbox quirks: `gh` GraphQL is blocked (use REST via `gh api`); the proxy resets some connections (retry); `sqlite3` CLI is missing (use python); never `pkill -f` a pattern that also appears in your own command line (it kills the shell, exit 144): kill by `pgrep -f "python -m tests[.]e2e_server"` in its own call.
+- Not CropStack: the "Murmur"/JustAnotherSim sim-mode messages in this chat belong to another project; ignore them here.
 
 ## v0.45.0
 Plants at real size: `planting.spots` (`[x, y, w, h]` cm per plant; `cells` is their cover, `layout.cover`), made by `layout.fill` (offset rows at the crop's spacing over painted cells, avoiding other plantings) in `plantings._place`; `beds.spots_of` lays out old rows from their cells; clashes are `layout.spot_clashes` (rectangles, not cells). Year plan drafting still works in cells: `layout.Patch/patch/best_block/plants_in` (spacing in both directions -> a patch of whole cells; a block is a solid rectangle of whole patches, then `layout.stagger` offsets every other row of patches by half a patch when the free ground allows), `yearplan.draft` scores blocks by touching good companions (`COMPANION_BONUS`, `BED_COMPANION_BONUS`) and refuses beds with an "avoid" crop; flower stands go against the host block / bed edge. `taken` now carries the crop as a fifth element (so adjacency can see existing plantings); `Want.footprint` became `Want.dims`; `kept` was removed. `catalog/companions.yaml` is read in both directions with family-level expansion (363 good / 56 avoid), flowers are derived (good partners with `purpose: companion`); zinnia and petunia added; 12 crops got estimated spacings (`plant_spread`/`row_spacing`, flagged). Flowers say "pick"/"in flower" (job title, suggestions). Limits: a patch is whole cells, so a spacing that is not a multiple of the cell wastes ground (finer cells follow it more closely); odd spacings like 20 x 45 cm take a 2-cell patch for one plant; adjacency is edge-to-edge only; the avoid rule is bed-level; the Today button still says "Mark harvest started" for flowers and the planting list still says "Harvest expected". Next: per-planting `purpose` in the API so those two say "flowering"; calendula/cosmos (no pairs in the source for our crops: only worth adding with a pair source); the re-plan diff.
