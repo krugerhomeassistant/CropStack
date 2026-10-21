@@ -5,6 +5,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.53.1] - 2026-10-21
+
+### Changed
+- The setup wizard picks crops from the same icon selector box as Arrange; the "Not on the grid yet." note sits under its plant.
+
 ## [0.53.0] - 2026-10-19
 
 ### Added
@@ -562,7 +567,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - CI: ruff lint and format, backend tests, frontend build, image publishing to GHCR and automatic GitHub releases on a version bump.
 - Project docs: README, wiki, architecture, roadmap, contributing guide, security policy and Code of Conduct.
 
-[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.53.0...HEAD
+[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.53.1...HEAD
+[0.53.1]: https://github.com/krugerhomeassistant/CropStack/compare/v0.53.0...v0.53.1
 [0.53.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.52.1...v0.53.0
 [0.52.1]: https://github.com/krugerhomeassistant/CropStack/compare/v0.52.0...v0.52.1
 [0.52.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.51.1...v0.52.0

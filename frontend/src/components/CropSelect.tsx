@@ -3,7 +3,8 @@ import { Check, ChevronDown, X } from 'lucide-react'
 import type { CropSummary } from '../api'
 import { t } from '../i18n'
 import { CropIcon } from './CropIcon'
-import { label } from './CropPicker'
+
+export const label = (c: CropSummary) => c.names.en?.[0] ?? c.slug
 
 /** A selector box for several crops: the chosen ones show as icon tags, the list keeps each crop's icon and filters as you type. */
 export default function CropSelect({ crops, chosen, onChange }: { crops: CropSummary[]; chosen: string[]; onChange: (s: string[]) => void }) {

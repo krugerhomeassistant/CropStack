@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { api, type CropSummary, type Garden, type YearPlan } from '../api'
 import { CropIcon } from '../components/CropIcon'
-import CropPicker from '../components/CropPicker'
+import CropSelect from '../components/CropSelect'
 import { PeopleStepper } from '../components/CoverageCard'
 import { Button, ErrorMessage, PageHeader } from '../components/ui'
 import { t } from '../i18n'
@@ -61,13 +61,13 @@ export default function Setup({ garden: start, onDone }: Props) {
       {step === 'want' && (
         <>
           <p>{t('Which crops do you want to grow? The plan favours them, and still adds others where food is short.')}</p>
-          <CropPicker crops={crops} chosen={wanted} onChange={setWanted} />
+          <CropSelect crops={crops} chosen={[...wanted]} onChange={(a) => setWanted(new Set(a))} />
         </>
       )}
       {step === 'seeds' && (
         <>
           <p>{t('Which seed do you already have? The plan uses those first and lists the rest to buy.')}</p>
-          <CropPicker crops={crops} chosen={owned} onChange={setOwned} />
+          <CropSelect crops={crops} chosen={[...owned]} onChange={(a) => setOwned(new Set(a))} />
         </>
       )}
       {step === 'done' && (
