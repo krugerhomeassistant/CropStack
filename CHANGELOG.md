@@ -5,6 +5,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.53.2] - 2026-10-21
+
+### Fixed
+- **Harvest dates no longer run far too late for cool-season crops.** Beetroot sown on 30 Aug was shown ripening 10–18 Dec; the heat model ran past the crop's longest catalogued cycle. When it does, the catalogued cycle (55 to 90 days for beetroot) is used instead, giving 24 Oct to 28 Nov.
+
 ## [0.53.1] - 2026-10-21
 
 ### Changed
@@ -567,7 +572,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - CI: ruff lint and format, backend tests, frontend build, image publishing to GHCR and automatic GitHub releases on a version bump.
 - Project docs: README, wiki, architecture, roadmap, contributing guide, security policy and Code of Conduct.
 
-[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.53.1...HEAD
+[Unreleased]: https://github.com/krugerhomeassistant/CropStack/compare/v0.53.2...HEAD
+[0.53.2]: https://github.com/krugerhomeassistant/CropStack/compare/v0.53.1...v0.53.2
 [0.53.1]: https://github.com/krugerhomeassistant/CropStack/compare/v0.53.0...v0.53.1
 [0.53.0]: https://github.com/krugerhomeassistant/CropStack/compare/v0.52.1...v0.53.0
 [0.52.1]: https://github.com/krugerhomeassistant/CropStack/compare/v0.52.0...v0.52.1

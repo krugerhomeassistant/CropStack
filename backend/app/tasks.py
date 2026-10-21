@@ -73,7 +73,8 @@ def crop_schedule(
                 done=past >= 3,
             )
         )
-    if maturity:
+    # A heat estimate longer than the crop's longest catalogued cycle is the model running cold; trust the catalogue.
+    if maturity and not (cycle_days and maturity["p50"] > cycle_days[1]):
         low, mid, high = (p.start_date + timedelta(days=maturity[q]) for q in ("p10", "p50", "p90"))
         verb = "comes into flower" if flower else "ripens"
         reason = (
