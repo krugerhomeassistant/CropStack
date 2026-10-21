@@ -140,3 +140,8 @@ More → Pantry. Each item: what, how it is kept, amount and unit, put-by date, 
 
 ## Needs model (v0.41.0)
 Settings → people. Demand is people × 400 g of vegetables a day, split over 8 food groups (leafy greens, fruiting vegetables, roots, brassicas, beans and peas, squash, onions, herbs; `engine/needs.py`, shares in `GROUPS`). Each catalog crop has a `food_group` and an estimated `yield_per_m2` (labelled estimates, low confidence). The drafter is a marginal-gain greedy: for each candidate planting in its sowing window it adds the crop and area that most reduces unmet weekly demand, rotation-aware, until beds are full or demand is met. `GET /plan/year` returns coverage (share of demand met), `weeks_short` (week starts where supply is under half the target), and the best change (about 4 m² more bed). Limits: harvest is spread evenly over the harvest window, no diet or per-member model, perennials not planned, crops without a yield are listed and skipped.
+
+## Animals (v0.54.0)
+- A bed with `kind: coop` is a coop and run on the plan: no grid, no plantings; `plan/year` and recommendations skip it.
+- `Flock` (species, breed, count, got_on, coop_id → a coop bed) and `EggLog` (one row per flock and day; logging a day again replaces it). `GET/POST /flocks`, `PATCH/DELETE /flocks/{id}`, `POST /flocks/{id}/eggs`. Each flock reports its coop, the coop's area, a suggested area (0.4 m² coop + 1.0 m² run per hen, an estimate, never enforced), eggs this week and per hen a day.
+- Next: catalog species and breeds for hens and bees, animal tasks on Today, bees.

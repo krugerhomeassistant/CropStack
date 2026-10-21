@@ -149,7 +149,7 @@ def year_plan(me: MemberDep, db: SessionDep, c: CatalogDep, bed: int | None = No
     plan included), each crop's first sowing only; nothing is scheduled until the caller plants the items."""
     only = frozenset(s for s in crops.split(",") if s)
     site = db.exec(select(Site).where(Site.household_id == me.household_id)).first()
-    beds = db.exec(select(Bed).where(Bed.household_id == me.household_id).order_by(Bed.id)).all()
+    beds = db.exec(select(Bed).where(Bed.household_id == me.household_id, Bed.kind != "coop").order_by(Bed.id)).all()
     if bed is not None:
         beds = [b for b in beds if b.id == bed]
         if not beds:

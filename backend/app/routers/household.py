@@ -10,7 +10,7 @@ from sqlmodel import Session, func, select
 
 from .. import ai
 from ..deps import MemberDep, OwnerDep, SessionDep
-from ..models import Bed, Harvest, Household, Invite, Membership, Planting, Seed, Task, User, now
+from ..models import Bed, EggLog, Flock, Harvest, Household, Invite, Membership, Planting, Seed, Task, User, now
 from .auth import token_hash, valid_invite
 
 router = APIRouter(prefix="/api/v1", tags=["household"])
@@ -143,10 +143,10 @@ class ResetIn(BaseModel):
 
 @router.post("/household/reset")
 def reset_garden(body: ResetIn, me: OwnerDep, db: SessionDep) -> dict[str, int]:
-    """Start the garden over: beds, plantings, jobs, harvests and seeds go. The login, members, garden location and
+    """Start the garden over: beds, plantings, jobs, harvests, flocks and seeds go. The login, members, garden location and
     settings, pantry and crop edits stay. For testing and a fresh start; it cannot be undone."""
     removed = {}
-    for model in (Task, Harvest, Planting, Bed, Seed):  # children first
+    for model in (Task, Harvest, Planting, EggLog, Flock, Bed, Seed):  # children first
         rows = db.exec(select(model).where(model.household_id == me.household_id)).all()
         for row in rows:
             db.delete(row)

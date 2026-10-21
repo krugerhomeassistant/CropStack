@@ -161,8 +161,25 @@ export type PantryItem = {
   days_left: number | null
   state: 'ok' | 'soon' | 'past'
 }
+export type Flock = {
+  id: number
+  name: string
+  species: string
+  breed: string
+  count: number
+  got_on: string
+  coop_id: number | null
+  notes: string
+  coop: string | null
+  coop_m2: number | null
+  wanted_m2: number // a suggestion for coop and run together, never a limit
+  eggs_week: number
+  eggs_today: number | null
+  per_hen_day: number
+}
+export type FlockIn = Pick<Flock, 'name' | 'breed' | 'count' | 'got_on' | 'coop_id' | 'notes'> & { species?: string }
 export type PantryIn = Pick<PantryItem, 'name' | 'method' | 'quantity' | 'unit' | 'made_on' | 'location' | 'notes'> & { best_before?: string | null }
-export type BedKind = 'bed' | 'container' | 'row'
+export type BedKind = 'bed' | 'container' | 'row' | 'coop'
 export type Bed = {
   id: number
   name: string
@@ -403,6 +420,11 @@ export const api = {
   addPantry: (body: PantryIn) => request<PantryItem>('POST', '/pantry', body),
   updatePantry: (id: number, body: Partial<Pick<PantryItem, 'name' | 'quantity' | 'best_before' | 'location' | 'notes'>>) => request<PantryItem>('PATCH', `/pantry/${id}`, body),
   deletePantry: (id: number) => request<null>('DELETE', `/pantry/${id}`),
+  flocks: () => request<Flock[]>('GET', '/flocks'),
+  addFlock: (body: FlockIn) => request<Flock>('POST', '/flocks', body),
+  updateFlock: (id: number, body: Partial<Pick<Flock, 'name' | 'breed' | 'count' | 'coop_id' | 'notes'>>) => request<Flock>('PATCH', `/flocks/${id}`, body),
+  logEggs: (id: number, laid_on: string, count: number) => request<Flock>('POST', `/flocks/${id}/eggs`, { laid_on, count }),
+  deleteFlock: (id: number) => request<null>('DELETE', `/flocks/${id}`),
   resetData: () => request<Record<string, number>>('POST', '/household/reset', { confirm: 'RESET' }),
   seeds: () => request<string[]>('GET', '/seeds'),
   setSeeds: (crops: string[]) => request<string[]>('PUT', '/seeds', { crops }),

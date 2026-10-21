@@ -21,7 +21,7 @@ MAX_CELLS = layout.MAX_CELLS
 
 class BedIn(BaseModel):
     name: str = Field(min_length=1, max_length=60)
-    kind: Literal["bed", "container", "row"] = "bed"
+    kind: Literal["bed", "container", "row", "coop"] = "bed"
     x: float = Field(0, ge=0, le=MAX_M)
     y: float = Field(0, ge=0, le=MAX_M)
     width: float = Field(gt=0, le=100)
@@ -32,7 +32,7 @@ class BedIn(BaseModel):
 
 class BedPatch(BaseModel):
     name: str | None = Field(None, min_length=1, max_length=60)
-    kind: Literal["bed", "container", "row"] | None = None
+    kind: Literal["bed", "container", "row", "coop"] | None = None
     x: float | None = Field(None, ge=0, le=MAX_M)
     y: float | None = Field(None, ge=0, le=MAX_M)
     width: float | None = Field(None, gt=0, le=100)
