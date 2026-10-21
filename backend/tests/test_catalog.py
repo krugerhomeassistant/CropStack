@@ -257,3 +257,10 @@ def test_every_real_crop_has_a_frontend_icon():
     icons = {p.stem for p in (REPO / "frontend/src/icons/crops").glob("*.svg")}
     crops = {p.stem for p in (REPO / "catalog/crops").glob("*.yaml")}
     assert crops - icons == set(), "add frontend/src/icons/crops/<slug>.svg (see docs/DESIGN.md, Crop icons)"
+
+
+def test_every_organism_has_an_icon_and_the_first_animals_too():
+    icons = {p.stem for p in (REPO / "frontend/src/icons/organisms").glob("*.svg")}
+    organisms = {p.stem for p in (REPO / "catalog/organisms").glob("*.yaml")}
+    assert organisms - icons == set(), "add frontend/src/icons/organisms/<slug>.svg (see docs/DESIGN.md, Crop icons)"
+    assert {"hen", "bee"} <= {p.stem for p in (REPO / "frontend/src/icons/animals").glob("*.svg")}

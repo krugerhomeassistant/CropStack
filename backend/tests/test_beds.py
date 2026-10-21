@@ -407,7 +407,7 @@ def test_a_crop_without_a_yield_is_listed_as_skipped(owner, monkeypatch):  # noq
     owner.post("/api/v1/beds", json={"name": "Big", "width": 2.4, "length": 3.6})
     with_yield = owner.get("/api/v1/plan/year").json()
     assert with_yield["skipped_no_yield"] == []
-    assert [i["crop"] for i in with_yield["items"]] == ["testcrop"]
+    assert {i["crop"] for i in with_yield["items"]} == {"testcrop"}  # more than one sowing now fits in the season
     monkeypatch.setattr(layout, "yield_per_m2", lambda item: None)
     without = owner.get("/api/v1/plan/year").json()
     assert without["skipped_no_yield"] == ["testcrop"] and without["items"] == []
@@ -576,8 +576,8 @@ def test_the_year_plan_previews_real_size_plants_and_accepting_plants_exactly_th
     fields = ("crop", "method", "start_date", "set_out_date", "bed_id", "cells", "spots")
     assert owner.post("/api/v1/plan/year", json=[{k: i[k] for k in fields} for i in items]).status_code == 201
     [row] = owner.get("/api/v1/beds").json()
-    planted = {p["crop"]: p["spots"] for p in row["placements"]}
-    assert all(planted[i["crop"]] == i["spots"] for i in items) and row["clashes"] == []
+    planted = [(p["crop"], p["start_date"], p["spots"]) for p in row["placements"]]
+    assert all((i["crop"], i["start_date"], i["spots"]) in planted for i in items) and row["clashes"] == []
 
 
 def test_reset_clears_the_garden_but_keeps_the_login_and_needs_the_word(owner):  # noqa: F811
@@ -689,3 +689,25 @@ def test_planting_over_others_moves_the_plants_to_free_ground(owner):  # noqa: F
     assert b["spots"] and b["spots"][0] != a["spots"][0]
     [row] = owner.get("/api/v1/beds").json()
     assert row["clashes"] == []
+
+
+def test_drafted_harvest_windows_never_run_past_the_catalogued_cycle(owner, monkeypatch):  # noqa: F811
+    from datetime import date
+    from pathlib import Path
+
+    from app import catalog as cat
+    from app import external
+    from app.main import app
+    from tests.e2e_server import fake_archive
+
+    root = cat.load(Path(__file__).resolve().parents[2] / "catalog")
+    monkeypatch.setattr(external, "fetch_climate_archive", fake_archive)
+    monkeypatch.setattr(app.state, "catalog", root)
+    owner.put("/api/v1/sites/current", json=GARDEN)
+    bed = owner.post("/api/v1/beds", json={"name": "A", "width": 1.2, "length": 2.4}).json()
+    items = owner.get(f"/api/v1/plan/year?bed={bed['id']}&crops=beetroot,lettuce,radish").json()["items"]
+    assert items
+    for i in items:
+        longest = root.get("crop", i["crop"])["params"]["cycle_days"]["value"]["max"]
+        sown = date.fromisoformat(i["set_out_date"] or i["start_date"])
+        assert (date.fromisoformat(i["harvest_to"]) - sown).days <= longest, i["crop"]
