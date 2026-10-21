@@ -251,3 +251,9 @@ def test_a_companion_flower_is_picked_not_harvested():
     assert plain.title.startswith("Start harvesting tomato")
     by_cycle = next(s for s in crop_schedule(planting(), "marigold", None, (50, 80), True) if s.kind == "harvest")
     assert "sowing to flowers" in by_cycle.reason
+
+
+def test_a_heat_estimate_longer_than_the_catalogued_cycle_gives_way_to_the_cycle():
+    beet = planting(crop="beetroot", start_date=date(2026, 8, 30))
+    [*_, harvest] = crop_schedule(beet, "beetroot", {"p10": 102, "p50": 106, "p90": 110}, (55, 90))
+    assert (harvest.earliest, harvest.latest) == (date(2026, 10, 24), date(2026, 11, 28))
