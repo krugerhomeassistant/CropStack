@@ -36,7 +36,7 @@ It runs on your own hardware (a NAS, a Raspberry Pi, a home server) as one conta
 </p>
 
 > [!NOTE]
-> CropStack is in active development (v0.50). Climate, a 60-crop catalog, the garden planner, a year plan with a seeds-to-buy list, daily jobs, watering and a pantry work today. Animals, Home Assistant and the Mealie link are next. See [what works now](#-what-works-now) and the [roadmap](#-roadmap).
+> CropStack is in active development (v0.54). Climate, a 60-crop catalog, the garden planner, a year plan with a seeds-to-buy list, daily jobs, watering and a pantry, and hens with a coop on the plan and an egg log work today. More animals, Home Assistant and the Mealie link are next. See [what works now](#-what-works-now) and the [roadmap](#-roadmap).
 
 ## ✅ What works now
 
