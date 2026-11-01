@@ -55,7 +55,7 @@ requirements:
       evidence: extension-service
       confidence: medium
       sources:
-      - {ref: harrington-osu, locator: Table 1 (°F converted to °C), retrieved: 2026-10-10, snapshot: 'sha256:189b1059f040263e1a9e60894621e8c8356dea18da8091774015388a7700098f'}
+      - {ref: harrington-osu, locator: Table 1 (°F converted to °C), retrieved: 2026-11-01, snapshot: 'sha256:c8711c8738515c125b9bbf04857af8ae44c218b06fb46328aad458cbdd281860'}
   temperature:
     stress_min:
       value: 12.0
@@ -258,42 +258,42 @@ params:
     evidence: extension-service
     confidence: medium
     sources:
-    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-10, snapshot: 'sha256:189b1059f040263e1a9e60894621e8c8356dea18da8091774015388a7700098f'}
+    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-11-01, snapshot: 'sha256:c8711c8738515c125b9bbf04857af8ae44c218b06fb46328aad458cbdd281860'}
   - value: 12.0
     unit: d
     qualifiers: {soil_temp_c: 15.0}
     evidence: extension-service
     confidence: medium
     sources:
-    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-10, snapshot: 'sha256:189b1059f040263e1a9e60894621e8c8356dea18da8091774015388a7700098f'}
+    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-11-01, snapshot: 'sha256:c8711c8738515c125b9bbf04857af8ae44c218b06fb46328aad458cbdd281860'}
   - value: 7.0
     unit: d
     qualifiers: {soil_temp_c: 20.0}
     evidence: extension-service
     confidence: medium
     sources:
-    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-10, snapshot: 'sha256:189b1059f040263e1a9e60894621e8c8356dea18da8091774015388a7700098f'}
+    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-11-01, snapshot: 'sha256:c8711c8738515c125b9bbf04857af8ae44c218b06fb46328aad458cbdd281860'}
   - value: 4.0
     unit: d
     qualifiers: {soil_temp_c: 25.0}
     evidence: extension-service
     confidence: medium
     sources:
-    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-10, snapshot: 'sha256:189b1059f040263e1a9e60894621e8c8356dea18da8091774015388a7700098f'}
+    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-11-01, snapshot: 'sha256:c8711c8738515c125b9bbf04857af8ae44c218b06fb46328aad458cbdd281860'}
   - value: 4.0
     unit: d
     qualifiers: {soil_temp_c: 30.0}
     evidence: extension-service
     confidence: medium
     sources:
-    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-10, snapshot: 'sha256:189b1059f040263e1a9e60894621e8c8356dea18da8091774015388a7700098f'}
+    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-11-01, snapshot: 'sha256:c8711c8738515c125b9bbf04857af8ae44c218b06fb46328aad458cbdd281860'}
   - value: 3.0
     unit: d
     qualifiers: {soil_temp_c: 35.0}
     evidence: extension-service
     confidence: medium
     sources:
-    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-10, snapshot: 'sha256:189b1059f040263e1a9e60894621e8c8356dea18da8091774015388a7700098f'}
+    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-11-01, snapshot: 'sha256:c8711c8738515c125b9bbf04857af8ae44c218b06fb46328aad458cbdd281860'}
   annual_rainfall:
     value: {min: 600.0, opt_min: 800.0, opt_max: 1500.0, max: 1800.0}
     unit: mm

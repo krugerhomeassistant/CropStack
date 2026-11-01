@@ -216,8 +216,8 @@ gbif:Zea mays:
   sha256: 5fa8981e9cbde70053ecaecf040baca60137ad15d868c46587de4b33247d989a
   url: https://api.gbif.org/v1/species/match?name=Zea%20mays&kingdom=Plantae&strict=true
 harrington-osu:
-  retrieved: 2026-10-10
-  sha256: 189b1059f040263e1a9e60894621e8c8356dea18da8091774015388a7700098f
+  retrieved: 2026-11-01
+  sha256: c8711c8738515c125b9bbf04857af8ae44c218b06fb46328aad458cbdd281860
   url: https://extension.oregonstate.edu/es/catalog/soil-temperature-conditions-vegetable-seed-germination
 openfarm-rescue:
   retrieved: 2026-10-09
