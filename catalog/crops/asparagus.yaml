@@ -55,7 +55,7 @@ requirements:
       evidence: extension-service
       confidence: medium
       sources:
-      - {ref: harrington-osu, locator: Table 1 (°F converted to °C), retrieved: 2026-10-10, snapshot: 'sha256:189b1059f040263e1a9e60894621e8c8356dea18da8091774015388a7700098f'}
+      - {ref: harrington-osu, locator: Table 1 (°F converted to °C), retrieved: 2026-11-01, snapshot: 'sha256:c8711c8738515c125b9bbf04857af8ae44c218b06fb46328aad458cbdd281860'}
   temperature:
     stress_min:
       value: 6.0
@@ -92,7 +92,7 @@ params:
     evidence: traditional
     confidence: low
     estimate: true
-    qualifiers: {basis: 'typical home-garden yield per crop cycle; replace with an extension-service figure'}
+    qualifiers: {basis: typical home-garden yield per crop cycle; replace with an extension-service figure}
   height_max:
     value: 0.5
     unit: m
@@ -167,49 +167,49 @@ params:
     evidence: extension-service
     confidence: medium
     sources:
-    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-10, snapshot: 'sha256:189b1059f040263e1a9e60894621e8c8356dea18da8091774015388a7700098f'}
+    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-11-01, snapshot: 'sha256:c8711c8738515c125b9bbf04857af8ae44c218b06fb46328aad458cbdd281860'}
   - value: 24.0
     unit: d
     qualifiers: {soil_temp_c: 15.0}
     evidence: extension-service
     confidence: medium
     sources:
-    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-10, snapshot: 'sha256:189b1059f040263e1a9e60894621e8c8356dea18da8091774015388a7700098f'}
+    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-11-01, snapshot: 'sha256:c8711c8738515c125b9bbf04857af8ae44c218b06fb46328aad458cbdd281860'}
   - value: 15.0
     unit: d
     qualifiers: {soil_temp_c: 20.0}
     evidence: extension-service
     confidence: medium
     sources:
-    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-10, snapshot: 'sha256:189b1059f040263e1a9e60894621e8c8356dea18da8091774015388a7700098f'}
+    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-11-01, snapshot: 'sha256:c8711c8738515c125b9bbf04857af8ae44c218b06fb46328aad458cbdd281860'}
   - value: 10.0
     unit: d
     qualifiers: {soil_temp_c: 25.0}
     evidence: extension-service
     confidence: medium
     sources:
-    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-10, snapshot: 'sha256:189b1059f040263e1a9e60894621e8c8356dea18da8091774015388a7700098f'}
+    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-11-01, snapshot: 'sha256:c8711c8738515c125b9bbf04857af8ae44c218b06fb46328aad458cbdd281860'}
   - value: 11.0
     unit: d
     qualifiers: {soil_temp_c: 30.0}
     evidence: extension-service
     confidence: medium
     sources:
-    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-10, snapshot: 'sha256:189b1059f040263e1a9e60894621e8c8356dea18da8091774015388a7700098f'}
+    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-11-01, snapshot: 'sha256:c8711c8738515c125b9bbf04857af8ae44c218b06fb46328aad458cbdd281860'}
   - value: 19.0
     unit: d
     qualifiers: {soil_temp_c: 35.0}
     evidence: extension-service
     confidence: medium
     sources:
-    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-10, snapshot: 'sha256:189b1059f040263e1a9e60894621e8c8356dea18da8091774015388a7700098f'}
+    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-11-01, snapshot: 'sha256:c8711c8738515c125b9bbf04857af8ae44c218b06fb46328aad458cbdd281860'}
   - value: 28.0
     unit: d
     qualifiers: {soil_temp_c: 40.0}
     evidence: extension-service
     confidence: medium
     sources:
-    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-10-10, snapshot: 'sha256:189b1059f040263e1a9e60894621e8c8356dea18da8091774015388a7700098f'}
+    - {ref: harrington-osu, locator: Table 2, retrieved: 2026-11-01, snapshot: 'sha256:c8711c8738515c125b9bbf04857af8ae44c218b06fb46328aad458cbdd281860'}
   row_spacing:
     value: 30
     unit: cm
