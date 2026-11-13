@@ -8,7 +8,7 @@ COPY frontend/ ./
 RUN npm run build
 
 # ---- runtime ----
-FROM python:3.14-slim
+FROM python:3.15-slim
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 \
     CROPSTACK_DATA_DIR=/data CROPSTACK_STATIC_DIR=/app/static CROPSTACK_CATALOG_DIR=/app/catalog
 WORKDIR /app
