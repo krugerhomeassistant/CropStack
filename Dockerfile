@@ -1,6 +1,6 @@
 # ---- frontend build ----
 # the build output is plain files, so build it once natively instead of once per target platform
-FROM --platform=$BUILDPLATFORM node:25-alpine AS web
+FROM --platform=$BUILDPLATFORM node:26-alpine AS web
 WORKDIR /web
 COPY frontend/package.json frontend/package-lock.json ./
 RUN npm ci --no-audit --no-fund
